@@ -93,6 +93,12 @@ export class CardRequirement {
     case RequirementType.CHAIRMAN:
       return player.game.turmoil?.chairman === player.id;
 
+    case RequirementType.CARDS_IN_HAND:
+      return this.satisfiesInequality(player.cardsInHand.length);
+
+    case RequirementType.CARDS_PLAYED:
+      return this.satisfiesInequality(player.playedCards.length);
+
     case RequirementType.CITIES:
       if (this._isAny) {
         return this.satisfiesInequality(player.game.getCitiesInPlay());

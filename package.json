@@ -42,6 +42,7 @@
     "extends": "@istanbuljs/nyc-config-typescript"
   },
   "scripts": {
+    "quick": "npm run compile && npm run webpack && npm run start",
     "build": "npm run compile && npm run templates && npm run webpack && npm run lint",
     "prebuild": "npm run makeJson && npm run makeCss",
     "clean": "rm -r ./build/ ./src/genfiles/ || true",

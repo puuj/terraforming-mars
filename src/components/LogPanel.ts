@@ -15,8 +15,6 @@ import {TileType} from '../TileType';
 
 import * as raw_settings from '../genfiles/settings.json';
 
-import * as raw_settings from '../genfiles/settings.json';
-
 export const LogPanel = Vue.component('log-panel', {
   props: {
     id: {
