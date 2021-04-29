@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import * as constants from './constants';
 import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, ENERGY_TRADE_COST, MAX_FLEET_SIZE, MC_TRADE_COST, MILESTONE_COST, REDS_RULING_POLICY_COST, TITANIUM_TRADE_COST} from './constants';
 import {AndOptions} from './inputs/AndOptions';
@@ -54,6 +56,7 @@ import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
 import {SelectProductionToLose} from './inputs/SelectProductionToLose';
 import {IAresGlobalParametersResponse, ShiftAresGlobalParameters} from './inputs/ShiftAresGlobalParameters';
 import {Timer} from './Timer';
+import {Notifier} from './Notifier';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
 import {TurmoilPolicy} from './turmoil/TurmoilPolicy';
 import {GameLoader} from './database/GameLoader';
@@ -130,6 +133,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   public cardDiscount: number = 0;
 
   public timer: Timer = Timer.newInstance();
+  public notifier: Notifier = Notifier.newInstance(process.env.NOTIFICATION_SENDER, process.env.URL);
 
   // Colonies
   private fleetSize: number = 1;
@@ -164,7 +168,8 @@ export class Player implements ISerializable<SerializedPlayer> {
     public color: Color,
     public beginner: boolean,
     public handicap: number = 0,
-    id: PlayerId) {
+    id: PlayerId,
+    public email: string | undefined) {
     this.id = id;
   }
 
@@ -173,8 +178,9 @@ export class Player implements ISerializable<SerializedPlayer> {
     color: Color,
     beginner: boolean,
     handicap: number = 0,
-    id: PlayerId): Player {
-    const player = new Player(name, color, beginner, handicap, id);
+    id: PlayerId,
+    email: string | undefined): Player {
+    const player = new Player(name, color, beginner, handicap, id, email);
     return player;
   }
 
@@ -349,11 +355,11 @@ export class Player implements ISerializable<SerializedPlayer> {
             .string(modifier)
             .number(Math.abs(amount)));
       }
+    }
 
-      // Mons Insurance hook
-      if (amount < 0 && options?.from !== undefined && options.from !== this) {
-        this.resolveMonsInsurance();
-      }
+    // Mons Insurance hook
+    if (options?.from !== undefined && amount < 0 && (options.from instanceof Player && options.from.id !== this.id)) {
+      this.resolveMonsInsurance();
     }
   }
 
@@ -398,11 +404,11 @@ export class Player implements ISerializable<SerializedPlayer> {
             .string(modifier)
             .number(Math.abs(amount)));
       }
+    }
 
-      // Mons Insurance hook
-      if (amount < 0 && options.from !== undefined && options.from !== this) {
-        this.resolveMonsInsurance();
-      }
+    // Mons Insurance hook
+    if (options?.from !== undefined && amount < 0 && (options.from instanceof Player && options.from.id !== this.id)) {
+      this.resolveMonsInsurance();
     }
 
     // Manutech hook
@@ -2050,6 +2056,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     this.waitingForCb = undefined;
     try {
       this.timer.stop();
+      this.notifier.clearNotification();
       this.runInput(input, waitingFor);
       waitingForCb();
     } catch (err) {
@@ -2064,6 +2071,7 @@ export class Player implements ISerializable<SerializedPlayer> {
 
   public setWaitingFor(input: PlayerInput, cb: () => void): void {
     this.timer.start();
+    this.notifier.registerNotification(setTimeout(Notifier.notify, 90000, this));
     this.waitingFor = input;
     this.waitingForCb = cb;
   }
@@ -2164,6 +2172,7 @@ export class Player implements ISerializable<SerializedPlayer> {
       color: this.color,
       beginner: this.beginner,
       handicap: this.handicap,
+      email: this.email,
       timer: this.timer.serialize(),
       // Used when undoing action
       usedUndo: this.usedUndo,
@@ -2175,7 +2184,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   public static deserialize(d: SerializedPlayer): Player {
-    const player = new Player(d.name, d.color, d.beginner, Number(d.handicap), d.id);
+    const player = new Player(d.name, d.color, d.beginner, Number(d.handicap), d.id, d.email);
     const cardFinder = new CardFinder();
 
     player.actionsTakenThisRound = d.actionsTakenThisRound;

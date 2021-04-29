@@ -43,12 +43,20 @@ export class GameHandler extends Handler {
         const gameId = this.generateRandomId('g');
         const spectatorId = this.generateRandomId('s');
         const players = gameReq.players.map((obj: any) => {
+          const parts = obj.name.split('|');
+          let email = undefined;
+          let name = obj.name;
+          if (parts.length > 1) {
+            name = parts[0];
+            email = parts[1];
+          }
           return new Player(
-            obj.name,
+            name,
             obj.color,
             obj.beginner,
             Number(obj.handicap), // For some reason handicap is coming up a string.
             this.generateRandomId('p'),
+            email,
           );
         });
         let firstPlayerIdx: number = 0;

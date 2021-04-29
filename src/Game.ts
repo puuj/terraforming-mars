@@ -1373,12 +1373,16 @@ export class Game implements ISerializable<SerializedGame> {
     if (spaceBonus === SpaceBonus.DRAW_CARD) {
       player.drawCard(count);
     } else if (spaceBonus === SpaceBonus.PLANT) {
+      LogHelper.logGainStandardResource(player, Resources.PLANTS, count);
       player.plants += count;
     } else if (spaceBonus === SpaceBonus.STEEL) {
+      LogHelper.logGainStandardResource(player, Resources.STEEL, count);
       player.steel += count;
     } else if (spaceBonus === SpaceBonus.TITANIUM) {
+      LogHelper.logGainStandardResource(player, Resources.TITANIUM, count);
       player.titanium += count;
     } else if (spaceBonus === SpaceBonus.HEAT) {
+      LogHelper.logGainStandardResource(player, Resources.HEAT, count);
       player.heat += count;
     }
   }

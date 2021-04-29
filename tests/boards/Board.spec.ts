@@ -282,8 +282,8 @@ describe('Board', function() {
         },
       ],
     };
-    const player1 = new Player('name-1', Color.RED, false, 0, 'name-1-id');
-    const player2 = new Player('name-2', Color.YELLOW, false, 0, 'name-2-id');
+    const player1 = new Player('name-1', Color.RED, false, 0, 'name-1-id', undefined);
+    const player2 = new Player('name-2', Color.YELLOW, false, 0, 'name-2-id', undefined);
 
     const board = new TestBoard(Board.deserializeSpaces((boardJson as SerializedBoard).spaces, [player1, player2]));
     expect(board.getSpaceById('01')!.player).eq(player1);

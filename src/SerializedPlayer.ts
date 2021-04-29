@@ -23,6 +23,7 @@ export interface SerializedPlayer {
     dealtPreludeCards: Array<CardName>;
     dealtProjectCards: Array<CardName>;
     draftedCards: Array<CardName>;
+    email: string | undefined;
     energy: number;
     energyProduction: number;
     fleetSize: number;
