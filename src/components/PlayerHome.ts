@@ -110,6 +110,20 @@ export const PlayerHome = Vue.component('player-home', {
     isPlayerActing: function(player: PlayerModel) : boolean {
       return player.players.length > 1 && player.waitingFor !== undefined;
     },
+    currentPlayerColor() {
+      let color = this.player.color;
+      for (let i=0; i < this.player.players.length; i++) {
+        if (this.player.players[i].isActive) {
+          color = this.player.players[i].color;
+        }
+      }
+
+      if (this.player.waitingFor !== undefined) {
+        color = this.player.color;
+      }
+
+      return color;
+    },
     getPlayerCssForTurnOrder: (
       player: PublicPlayerModel,
       highlightActive: boolean,
@@ -205,6 +219,7 @@ export const PlayerHome = Vue.component('player-home', {
 
             <sidebar v-trim-whitespace
               :acting_player="isPlayerActing(player)"
+              :current_player_color="currentPlayerColor()"
               :player_color="player.color"
               :generation="player.game.generation"
               :coloniesCount="player.game.colonies.length"

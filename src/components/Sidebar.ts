@@ -14,6 +14,9 @@ import {MoonModel} from '../models/MoonModel';
 
 export const Sidebar = Vue.component('sidebar', {
   props: {
+    active_player: {
+      type: Boolean,
+    },
     playerNumber: {
       type: Number,
     },
@@ -24,6 +27,9 @@ export const Sidebar = Vue.component('sidebar', {
       type: Boolean,
     },
     player_color: {
+      type: String as () => Color,
+    },
+    current_player_color: {
       type: String as () => Color,
     },
     generation: {
@@ -190,7 +196,7 @@ export const Sidebar = Vue.component('sidebar', {
     <moon-global-parameter-value v-if="gameOptions.moonExpansion" :moonData="this.moonData"></moon-global-parameter-value>
   </div>
   <div class="preferences_item preferences_player">
-    <div :class="getPlayerColorCubeClass()+' player_bg_color_' + player_color"></div>
+    <div :class="getPlayerColorCubeClass()+' player_bg_color_' + current_player_color"></div>
   </div>
 
   <a href="#board">
