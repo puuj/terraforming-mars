@@ -6,6 +6,8 @@ export enum RequirementType {
     TR = 'TR',
     RESOURCE_TYPES = 'Resource type',
     GREENERIES = 'Greenery',
+    CARDS_IN_HAND = 'Cards in hand',
+    CARDS_PLAYED = 'Cards played',
     CITIES = 'City',
     COLONIES = 'Colony',
     FLOATERS = 'Floater',
