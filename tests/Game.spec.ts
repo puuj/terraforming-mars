@@ -316,10 +316,10 @@ describe('Game', function() {
   });
 
   it('Should return players in turn order', function() {
-    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id');
-    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id');
-    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id');
-    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id');
+    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id', undefined);
+    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id', undefined);
+    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id', undefined);
+    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id', undefined);
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player3);
 
     let players = game.getPlayers();
@@ -470,8 +470,8 @@ describe('Game', function() {
   });
 
   it('fails when the same id appears in two players', () => {
-    const player1 = new Player('name', Color.BLUE, false, 0, 'id3');
-    const player2 = new Player('name', Color.RED, false, 0, 'id3');
+    const player1 = new Player('name', Color.BLUE, false, 0, 'id3', undefined);
+    const player2 = new Player('name', Color.RED, false, 0, 'id3', undefined);
     expect(
       () => Game.newInstance('id', [player1, player2], player1))
       .to.throw(Error, /Duplicate player found: id3,id3/);
@@ -484,8 +484,8 @@ describe('Game', function() {
   });
 
   it('fails when the same color appears in two players', () => {
-    const player1 = new Player('name', Color.RED, false, 0, 'id1');
-    const player2 = new Player('name', Color.RED, false, 0, 'id2');
+    const player1 = new Player('name', Color.RED, false, 0, 'id1', undefined);
+    const player2 = new Player('name', Color.RED, false, 0, 'id2', undefined);
     expect(
       () => Game.newInstance('id', [player1, player2], player1))
       .to.throw(Error, /Duplicate color found/);

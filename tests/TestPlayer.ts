@@ -6,7 +6,7 @@ import {Tags} from '../src/cards/Tags';
 
 export class TestPlayer extends Player {
   constructor(color: Color) {
-    super('player-' + color, color, false, 0, color + '-id');
+    super('player-' + color, color, false, 0, color + '-id', undefined);
   }
 
   public setProductionForTest(units: Partial<Units>) {

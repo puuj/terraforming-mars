@@ -274,6 +274,7 @@ describe('Player', function() {
         afterFirstAction: false,
         lastStoppedAt: 0,
       } as SerializedTimer,
+      email: 'test@example.com'
     };
 
     const newPlayer = Player.deserialize(json as SerializedPlayer);

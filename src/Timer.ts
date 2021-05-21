@@ -65,5 +65,11 @@ export class Timer implements ISerializable<SerializedTimer> {
     }
     return elapsedDate.toISOString().substr(14, 5);
   }
+  public getActingTime() : number {
+    if (this.running && this.afterFirstAction) {
+      return Math.floor((Date.now() - this.startedAt)/1000);
+    }
+    return 0;
+  }
 }
 
