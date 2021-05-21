@@ -26,7 +26,11 @@ export class CardRequirements {
     if (this.hasAny()) {
       reqTexts.unshift('Any');
     }
-    return reqTexts.join(' ');
+    const reqText = reqTexts.join(' ');
+    if (reqText.length > 50) {
+      return 'See description';
+    }
+    return reqText;
   }
   public hasMax(): boolean {
     return this.requirements.some((req) => req.isMax);
@@ -109,6 +113,16 @@ class Builder {
 
   public greeneries(amount?: number): Builder {
     this.reqs.push(new CardRequirement(RequirementType.GREENERIES, amount));
+    return this;
+  }
+
+  public cardsInHand(amount?: number): Builder {
+    this.reqs.push(new CardRequirement(RequirementType.CARDS_IN_HAND, amount));
+    return this;
+  }
+
+  public cardsPlayed(amount?: number): Builder {
+    this.reqs.push(new CardRequirement(RequirementType.CARDS_PLAYED, amount));
     return this;
   }
 

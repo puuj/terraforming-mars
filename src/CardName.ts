@@ -486,6 +486,18 @@ export enum CardName {
     // Community colonies
     SCIENCE_TAG_BLANK_CARD = '',
 
+    // Community extras
+    DARK_HORSE = 'Dark Horse',
+    DROUGHT = 'Drought',
+    FIRES = 'Fires',
+    FORCED_PARTNERSHIP = 'Forced Partnership',
+    HORIZONTAL_INTEGRATION = 'Horizontal Integration',
+    ICE_AGE = 'Ice Age',
+    PATENT_PORTFOLIO = 'Patent Portfolio',
+    SPIES = 'Spies',
+    UNO = 'Uno',
+    WINDFALL = 'Windfall',
+
     // Ares expansion.
     BIOENGINEERING_ENCLOSURE = 'Bioengineering Enclosure',
     BIOFERTILIZER_FACILITY = 'Bio-Fertilizer Facility',
