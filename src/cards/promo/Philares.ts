@@ -12,6 +12,7 @@ import {DeferredAction, Priority} from '../../deferredActions/DeferredAction';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../render/Size';
 import {BoardType} from '../../boards/BoardType';
+import {Resources} from '../../Resources';
 
 export class Philares extends Card implements CorporationCard {
   constructor() {
@@ -94,12 +95,12 @@ export class Philares extends Card implements CorporationCard {
         ) {
           throw new Error('Need to select ' + resourceCount + ' resource(s)');
         }
-        philaresPlayer.megaCredits += megacreditsAmount;
-        philaresPlayer.steel += steelAmount;
-        philaresPlayer.titanium += titaniumAmount;
-        philaresPlayer.plants += plantsAmount;
-        philaresPlayer.energy += energyAmount;
-        philaresPlayer.heat += heatAmount;
+        philaresPlayer.addResource(Resources.MEGACREDITS, megacreditsAmount, {log: true});
+        philaresPlayer.addResource(Resources.STEEL, steelAmount, {log: true});
+        philaresPlayer.addResource(Resources.TITANIUM, titaniumAmount, {log: true});
+        philaresPlayer.addResource(Resources.PLANTS, plantsAmount, {log: true});
+        philaresPlayer.addResource(Resources.ENERGY, energyAmount, {log: true});
+        philaresPlayer.addResource(Resources.HEAT, heatAmount, {log: true});
         return undefined;
       }, selectMegacredit, selectSteel, selectTitanium, selectPlants, selectEnergy, selectHeat);
     selectResources.title = 'Philares effect: select ' + resourceCount + ' resource(s)';
@@ -108,7 +109,6 @@ export class Philares extends Card implements CorporationCard {
   }
 
   public onTilePlaced(cardOwner: Player, activePlayer: Player, space: ISpace, boardType: BoardType) {
-    // TODO(kberg): Clarify that this is nerfed for The Moon.
     // Nerfing on The Moon.
     if (boardType !== BoardType.MARS) {
       return;
@@ -117,20 +117,17 @@ export class Philares extends Card implements CorporationCard {
     if (space.player === undefined) {
       return;
     }
-    let bonusResource: number = 0;
-    if (cardOwner.id === activePlayer.id) {
-      bonusResource = cardOwner.game.board.getAdjacentSpaces(space)
-        .filter((space) => space.tile !== undefined && space.player !== undefined && space.player.id !== cardOwner.id)
-        .length;
-    } else {
-      bonusResource = cardOwner.game.board.getAdjacentSpaces(space)
-        .filter((space) => space.tile !== undefined && space.player !== undefined && space.player.id === cardOwner.id)
-        .length;
-    }
-    if (bonusResource > 0) {
+    const adjacentSpaces = cardOwner.game.board.getAdjacentSpaces(space);
+    const adjacentSpacesWithPlayerTiles = adjacentSpaces.filter((space) => space.tile !== undefined && space.player !== undefined);
+
+    const eligibleTiles = (cardOwner.id === activePlayer.id) ?
+      adjacentSpacesWithPlayerTiles.filter((space) => space.player?.id !== cardOwner.id) :
+      adjacentSpacesWithPlayerTiles.filter((space) => space.player?.id === cardOwner.id);
+
+    if (eligibleTiles.length > 0) {
       cardOwner.game.defer(
         new DeferredAction(cardOwner, () => {
-          return this.selectResources(cardOwner, bonusResource);
+          return this.selectResources(cardOwner, eligibleTiles.length);
         }),
         cardOwner.id !== activePlayer.id ? Priority.OPPONENT_TRIGGER : Priority.GAIN_RESOURCE_OR_PRODUCTION,
       );
