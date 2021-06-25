@@ -24,7 +24,7 @@ export class VenusMagnetizer extends Card implements IActionCard {
         cardNumber: '256',
         renderData: CardRenderer.builder((b) => {
           b.action('Decrease your Energy production 1 step to raise Venus 1 step.', (eb) => {
-            eb.production((pb) => pb.energy(1)).startAction.venus(1);
+            eb.production((pb) => pb.minus().energy(1)).startAction.venus(1);
           });
         }),
         description: 'Requires Venus 10%.',
