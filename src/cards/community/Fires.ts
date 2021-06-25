@@ -26,10 +26,7 @@ export class Fires extends Card implements IProjectCard {
   }
 
   public canPlay(player: Player): boolean {
-    if (player.game.getOxygenLevel() > 1) {
-      return true;
-    }
-    return false;
+    return super.canPlay(player) && player.game.getOxygenLevel() > 1;
   }
 
   public play(player: Player) {

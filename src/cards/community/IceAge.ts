@@ -11,20 +11,13 @@ export class IceAge extends Card implements IProjectCard {
       cardType: CardType.EVENT,
       name: CardName.ICE_AGE,
       cost: 10,
-
+      requirements: CardRequirements.builder((b) => b.temperature(-26).min()),
       metadata: {
         cardNumber: 'J003',
         renderData: CardRenderer.builder((b) => b.minus().temperature(2)),
         description: 'Reduce temperature 2 steps.',
       },
     });
-  }
-
-  public canPlay(player: Player): boolean {
-    if (player.game.getTemperature() > -26) {
-      return true;
-    }
-    return false;
   }
 
   public play(player: Player) {

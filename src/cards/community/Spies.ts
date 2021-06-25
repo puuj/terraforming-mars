@@ -33,8 +33,8 @@ export class Spies extends Card implements IProjectCard {
     return undefined;
   }
 
-  public canAct(): boolean {
-    return true;
+  public canAct(player: Player): boolean {
+    return player.megaCredits > 0;
   }
 
   public action(player: Player) {

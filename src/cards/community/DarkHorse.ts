@@ -27,9 +27,14 @@ export class DarkHorse extends Card implements IProjectCard {
   }
 
   public canPlay(player: Player): boolean {
+    if (!super.canPlay(player)) {
+      return false;
+    }
+
     if (!player.game.allMilestonesClaimed()) {
       return false;
     }
+
     let canClaim = false;
     player.game.milestones.forEach((milestone) => {
       if (milestone.canClaim(player) && !player.game.milestoneClaimed(milestone)) {
