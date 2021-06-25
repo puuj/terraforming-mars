@@ -19,7 +19,7 @@ export class SQLite implements IDatabase {
     }
     this.db = new sqlite3.Database(dbPath);
     this.db.run('CREATE TABLE IF NOT EXISTS games(game_id varchar, players integer, save_id integer, game text, status text default \'running\', created_time timestamp default (strftime(\'%s\', \'now\')), PRIMARY KEY (game_id, save_id))');
-    this.db.run('CREATE TABLE IF NOT EXISTS game_results(game_id varchar not null, seed_game_id varchar, players integer, generations integer, game_options text, scores text, PRIMARY KEY (game_id))');
+    this.db.run('CREATE TABLE IF NOT EXISTS game_results(game_id varchar not null, seed_game_id varchar, players integer, generations integer, game_options text, scores text, game text, PRIMARY KEY (game_id))');
   }
 
   getClonableGames(cb: (err: Error | undefined, allGames: Array<IGameData>) => void) {
@@ -44,7 +44,7 @@ export class SQLite implements IDatabase {
 
   getGames(cb: (err: Error | undefined, allGames: Array<GameId>) => void) {
     const allGames: Array<GameId> = [];
-    const sql: string = 'SELECT distinct game_id game_id FROM games WHERE status = \'running\'';
+    const sql: string = 'SELECT distinct game_id game_id FROM games WHERE status = \'running\' or status = \'finished\'';
     this.db.all(sql, [], (err, rows) => {
       if (rows) {
         rows.forEach((row) => {
@@ -73,10 +73,11 @@ export class SQLite implements IDatabase {
     });
   }
 
-  saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>): void {
+  saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: Game): void {
+    const gameJSON = game.toJSON();
     this.db.run(
-      'INSERT INTO game_results (game_id, seed_game_id, players, generations, game_options, scores) VALUES($1, $2, $3, $4, $5, $6)',
-      [game_id, gameOptions.clonedGamedId, players, generations, JSON.stringify(gameOptions), JSON.stringify(scores)], (err) => {
+      'INSERT INTO game_results (game_id, seed_game_id, players, generations, game_options, scores, game) VALUES($1, $2, $3, $4, $5, $6, $7)',
+      [game_id, gameOptions.clonedGamedId, players, generations, JSON.stringify(gameOptions), JSON.stringify(scores), gameJSON], (err) => {
         if (err) {
           console.error('SQLite:saveGameResults', err);
           throw err;

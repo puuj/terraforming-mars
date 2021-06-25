@@ -1037,7 +1037,11 @@ export class Game implements ISerializable<SerializedGame> {
       this.log('This game id was ' + this.id);
     }
 
-    Database.getInstance().cleanSaves(this.id, this.lastSaveId);
+    const oldSave = this.lastSaveId;
+    this.phase = Phase.END;
+    this.save();
+
+    Database.getInstance().cleanSaves(this.id, oldSave);
     const scores: Array<Score> = [];
     this.players.forEach((player) => {
       let corponame: string = '';
@@ -1048,8 +1052,7 @@ export class Game implements ISerializable<SerializedGame> {
       scores.push({corporation: corponame, playerScore: vpb.total});
     });
 
-    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores);
-    this.phase = Phase.END;
+    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
   }
 
   // Part of final greenery placement.
@@ -1100,7 +1103,7 @@ export class Game implements ISerializable<SerializedGame> {
   }
 
   public increaseOxygenLevel(player: Player, increments: -1 | 1 | 2): undefined {
-    if (this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL) {
+    if (this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL && increments > 0) {
       return undefined;
     }
 
@@ -1627,6 +1630,7 @@ export class Game implements ISerializable<SerializedGame> {
       game.runDraftRound();
     } else if (game.phase === Phase.RESEARCH) {
       game.gotoResearchPhase();
+    } else if (game.phase === Phase.END) {
     } else {
       // We should be in ACTION phase, let's prompt the active player for actions
       game.getPlayerById(game.activePlayer).takeAction();
