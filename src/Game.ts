@@ -111,8 +111,8 @@ export interface GameOptions {
   customCorporationsList: Array<CardName>;
   cardsBlackList: Array<CardName>;
   customColoniesList: Array<ColonyName>;
-  requiresVenusTrackCompletion: boolean; // Venus must be completed to end the game
   requiresMoonTrackCompletion: boolean; // Moon must be completed to end the game
+  requiresVenusTrackCompletion: boolean; // Venus must be completed to end the game
 }
 
 const DEFAULT_GAME_OPTIONS: GameOptions = {
@@ -794,9 +794,9 @@ export class Game implements ISerializable<SerializedGame> {
       this.syndicatePirateRaider = undefined;
     }
 
-    if (this.gameOptions.turmoilExtension) {
-      this.turmoil?.endGeneration(this);
-    }
+    Turmoil.ifTurmoil(this, (turmoil) => {
+      turmoil.endGeneration(this);
+    });
 
     // Resolve Turmoil deferred actions
     if (this.deferredActions.length > 0) {

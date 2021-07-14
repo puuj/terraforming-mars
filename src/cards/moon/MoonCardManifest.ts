@@ -4,6 +4,7 @@ import {CardManifest} from '../CardManifest';
 import {AIControlledMineNetwork} from './AIControlledMineNetwork';
 import {AlgaeBioreactors} from './AlgaeBioreactors';
 import {AncientShipyards} from './AncientShipyards';
+import {AnOfferYouCantRefuse} from './AnOfferYouCantRefuse';
 import {ArchimedesHydroponicsStation} from './ArchimedesHydroponicsStation';
 import {AristarchusRoadNetwork} from './AristarchusRoadNetwork';
 import {BasicInfrastructure} from './BasicInfrastructure';
@@ -37,7 +38,9 @@ import {IntragenSanctuaryHeadquarters} from './IntragenSanctuaryHeadquarters';
 import {IronExtractionCenter} from './IronExtractionCenter';
 import {LTFHeadquarters} from './LTFHeadquarters';
 import {LTFPrivileges} from './LTFPrivileges';
+import {LunaArchives} from './LunaArchives';
 import {LunaConference} from './LunaConference';
+import {LunaEcumenopolis} from './LunaEcumenopolis';
 import {LunaFirstIncorporated} from './LunaFirstIncorporated';
 import {LunaHyperloopCorporation} from './LunaHyperloopCorporation';
 import {LunaMiningHub} from './LunaMiningHub';
@@ -69,7 +72,7 @@ import {MiningRobotsManufCenter} from './MiningRobotsManufCenter';
 import {MomentumViriumHabitat} from './MomentumViriumHabitat';
 import {MoonColonyStandardProject} from './MoonColonyStandardProject';
 import {MooncrateBlockFactory} from './MooncrateBlockFactory';
-// import {MooncrateConvoysToMars} from './MooncrateConvoysToMars';
+import {MooncrateConvoysToMars} from './MooncrateConvoysToMars';
 import {MoonMineStandardProject} from './MoonMineStandardProject';
 import {MoonRoadStandardProject} from './MoonRoadStandardProject';
 import {MoonTether} from './MoonTether';
@@ -170,16 +173,16 @@ export const MOON_CARD_MANIFEST = new CardManifest({
     {cardName: CardName.HE3_PRODUCTION_QUOTAS, Factory: HE3ProductionQuotas, compatibility: GameModule.Turmoil},
     {cardName: CardName.LUNA_CONFERENCE, Factory: LunaConference, compatibility: GameModule.Turmoil},
     {cardName: CardName.WE_GROW_AS_ONE, Factory: WeGrowAsOne, compatibility: [GameModule.Turmoil, GameModule.Colonies]},
-    // // {cardName: CardName.MOONCRATE_CONVOYS_TO_MARS, Factory: MooncrateConvoysToMars},
+    {cardName: CardName.MOONCRATE_CONVOYS_TO_MARS, Factory: MooncrateConvoysToMars, compatibility: [GameModule.Turmoil]},
     // // {cardName: CardName.LUNAR_INDEPENDENCE_WAR, Factory: LunarIndependenceWar},
-    //   // {cardName: CardName.AN_OFFER_HE_CANNOT_REFUSE, Factory: AnOfferHeCannotRefuse, compatibility: GameModule.Turmoil},
+    {cardName: CardName.AN_OFFER_YOU_CANT_REFUSE, Factory: AnOfferYouCantRefuse, compatibility: GameModule.Turmoil},
     {cardName: CardName.PRELIMINARY_DARKSIDE, Factory: PreliminaryDarkside},
     //   {cardName: CardName.HOSTILE_TAKEOVER, Factory: HostileTakeover},
     {cardName: CardName.SYNDICATE_PIRATE_RAIDS, Factory: SyndicatePirateRaids, compatibility: GameModule.Colonies},
     {cardName: CardName.DARKSIDE_MINING_SYNDICATE, Factory: DarksideMiningSyndicate},
     //   // {cardName: CardName.HE3_PROPULSION, Factory: HE3Propulsion, compatibility: GameModule.Colonies},
     {cardName: CardName.STAGING_STATION_BEHEMOTH, Factory: StagingStationBehemoth, compatibility: GameModule.Colonies},
-    //   // {cardName: CardName.LUNA_ARCHIVES, Factory: LunaArchives},
+    {cardName: CardName.LUNA_ARCHIVES, Factory: LunaArchives},
     {cardName: CardName.LUNA_SENATE, Factory: LunaSenate},
     {cardName: CardName.LUNA_POLITICAL_INSTITUTE, Factory: LunaPoliticalInstitute, compatibility: GameModule.Turmoil},
     {cardName: CardName.COPERNICUS_TOWER, Factory: CopernicusTower},
@@ -193,7 +196,7 @@ export const MOON_CARD_MANIFEST = new CardManifest({
     {cardName: CardName.UNDERMOON_DRUG_LORDS_NETWORK, Factory: UndermoonDrugLordsNetwork},
     {cardName: CardName.LTF_PRIVILEGES, Factory: LTFPrivileges},
     {cardName: CardName.GRAND_LUNA_ACADEMY, Factory: GrandLunaAcademy},
-    // // {cardName: CardName.LUNA_ECUMENOPOLIS, Factory: LunaEcumenopolis},
+    {cardName: CardName.LUNA_ECUMENOPOLIS, Factory: LunaEcumenopolis},
     {cardName: CardName.ORBITAL_POWER_GRID, Factory: OrbitalPowerGrid},
     {cardName: CardName.PROCESSOR_FACTORY, Factory: ProcessorFactory},
     {cardName: CardName.LUNAR_STEEL, Factory: LunarSteel},

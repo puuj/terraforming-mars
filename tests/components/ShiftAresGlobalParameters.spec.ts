@@ -1,7 +1,7 @@
 import {createLocalVue, mount} from '@vue/test-utils';
 
 import {expect} from 'chai';
-import {ShiftAresGlobalParameters} from '../../src/components/ShiftAresGlobalParameters';
+import ShiftAresGlobalParameters from '../../src/components/ShiftAresGlobalParameters.vue';
 import {PlayerInputModel} from '../../src/models/PlayerInputModel';
 import {PlayerInputTypes} from '../../src/PlayerInputTypes';
 import {PartyName} from '../../src/turmoil/parties/PartyName';
@@ -26,6 +26,7 @@ describe('ShiftAresGlobalParameters', function() {
     max: undefined,
     microbes: undefined,
     floaters: undefined,
+    science: undefined,
     coloniesModel: undefined,
     payProduction: undefined,
     aresData: {

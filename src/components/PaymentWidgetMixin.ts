@@ -1,20 +1,66 @@
 // Common code for SelectHowToPay and SelectHowToPayForProjectCard
 import {CardName} from '../CardName';
 import {CardModel} from '../models/CardModel';
+import {PlayerInputModel} from '../models/PlayerInputModel';
+import {PlayerModel} from '../models/PlayerModel';
 import {ResourceType} from '../ResourceType';
+import {Tags} from '../cards/Tags';
+import {Units} from '../Units';
 
+export interface SelectHowToPayModel {
+    card?: CardModel;
+    cost: number;
+    heat: number;
+    megaCredits: number;
+    steel: number;
+    titanium: number;
+    microbes: number; // Microbes are not actually used in this component. It's just to satisfy the mixin.
+    floaters: number; // Floaters are not actually used in this component. It's just to satisfy the mixin.
+    warning: string | undefined;
+}
+
+export interface SelectHowToPayForProjectCardModel extends SelectHowToPayModel {
+  cardName: CardName;
+  card: CardModel;
+  cards: Array<CardModel>;
+  tags: Array<Tags>
+  science: number;
+  available: Units;
+}
+
+interface PaymentWidgetModel extends SelectHowToPayModel {
+  cardName?: CardName;
+  card?: CardModel;
+  cards?: Array<CardModel>;
+  tags?: Array<Tags>;
+  science?: number;
+  available?: Units;
+  $data: SelectHowToPayModel | SelectHowToPayForProjectCardModel;
+  player: PlayerModel;
+  playerinput: PlayerInputModel;
+}
+
+type ResourcesWithRates = 'titanium' | 'steel' | 'microbes' |'floaters';
 export const PaymentWidgetMixin = {
   'name': 'PaymentWidgetMixin',
   'methods': {
-    getMegaCreditsMax: function(): number {
-      return Math.min((this as any).player.megaCredits, (this as any).$data.cost);
+    // Please don't copy this pattern. This
+    // is being used as an interim solution
+    // until there is better typing on the
+    // SelectHowToPay components.
+    asModel: function(): PaymentWidgetModel {
+      return this as unknown as PaymentWidgetModel;
     },
-    getResourceRate: function(resourceName: string): number {
+    getMegaCreditsMax: function(): number {
+      const model = this.asModel();
+      return Math.min(model.player.megaCredits, model.$data.cost);
+    },
+    getResourceRate: function(resourceName: ResourcesWithRates): number {
       let rate = 1; // one resource == one money
       if (resourceName === 'titanium') {
-        rate = (this as any).player.titaniumValue;
+        rate = this.asModel().player.titaniumValue;
       } else if (resourceName === 'steel') {
-        rate = (this as any).player.steelValue;
+        rate = this.asModel().player.steelValue;
       } else if (resourceName === 'microbes') {
         rate = 2;
       } else if (resourceName === 'floaters') {
@@ -22,64 +68,103 @@ export const PaymentWidgetMixin = {
       }
       return rate;
     },
-    reduceValue: function(target: string, to: number): void {
-      const currentValue: number = (this as any)[target];
+    reduceValue: function(target: ResourcesWithRates | 'heat' | 'megaCredits' | 'science', to: number): void {
+      const currentValue: number | undefined = this.asModel()[target];
+
+      if (currentValue === undefined) {
+        throw new Error(`can not reduceValue for ${target} on this`);
+      }
 
       if (currentValue === 0) return;
 
       const realTo = Math.min(to, currentValue);
-      (this as any)[target] -= realTo;
+      this.asModel()[target] -= realTo;
 
       if (target === 'megaCredits' || realTo === 0) return;
 
       this.setRemainingMCValue();
     },
-    addValue: function(target: string, to: number, max?: number): void {
-      const currentValue: number = (this as any)[target];
-      let maxValue: number = max ?? (this as any).player[target];
+    addValue: function(target: ResourcesWithRates | 'heat' | 'megaCredits' | 'science', to: number, max?: number): void {
+      const currentValue: number | undefined = this.asModel()[target];
 
-      if (target === 'megaCredits') {
+      if (currentValue === undefined) {
+        throw new Error(`can not addValue for ${target} on this`);
+      }
+
+      let maxValue: number | undefined = max;
+
+      if (maxValue === undefined && target !== 'microbes' && target !== 'floaters' && target !== 'science') {
+        maxValue = this.asModel().player[target];
+      }
+
+      switch (target) {
+      case 'megaCredits':
         maxValue = this.getMegaCreditsMax();
+        break;
+      case 'microbes':
+        maxValue = this.asModel().playerinput.microbes;
+        break;
+      case 'floaters':
+        maxValue = this.asModel().playerinput.floaters;
+        if (maxValue !== undefined && this.isStratosphericBirdsEdgeCase()) maxValue--;
+        break;
+      case 'science':
+        maxValue = this.asModel().playerinput.science;
+        break;
       }
 
-      if (target === 'microbes') maxValue = (this as any).playerinput.microbes;
-      if (target === 'floaters') {
-        maxValue = (this as any).playerinput.floaters;
-        if (this.isStratosphericBirdsEdgeCase()) maxValue--;
-      }
       if (currentValue === maxValue) return;
 
+      if (maxValue === undefined) {
+        throw new Error(`unable to determine maxValue for ${target}`);
+      }
+
       const realTo = (currentValue + to <= maxValue) ? to : maxValue - currentValue;
-      (this as any)[target] += realTo;
+      this.asModel()[target] += realTo;
 
       if (target === 'megaCredits' || realTo === 0) return;
 
       this.setRemainingMCValue();
     },
     setRemainingMCValue: function(): void {
-      const remainingMC: number = (this as any).$data.cost -
-              (this as any)['heat'] -
-              (this as any)['titanium'] * this.getResourceRate('titanium') -
-              (this as any)['steel'] * this.getResourceRate('steel') -
-              (this as any)['microbes'] * this.getResourceRate('microbes') -
-              (this as any)['floaters'] * this.getResourceRate('floaters');
+      const ta = this.asModel();
+      const heatMc = ta['heat'] ?? 0;
+      const titaniumMc = (ta['titanium'] ?? 0) * this.getResourceRate('titanium');
+      const steelMc = (ta['steel'] ?? 0) * this.getResourceRate('steel');
+      const microbesMc = (ta['microbes'] ?? 0) * this.getResourceRate('microbes');
+      const floatersMc = (ta['floaters'] ?? 0) * this.getResourceRate('floaters');
+      const scienceMc = ta['science'] ?? 0;
 
-      (this as any)['megaCredits'] = Math.max(0, Math.min(this.getMegaCreditsMax(), remainingMC));
+      const remainingMC: number =
+          ta.$data.cost - heatMc - titaniumMc - steelMc - microbesMc - floatersMc - scienceMc;
+
+      ta['megaCredits'] = Math.max(0, Math.min(this.getMegaCreditsMax(), remainingMC));
     },
-    setMaxValue: function(target: string, max?: number): void {
-      let currentValue: number = (this as any)[target];
-      const cardCost: number = (this as any).$data.cost;
-      let amountHave: number = max ?? (this as any).player[target];
-
-      let amountNeed: number = cardCost;
-      if (['titanium', 'steel', 'microbes', 'floaters'].includes(target)) {
-        amountNeed = Math.floor(cardCost/this.getResourceRate(target));
+    setMaxValue: function(target: ResourcesWithRates | 'science' | 'heat', max?: number): void {
+      let currentValue: number | undefined = this.asModel()[target];
+      if (currentValue === undefined) {
+        throw new Error(`can not setMaxValue for ${target} on this`);
+      }
+      const cardCost: number = this.asModel().$data.cost;
+      let amountHave: number | undefined = max;
+      if (max === undefined && target !== 'microbes' && target !== 'floaters' && target !== 'science') {
+        amountHave = this.asModel().player[target];
       }
 
-      if (target === 'microbes') amountHave = (this as any).playerinput.microbes;
+      let amountNeed = cardCost;
+      if (target !== 'science' && target !== 'heat') {
+        amountNeed = Math.floor(cardCost / this.getResourceRate(target));
+      }
+
+      if (target === 'microbes') amountHave = this.asModel().playerinput.microbes;
       if (target === 'floaters') {
-        amountHave = (this as any).playerinput.floaters;
-        if (this.isStratosphericBirdsEdgeCase()) amountHave--;
+        amountHave = this.asModel().playerinput.floaters;
+        if (amountHave !== undefined && this.isStratosphericBirdsEdgeCase()) amountHave--;
+      }
+      if (target === 'science') amountHave = this.asModel().playerinput.science;
+
+      if (amountHave === undefined) {
+        throw new Error(`unable to find amountHave for setMaxValue for ${target}`);
       }
 
       while (currentValue < amountHave && currentValue < amountNeed) {
@@ -88,8 +173,8 @@ export const PaymentWidgetMixin = {
       }
     },
     isStratosphericBirdsEdgeCase: function(): boolean {
-      if ((this as any).$data.card.name === CardName.STRATOSPHERIC_BIRDS) {
-        const playedCards = (this as any).player.playedCards as Array<CardModel>;
+      if (this.asModel().$data.card?.name === CardName.STRATOSPHERIC_BIRDS) {
+        const playedCards = this.asModel().player.playedCards as Array<CardModel>;
         const cardsWithFloaters = playedCards.filter((card) => card.resourceType === ResourceType.FLOATER && card.resources);
         return cardsWithFloaters.length === 1;
       }

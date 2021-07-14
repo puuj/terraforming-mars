@@ -77,6 +77,7 @@ import {LogHelper} from './LogHelper';
 import {UndoActionOption} from './inputs/UndoActionOption';
 import {LawSuit} from './cards/promo/LawSuit';
 import {CrashSiteCleanup} from './cards/promo/CrashSiteCleanup';
+import {Turmoil} from './turmoil/Turmoil';
 
 export type PlayerId = string;
 
@@ -555,9 +556,11 @@ export class Player implements ISerializable<SerializedPlayer> {
     // Turmoil Victory Points
     const includeTurmoilVP : boolean = this.game.gameIsOver() || this.game.phase === Phase.END;
 
-    if (includeTurmoilVP && this.game.gameOptions.turmoilExtension && this.game.turmoil) {
-      victoryPointsBreakdown.setVictoryPoints('victoryPoints', this.game.turmoil.getPlayerVictoryPoints(this), 'Turmoil Points');
-    }
+    Turmoil.ifTurmoil(this.game, (turmoil) => {
+      if (includeTurmoilVP) {
+        victoryPointsBreakdown.setVictoryPoints('victoryPoints', turmoil.getPlayerVictoryPoints(this), 'Turmoil Points');
+      }
+    });
 
     // Titania Colony VP
     if (this.colonyVictoryPoints > 0) {
@@ -881,6 +884,7 @@ export class Player implements ISerializable<SerializedPlayer> {
       megaCredits: 0,
       microbes: 0,
       floaters: 0,
+      science: 0,
     };
     try {
       const howToPay: HowToPay = JSON.parse(json);
@@ -1346,8 +1350,16 @@ export class Player implements ISerializable<SerializedPlayer> {
       totalToPay += howToPay.floaters * DEFAULT_FLOATERS_VALUE;
     }
 
+    if (howToPay.science ?? 0 > 0) {
+      totalToPay += howToPay.science;
+    }
+
     if (howToPay.megaCredits > this.megaCredits) {
       throw new Error('Do not have enough M€');
+    }
+
+    if (howToPay.science !== undefined) {
+      totalToPay += howToPay.science;
     }
 
     totalToPay += howToPay.megaCredits;
@@ -1380,6 +1392,13 @@ export class Player implements ISerializable<SerializedPlayer> {
     return 0;
   }
 
+  public getSpendableScienceResources(): number {
+    const lunaArchives = this.playedCards.find((card) => card.name === CardName.LUNA_ARCHIVES);
+    if (lunaArchives !== undefined) return this.getResourcesOnCard(lunaArchives)!;
+
+    return 0;
+  }
+
   public playCard(selectedCard: IProjectCard, howToPay?: HowToPay, addToPlayedCards: boolean = true): undefined {
     // Pay for card
     if (howToPay !== undefined) {
@@ -1395,6 +1414,10 @@ export class Player implements ISerializable<SerializedPlayer> {
 
         if (playedCard.name === CardName.DIRIGIBLES) {
           this.removeResourceFrom(playedCard, howToPay.floaters);
+        }
+
+        if (playedCard.name === CardName.LUNA_ARCHIVES) {
+          this.removeResourceFrom(playedCard, howToPay.science);
         }
       }
     }
@@ -1998,13 +2021,13 @@ export class Player implements ISerializable<SerializedPlayer> {
     }
 
     // If you can pay to add a delegate to a party.
-    if (this.game.gameOptions.turmoilExtension && this.game.turmoil !== undefined) {
+    Turmoil.ifTurmoil(this.game, (turmoil) => {
       let sendDelegate;
-      if (this.game.turmoil?.lobby.has(this.id)) {
+      if (turmoil.lobby.has(this.id)) {
         sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (from lobby)');
-      } else if (this.isCorporation(CardName.INCITE) && this.canAfford(3) && this.game.turmoil.getDelegatesInReserve(this.id) > 0) {
+      } else if (this.isCorporation(CardName.INCITE) && this.canAfford(3) && turmoil.getDelegatesInReserve(this.id) > 0) {
         sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (3 M€)', {cost: 3});
-      } else if (this.canAfford(5) && this.game.turmoil.getDelegatesInReserve(this.id) > 0) {
+      } else if (this.canAfford(5) && turmoil.getDelegatesInReserve(this.id) > 0) {
         sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (5 M€)', {cost: 5});
       }
       if (sendDelegate) {
@@ -2013,7 +2036,7 @@ export class Player implements ISerializable<SerializedPlayer> {
           action.options.push(input);
         }
       }
-    }
+    });
 
     if (this.game.getPlayers().length > 1 &&
       this.actionsTakenThisRound > 0 &&

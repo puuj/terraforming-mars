@@ -1,13 +1,14 @@
 import GameEnd from './GameEnd.vue';
 import {CreateGameForm} from './create/CreateGameForm';
-import {GameHome} from './GameHome';
-import {GamesOverview} from './GamesOverview';
+import GameHome from './GameHome.vue';
+import GamesOverview from './GamesOverview.vue';
 import {PlayerHome} from './PlayerHome';
+import PlayerInputFactory from './PlayerInputFactory.vue';
 import {SpectatorHome} from './SpectatorHome';
 import {PlayerModel} from '../models/PlayerModel';
-import {StartScreen} from './StartScreen';
+import StartScreen from './StartScreen.vue';
 import {LoadGameForm} from './LoadGameForm';
-import {DebugUI} from './DebugUI';
+import DebugUI from './DebugUI.vue';
 import {SimpleGameModel} from '../models/SimpleGameModel';
 import {Help} from './help/Help';
 
@@ -66,6 +67,7 @@ export const mainAppSettings = {
     logPaused: false,
   } as MainAppData,
   'components': {
+    'player-input-factory': PlayerInputFactory,
     'start-screen': StartScreen,
     'create-game-form': CreateGameForm,
     'load-game-form': LoadGameForm,
@@ -151,7 +153,7 @@ export const mainAppSettings = {
   },
   'mounted': function() {
     document.title = constants.APP_NAME;
-    dialogPolyfill.default.registerDialog(document.getElementById('alert-dialog'));
+    if (!window.HTMLDialogElement) dialogPolyfill.default.registerDialog(document.getElementById('alert-dialog'));
     const currentPathname: string = window.location.pathname;
     const app = this as unknown as (typeof mainAppSettings.data) & (typeof mainAppSettings.methods);
     if (currentPathname === '/player' || currentPathname === '/the-end') {
@@ -185,7 +187,7 @@ export const mainAppSettings = {
       app.screen = 'create-game-form';
     } else if (currentPathname === '/load') {
       app.screen = 'load';
-    } else if (currentPathname === '/debug-ui' || currentPathname === '/cards') {
+    } else if (currentPathname === '/cards') {
       app.screen = 'cards';
     } else if (currentPathname === '/help') {
       app.screen = 'help';

@@ -50,8 +50,10 @@ describe('SelectHowToPayForProjectCard', () => {
           title: 'foo',
           cards: [{
             name: CardName.ANTS,
+            reserveUnits: Units.of({}),
           }, {
             name: CardName.BIRDS,
+            reserveUnits: Units.of({}),
           }],
         },
         onsave: () => {},
@@ -323,6 +325,24 @@ describe('SelectHowToPayForProjectCard', () => {
     expect(vm.steel).eq(0);
     const titaniumTextBox = wrapper.find('[title~=Titanium] ~ input').element as HTMLInputElement;
     expect(titaniumTextBox.value).eq('7');
+  });
+
+  it('select how to pay uses science', async () => {
+    // ARISTARCHUS_ROAD_NETWORK costs 15. Player has 7M€ and will use 8 science units.
+    const wrapper = setupCardForPurchase(
+      CardName.ARISTARCHUS_ROAD_NETWORK, 15,
+      {
+        megaCredits: 7,
+        steel: 0,
+      },
+      {science: 10});
+
+    const vm = wrapper.vm;
+    await vm.$nextTick();
+
+    expect(vm.science).eq(8);
+    const scienceTextBox = wrapper.find('[title~=Science] ~ input').element as HTMLInputElement;
+    expect(scienceTextBox.value).eq('8');
   });
 
   const setupCardForPurchase = function(
