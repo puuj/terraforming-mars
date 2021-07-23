@@ -40,7 +40,7 @@ import {LogMessageType} from '../LogMessageType';
 import {LogMessageData} from '../LogMessageData';
 import {LogMessageDataType} from '../LogMessageDataType';
 import {PlayerModel} from '../models/PlayerModel';
-import {Card} from './card/Card';
+import Card from './card/Card.vue';
 import {$t} from '../directives/i18n';
 import {CardFinder} from './../CardFinder';
 import {ICard} from '../cards/ICard';
@@ -56,6 +56,7 @@ import {getGlobalEventByName} from '../turmoil/globalEvents/GlobalEventDealer';
 import {GlobalEventModel} from '../models/TurmoilModel';
 import {PartyName} from '../turmoil/parties/PartyName';
 import Button from './common/Button.vue';
+import {Log} from '../Log';
 
 let logRequest: XMLHttpRequest | undefined;
 
@@ -216,9 +217,7 @@ export default Vue.extend({
         }
         if (message.type !== undefined && message.message !== undefined) {
           message.message = $t(message.message);
-          return logEntryBullet + message.message.replace(/\$\{(\d{1,2})\}/gi, (_match, idx) => {
-            return this.messageDataToHTML(message.data[idx]);
-          });
+          return logEntryBullet + Log.applyData(message, this.messageDataToHTML);
         }
       } catch (err) {
         return this.safeMessage(message);
