@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {PlayerModel} from '../../models/PlayerModel';
-import {PlayerResources} from './PlayerResources';
-import {PlayerTags} from './PlayerTags';
+import PlayerResources from './PlayerResources.vue';
+import PlayerTags from './PlayerTags.vue';
 import PlayerStatus from './PlayerStatus.vue';
 import {playerColorClass} from '../../utils/utils';
 import {mainAppSettings} from '../App';
@@ -38,8 +38,8 @@ export const PlayerInfo = Vue.component('player-info', {
   },
   components: {
     Button,
-    'player-resources': PlayerResources,
-    'player-tags': PlayerTags,
+    PlayerResources,
+    PlayerTags,
     'player-status': PlayerStatus,
   },
   mixins: [PlayerMixin],
@@ -109,7 +109,7 @@ export const PlayerInfo = Vue.component('player-info', {
           </div>
           <player-status :player="player" :firstForGen="firstForGen" v-trim-whitespace :actionLabel="actionLabel" :playerIndex="playerIndex"/>
         </div>
-          <player-resources :player="player" v-trim-whitespace />
+          <PlayerResources :player="player" v-trim-whitespace />
           <div class="player-played-cards">
             <div class="player-played-cards-top">
               <div class="played-cards-elements">
@@ -133,7 +133,7 @@ export const PlayerInfo = Vue.component('player-info', {
             <span class="tag-count-display">{{ getAvailableBlueActionCount() }}</span>
           </div>
         </div>
-        <player-tags :player="player" v-trim-whitespace :isActivePlayer="getIsActivePlayer()" :hideZeroTags="hideZeroTags" />
+        <PlayerTags :player="player" v-trim-whitespace :isActivePlayer="getIsActivePlayer()" :hideZeroTags="hideZeroTags" />
       </div>
     `,
 });

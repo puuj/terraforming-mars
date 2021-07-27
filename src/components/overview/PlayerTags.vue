@@ -1,3 +1,39 @@
+<template>
+        <div class="player-tags">
+            <div class="player-tags-main">
+                <tag-count :tag="'vp'" :count="getVpCount()" :size="'big'" :type="'main'" :hideCount="hideVpCount()" />
+                <tag-count :tag="'tr'" :count="getTR()" :size="'big'" :type="'main'"/>
+                <div class="tag-and-discount">
+                  <PlayerTagDiscount v-if="hasTagDiscount('all')" :amount="getTagDiscountAmount('all')" :color="player.color" />
+                  <tag-count :tag="'cards'" :count="getCardCount()" :size="'big'" :type="'main'"/>
+                </div>
+            </div>
+            <div class="player-tags-secondary">
+                <template v-if="showShortTags()">
+                  <div class="tag-count-container" v-for="tag in player.tags" :key="tag.tag">
+                    <div class="tag-and-discount">
+                      <PlayerTagDiscount v-if="hasTagDiscount(tag.tag)" :amount="getTagDiscountAmount(tag.tag)" :color="player.color" />
+                      <JovianMultiplier v-if="showJovianMultipliers(tag.tag)" :amount="playerJovianMultipliersCount()" />
+                      <tag-count :tag="tag.tag" :count="tag.count" :size="'big'" :type="'secondary'"/>
+                    </div>
+                  </div>
+                </template>
+                <template v-else>
+                    <div class="tag-count-container" v-for="tagName in getTagsPlaceholders()" :key="tagName">
+                      <div class="tag-and-discount" v-if="tagName !== 'separator'">
+                        <PlayerTagDiscount v-if="hasTagDiscount(tagName)" :color="player.color" :amount="getTagDiscountAmount(tagName)"/>
+                        <JovianMultiplier v-if="showJovianMultipliers(tagName)" :amount="playerJovianMultipliersCount()" />
+                        <tag-count :tag="tagName" :count="getTagCount(tagName)" :size="'big'" :type="'secondary'"/>
+                      </div>
+                      <div v-else class="tag-separator"></div>
+                    </div>
+                </template>
+            </div>
+        </div>
+</template>
+
+<script lang="ts">
+
 import Vue from 'vue';
 import TagCount from '../TagCount.vue';
 import {ITagCount} from '../../ITagCount';
@@ -5,13 +41,13 @@ import {PlayerModel} from '../../models/PlayerModel';
 import {Tags} from '../../cards/Tags';
 import {CardName} from '../../CardName';
 import {SpecialTags} from '../../cards/SpecialTags';
-import {isTagsViewConcise} from './OverviewSettings';
-import {PlayerTagDiscount} from './PlayerTagDiscount';
-import {JovianMultiplier} from './JovianMultiplier';
+import PlayerTagDiscount from './PlayerTagDiscount.vue';
+import JovianMultiplier from './JovianMultiplier.vue';
 import {PartyName} from '../../turmoil/parties/PartyName';
 import {TurmoilPolicy} from '../../turmoil/TurmoilPolicy';
 import {ColonyName} from '../../colonies/ColonyName';
 import {CardModel} from '../../models/CardModel';
+import {Shared} from './Shared';
 
 type InterfaceTagsType = Tags | SpecialTags | 'all' | 'separator';
 
@@ -61,7 +97,7 @@ export const PLAYER_INTERFACE_TAGS_ORDER: Array<InterfaceTagsType> = [
   SpecialTags.COLONY_COUNT,
 ];
 
-export const checkTagUsed = (tag: InterfaceTagsType, player: PlayerModel) => {
+const checkTagUsed = (tag: InterfaceTagsType, player: PlayerModel) => {
   if (player.game.gameOptions.coloniesExtension === false && tag === SpecialTags.COLONY_COUNT) {
     return false;
   }
@@ -77,7 +113,8 @@ export const checkTagUsed = (tag: InterfaceTagsType, player: PlayerModel) => {
   return true;
 };
 
-export const PlayerTags = Vue.component('player-tags', {
+export default Vue.extend({
+  name: 'PlayerTags',
   props: {
     player: {
       type: Object as () => PlayerModel,
@@ -131,7 +168,7 @@ export const PlayerTags = Vue.component('player-tags', {
     },
     showShortTags: function(): boolean {
       if (this.hideZeroTags === true) return true;
-      return isTagsViewConcise(this.$root);
+      return Shared.isTagsViewConcise(this.$root);
     },
     hasTagDiscount: function(tag: InterfaceTagsType): boolean {
       for (const card of [...this.player.playedCards, this.player.corporationCard]) {
@@ -214,37 +251,6 @@ export const PlayerTags = Vue.component('player-tags', {
       return multipliers;
     },
   },
-  template: `
-        <div class="player-tags">
-            <div class="player-tags-main">
-                <tag-count :tag="'vp'" :count="getVpCount()" :size="'big'" :type="'main'" :hideCount="hideVpCount()" />
-                <tag-count :tag="'tr'" :count="getTR()" :size="'big'" :type="'main'"/>
-                <div class="tag-and-discount">
-                  <PlayerTagDiscount v-if="hasTagDiscount('all')" :amount="getTagDiscountAmount('all')" :color="player.color" />
-                  <tag-count :tag="'cards'" :count="getCardCount()" :size="'big'" :type="'main'"/>
-                </div>
-            </div>
-            <div class="player-tags-secondary">
-                <template v-if="showShortTags()">
-                  <div class="tag-count-container" v-for="tag in player.tags">
-                    <div class="tag-and-discount" :key="tag.tag">
-                      <PlayerTagDiscount v-if="hasTagDiscount(tag.tag)" :amount="getTagDiscountAmount(tag.tag)" :color="player.color" />
-                      <JovianMultiplier v-if="showJovianMultipliers(tag.tag)" :amount="playerJovianMultipliersCount()" />
-                      <tag-count :tag="tag.tag" :count="tag.count" :size="'big'" :type="'secondary'"/>
-                    </div>
-                  </div>
-                </template>
-                <template v-else>
-                    <div class="tag-count-container" v-for="tagName in getTagsPlaceholders()" :key="tagName">
-                      <div class="tag-and-discount" v-if="tagName !== 'separator'">
-                        <PlayerTagDiscount v-if="hasTagDiscount(tagName)" :color="player.color" :amount="getTagDiscountAmount(tagName)"/>
-                        <JovianMultiplier v-if="showJovianMultipliers(tagName)" :amount="playerJovianMultipliersCount()" />
-                        <tag-count :tag="tagName" :count="getTagCount(tagName)" :size="'big'" :type="'secondary'"/>
-                      </div>
-                      <div v-else class="tag-separator"></div>
-                    </div>
-                </template>
-            </div>
-        </div>
-    `,
 });
+
+</script>
