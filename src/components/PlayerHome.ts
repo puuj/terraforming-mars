@@ -276,7 +276,7 @@ export const PlayerHome = Vue.component('player-home', {
                 </div>
 
                 <div class="player_home_block player_home_block--hand" v-if="player.draftedCards.length > 0">
-                    <dynamic-title title="Drafted cards" :color="player.color" />
+                    <dynamic-title :title="'Drafted cards (passing to ' + player.passingTo + ')'" :color="player.color" />
                     <div v-for="card in player.draftedCards" :key="card.name" class="cardbox">
                         <Card :card="card"/>
                     </div>

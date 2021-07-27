@@ -38,6 +38,7 @@ export interface SerializedPlayer {
     name: string;
     needsToDraft: boolean | undefined;
     oceanBonus: number;
+    passingTo: string | undefined,
     pickedCorporationCard: CardName | undefined;
     plantProduction: number;
     plants: number;

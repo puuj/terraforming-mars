@@ -131,6 +131,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   public cardCost: number = constants.CARD_COST;
   public needsToDraft: boolean | undefined = undefined;
   public cardDiscount: number = 0;
+  public passingTo: string = '';
 
   public timer: Timer = Timer.newInstance();
   public notifier: Notifier = Notifier.newInstance(process.env.NOTIFICATION_SENDER, process.env.URL);
@@ -1175,6 +1176,7 @@ export class Player implements ISerializable<SerializedPlayer> {
    *   step in the draft, and cards have to be dealt.
    */
   public runDraftPhase(initialDraft: boolean, playerName: string, passedCards?: Array<IProjectCard>): void {
+    this.passingTo = playerName;
     let cardsToKeep = 1;
 
     let cards: Array<IProjectCard> = [];
@@ -2183,6 +2185,7 @@ export class Player implements ISerializable<SerializedPlayer> {
       cardCost: this.cardCost,
       needsToDraft: this.needsToDraft,
       cardDiscount: this.cardDiscount,
+      passingTo: this.passingTo,
       // Colonies
       fleetSize: this.fleetSize,
       tradesThisTurn: this.tradesThisGeneration,
@@ -2238,6 +2241,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     player.megaCredits = d.megaCredits;
     player.needsToDraft = d.needsToDraft;
     player.oceanBonus = d.oceanBonus;
+    player.passingTo = (d.passingTo ? d.passingTo : '');
     player.plantProduction = d.plantProduction;
     player.plants = d.plants;
     player.plantsNeededForGreenery = d.plantsNeededForGreenery;
