@@ -135,7 +135,7 @@ export class SQLite implements IDatabase {
   purgeUnfinishedGames(): void {
     // Purge unfinished games older than MAX_GAME_DAYS days. If this environment variable is absent, it uses the default of 10 days.
     const envDays = parseInt(process.env.MAX_GAME_DAYS || '');
-    const days = Number.isInteger(envDays) ? envDays : 10;
+    const days = Number.isInteger(envDays) ? envDays : 365;
     this.db.run('DELETE FROM games WHERE created_time < strftime(\'%s\',date(\'now\', \'-\' || ? || \' day\')) and status = \'running\'', [days.toString()], function(err: Error | null) {
       if (err) {
         return console.warn(err.message);
