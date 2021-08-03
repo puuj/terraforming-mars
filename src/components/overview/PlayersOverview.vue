@@ -1,7 +1,8 @@
+<script lang="ts">
 import Vue from 'vue';
-import {PlayerInfo} from './PlayerInfo';
+import PlayerInfo from './PlayerInfo.vue';
 import OverviewSettings from './OverviewSettings.vue';
-import {OtherPlayer} from '../OtherPlayer';
+import OtherPlayer from '../OtherPlayer.vue';
 import {PlayerModel, PublicPlayerModel} from '../../models/PlayerModel';
 import {ActionLabel} from './ActionLabel';
 import {Phase} from '../../Phase';
@@ -22,7 +23,8 @@ export const getCurrentPlayerIndex = (
   return currentPlayerIndex;
 };
 
-export const PlayersOverview = Vue.component('players-overview', {
+export default Vue.extend({
+  name: 'PlayersOverview',
   props: {
     player: {
       type: Object as () => PlayerModel,
@@ -104,7 +106,10 @@ export const PlayersOverview = Vue.component('players-overview', {
       return ActionLabel.NONE;
     },
   },
-  template: `
+});
+</script>
+
+<template>
         <div class="players-overview" v-if="hasPlayers()">
             <overview-settings />
             <div class="other_player" v-if="player.players.length > 1">
@@ -128,5 +133,4 @@ export const PlayersOverview = Vue.component('players-overview', {
               :actionLabel="getActionLabel(player)"
               :playerIndex="-1"/>
         </div>
-    `,
-});
+</template>

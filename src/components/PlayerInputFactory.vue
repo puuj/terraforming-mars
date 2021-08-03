@@ -10,17 +10,17 @@ import {PlayerModel} from '../models/PlayerModel';
 import {PlayerInputModel} from '../models/PlayerInputModel';
 import AndOptions from './AndOptions.vue';
 import OrOptions from './OrOptions.vue';
-import {SelectAmount} from './SelectAmount';
-import {SelectCard} from './SelectCard';
-import {SelectHowToPay} from './SelectHowToPay';
-import {SelectHowToPayForProjectCard} from './SelectHowToPayForProjectCard';
-import {SelectInitialCards} from './SelectInitialCards';
+import SelectAmount from './SelectAmount.vue';
+import SelectCard from './SelectCard.vue';
+import SelectHowToPay from './SelectHowToPay.vue';
+import SelectHowToPayForProjectCard from './SelectHowToPayForProjectCard.vue';
+import SelectInitialCards from './SelectInitialCards.vue';
 import SelectOption from './SelectOption.vue';
 import SelectPlayer from './SelectPlayer.vue';
 import SelectSpace from './SelectSpace.vue';
 import SelectPartyPlayer from './SelectPartyPlayer.vue';
 import SelectPartyToSendDelegate from './SelectPartyToSendDelegate.vue';
-import {SelectColony} from './SelectColony';
+import SelectColony from './SelectColony.vue';
 import SelectProductionToLose from './SelectProductionToLose.vue';
 import ShiftAresGlobalParameters from './ShiftAresGlobalParameters.vue';
 
@@ -49,11 +49,11 @@ export default Vue.component('player-input-factory', {
     'and-options': AndOptions,
     'or-options': OrOptions,
     'select-amount': SelectAmount,
-    'select-card': SelectCard,
+    SelectCard,
     'select-option': SelectOption,
-    'select-how-to-pay': SelectHowToPay,
-    'select-how-to-pay-for-project-card': SelectHowToPayForProjectCard,
-    'select-initial-cards': SelectInitialCards,
+    SelectHowToPay,
+    SelectHowToPayForProjectCard,
+    SelectInitialCards,
     'select-player': SelectPlayer,
     'select-space': SelectSpace,
     'select-party-player': SelectPartyPlayer,
@@ -71,17 +71,17 @@ export default Vue.component('player-input-factory', {
       case PlayerInputTypes.AND_OPTIONS:
         return 'and-options';
       case PlayerInputTypes.SELECT_CARD:
-        return 'select-card';
+        return 'SelectCard';
       case PlayerInputTypes.SELECT_HOW_TO_PAY_FOR_PROJECT_CARD:
-        return 'select-how-to-pay-for-project-card';
+        return 'SelectHowToPayForProjectCard';
       case PlayerInputTypes.SELECT_INITIAL_CARDS:
-        return 'select-initial-cards';
+        return 'SelectInitialCards';
       case PlayerInputTypes.OR_OPTIONS:
         return 'or-options';
       case PlayerInputTypes.SELECT_OPTION:
         return 'select-option';
       case PlayerInputTypes.SELECT_HOW_TO_PAY:
-        return 'select-how-to-pay';
+        return 'SelectHowToPay';
       case PlayerInputTypes.SELECT_SPACE:
         return 'select-space';
       case PlayerInputTypes.SELECT_PLAYER:
@@ -104,6 +104,4 @@ export default Vue.component('player-input-factory', {
     },
   },
 });
-
 </script>
-
