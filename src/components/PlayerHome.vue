@@ -11,7 +11,7 @@
 
             <sidebar v-trim-whitespace
               :acting_player="isPlayerActing(playerView)"
-              :current_player_color="currentPlayerColor()"
+              :current_player_color="currentPlayerColor(playerView, thisPlayer)"
               :player_color="thisPlayer.color"
               :generation="game.generation"
               :coloniesCount="game.colonies.length"
@@ -353,16 +353,16 @@ export default Vue.extend({
     isPlayerActing(playerView: PlayerViewModel) : boolean {
       return playerView.players.length > 1 && playerView.waitingFor !== undefined;
     },
-    currentPlayerColor() {
-      let color = this.player.color;
-      for (let i=0; i < this.player.players.length; i++) {
-        if (this.player.players[i].isActive) {
-          color = this.player.players[i].color;
+    currentPlayerColor(playerView: PlayerViewModel, thisPlayer: PublicPlayerModel) {
+      let color = thisPlayer.color;
+      for (let i=0; i < playerView.players.length; i++) {
+        if (playerView.players[i].isActive) {
+          color = playerView.players[i].color;
         }
       }
 
-      if (this.player.waitingFor !== undefined) {
-        color = this.player.color;
+      if (playerView.waitingFor !== undefined) {
+        color = thisPlayer.color;
       }
 
       return color;
