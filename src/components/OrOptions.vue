@@ -10,7 +10,7 @@
       <div v-if="selectedOption === option" style="margin-left: 30px">
         <player-input-factory ref="inputfactory"
                               :players="players"
-                              :player="player"
+                              :playerView="playerView"
                               :playerinput="option"
                               :onsave="playerFactorySaved()"
                               :showsave="false"
@@ -19,7 +19,7 @@
     </div>
     <div v-if="showsave && selectedOption">
       <div style="margin: 5px 30px 10px" class="wf-action">
-        <Button :title="$t(selectedOption.buttonLabel)" type="submit" size="normal" :onClick="saveData" />
+        <Button :title="$t(selectedOption.buttonLabel)" type="submit" size="normal" @click="saveData" />
       </div>
     </div>
   </div>
@@ -28,22 +28,22 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import Button from '../components/common/Button.vue';
-import {PlayerModel} from '../models/PlayerModel';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {PreferencesManager} from './PreferencesManager';
-import {TranslateMixin} from '../components/TranslateMixin';
+import Button from '@/components/common/Button.vue';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {PreferencesManager} from '@/components/PreferencesManager';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 let unique = 0;
 
 export default Vue.extend({
   name: 'or-options',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
     players: {
-      type: Array as () => Array<PlayerModel>,
+      type: Array as () => Array<PublicPlayerModel>,
     },
     playerinput: {
       type: Object as () => PlayerInputModel,
@@ -61,7 +61,7 @@ export default Vue.extend({
   components: {
     Button,
   },
-  data: function() {
+  data() {
     if (this.playerinput.options === undefined) {
       throw new Error('no options provided for OrOptions');
     }
@@ -74,7 +74,7 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    playerFactorySaved: function() {
+    playerFactorySaved() {
       const idx = this.playerinput.options?.indexOf(this.selectedOption);
       if (idx === undefined || idx === -1) {
         throw new Error('option not found!');
@@ -87,7 +87,7 @@ export default Vue.extend({
         this.onsave(copy);
       };
     },
-    saveData: function() {
+    saveData() {
       let ref = this.$refs['inputfactory'];
       if (Array.isArray(ref)) {
         ref = ref[0];

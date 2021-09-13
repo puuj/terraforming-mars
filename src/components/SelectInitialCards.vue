@@ -4,12 +4,12 @@
       message="Continue without buying initial cards?"
       ref="confirmation"
       v-on:accept="confirmSelection" />
-    <SelectCard :player="player" :playerinput="getOption(0)" :showtitle="true" :onsave="noop" v-on:cardschanged="corporationChanged" />
-    <SelectCard v-if="hasPrelude()" :player="player" :playerinput="getOption(1)" :onsave="noop" :showtitle="true" v-on:cardschanged="preludesChanged" />
-    <SelectCard :player="player" :playerinput="getOption(hasPrelude() ? 2 : 1)" :onsave="noop" :showtitle="true" v-on:cardschanged="cardsChanged" />
+    <SelectCard :playerView="playerView" :playerinput="getOption(0)" :showtitle="true" :onsave="noop" v-on:cardschanged="corporationChanged" />
+    <SelectCard v-if="hasPrelude()" :playerView="playerView" :playerinput="getOption(1)" :onsave="noop" :showtitle="true" v-on:cardschanged="preludesChanged" />
+    <SelectCard :playerView="playerView" :playerinput="getOption(hasPrelude() ? 2 : 1)" :onsave="noop" :showtitle="true" v-on:cardschanged="cardsChanged" />
     <div v-if="selectedCorporation" v-i18n>Starting Megacredits: <div class="megacredits">{{getStartingMegacredits()}}</div></div>
     <div v-if="selectedCorporation && hasPrelude()" v-i18n>After Preludes: <div class="megacredits">{{getStartingMegacredits() + getAfterPreludes()}}</div></div>
-    <Button v-if="showsave" :onClick="saveIfConfirmed" type="submit" :title="playerinput.buttonLabel" />
+    <Button v-if="showsave" @click="saveIfConfirmed" type="submit" :title="playerinput.buttonLabel" />
   </div>
 </template>
 
@@ -17,22 +17,22 @@
 
 import Vue from 'vue';
 
-import Button from './common/Button.vue';
-import {CardFinder} from '../CardFinder';
-import {CardName} from '../CardName';
-import * as constants from '../constants';
-import {CorporationCard} from '../cards/corporation/CorporationCard';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {PlayerModel} from '../models/PlayerModel';
-import SelectCard from './SelectCard.vue';
-import ConfirmDialog from './common/ConfirmDialog.vue';
-import {PreferencesManager} from './PreferencesManager';
+import Button from '@/components/common/Button.vue';
+import {CardFinder} from '@/CardFinder';
+import {CardName} from '@/CardName';
+import * as constants from '@/constants';
+import {CorporationCard} from '@/cards/corporation/CorporationCard';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {PlayerViewModel} from '@/models/PlayerModel';
+import SelectCard from '@/components/SelectCard.vue';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
+import {PreferencesManager} from '@/components/PreferencesManager';
 
 export default Vue.extend({
   name: 'SelectInitialCards',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
     playerinput: {
       type: Object as () => PlayerInputModel,
@@ -52,7 +52,7 @@ export default Vue.extend({
     SelectCard,
     'confirm-dialog': ConfirmDialog,
   },
-  data: function() {
+  data() {
     return {
       selectedCards: [] as Array<CardName>,
       selectedCorporation: undefined as CorporationCard | undefined,
@@ -60,10 +60,10 @@ export default Vue.extend({
     };
   },
   methods: {
-    noop: function() {
+    noop() {
       throw new Error('should not be called');
     },
-    getAfterPreludes: function() {
+    getAfterPreludes() {
       let result = 0;
       for (const prelude of this.selectedPrelude) {
         switch (prelude) {
@@ -156,13 +156,13 @@ export default Vue.extend({
       }
       return result;
     },
-    getOption: function(idx: number) {
+    getOption(idx: number) {
       if (this.playerinput.options === undefined || this.playerinput.options[idx] === undefined) {
         throw new Error('invalid input, missing option');
       }
       return this.playerinput.options[idx];
     },
-    getStartingMegacredits: function() {
+    getStartingMegacredits() {
       if (this.selectedCorporation === undefined) {
         return NaN;
       }
@@ -171,14 +171,14 @@ export default Vue.extend({
       starting -= this.selectedCards.length * cardCost;
       return starting;
     },
-    saveIfConfirmed: function() {
+    saveIfConfirmed() {
       if (PreferencesManager.load('show_alerts') === '1' && this.selectedCards.length === 0) {
         (this.$refs['confirmation'] as any).show();
       } else {
         this.saveData();
       }
     },
-    saveData: function() {
+    saveData() {
       const result: Array<Array<string>> = [];
       result.push([]);
       if (this.selectedCorporation !== undefined) {
@@ -190,19 +190,19 @@ export default Vue.extend({
       result.push(this.selectedCards);
       this.onsave(result);
     },
-    hasPrelude: function() {
+    hasPrelude() {
       return this.playerinput.options !== undefined && this.playerinput.options.length === 3;
     },
-    cardsChanged: function(cards: Array<CardName>) {
+    cardsChanged(cards: Array<CardName>) {
       this.selectedCards = cards;
     },
-    corporationChanged: function(cards: Array<CardName>) {
+    corporationChanged(cards: Array<CardName>) {
       this.selectedCorporation = new CardFinder().getCorporationCardByName(cards[0]);
     },
-    preludesChanged: function(cards: Array<CardName>) {
+    preludesChanged(cards: Array<CardName>) {
       this.selectedPrelude = cards;
     },
-    confirmSelection: function() {
+    confirmSelection() {
       this.saveData();
     },
   },

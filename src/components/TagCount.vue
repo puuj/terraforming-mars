@@ -8,9 +8,9 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import Tag from './Tag.vue';
-import {Tags} from '../cards/Tags';
-import {SpecialTags} from '../cards/SpecialTags';
+import Tag from '@/components/Tag.vue';
+import {Tags} from '@/cards/Tags';
+import {SpecialTags} from '@/cards/SpecialTags';
 
 export default Vue.extend({
   name: 'tag-count',
@@ -36,14 +36,14 @@ export default Vue.extend({
     Tag,
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes = ['tag-display'];
       if (this.count === 0) {
         classes.push('tag-no-show');
       }
       return classes.join(' ');
     },
-    getCountClasses: function(): string {
+    getCountClasses(): string {
       const classes = ['tag-count-display'];
       if (this.count === 0) {
         classes.push('tag-count-no-show');
@@ -51,7 +51,7 @@ export default Vue.extend({
 
       return classes.join(' ');
     },
-    getCount: function(): number | string {
+    getCount(): number | string {
       return this.hideCount === true ? '?' : this.count;
     },
   },

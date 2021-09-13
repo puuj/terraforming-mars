@@ -5,7 +5,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {Tags} from '../../cards/Tags';
+import {Tags} from '@/cards/Tags';
 
 export default Vue.extend({
   name: 'CardTag',
@@ -22,7 +22,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes = ['card-tag'];
       classes.push(`tag-${this.type.toLocaleLowerCase()}`);
 

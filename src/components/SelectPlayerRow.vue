@@ -5,18 +5,18 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {PlayerModel} from '../models/PlayerModel';
+import {PublicPlayerModel} from '@/models/PlayerModel';
 
 export default Vue.extend({
   name: 'SelectPlayerRow',
   props: {
     player: {
-      type: Object as () => PlayerModel | undefined,
+      type: Object as () => PublicPlayerModel | undefined,
     },
   },
   methods: {
   },
-  data: function() {
+  data() {
     return {};
   },
 });

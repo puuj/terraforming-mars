@@ -465,6 +465,7 @@ export enum CardName {
     ASTEROID_RIGHTS = 'Asteroid Rights',
     BIO_PRINTING_FACILITY = 'Bio Printing Facility',
     BACTOVIRAL_RESEARCH = 'Bactoviral Research',
+    HARVEST = 'Harvest',
 
     // Community corps
     AGRICOLA_INC = 'Agricola Inc',
@@ -632,4 +633,7 @@ export enum CardName {
     MOON_ROAD_STANDARD_PROJECT = 'Road Infrastructure',
     MOON_MINE_STANDARD_PROJECT = 'Lunar Mine',
     MOON_COLONY_STANDARD_PROJECT = 'Lunar Habitat',
+    MOON_ROAD_STANDARD_PROJECT_V2 = 'Road Infrastructure (var.)',
+    MOON_MINE_STANDARD_PROJECT_V2 = 'Lunar Mine (var.)',
+    MOON_COLONY_STANDARD_PROJECT_V2 = 'Lunar Habitat (var.)',
 }

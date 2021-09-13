@@ -15,9 +15,9 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {TranslateMixin} from './TranslateMixin';
-import {MAX_OCEAN_TILES, MAX_OXYGEN_LEVEL, MAX_TEMPERATURE, MAX_VENUS_SCALE} from '../constants';
-import {GlobalParameter} from '../GlobalParameter';
+import {TranslateMixin} from '@/components/TranslateMixin';
+import {MAX_OCEAN_TILES, MAX_OXYGEN_LEVEL, MAX_TEMPERATURE, MAX_VENUS_SCALE} from '@/constants';
+import {GlobalParameter} from '@/GlobalParameter';
 
 export default Vue.extend({
   name: 'global-parameter-value',
@@ -31,7 +31,7 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    isMax: function(): boolean {
+    isMax(): boolean {
       switch (this.param as GlobalParameter) {
       case GlobalParameter.TEMPERATURE:
         return this.value === MAX_TEMPERATURE;
@@ -45,7 +45,7 @@ export default Vue.extend({
         return false;
       }
     },
-    getIconClass: function(): string {
+    getIconClass(): string {
       switch (this.param as GlobalParameter) {
       case GlobalParameter.TEMPERATURE:
         return 'temperature-tile';
@@ -59,7 +59,7 @@ export default Vue.extend({
         return '';
       }
     },
-    suffix: function(): string {
+    suffix(): string {
       return this.param === GlobalParameter.OXYGEN ? '%' : '';
     },
   },

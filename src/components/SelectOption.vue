@@ -1,16 +1,16 @@
 <template>
   <div class="wf-component wf-component--select-option">
     <div v-if="showtitle === true" class="wf-component-title">{{ $t(playerinput.title) }}</div>
-    <Button v-if="showsave === true" size="big" :onClick="saveData" :title="$t(playerinput.buttonLabel)" />
+    <Button v-if="showsave === true" size="big" @click="saveData" :title="$t(playerinput.buttonLabel)" />
   </div>
 </template>
 
 <script lang="ts">
 
 import Vue from 'vue';
-import Button from '../components/common/Button.vue';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {TranslateMixin} from './TranslateMixin';
+import Button from '@/components/common/Button.vue';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 export default Vue.extend({
   name: 'select-option',
@@ -33,7 +33,7 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    saveData: function() {
+    saveData() {
       this.onsave([['1']]);
     },
   },

@@ -5,9 +5,9 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {CardRenderTile} from '../../cards/render/CardRenderer';
-import {generateClassString} from '../../utils/utils';
-import {TileType} from '../../TileType';
+import {CardRenderTile} from '@/cards/render/CardRenderer';
+import {generateClassString} from '@/utils/utils';
+import {TileType} from '@/TileType';
 
 interface Classes {
   // The tile div is used to display a full tile. If distinct version
@@ -128,7 +128,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getTiles: function(): string {
+    getTiles(): string {
       const classes: string[] = ['card-tile'];
       if (this.item.hasSymbol) {
         classes.push('card-tile-canvas');
@@ -142,7 +142,7 @@ export default Vue.extend({
       return generateClassString(classes);
     },
     // Symbols for tiles go on top of the tile canvas
-    getSymbols: function(): string {
+    getSymbols(): string {
       const classes: string[] = [];
       if (this.item.hasSymbol) {
         const symbolClass = TILE_CLASSES.get(this.item.tile);

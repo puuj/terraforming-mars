@@ -35,19 +35,19 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import TagCount from '../TagCount.vue';
-import {ITagCount} from '../../ITagCount';
-import {PlayerModel} from '../../models/PlayerModel';
-import {Tags} from '../../cards/Tags';
-import {CardName} from '../../CardName';
-import {SpecialTags} from '../../cards/SpecialTags';
-import PlayerTagDiscount from './PlayerTagDiscount.vue';
-import JovianMultiplier from './JovianMultiplier.vue';
-import {PartyName} from '../../turmoil/parties/PartyName';
-import {TurmoilPolicy} from '../../turmoil/TurmoilPolicy';
-import {ColonyName} from '../../colonies/ColonyName';
-import {CardModel} from '../../models/CardModel';
-import {Shared} from './Shared';
+import TagCount from '@/components/TagCount.vue';
+import {ITagCount} from '@/ITagCount';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import {GameModel} from '@/models/GameModel';
+import {Tags} from '@/cards/Tags';
+import {CardName} from '@/CardName';
+import {SpecialTags} from '@/cards/SpecialTags';
+import PlayerTagDiscount from '@/components/overview/PlayerTagDiscount.vue';
+import JovianMultiplier from '@/components/overview/JovianMultiplier.vue';
+import {PartyName} from '@/turmoil/parties/PartyName';
+import {TurmoilPolicy} from '@/turmoil/TurmoilPolicy';
+import {CardModel} from '@/models/CardModel';
+import {Shared} from '@/components/overview/Shared';
 
 type InterfaceTagsType = Tags | SpecialTags | 'all' | 'separator';
 
@@ -97,17 +97,17 @@ export const PLAYER_INTERFACE_TAGS_ORDER: Array<InterfaceTagsType> = [
   SpecialTags.COLONY_COUNT,
 ];
 
-const checkTagUsed = (tag: InterfaceTagsType, player: PlayerModel) => {
-  if (player.game.gameOptions.coloniesExtension === false && tag === SpecialTags.COLONY_COUNT) {
+const isTagInGame = (tag: InterfaceTagsType, game: GameModel) => {
+  if (game.gameOptions.coloniesExtension === false && tag === SpecialTags.COLONY_COUNT) {
     return false;
   }
-  if (player.game.turmoil === undefined && tag === SpecialTags.INFLUENCE) {
+  if (game.turmoil === undefined && tag === SpecialTags.INFLUENCE) {
     return false;
   }
-  if (player.game.gameOptions.venusNextExtension === false && tag === Tags.VENUS) {
+  if (game.gameOptions.venusNextExtension === false && tag === Tags.VENUS) {
     return false;
   }
-  if (player.game.gameOptions.moonExpansion === false && tag === Tags.MOON) {
+  if (game.gameOptions.moonExpansion === false && tag === Tags.MOON) {
     return false;
   }
   return true;
@@ -116,11 +116,11 @@ const checkTagUsed = (tag: InterfaceTagsType, player: PlayerModel) => {
 export default Vue.extend({
   name: 'PlayerTags',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
-    isActivePlayer: {
-      type: Boolean,
+    player: {
+      type: Object as () => PublicPlayerModel,
     },
     hideZeroTags: {
       type: Boolean,
@@ -131,46 +131,51 @@ export default Vue.extend({
     PlayerTagDiscount,
     JovianMultiplier,
   },
+  computed: {
+    isThisPlayer(): boolean {
+      return this.player.color === this.playerView.thisPlayer.color;
+    },
+  },
 
   methods: {
-    showColonyCount: function(): boolean {
-      return this.player.game.gameOptions.coloniesExtension;
+    showColonyCount(): boolean {
+      return this.playerView.game.gameOptions.coloniesExtension;
     },
-    showInfluence: function(): boolean {
-      return this.player.game.turmoil !== undefined;
+    showInfluence(): boolean {
+      return this.playerView.game.turmoil !== undefined;
     },
-    showVenus: function(): boolean {
-      return this.player.game.gameOptions.venusNextExtension;
+    showVenus(): boolean {
+      return this.playerView.game.gameOptions.venusNextExtension;
     },
-    showMoon: function(): boolean {
-      return this.player.game.gameOptions.moonExpansion;
+    showMoon(): boolean {
+      return this.playerView.game.gameOptions.moonExpansion;
     },
-    getTagsPlaceholders: function(): Array<InterfaceTagsType> {
+    getTagsPlaceholders(): Array<InterfaceTagsType> {
       const tags = PLAYER_INTERFACE_TAGS_ORDER;
       return tags.filter((tag) => {
-        return checkTagUsed(tag, this.player);
+        return isTagInGame(tag, this.playerView.game);
       });
     },
-    getCardCount: function(): number {
+    getCardCount(): number {
       if (this.player.cardsInHandNbr) {
         return this.player.cardsInHandNbr;
       }
       return 0;
     },
-    getTR: function(): number {
+    getTR(): number {
       return this.player.terraformRating;
     },
-    getVpCount: function(): number {
+    getVpCount(): number {
       return this.player.victoryPointsBreakdown.total;
     },
-    hideVpCount: function(): boolean {
-      return !this.player.game.gameOptions.showOtherPlayersVP && !this.isActivePlayer;
+    hideVpCount(): boolean {
+      return !this.playerView.game.gameOptions.showOtherPlayersVP && !this.isThisPlayer;
     },
-    showShortTags: function(): boolean {
+    showShortTags(): boolean {
       if (this.hideZeroTags === true) return true;
       return Shared.isTagsViewConcise(this.$root);
     },
-    hasTagDiscount: function(tag: InterfaceTagsType): boolean {
+    hasTagDiscount(tag: InterfaceTagsType): boolean {
       for (const card of [...this.player.playedCards, this.player.corporationCard]) {
         if (card !== undefined) {
           if (hasDiscount(tag, card)) {
@@ -179,24 +184,20 @@ export default Vue.extend({
         }
       }
 
-      const turmoil = this.player.game.turmoil;
+      const turmoil = this.playerView.game.turmoil;
       if (tag === Tags.SPACE &&
         turmoil && turmoil.ruling === PartyName.UNITY &&
         turmoil.politicalAgendas?.unity.policyId === TurmoilPolicy.UNITY_POLICY_4) {
         return true;
       }
 
-      const iapetusColony = this.player.game.colonies.find((colony) => colony.name === ColonyName.IAPETUS);
-      if (tag === 'all' &&
-        iapetusColony !== undefined &&
-        iapetusColony.visitor !== undefined &&
-        iapetusColony.colonies.includes(this.player.color)) {
+      if (tag === 'all' && this.playerView.thisPlayer.cardDiscount > 0) {
         return true;
       }
 
       return false;
     },
-    getTagDiscountAmount: function(tag: InterfaceTagsType): number {
+    getTagDiscountAmount(tag: InterfaceTagsType): number {
       let discount = 0;
       for (const card of [...this.player.playedCards, this.player.corporationCard]) {
         if (card !== undefined) {
@@ -204,18 +205,17 @@ export default Vue.extend({
         }
       }
 
-      if (tag === Tags.SPACE && this.player.game.turmoil?.ruling === PartyName.UNITY) {
-        if (this.player.game.turmoil.politicalAgendas?.unity.policyId === TurmoilPolicy.UNITY_POLICY_4) discount += 2;
+      if (tag === Tags.SPACE && this.playerView.game.turmoil?.ruling === PartyName.UNITY) {
+        if (this.playerView.game.turmoil.politicalAgendas?.unity.policyId === TurmoilPolicy.UNITY_POLICY_4) discount += 2;
       }
 
-      const iapetusColony = this.player.game.colonies.find((colony) => colony.name === ColonyName.IAPETUS);
-      if (tag === 'all' && iapetusColony !== undefined && iapetusColony.visitor !== undefined) {
-        discount += iapetusColony.colonies.filter((owner) => owner === this.player.color).length;
+      if (tag === 'all') {
+        discount += this.playerView.thisPlayer.cardDiscount;
       }
 
       return discount;
     },
-    getTagCount: function(tagName: InterfaceTagsType): number {
+    getTagCount(tagName: InterfaceTagsType): number {
       if (tagName === SpecialTags.COLONY_COUNT && this.showColonyCount()) {
         return this.player.coloniesCount || 0;
       }
@@ -238,10 +238,10 @@ export default Vue.extend({
 
       return 0;
     },
-    showJovianMultipliers: function(tag: InterfaceTagsType): boolean {
+    showJovianMultipliers(tag: InterfaceTagsType): boolean {
       return tag === Tags.JOVIAN && this.playerJovianMultipliersCount() > 0;
     },
-    playerJovianMultipliersCount: function(): number {
+    playerJovianMultipliersCount(): number {
       let multipliers = 0;
       for (const card of this.player.playedCards) {
         if (card !== undefined && JOVIAN_MULTIPLIERS.includes(card.name as CardName)) {

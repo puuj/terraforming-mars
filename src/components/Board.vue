@@ -1,7 +1,10 @@
 <template>
     <div :class="getGameBoardClassName()">
         <div class="hide-tile-button-container">
-        <div class="hide-tile-button" v-on:click.prevent="toggleHideTile()">{{ toggleHideTileLabel() }}</div>
+          <div class="hide-tile-button" @click="$emit('toggleHideTiles')" data-test="hide-tiles-button">
+            <!-- TODO - Add i18n for this button -->
+            {{ hideTiles ? 'show' : 'hide' }} tiles
+          </div>
         </div>
         <div class="board-outer-spaces">
             <board-space :space="getSpaceById('01')" text="Ganymede Colony"></board-space>
@@ -56,7 +59,16 @@
         </div>
 
         <div class="board" id="main_board">
-            <board-space :space="curSpace" :is_selectable="true" :key="'board-space-'+curSpace.id" :aresExtension="aresExtension" :isTileHidden="checkHideTile()" v-for="curSpace in getAllSpacesOnMars()"></board-space>
+            <board-space
+              v-for="curSpace in getAllSpacesOnMars()"
+              :key="curSpace.id"
+              :space="curSpace"
+              :is_selectable="true"
+              :aresExtension="aresExtension"
+              :hideTiles="hideTiles"
+              data-test="board-space"
+            />
+
             <svg id="board_legend" height="550" width="630" class="board-legend">
                 <g v-if="boardName === 'tharsis'" id="ascraeus_mons" transform="translate(95, 192)">
                     <text class="board-caption">
@@ -137,15 +149,14 @@
 </template>
 
 <script lang="ts">
-
 import Vue from 'vue';
-import * as constants from '../constants';
-import BoardSpace from './BoardSpace.vue';
-import {IAresData} from '../ares/IAresData';
-import {SpaceModel} from '../models/SpaceModel';
-import {SpaceType} from '../SpaceType';
-import {SpaceId} from '../boards/ISpace';
-import {TranslateMixin} from './TranslateMixin';
+import * as constants from '@/constants';
+import BoardSpace from '@/components/BoardSpace.vue';
+import {IAresData} from '@/ares/IAresData';
+import {SpaceModel} from '@/models/SpaceModel';
+import {SpaceType} from '@/SpaceType';
+import {SpaceId} from '@/boards/ISpace';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 class GlobalParamLevel {
   constructor(public value: number, public isActive: boolean, public strValue: string) {
@@ -182,19 +193,22 @@ export default Vue.extend({
     aresData: {
       type: Object as () => IAresData | undefined,
     },
+    hideTiles: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
-    'board-space': BoardSpace,
+    BoardSpace,
   },
-  data: function() {
+  data() {
     return {
-      'constants': constants,
-      'isTileHidden': false,
+      constants,
     };
   },
   methods: {
     ...TranslateMixin.methods,
-    getAllSpacesOnMars: function(): Array<SpaceModel> {
+    getAllSpacesOnMars(): Array<SpaceModel> {
       const boardSpaces: Array<SpaceModel> = this.spaces;
       boardSpaces.sort(
         (space1: SpaceModel, space2: SpaceModel) => {
@@ -205,7 +219,7 @@ export default Vue.extend({
         return s.spaceType !== SpaceType.COLONY;
       });
     },
-    getSpaceById: function(spaceId: SpaceId) {
+    getSpaceById(spaceId: SpaceId) {
       for (const space of this.spaces) {
         if (space.id === spaceId) {
           return space;
@@ -213,7 +227,7 @@ export default Vue.extend({
       }
       throw 'Board space not found by id \'' + spaceId + '\'';
     },
-    getValuesForParameter: function(targetParameter: string): Array<GlobalParamLevel> {
+    getValuesForParameter(targetParameter: string): Array<GlobalParamLevel> {
       const values: Array<GlobalParamLevel> = [];
       let startValue: number;
       let endValue: number;
@@ -252,14 +266,14 @@ export default Vue.extend({
       }
       return values;
     },
-    getScaleCSS: function(paramLevel: GlobalParamLevel): string {
+    getScaleCSS(paramLevel: GlobalParamLevel): string {
       let css = 'global-numbers-value val-' + paramLevel.value + ' ';
       if (paramLevel.isActive) {
         css += 'val-is-active';
       }
       return css;
     },
-    oceansValue: function() {
+    oceansValue() {
       const oceans_count = this.oceans_count || 0;
       const leftover = constants.MAX_OCEAN_TILES - oceans_count;
       if (leftover === 0) {
@@ -268,20 +282,9 @@ export default Vue.extend({
         return `${oceans_count}/${constants.MAX_OCEAN_TILES}`;
       }
     },
-    getGameBoardClassName: function():string {
+    getGameBoardClassName(): string {
       return this.venusNextExtension ? 'board-cont board-with-venus' : 'board-cont board-without-venus';
-    },
-    toggleHideTile: function() {
-      this.isTileHidden = !this.isTileHidden;
-    },
-    toggleHideTileLabel: function(): string {
-      return this.isTileHidden ? 'show tiles' : 'hide tiles';
-    },
-    checkHideTile: function():boolean {
-      return this.isTileHidden;
     },
   },
 });
-
 </script>
-

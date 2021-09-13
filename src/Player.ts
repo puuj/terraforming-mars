@@ -854,6 +854,8 @@ export class Player implements ISerializable<SerializedPlayer> {
     tags.forEach((tag) => {
       if (this.getTagCount(tag, false, false) > 0) {
         distinctCount++;
+      } else if (tag === Tags.SCIENCE && this.hasTurmoilScienceTagBonus) {
+        distinctCount++;
       }
     });
     if (distinctCount + this.getTagCount(Tags.WILDCARD) >= tags.length) {
@@ -1548,7 +1550,6 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   private tradeWithColony(openColonies: Array<Colony>): PlayerInput {
-    const opts: Array<OrOptions | SelectColony> = [];
     let payWith: Resources | ResourceType | undefined = undefined;
     const coloniesModel: Array<ColonyModel> = this.game.getColoniesModel(openColonies);
     const titanFloatingLaunchPad = this.playedCards.find((card) => card.name === CardName.TITAN_FLOATING_LAUNCHPAD);
@@ -1623,14 +1624,12 @@ export class Player implements ISerializable<SerializedPlayer> {
     if (this.titanium >= titaniumTradeAmount) howToPayForTrade.options.push(payWithTitanium);
     if (this.canAfford(mcTradeAmount)) howToPayForTrade.options.push(payWithMC);
 
-    opts.push(howToPayForTrade);
-    opts.push(selectColony);
-
     const trade = new AndOptions(
       () => {
         return undefined;
       },
-      ...opts,
+      howToPayForTrade,
+      selectColony,
     );
 
     trade.title = 'Trade with a colony tile';
@@ -2358,12 +2357,13 @@ export class Player implements ISerializable<SerializedPlayer> {
   public hasAvailableColonyTileToBuildOn(): boolean {
     if (this.game.gameOptions.coloniesExtension === false) return false;
 
+    const availableColonyTiles = this.game.colonies.filter((colony) => colony.isActive);
     let colonyTilesAlreadyBuiltOn: number = 0;
 
-    this.game.colonies.forEach((colony) => {
+    availableColonyTiles.forEach((colony) => {
       if (colony.colonies.includes(this.id)) colonyTilesAlreadyBuiltOn++;
     });
 
-    return colonyTilesAlreadyBuiltOn < this.game.colonies.length;
+    return colonyTilesAlreadyBuiltOn < availableColonyTiles.length;
   }
 }

@@ -113,6 +113,11 @@
                               <label for="requiresMoonTrackCompletion-checkbox">
                                   <span v-i18n>Mandatory Moon Terraforming</span>
                               </label>
+
+                              <input type="checkbox" v-model="moonStandardProjectVariant" id="moonStandardProjectVariant-checkbox">
+                              <label for="moonStandardProjectVariant-checkbox">
+                                  <span v-i18n>Standard Project Variant</span>&nbsp;<a href="https://github.com/bafolts/terraforming-mars/wiki/Variants#moon-standard-project-variant" class="tooltip" target="_blank">&#9432;</a>
+                              </label>
                             </template>
 
                             <template v-if="turmoil">
@@ -348,7 +353,7 @@
                         </div>
 
                         <div class="create-game-action">
-                            <Button title="Create game" size="big" :onClick="createGame"/>
+                            <Button title="Create game" size="big" @click="createGame"/>
 
                             <label>
                                 <div class="btn btn-primary btn-action btn-lg"><i class="icon icon-upload"></i></div>
@@ -400,23 +405,23 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {Color} from '../../Color';
-import {BoardName} from '../../boards/BoardName';
-import {CardName} from '../../CardName';
-import CorporationsFilter from './CorporationsFilter.vue';
-import {translateTextWithParams} from '../../directives/i18n';
-import {IGameData} from '../../database/IDatabase';
-import ColoniesFilter from './ColoniesFilter.vue';
-import {ColonyName} from '../../colonies/ColonyName';
-import CardsFilter from './CardsFilter.vue';
-import Button from '../common/Button.vue';
-import {playerColorClass} from '../../utils/utils';
-import {RandomMAOptionType} from '../../RandomMAOptionType';
-import {GameId} from '../../Game';
-import {AgendaStyle} from '../../turmoil/PoliticalAgendas';
+import {Color} from '@/Color';
+import {BoardName} from '@/boards/BoardName';
+import {CardName} from '@/CardName';
+import CorporationsFilter from '@/components/create/CorporationsFilter.vue';
+import {translateTextWithParams} from '@/directives/i18n';
+import {IGameData} from '@/database/IDatabase';
+import ColoniesFilter from '@/components/create/ColoniesFilter.vue';
+import {ColonyName} from '@/colonies/ColonyName';
+import CardsFilter from '@/components/create/CardsFilter.vue';
+import Button from '@/components/common/Button.vue';
+import {playerColorClass} from '@/utils/utils';
+import {RandomMAOptionType} from '@/RandomMAOptionType';
+import {GameId} from '@/Game';
+import {AgendaStyle} from '@/turmoil/PoliticalAgendas';
 
-import * as constants from '../../constants';
-import {$t} from '../../directives/i18n';
+import * as constants from '@/constants';
+import {$t} from '@/directives/i18n';
 
 export interface CreateGameModel {
     constants: typeof constants;
@@ -463,6 +468,7 @@ export interface CreateGameModel {
     cloneGameData: Array<IGameData>;
     requiresVenusTrackCompletion: boolean;
     requiresMoonTrackCompletion: boolean;
+    moonStandardProjectVariant: boolean;
     seededGame: boolean;
 }
 
@@ -477,7 +483,7 @@ export interface NewPlayerModel {
 
 export default Vue.extend({
   name: 'CreateGameForm',
-  data: function(): CreateGameModel {
+  data(): CreateGameModel {
     return {
       constants,
       firstIndex: 1,
@@ -538,6 +544,7 @@ export default Vue.extend({
       allOfficialExpansions: false,
       requiresVenusTrackCompletion: false,
       requiresMoonTrackCompletion: false,
+      moonStandardProjectVariant: false,
     };
   },
   components: {
@@ -546,7 +553,7 @@ export default Vue.extend({
     ColoniesFilter,
     CorporationsFilter,
   },
-  mounted: function() {
+  mounted() {
     if (window.location.pathname === '/solo') {
       this.isSoloModePage = true;
     }
@@ -561,7 +568,7 @@ export default Vue.extend({
       .catch((_) => alert('Unexpected server response'));
   },
   methods: {
-    downloadCurrentSettings: function() {
+    downloadCurrentSettings() {
       const serializedData = this.serializeSettings();
 
       if (serializedData) {
@@ -572,7 +579,7 @@ export default Vue.extend({
         a.click();
       }
     },
-    handleSettingsUpload: function() {
+    handleSettingsUpload() {
       const refs = this.$refs;
       const file = (refs.file as any).files[0];
       const reader = new FileReader();
@@ -622,32 +629,32 @@ export default Vue.extend({
         }
       }
     },
-    getPlayerNamePlaceholder: function(player: NewPlayerModel): string {
+    getPlayerNamePlaceholder(player: NewPlayerModel): string {
       return translateTextWithParams(
         'Player ${0} name',
         [String(player.index)],
       );
     },
-    updateCustomCorporationsList: function(newCustomCorporationsList: Array<CardName>) {
+    updateCustomCorporationsList(newCustomCorporationsList: Array<CardName>) {
       const component = (this as any) as CreateGameModel;
       component.customCorporationsList = newCustomCorporationsList;
     },
-    updateCardsBlackList: function(newCardsBlackList: Array<CardName>) {
+    updateCardsBlackList(newCardsBlackList: Array<CardName>) {
       const component = (this as any) as CreateGameModel;
       component.cardsBlackList = newCardsBlackList;
     },
-    updateCustomColoniesList: function(newCustomColoniesList: Array<ColonyName>) {
+    updateCustomColoniesList(newCustomColoniesList: Array<ColonyName>) {
       const component = (this as any) as CreateGameModel;
       component.customColoniesList = newCustomColoniesList;
     },
-    getPlayers: function(): Array<NewPlayerModel> {
+    getPlayers(): Array<NewPlayerModel> {
       const component = (this as any) as CreateGameModel;
       return component.players.slice(0, component.playersCount);
     },
-    isRandomMAEnabled: function(): Boolean {
+    isRandomMAEnabled(): Boolean {
       return this.randomMA !== RandomMAOptionType.NONE;
     },
-    randomMAToggle: function() {
+    randomMAToggle() {
       const component = (this as any) as CreateGameModel;
       if (component.randomMA === RandomMAOptionType.NONE) {
         component.randomMA = RandomMAOptionType.LIMITED;
@@ -657,7 +664,7 @@ export default Vue.extend({
         this.randomMA = RandomMAOptionType.NONE;
       }
     },
-    getRandomMaOptionType: function(type: 'limited' | 'full'): RandomMAOptionType {
+    getRandomMaOptionType(type: 'limited' | 'full'): RandomMAOptionType {
       if (type === 'limited') {
         return RandomMAOptionType.LIMITED;
       } else if (type === 'full') {
@@ -666,17 +673,17 @@ export default Vue.extend({
         return RandomMAOptionType.NONE;
       }
     },
-    isPoliticalAgendasExtensionEnabled: function(): Boolean {
+    isPoliticalAgendasExtensionEnabled(): Boolean {
       return this.politicalAgendasExtension !== AgendaStyle.STANDARD;
     },
-    politicalAgendasExtensionToggle: function() {
+    politicalAgendasExtensionToggle() {
       if (this.politicalAgendasExtension === AgendaStyle.STANDARD) {
         this.politicalAgendasExtension = AgendaStyle.RANDOM;
       } else {
         this.politicalAgendasExtension = AgendaStyle.STANDARD;
       }
     },
-    getPoliticalAgendasExtensionAgendaStyle: function(type: 'random' | 'chairman'): AgendaStyle {
+    getPoliticalAgendasExtensionAgendaStyle(type: 'random' | 'chairman'): AgendaStyle {
       if (type === 'random') {
         return AgendaStyle.RANDOM;
       } else if (type === 'chairman') {
@@ -686,10 +693,10 @@ export default Vue.extend({
         return AgendaStyle.STANDARD;
       }
     },
-    isBeginnerToggleEnabled: function(): Boolean {
+    isBeginnerToggleEnabled(): Boolean {
       return !(this.initialDraft || this.prelude || this.venusNext || this.colonies || this.turmoil);
     },
-    selectAll: function() {
+    selectAll() {
       this.corporateEra = this.$data.allOfficialExpansions;
       this.prelude = this.$data.allOfficialExpansions;
       this.venusNext = this.$data.allOfficialExpansions;
@@ -698,25 +705,25 @@ export default Vue.extend({
       this.promoCardsOption = this.$data.allOfficialExpansions;
       this.solarPhaseOption = this.$data.allOfficialExpansions;
     },
-    toggleVenusNext: function() {
+    toggleVenusNext() {
       this.solarPhaseOption = this.$data.venusNext;
     },
-    deselectPoliticalAgendasWhenDeselectingTurmoil: function() {
+    deselectPoliticalAgendasWhenDeselectingTurmoil() {
       if (this.$data.turmoil === false) {
         this.politicalAgendasExtension = AgendaStyle.STANDARD;
       }
     },
-    deselectVenusCompletion: function() {
+    deselectVenusCompletion() {
       if (this.$data.venusNext === false) {
         this.requiresVenusTrackCompletion = false;
       }
     },
-    deselectMoonCompletion: function() {
+    deselectMoonCompletion() {
       if (this.$data.moonExpansion === false) {
         this.requiresMoonTrackCompletion = false;
       }
     },
-    getBoardColorClass: function(boardName: string): string {
+    getBoardColorClass(boardName: string): string {
       if (boardName === BoardName.ORIGINAL) {
         return 'create-game-board-hexagon create-game-tharsis';
       } else if (boardName === BoardName.HELLAS) {
@@ -727,13 +734,13 @@ export default Vue.extend({
         return 'create-game-board-hexagon create-game-random';
       }
     },
-    getPlayerCubeColorClass: function(color: string): string {
+    getPlayerCubeColorClass(color: string): string {
       return playerColorClass(color.toLowerCase(), 'bg');
     },
-    getPlayerContainerColorClass: function(color: string): string {
+    getPlayerContainerColorClass(color: string): string {
       return playerColorClass(color.toLowerCase(), 'bg_transparent');
     },
-    serializeSettings: function() {
+    serializeSettings() {
       const component = (this as any) as CreateGameModel;
 
       let players = component.players.slice(0, component.playersCount);
@@ -809,7 +816,6 @@ export default Vue.extend({
       const beginnerOption = component.beginnerOption;
       const randomFirstPlayer = component.randomFirstPlayer;
       const requiresVenusTrackCompletion = component.requiresVenusTrackCompletion;
-      const requiresMoonTrackCompletion = component.requiresMoonTrackCompletion;
       let clonedGamedId: undefined | GameId = undefined;
 
       // Check custom colony count
@@ -884,11 +890,12 @@ export default Vue.extend({
         beginnerOption,
         randomFirstPlayer,
         requiresVenusTrackCompletion,
-        requiresMoonTrackCompletion,
+        requiresMoonTrackCompletion: component.requiresMoonTrackCompletion,
+        moonStandardProjectVariant: component.moonStandardProjectVariant,
       }, undefined, 4);
       return dataToSend;
     },
-    createGame: function() {
+    createGame() {
       const dataToSend = this.serializeSettings();
 
       if (dataToSend === undefined) return;

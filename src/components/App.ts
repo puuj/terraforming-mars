@@ -1,21 +1,22 @@
-import GameEnd from './GameEnd.vue';
-import CreateGameForm from './create/CreateGameForm.vue';
-import GameHome from './GameHome.vue';
-import GamesOverview from './GamesOverview.vue';
-import PlayerHome from './PlayerHome.vue';
-import PlayerInputFactory from './PlayerInputFactory.vue';
-import SpectatorHome from './SpectatorHome.vue';
-import {PlayerModel} from '../models/PlayerModel';
-import StartScreen from './StartScreen.vue';
-import LoadGameForm from './LoadGameForm.vue';
-import DebugUI from './DebugUI.vue';
-import {SimpleGameModel} from '../models/SimpleGameModel';
-import Help from './help/Help.vue';
+import GameEnd from '@/components/GameEnd.vue';
+import CreateGameForm from '@/components/create/CreateGameForm.vue';
+import GameHome from '@/components/GameHome.vue';
+import GamesOverview from '@/components/GamesOverview.vue';
+import PlayerHome from '@/components/PlayerHome.vue';
+import PlayerInputFactory from '@/components/PlayerInputFactory.vue';
+import SpectatorHome from '@/components/SpectatorHome.vue';
+import {PlayerViewModel} from '@/models/PlayerModel';
+import StartScreen from '@/components/StartScreen.vue';
+import LoadGameForm from '@/components/LoadGameForm.vue';
+import DebugUI from '@/components/DebugUI.vue';
+import {SimpleGameModel} from '@/models/SimpleGameModel';
+import Help from '@/components/help/Help.vue';
 
-import {$t} from '../directives/i18n';
+import {$t} from '@/directives/i18n';
 
-import * as constants from '../constants';
-import * as raw_settings from '../genfiles/settings.json';
+import * as constants from '@/constants';
+import * as raw_settings from '@/genfiles/settings.json';
+import {SpectatorModel} from '@/models/SpectatorModel';
 
 const dialogPolyfill = require('dialog-polyfill');
 
@@ -32,12 +33,16 @@ interface MainAppData {
             'start-screen' |
             'the-end';
     /**
-     * We set player once the app component has loaded. Vue only
-     * watches properties that exist initially. When we
+     * player or spectator are set once the app component has loaded.
+     * Vue only watches properties that exist initially. When we
      * use this property we can't trigger vue state without
      * a refactor.
      */
-    player?: PlayerModel;
+    spectator?: SpectatorModel;
+    playerView?: PlayerViewModel;
+    // playerKey might seem to serve no function, but it's basically an arbitrary value used
+    // to force a rerender / refresh.
+    // See https://michaelnthiessen.com/force-re-render/
     playerkey: number;
     settings: typeof raw_settings;
     isServerSideRequestInProgress: boolean;
@@ -53,7 +58,7 @@ export const mainAppSettings = {
     settings: raw_settings,
     isServerSideRequestInProgress: false,
     componentsVisibility: {
-      'millestones_list': true,
+      'milestones_list': true,
       'awards_list': true,
       'tags_concise': false,
       'pinned_player_0': false,
@@ -81,7 +86,7 @@ export const mainAppSettings = {
     'help': Help,
   },
   'methods': {
-    showAlert: function(message: string, cb: () => void = () => {}): void {
+    showAlert(message: string, cb: () => void = () => {}): void {
       const dialogElement: HTMLElement | null = document.getElementById('alert-dialog');
       const buttonElement: HTMLElement | null = document.getElementById('alert-dialog-button');
       const messageElement: HTMLElement | null = document.getElementById('alert-dialog-message');
@@ -98,14 +103,14 @@ export const mainAppSettings = {
         cb();
       }
     },
-    setVisibilityState: function(targetVar: string, isVisible: boolean) {
+    setVisibilityState(targetVar: string, isVisible: boolean) {
       if (isVisible === this.getVisibilityState(targetVar)) return;
       (this as unknown as typeof mainAppSettings.data).componentsVisibility[targetVar] = isVisible;
     },
-    getVisibilityState: function(targetVar: string): boolean {
+    getVisibilityState(targetVar: string): boolean {
       return (this as unknown as typeof mainAppSettings.data).componentsVisibility[targetVar] ? true : false;
     },
-    updatePlayer: function() {
+    updatePlayer() {
       const currentPathname: string = window.location.pathname;
       const xhr = new XMLHttpRequest();
       const app = this as unknown as typeof mainAppSettings.data;
@@ -120,10 +125,10 @@ export const mainAppSettings = {
       };
       xhr.onload = () => {
         if (xhr.status === 200) {
-          app.player = xhr.response as PlayerModel;
+          app.playerView = xhr.response as PlayerViewModel;
           app.playerkey++;
           if (
-            app.player.game.phase === 'end' &&
+            app.playerView.game.phase === 'end' &&
                         window.location.search.includes('&noredirect') === false
           ) {
             app.screen = 'the-end';
@@ -131,7 +136,7 @@ export const mainAppSettings = {
               window.history.replaceState(
                 xhr.response,
                 `${constants.APP_NAME} - Player`,
-                '/the-end?id=' + app.player.id,
+                '/the-end?id=' + app.playerView.id,
               );
             }
           } else {
@@ -140,19 +145,46 @@ export const mainAppSettings = {
               window.history.replaceState(
                 xhr.response,
                 `${constants.APP_NAME} - Game`,
-                '/player?id=' + app.player.id,
+                '/player?id=' + app.playerView.id,
               );
             }
           }
         } else {
-          alert('Unexpected server response');
+          alert('Unexpected server response: ' + xhr.statusText);
+        }
+      };
+      xhr.responseType = 'json';
+      xhr.send();
+    },
+    updateSpectator: function() {
+      const xhr = new XMLHttpRequest();
+      const app = this as unknown as typeof mainAppSettings.data;
+
+      xhr.open('GET', '/api/spectator' + window.location.search);
+      xhr.onerror = function() {
+        alert('Error getting game data');
+      };
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          app.spectator = xhr.response as SpectatorModel;
+          app.playerkey++;
+          app.screen = 'spectator-home';
+          if (window.location.pathname !== '/spectator') {
+            window.history.replaceState(
+              xhr.response,
+              `${constants.APP_NAME} - Game`,
+              '/spectator?id=' + app.spectator.id,
+            );
+          }
+        } else {
+          alert('Unexpected server response: ' + xhr.statusText);
         }
       };
       xhr.responseType = 'json';
       xhr.send();
     },
   },
-  'mounted': function() {
+  mounted() {
     document.title = constants.APP_NAME;
     if (!window.HTMLDialogElement) dialogPolyfill.default.registerDialog(document.getElementById('alert-dialog'));
     const currentPathname: string = window.location.pathname;
@@ -193,7 +225,7 @@ export const mainAppSettings = {
     } else if (currentPathname === '/help') {
       app.screen = 'help';
     } else if (currentPathname === '/spectator') {
-      app.screen = 'spectator-home';
+      app.updateSpectator();
     } else {
       app.screen = 'start-screen';
     }

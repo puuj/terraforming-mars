@@ -26,15 +26,15 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import CardRenderItemComponent from './CardRenderItemComponent.vue';
-import CardRenderSymbolComponent from './CardRenderSymbolComponent.vue';
-import {ItemType, CardRenderEffect, CardRenderProductionBox, CardRenderTile} from '../../cards/render/CardRenderer';
-import CardProductionBoxComponent from './CardProductionBoxComponent.vue';
-import CardRenderTileComponent from './CardRenderTileComponent.vue';
-import {CardRenderSymbol} from '../../cards/render/CardRenderSymbol';
-import {CardRenderItem} from '../../cards/render/CardRenderItem';
+import CardRenderItemComponent from '@/components/card/CardRenderItemComponent.vue';
+import CardRenderSymbolComponent from '@/components/card/CardRenderSymbolComponent.vue';
+import {ItemType, CardRenderEffect, CardRenderProductionBox, CardRenderTile} from '@/cards/render/CardRenderer';
+import CardProductionBoxComponent from '@/components/card/CardProductionBoxComponent.vue';
+import CardRenderTileComponent from '@/components/card/CardRenderTileComponent.vue';
+import {CardRenderSymbol} from '@/cards/render/CardRenderSymbol';
+import {CardRenderItem} from '@/cards/render/CardRenderItem';
 
-import CardDescription from './CardDescription.vue';
+import CardDescription from '@/components/card/CardDescription.vue';
 
 export default Vue.extend({
   name: 'CardRenderEffectBoxComponent',
@@ -52,22 +52,22 @@ export default Vue.extend({
     CardDescription,
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       return 'card-effect-box';
     },
-    isItem: function(rowItem: ItemType): rowItem is CardRenderItem {
+    isItem(rowItem: ItemType): rowItem is CardRenderItem {
       return rowItem instanceof CardRenderItem;
     },
-    isSymbol: function(rowItem: ItemType): rowItem is CardRenderSymbol {
+    isSymbol(rowItem: ItemType): rowItem is CardRenderSymbol {
       return rowItem instanceof CardRenderSymbol;
     },
-    isProductionBox: function(rowItem: ItemType): rowItem is CardRenderProductionBox {
+    isProductionBox(rowItem: ItemType): rowItem is CardRenderProductionBox {
       return rowItem instanceof CardRenderProductionBox;
     },
-    isTile: function(rowItem: ItemType): rowItem is CardRenderTile {
+    isTile(rowItem: ItemType): rowItem is CardRenderTile {
       return rowItem instanceof CardRenderTile;
     },
-    hasDescription: function(): boolean {
+    hasDescription(): boolean {
       return this.effectData.description !== undefined;
     },
   },

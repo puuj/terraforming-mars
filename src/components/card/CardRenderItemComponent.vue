@@ -8,12 +8,12 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {generateClassString} from '../../utils/utils';
-import {AltSecondaryTag, CardRenderItem} from '../../cards/render/CardRenderItem';
-import {CardRenderItemType} from '../../cards/render/CardRenderItemType';
-import {CardRenderSymbol} from '../../cards/render/CardRenderSymbol';
-import {Size} from '../../cards/render/Size';
-import {Tags} from '../../cards/Tags';
+import {generateClassString} from '@/utils/utils';
+import {AltSecondaryTag, CardRenderItem} from '@/cards/render/CardRenderItem';
+import {CardRenderItemType} from '@/cards/render/CardRenderItemType';
+import {CardRenderSymbol} from '@/cards/render/CardRenderSymbol';
+import {Size} from '@/cards/render/Size';
+import {Tags} from '@/cards/Tags';
 
 // microbe, animal and plant tag could be used both as a resource and played tag
 const RESOURCE_AND_TAG_TYPES = [
@@ -30,7 +30,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getComponentClasses: function(): string {
+    getComponentClasses(): string {
       let classes: Array<string> = [];
 
       const type: CardRenderItemType = this.item.type;
@@ -257,18 +257,18 @@ export default Vue.extend({
 
       return generateClassString(classes);
     },
-    getAmountAbs: function(): number {
+    getAmountAbs(): number {
       if (this.item.amountInside) return 1;
       return Math.abs(this.item.amount);
     },
-    getMinus: function(): CardRenderSymbol {
+    getMinus(): CardRenderSymbol {
       return CardRenderSymbol.minus();
     },
-    itemsToShow: function(): number {
+    itemsToShow(): number {
       if (this.item.showDigit) return 1;
       return this.getAmountAbs();
     },
-    itemHtmlContent: function(): string {
+    itemHtmlContent(): string {
       let result: string = '';
       // in case of symbols inside
       if (this.item instanceof CardRenderItem && this.item.amountInside) {

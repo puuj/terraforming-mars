@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
-import {TranslateMixin} from '../TranslateMixin';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 const dialogPolyfill = require('dialog-polyfill');
 
@@ -15,29 +15,29 @@ export default Vue.extend({
       default: false,
     },
   },
-  data: function() {
+  data() {
     return {
-      hide: false as unknown[] | boolean,
+      hide: false,
     };
   },
   mixins: [TranslateMixin],
   watch: {
-    hide: function() {
+    hide() {
       this.$emit('hide', this.hide);
     },
   },
   methods: {
-    accept: function() {
+    accept() {
       this.$emit('accept');
     },
-    dismiss: function() {
+    dismiss() {
       this.$emit('dismiss');
     },
-    show: function() {
+    show() {
       (this.$refs['dialog'] as HTMLDialogElement).showModal();
     },
   },
-  mounted: function() {
+  mounted() {
     if (!window.HTMLDialogElement) dialogPolyfill.default.registerDialog(this.$refs['dialog']);
   },
 });

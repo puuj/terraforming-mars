@@ -72,19 +72,19 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {Color} from '../Color';
-import {PreferencesManager} from './PreferencesManager';
-import {LANGUAGES} from '../constants';
-import {TurmoilModel} from '../models/TurmoilModel';
-import {PartyName} from '../turmoil/parties/PartyName';
-import GameSetupDetail from './GameSetupDetail.vue';
-import {GameOptionsModel} from '../models/GameOptionsModel';
-import {TranslateMixin} from './TranslateMixin';
-import GlobalParameterValue from './GlobalParameterValue.vue';
-import MoonGlobalParameterValue from './MoonGlobalParameterValue.vue';
-import {GlobalParameter} from '../GlobalParameter';
-import {MoonModel} from '../models/MoonModel';
-import PreferencesDialog from './PreferencesDialog.vue';
+import {Color} from '@/Color';
+import {PreferencesManager} from '@/components/PreferencesManager';
+import {LANGUAGES} from '@/constants';
+import {TurmoilModel} from '@/models/TurmoilModel';
+import {PartyName} from '@/turmoil/parties/PartyName';
+import GameSetupDetail from '@/components/GameSetupDetail.vue';
+import {GameOptionsModel} from '@/models/GameOptionsModel';
+import {TranslateMixin} from '@/components/TranslateMixin';
+import GlobalParameterValue from '@/components/GlobalParameterValue.vue';
+import MoonGlobalParameterValue from '@/components/MoonGlobalParameterValue.vue';
+import {GlobalParameter} from '@/GlobalParameter';
+import {MoonModel} from '@/models/MoonModel';
+import PreferencesDialog from '@/components/PreferencesDialog.vue';
 
 export default Vue.extend({
   name: 'sidebar',
@@ -141,49 +141,49 @@ export default Vue.extend({
     MoonGlobalParameterValue,
     'preferences-dialog': PreferencesDialog,
   },
-  data: function() {
+  data() {
     return {
       'ui': {
         'preferences_panel_open': false,
         'gamesetup_detail_open': false,
       },
-      'hide_hand': false as boolean | unknown[],
-      'hide_awards_and_milestones': false as boolean | unknown[],
-      'hide_top_bar': false as boolean | unknown[],
-      'small_cards': false as boolean | unknown[],
-      'remove_background': false as boolean | unknown[],
-      'magnify_cards': true as boolean | unknown[],
-      'show_alerts': true as boolean | unknown[],
+      'hide_hand': false,
+      'hide_awards_and_milestones': false,
+      'hide_top_bar': false,
+      'small_cards': false,
+      'remove_background': false,
+      'magnify_cards': true,
+      'show_alerts': true,
       'lang': 'en',
       'langs': LANGUAGES,
-      'enable_sounds': false as boolean | unknown[],
-      'hide_tile_confirmation': false as boolean | unknown[],
-      'show_card_number': false as boolean | unknown[],
-      'hide_discount_on_cards': false as boolean | unknown[],
-      'learner_mode': true as boolean | unknown[],
-      'hide_animated_sidebar': false as boolean | unknown[],
+      'enable_sounds': false,
+      'hide_tile_confirmation': false,
+      'show_card_number': false,
+      'hide_discount_on_cards': false,
+      'learner_mode': true,
+      'hide_animated_sidebar': false,
       'globalParameter': GlobalParameter,
     };
   },
   methods: {
     ...TranslateMixin.methods,
-    getPlayerColorCubeClass: function(): string {
+    getPlayerColorCubeClass(): string {
       return this.acting_player && (PreferencesManager.loadBoolean('hide_animated_sidebar') === false) ? 'preferences_player_inner active' : 'preferences_player_inner';
     },
-    getSideBarClass: function(): string {
+    getSideBarClass(): string {
       return this.acting_player && (PreferencesManager.loadBoolean('hide_animated_sidebar') === false) ? 'preferences_acting_player' : 'preferences_nonacting_player';
     },
-    getGenMarker: function(): string {
+    getGenMarker(): string {
       return `${this.generation}`;
     },
-    rulingPartyToCss: function(): string {
+    rulingPartyToCss(): string {
       if (this.turmoil.ruling === undefined) {
         console.warn('no party provided');
         return '';
       }
       return this.turmoil.ruling.toLowerCase().split(' ').join('_');
     },
-    getRulingParty: function(): string {
+    getRulingParty(): string {
       const rulingPartyName = this.turmoil.ruling;
       if (rulingPartyName === PartyName.MARS) {
         return 'Mars';

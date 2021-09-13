@@ -43,8 +43,8 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import {IAresGlobalParametersResponse} from '../inputs/ShiftAresGlobalParameters';
-import {PlayerInputModel} from '../models/PlayerInputModel';
+import {IAresGlobalParametersResponse} from '@/inputs/ShiftAresGlobalParameters';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
 
 export default Vue.extend({
   name: 'ShiftAresGlobalParameters',
@@ -62,7 +62,7 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     const hazardData = this.playerinput.aresData.hazardData;
     return {
       hazardData: hazardData,
@@ -74,7 +74,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    saveData: function() {
+    saveData() {
       const response: IAresGlobalParametersResponse = {
         lowOceanDelta: this.$data.lowOceanDelta,
         highOceanDelta: this.$data.highOceanDelta,

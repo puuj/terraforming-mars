@@ -5,8 +5,8 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {isIDescription} from '../../cards/render/ICardRenderDescription';
-import {generateClassString} from '../../utils/utils';
+import {isIDescription} from '@/cards/render/ICardRenderDescription';
+import {generateClassString} from '@/utils/utils';
 
 export default Vue.extend({
   name: 'CardDescription',
@@ -16,7 +16,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes: string[] = ['card-description'];
       if (isIDescription(this.item)) {
         if (this.item.align !== 'center') {
@@ -27,7 +27,7 @@ export default Vue.extend({
       }
       return generateClassString(classes);
     },
-    getDescription: function(): string {
+    getDescription(): string {
       return isIDescription(this.item) ? this.item.text : String(this.item);
     },
   },

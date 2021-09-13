@@ -2,7 +2,7 @@
   <div v-if="waitingfor === undefined">{{ $t('Not your turn to take any actions') }}</div>
   <div v-else class="wf-root">
     <player-input-factory :players="players"
-                          :player="player"
+                          :playerView="playerView"
                           :playerinput="waitingfor"
                           :onsave="onsave"
                           :showsave="true"
@@ -14,17 +14,17 @@
 
 import Vue from 'vue';
 
-import {mainAppSettings} from './App';
-import {$t} from '../directives/i18n';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {PlayerModel} from '../models/PlayerModel';
-import {PreferencesManager} from './PreferencesManager';
-import {SoundManager} from './SoundManager';
-import {TranslateMixin} from './TranslateMixin';
-import {WaitingForModel} from '../models/WaitingForModel';
+import {mainAppSettings} from '@/components/App';
+import {$t} from '@/directives/i18n';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import {PreferencesManager} from '@/components/PreferencesManager';
+import {SoundManager} from '@/components/SoundManager';
+import {TranslateMixin} from '@/components/TranslateMixin';
+import {WaitingForModel} from '@/models/WaitingForModel';
 
-import * as constants from '../constants';
-import * as raw_settings from '../genfiles/settings.json';
+import * as constants from '@/constants';
+import * as raw_settings from '@/genfiles/settings.json';
 
 let ui_update_timeout_id: number | undefined;
 let documentTitleTimer: number | undefined;
@@ -32,11 +32,11 @@ let documentTitleTimer: number | undefined;
 export default Vue.extend({
   name: 'waiting-for',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
     players: {
-      type: Array as () => Array<PlayerModel>,
+      type: Array as () => Array<PublicPlayerModel>,
     },
     settings: {
       type: Object as () => typeof raw_settings,
@@ -45,14 +45,14 @@ export default Vue.extend({
       type: Object as () => PlayerInputModel | undefined,
     },
   },
-  data: function() {
+  data() {
     return {
       waitingForTimeout: this.settings.waitingForTimeout as typeof raw_settings.waitingForTimeout,
     };
   },
   methods: {
     ...TranslateMixin.methods,
-    animateTitle: function() {
+    animateTitle() {
       const sequence = '\u25D1\u25D2\u25D0\u25D3';
       const first = document.title[0];
       const position = sequence.indexOf(first);
@@ -62,7 +62,7 @@ export default Vue.extend({
       }
       document.title = next + ' ' + $t(constants.APP_NAME);
     },
-    onsave: function(out: Array<Array<string>>) {
+    onsave(out: Array<Array<string>>) {
       const xhr = new XMLHttpRequest();
       const root = this.$root as unknown as typeof mainAppSettings.data;
       const showAlert = (this.$root as unknown as typeof mainAppSettings.methods).showAlert;
@@ -72,15 +72,15 @@ export default Vue.extend({
       }
 
       root.isServerSideRequestInProgress = true;
-      xhr.open('POST', '/player/input?id=' + this.player.id);
+      xhr.open('POST', '/player/input?id=' + this.playerView.id);
       xhr.responseType = 'json';
       xhr.onload = () => {
         if (xhr.status === 200) {
           root.screen = 'empty';
-          root.player = xhr.response;
+          root.playerView = xhr.response;
           root.playerkey++;
           root.screen = 'player-home';
-          if (this.player.game.phase === 'end' && window.location.pathname !== '/the-end') {
+          if (this.playerView.game.phase === 'end' && window.location.pathname !== '/the-end') {
             (window).location = (window).location;
           }
         } else if (xhr.status === 400 && xhr.responseType === 'json') {
@@ -95,13 +95,13 @@ export default Vue.extend({
         root.isServerSideRequestInProgress = false;
       };
     },
-    waitForUpdate: function() {
+    waitForUpdate() {
       const vueApp = this;
       const root = this.$root as unknown as typeof mainAppSettings.methods;
       clearTimeout(ui_update_timeout_id);
       const askForUpdate = () => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/api/waitingfor' + window.location.search + '&gameAge=' + this.player.game.gameAge + '&undoCount=' + this.player.game.undoCount);
+        xhr.open('GET', '/api/waitingfor' + window.location.search + '&gameAge=' + this.playerView.game.gameAge + '&undoCount=' + this.playerView.game.undoCount);
         xhr.onerror = function() {
           root.showAlert('Unable to reach the server. The server may be restarting or down for maintenance.', () => vueApp.waitForUpdate());
         };
@@ -142,13 +142,13 @@ export default Vue.extend({
       ui_update_timeout_id = window.setTimeout(askForUpdate, this.waitingForTimeout);
     },
   },
-  mounted: function() {
+  mounted() {
     document.title = $t(constants.APP_NAME);
     window.clearInterval(documentTitleTimer);
     if (this.waitingfor === undefined) {
       this.waitForUpdate();
     }
-    if (this.player.players.length > 1 && this.player.waitingFor !== undefined) {
+    if (this.playerView.players.length > 1 && this.playerView.waitingFor !== undefined) {
       documentTitleTimer = window.setInterval(() => this.animateTitle(), 1000);
     }
   },

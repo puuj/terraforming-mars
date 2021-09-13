@@ -42,7 +42,6 @@ import {SelectInitialCards} from './inputs/SelectInitialCards';
 import {PlaceOceanTile} from './deferredActions/PlaceOceanTile';
 import {RemoveColonyFromGame} from './deferredActions/RemoveColonyFromGame';
 import {GainResources} from './deferredActions/GainResources';
-import {SelectSpace} from './inputs/SelectSpace';
 import {SerializedGame} from './SerializedGame';
 import {SerializedPlayer} from './SerializedPlayer';
 import {SpaceBonus} from './SpaceBonus';
@@ -113,6 +112,7 @@ export interface GameOptions {
   customColoniesList: Array<ColonyName>;
   requiresMoonTrackCompletion: boolean; // Moon must be completed to end the game
   requiresVenusTrackCompletion: boolean; // Venus must be completed to end the game
+  moonStandardProjectVariant: boolean;
 }
 
 const DEFAULT_GAME_OPTIONS: GameOptions = {
@@ -131,6 +131,7 @@ const DEFAULT_GAME_OPTIONS: GameOptions = {
   includeVenusMA: true,
   initialDraftVariant: false,
   moonExpansion: false,
+  moonStandardProjectVariant: false,
   politicalAgendasExtension: AgendaStyle.STANDARD,
   preludeExtension: false,
   promoCardsOption: false,
@@ -1137,15 +1138,15 @@ export class Game implements ISerializable<SerializedGame> {
     return this.oxygenLevel;
   }
 
-  public increaseVenusScaleLevel(player: Player, increments: -1 | 1 | 2 | 3): SelectSpace | undefined {
+  public increaseVenusScaleLevel(player: Player, increments: -1 | 1 | 2 | 3): void {
     if (this.venusScaleLevel >= constants.MAX_VENUS_SCALE) {
-      return undefined;
+      return;
     }
 
     // PoliticalAgendas Reds P3 hook
     if (increments === -1) {
       this.venusScaleLevel = Math.max(constants.MIN_VENUS_SCALE, this.venusScaleLevel + increments * 2);
-      return undefined;
+      return;
     }
 
     // Literal typing makes |increments| a const
@@ -1170,8 +1171,6 @@ export class Game implements ISerializable<SerializedGame> {
     }
 
     this.venusScaleLevel += steps * 2;
-
-    return undefined;
   }
 
   public getVenusScaleLevel(): number {
@@ -1194,10 +1193,10 @@ export class Game implements ISerializable<SerializedGame> {
     if (this.phase !== Phase.SOLAR) {
       // BONUS FOR HEAT PRODUCTION AT -20 and -24
       if (this.temperature < -24 && this.temperature + steps * 2 >= -24) {
-        player.addProduction(Resources.HEAT, 1);
+        player.addProduction(Resources.HEAT, 1, {log: true});
       }
       if (this.temperature < -20 && this.temperature + steps * 2 >= -20) {
-        player.addProduction(Resources.HEAT, 1);
+        player.addProduction(Resources.HEAT, 1, {log: true});
       }
 
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.TEMPERATURE, steps);

@@ -12,12 +12,12 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import CardRenderItemComponent from './CardRenderItemComponent.vue';
-import CardRenderEffectBoxComponent from './CardRenderEffectBoxComponent.vue';
-import CardRenderSymbolComponent from './CardRenderSymbolComponent.vue';
-import {CardRenderEffect} from '../../cards/render/CardRenderer';
-import {CardRenderItem} from '../../cards/render/CardRenderItem';
-import {CardRenderSymbol} from '../../cards/render/CardRenderSymbol';
+import CardRenderItemComponent from '@/components/card/CardRenderItemComponent.vue';
+import CardRenderEffectBoxComponent from '@/components/card/CardRenderEffectBoxComponent.vue';
+import CardRenderSymbolComponent from '@/components/card/CardRenderSymbolComponent.vue';
+import {CardRenderEffect} from '@/cards/render/CardRenderer';
+import {CardRenderItem} from '@/cards/render/CardRenderItem';
+import {CardRenderSymbol} from '@/cards/render/CardRenderSymbol';
 
 export default Vue.extend({
   name: 'CardRenderCorpBoxComponent',
@@ -37,11 +37,11 @@ export default Vue.extend({
     CardRenderEffectBoxComponent,
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes: Array<string> = ['card-corporation-box'];
       return classes.join(' ');
     },
-    getComponentType: function(rowItem: CardRenderEffect | CardRenderItem | CardRenderSymbol): string {
+    getComponentType(rowItem: CardRenderEffect | CardRenderItem | CardRenderSymbol): string {
       if (rowItem instanceof CardRenderSymbol) {
         return 'symbol';
       } else if (rowItem instanceof CardRenderEffect) {

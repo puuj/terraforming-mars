@@ -5,7 +5,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {CardName} from '../../CardName';
+import {CardName} from '@/CardName';
 
 export default Vue.extend({
   name: 'CardCorporationLogo',
@@ -16,7 +16,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getHtmlContent: function(): string {
+    getHtmlContent(): string {
       const title: CardName = this.title;
       // TODO(chosta): refactor to include only the exceptions and DRY the code
 

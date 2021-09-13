@@ -10,18 +10,18 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {CardMetadata} from '../../cards/CardMetadata';
+import {ICardMetadata} from '@/cards/ICardMetadata';
 import CardRequirementsComponent from './CardRequirementsComponent.vue';
 import CardVictoryPoints from './CardVictoryPoints.vue';
 import CardDescription from './CardDescription.vue';
 import CardRenderData from './CardRenderData.vue';
-import {CardRequirements} from '../../cards/CardRequirements';
+import {CardRequirements} from '@/cards/CardRequirements';
 
 export default Vue.extend({
   name: 'CardContent',
   props: {
     metadata: {
-      type: Object as () => CardMetadata,
+      type: Object as () => ICardMetadata,
       required: true,
     },
     requirements: {
@@ -39,7 +39,7 @@ export default Vue.extend({
     CardRenderData,
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes: Array<string> = ['card-content'];
       if (this.isCorporation) {
         classes.push('card-content-corporation');

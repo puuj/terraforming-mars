@@ -2,18 +2,18 @@
 
 import Vue from 'vue';
 
-import StackedCards from './StackedCards.vue';
-import {PlayerMixin} from './PlayerMixin';
-import {PlayerModel} from '../models/PlayerModel';
-import {mainAppSettings} from './App';
-import Card from './card/Card.vue';
-import Button from './common/Button.vue';
+import StackedCards from '@/components/StackedCards.vue';
+import {PlayerMixin} from '@/components/PlayerMixin';
+import {PublicPlayerModel} from '@/models/PlayerModel';
+import {mainAppSettings} from '@/components/App';
+import Card from '@/components/card/Card.vue';
+import Button from '@/components/common/Button.vue';
 
 export default Vue.extend({
   name: 'OtherPlayer',
   props: {
     player: {
-      type: Object as () => PlayerModel,
+      type: Object as () => PublicPlayerModel,
     },
     playerIndex: {
       type: Number,
@@ -26,11 +26,11 @@ export default Vue.extend({
   },
   methods: {
     ...PlayerMixin.methods,
-    hideMe: function() {
+    hideMe() {
       // TODO find a better way to share methods with this.$root for type safety
       (this.$root as unknown as typeof mainAppSettings.methods).setVisibilityState('pinned_player_' + this.playerIndex, false);
     },
-    isVisible: function() {
+    isVisible() {
       return (this.$root as unknown as typeof mainAppSettings.methods).getVisibilityState(
         'pinned_player_' + this.playerIndex,
       );
@@ -40,7 +40,7 @@ export default Vue.extend({
 </script>
 <template>
   <div v-show="isVisible()" class="other_player_cont menu">
-      <Button size="big" type="close" :onClick="hideMe" :disableOnServerBusy="false" align="right" />
+      <Button size="big" type="close" @click="hideMe" :disableOnServerBusy="false" align="right" />
       <div v-if="player.playedCards.length > 0 || player.corporationCard !== undefined" class="player_home_block">
           <span class="player_name" :class="'player_bg_color_' + player.color"> {{ player.name }} played cards </span>
           <div>

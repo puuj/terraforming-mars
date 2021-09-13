@@ -6,16 +6,16 @@
       <colony :colony="colony"></colony>
     </label>
     <div v-if="showsave === true" class="nofloat">
-      <Button :onClick="saveData" :title="playerinput.buttonLabel" />
+      <Button @click="saveData" :title="playerinput.buttonLabel" :disabled="!canSave()"/>
     </div>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import Colony from './Colony.vue';
-import Button from '../components/common/Button.vue';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {TranslateMixin} from './TranslateMixin';
+import Colony from '@/components/Colony.vue';
+import Button from '@/components/common/Button.vue';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 export default Vue.extend({
   name: 'SelectColony',
@@ -33,7 +33,7 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {
       selectedColony: undefined as string | undefined,
     };
@@ -44,11 +44,14 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    saveData: function() {
+    canSave() {
+      return this.selectedColony !== undefined;
+    },
+    saveData() {
       const result: string[][] = [];
       result.push([]);
-      if (this.selectedColony !== undefined) {
-        result[0].push(this.selectedColony);
+      if (this.canSave()) {
+        result[0].push(this.selectedColony ?? '');
       }
       this.onsave(result);
     },

@@ -79,12 +79,12 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {PartyName} from '../turmoil/parties/PartyName';
-import {$t} from '../directives/i18n';
-import {TurmoilModel} from '../models/TurmoilModel';
-import {BonusId} from '../turmoil/Bonus';
-import {PolicyId} from '../turmoil/Policy';
-import GlobalEvent from './GlobalEvent.vue';
+import {PartyName} from '@/turmoil/parties/PartyName';
+import {$t} from '@/directives/i18n';
+import {TurmoilModel} from '@/models/TurmoilModel';
+import {BonusId} from '@/turmoil/Bonus';
+import {PolicyId} from '@/turmoil/Policy';
+import GlobalEvent from '@/components/GlobalEvent.vue';
 
 const AGENDA_HTML: Map<BonusId | PolicyId, string> = new Map([
   ['mb01',
@@ -232,14 +232,14 @@ export default Vue.extend({
     },
   },
   methods: {
-    partyNameToCss: function(party: PartyName | undefined): string {
+    partyNameToCss(party: PartyName | undefined): string {
       if (party === undefined) {
         console.warn('no party provided');
         return '';
       }
       return party.toLowerCase().split(' ').join('_');
     },
-    getBonus: function(party: PartyName | undefined): string {
+    getBonus(party: PartyName | undefined): string {
       const politicalAgendas = this.turmoil.politicalAgendas;
       let bonusId: BonusId | undefined = undefined;
       if (politicalAgendas !== undefined) {
@@ -270,7 +270,7 @@ export default Vue.extend({
       }
       return `No ruling Bonus`;
     },
-    getPolicy: function(partyName: PartyName | undefined) {
+    getPolicy(partyName: PartyName | undefined) {
       const politicalAgendas = this.turmoil.politicalAgendas;
       let policyId: PolicyId | undefined = undefined;
       if (politicalAgendas !== undefined) {
@@ -302,11 +302,11 @@ export default Vue.extend({
       }
       return '<p>' + $t('No ruling Policy') + '</p>';
     },
-    toggleMe: function() {
+    toggleMe() {
       const currentState: boolean = this.isVisible();
       (this.$root as any).setVisibilityState('turmoil_parties', ! currentState);
     },
-    isVisible: function() {
+    isVisible() {
       return (this.$root as any).getVisibilityState('turmoil_parties');
     },
   },

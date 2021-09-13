@@ -6,26 +6,24 @@
       <i class="form-icon"></i>
       <SelectPlayerRow :player="players.find((otherPlayer) => otherPlayer.color === player)"></SelectPlayerRow>
     </label>
-    <Button v-if="showsave === true" size="big" :onClick="saveData" :title="$t(playerinput.buttonLabel)" />
+    <Button v-if="showsave === true" size="big" @click="saveData" :title="$t(playerinput.buttonLabel)" />
   </div>
 </template>
 
 <script lang="ts">
 
 import Vue from 'vue';
-import Button from './common/Button.vue';
-import {ColorWithNeutral} from '../Color';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {PlayerModel} from '../models/PlayerModel';
-import SelectPlayerRow from './SelectPlayerRow.vue';
-import {VueModelRadio} from './VueTypes';
-import {TranslateMixin} from './TranslateMixin';
+import Button from '@/components/common/Button.vue';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {PublicPlayerModel} from '@/models/PlayerModel';
+import SelectPlayerRow from '@/components/SelectPlayerRow.vue';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 export default Vue.extend({
   name: 'SelectPlayer',
   props: {
     players: {
-      type: Array as () => Array<PlayerModel>,
+      type: Array as () => Array<PublicPlayerModel>,
     },
     playerinput: {
       type: Object as () => PlayerInputModel,
@@ -40,9 +38,9 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {
-      selectedPlayer: undefined as VueModelRadio<ColorWithNeutral> | undefined,
+      selectedPlayer: '',
     };
   },
   components: {
@@ -51,11 +49,11 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    saveData: function() {
+    saveData() {
       const result: string[][] = [];
       result.push([]);
-      if (this.selectedPlayer !== undefined) {
-        result[0].push(this.selectedPlayer);
+      if (this.$data.selectedPlayer) {
+        result[0].push(this.$data.selectedPlayer);
       }
       this.onsave(result);
     },

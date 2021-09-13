@@ -54,11 +54,10 @@
 <script lang="ts">
 import Vue from 'vue';
 
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {PlayerModel} from '../models/PlayerModel';
-import {IPayProductionModel} from '../models/IPayProductionUnitsModel';
-import {Units} from '../Units';
-import {TranslateMixin} from './TranslateMixin';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {IPayProductionModel} from '@/models/IPayProductionUnitsModel';
+import {Units} from '@/Units';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 interface SelectProductionToLoseModel {
     megacredits: number;
@@ -73,9 +72,6 @@ interface SelectProductionToLoseModel {
 export default Vue.extend({
   name: 'SelectProductionToLose',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
-    },
     playerinput: {
       type: Object as () => Required<Pick<PlayerInputModel, 'title' | 'payProduction' | 'buttonLabel'>>,
     },
@@ -89,7 +85,7 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {
       megacredits: 0,
       steel: 0,
@@ -102,28 +98,28 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    canDeductMegaCredits: function() {
+    canDeductMegaCredits() {
       return this.playerinput.payProduction.units.megacredits > -5;
     },
-    canDeductSteel: function() {
+    canDeductSteel() {
       return this.playerinput.payProduction.units.steel > 0;
     },
-    canDeductTitanium: function() {
+    canDeductTitanium() {
       return this.playerinput.payProduction.units.titanium > 0;
     },
-    canDeductPlants: function() {
+    canDeductPlants() {
       return this.playerinput.payProduction.units.plants > 0;
     },
-    canDeductEnergy: function() {
+    canDeductEnergy() {
       return this.playerinput.payProduction.units.energy > 0;
     },
-    canDeductHeat: function() {
+    canDeductHeat() {
       return this.playerinput.payProduction.units.heat > 0;
     },
-    hasWarning: function() {
+    hasWarning() {
       return this.$data.warning !== undefined;
     },
-    delta: function(type: string, direction: number) {
+    delta(type: string, direction: number) {
       const expendableProductionQuantity = function(type: string, model: IPayProductionModel): number {
         switch (type) {
         case 'megacredits':
@@ -148,7 +144,7 @@ export default Vue.extend({
       newValue = Math.min(Math.max(newValue, lowestValue), expendableQuantity);
       this.$data[type] = newValue;
     },
-    saveData: function() {
+    saveData() {
       const htp: Units = {
         megacredits: this.$data.megacredits,
         steel: this.$data.steel,

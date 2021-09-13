@@ -4,7 +4,7 @@
         <div class="cards-filter-results-cont" v-if="selectedCardNames.length">
             <div class="cards-filter-result" v-for="cardName in selectedCardNames" v-bind:key="cardName">
                 <label>{{ cardName }}<i class="create-game-expansion-icon expansion-icon-prelude" title="This card is prelude" v-if="isPrelude(cardName)"></i></label>
-                <Button size="small" type="close" :onClick="_=>removeCard(cardName)" />
+                <Button size="small" type="close" @click="removeCard(cardName)" />
             </div>
         </div>
         <div class="cards-filter-input">
@@ -25,10 +25,10 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {CardName} from '../../CardName';
-import {ALL_PRELUDE_CARD_NAMES, ALL_PROJECT_CARD_NAMES} from '../../cards/AllCards';
-import {TranslateMixin} from '../TranslateMixin';
-import Button from '../common/Button.vue';
+import {CardName} from '@/CardName';
+import {ALL_PRELUDE_CARD_NAMES, ALL_PROJECT_CARD_NAMES} from '@/cards/AllCards';
+import {TranslateMixin} from '@/components/TranslateMixin';
+import Button from '@/components/common/Button.vue';
 
 const allItems: Array<CardName> = ALL_PROJECT_CARD_NAMES.concat(ALL_PRELUDE_CARD_NAMES).sort();
 
@@ -41,7 +41,7 @@ interface CardsFilterModel {
 export default Vue.extend({
   name: 'CardsFilter',
   props: {},
-  data: function() {
+  data() {
     return {
       selectedCardNames: [],
       foundCardNames: [],
@@ -51,13 +51,13 @@ export default Vue.extend({
   components: {Button},
   methods: {
     ...TranslateMixin.methods,
-    isPrelude: function(cardName: CardName) {
+    isPrelude(cardName: CardName) {
       return ALL_PRELUDE_CARD_NAMES.includes(cardName);
     },
-    removeCard: function(cardNameToRemove: CardName) {
+    removeCard(cardNameToRemove: CardName) {
       this.selectedCardNames = this.selectedCardNames.filter((curCardName) => curCardName !== cardNameToRemove).sort();
     },
-    addCard: function(cardNameToAdd: CardName) {
+    addCard(cardNameToAdd: CardName) {
       if (this.selectedCardNames.includes(cardNameToAdd)) return;
       this.selectedCardNames.push(cardNameToAdd);
       this.selectedCardNames.sort();
@@ -65,10 +65,10 @@ export default Vue.extend({
     },
   },
   watch: {
-    selectedCardNames: function(value) {
+    selectedCardNames(value) {
       this.$emit('cards-list-changed', value);
     },
-    searchTerm: function(value: string) {
+    searchTerm(value: string) {
       if (value === '') {
         this.foundCardNames = [];
         return;

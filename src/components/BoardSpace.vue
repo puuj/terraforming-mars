@@ -1,21 +1,21 @@
 <template>
   <div :class="getMainClass()" :data_space_id="space.id">
-    <div :class="getTileClass()" :title="getVerboseTitle(space.tileType)"></div>
+    <div :class="getTileClass()" :title="getVerboseTitle(space.tileType)" data-test="tile"/>
     <div class="board-space-text" v-if="text" v-i18n>{{ text }}</div>
     <bonus :bonus="space.bonus" v-if="space.tileType === undefined"></bonus>
-    <bonus :bonus="space.bonus" v-if="space.tileType !== undefined && isTileHidden"></bonus>
-    <div :class="'board-cube board-cube--'+space.color" v-if="space.color !== undefined && !isTileHidden "></div>
+    <bonus :bonus="space.bonus" v-if="space.tileType !== undefined && hideTiles"></bonus>
+    <div :class="'board-cube board-cube--'+space.color" v-if="space.color !== undefined && !hideTiles"></div>
   </div>
 </template>
 
 <script lang="ts">
 
 import Vue from 'vue';
-import Bonus from './Bonus.vue';
-import {SpaceModel} from '../models/SpaceModel';
-import {SpaceType} from '../SpaceType';
-import {TileType} from '../TileType';
-import {$t} from '../directives/i18n';
+import Bonus from '@/components/Bonus.vue';
+import {SpaceModel} from '@/models/SpaceModel';
+import {SpaceType} from '@/SpaceType';
+import {TileType} from '@/TileType';
+import {$t} from '@/directives/i18n';
 
 const tileTypeToCssClass = new Map<TileType, string>([
   [TileType.COMMERCIAL_DISTRICT, 'commercial_district'],
@@ -73,18 +73,18 @@ export default Vue.extend({
     aresExtension: {
       type: Boolean,
     },
-    isTileHidden: {
+    hideTiles: {
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {};
   },
   components: {
     'bonus': Bonus,
   },
   methods: {
-    getVerboseTitle: function(tileType: TileType | undefined): string {
+    getVerboseTitle(tileType: TileType | undefined): string {
       let ret: string = '';
       if (tileType === TileType.MOHOLE_AREA) {
         ret = 'Mohole Area';
@@ -145,14 +145,14 @@ export default Vue.extend({
       }
       return $t(ret);
     },
-    getMainClass: function(): string {
+    getMainClass(): string {
       let css = 'board-space board-space-' + this.space.id.toString();
       if (this.is_selectable) {
         css += ' board-space-selectable';
       }
       return css;
     },
-    getTileClass: function(): string {
+    getTileClass(): string {
       let css = 'board-space';
       const tileType = this.space.tileType;
       if (tileType !== undefined) {
@@ -185,7 +185,7 @@ export default Vue.extend({
           }
         }
       }
-      if (this.isTileHidden) {
+      if (this.hideTiles) {
         css += ' board-hidden-tile';
       }
       return css;

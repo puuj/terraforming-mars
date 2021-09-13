@@ -9,7 +9,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {GlobalEventModel} from '../models/TurmoilModel';
+import {GlobalEventModel} from '@/models/TurmoilModel';
 
 export default Vue.extend({
   name: 'global-event',
@@ -22,13 +22,13 @@ export default Vue.extend({
     },
   },
   methods: {
-    partyNameClass: function(partyName: string): string {
+    partyNameClass(partyName: string): string {
       if (partyName === undefined) {
         return '';
       }
       return 'event-party--' + partyName.toLowerCase().split(' ').join('_');
     },
-    getClass: function(): string {
+    getClass(): string {
       const common = 'global-event';
       switch (this.type) {
       case 'coming':

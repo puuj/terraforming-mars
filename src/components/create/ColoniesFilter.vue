@@ -22,26 +22,26 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {Callisto} from '../../colonies/Callisto';
-import {Ceres} from '../../colonies/Ceres';
-import {Colony} from '../../colonies/Colony';
-import {Europa} from '../../colonies/Europa';
-import {Ganymede} from '../../colonies/Ganymede';
-import {Io} from '../../colonies/Io';
-import {Luna} from '../../colonies/Luna';
-import {Miranda} from '../../colonies/Miranda';
-import {Pluto} from '../../colonies/Pluto';
-import {Titan} from '../../colonies/Titan';
-import {Triton} from '../../colonies/Triton';
-import {Enceladus} from '../../colonies/Enceladus';
-import {ColonyName} from '../../colonies/ColonyName';
-import {Iapetus} from '../../cards/community/Iapetus';
-import {Mercury} from '../../cards/community/Mercury';
-import {Hygiea} from '../../cards/community/Hygiea';
-import {Titania} from '../../cards/community/Titania';
-import {Venus} from '../../cards/community/Venus';
-import {Leavitt} from '../../cards/community/Leavitt';
-import {Pallas} from '../../cards/community/Pallas';
+import {Callisto} from '@/colonies/Callisto';
+import {Ceres} from '@/colonies/Ceres';
+import {Colony} from '@/colonies/Colony';
+import {Europa} from '@/colonies/Europa';
+import {Ganymede} from '@/colonies/Ganymede';
+import {Io} from '@/colonies/Io';
+import {Luna} from '@/colonies/Luna';
+import {Miranda} from '@/colonies/Miranda';
+import {Pluto} from '@/colonies/Pluto';
+import {Titan} from '@/colonies/Titan';
+import {Triton} from '@/colonies/Triton';
+import {Enceladus} from '@/colonies/Enceladus';
+import {ColonyName} from '@/colonies/ColonyName';
+import {Iapetus} from '@/cards/community/Iapetus';
+import {Mercury} from '@/cards/community/Mercury';
+import {Hygiea} from '@/cards/community/Hygiea';
+import {Titania} from '@/cards/community/Titania';
+import {Venus} from '@/cards/community/Venus';
+import {Leavitt} from '@/cards/community/Leavitt';
+import {Pallas} from '@/cards/community/Pallas';
 
 const OFFICIAL_COLONIES: Array<Colony> = [
   new Callisto(),
@@ -80,7 +80,7 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {
       allColonies: OFFICIAL_COLONIES.concat(COMMUNITY_COLONIES),
       officialColonies: OFFICIAL_COLONIES,
@@ -102,14 +102,14 @@ export default Vue.extend({
     },
   },
   watch: {
-    selectedColonies: function(value) {
+    selectedColonies(value) {
       const colonyNames: Array<ColonyName> = [];
       value.forEach(function(el: any) {
         colonyNames.push(el.name);
       } );
       this.$emit('colonies-list-changed', colonyNames);
     },
-    communityCardsOption: function(enabled) {
+    communityCardsOption(enabled) {
       if (enabled) {
         this.selectedColonies = OFFICIAL_COLONIES.concat(COMMUNITY_COLONIES).slice();
         if (this.venusNext === false) this.selectedColonies = this.selectedColonies.filter((c) => c.name !== ColonyName.VENUS);
@@ -118,7 +118,7 @@ export default Vue.extend({
         this.selectedColonies = OFFICIAL_COLONIES.slice();
       }
     },
-    venusNext: function(enabled) {
+    venusNext(enabled) {
       if (this.communityCardsOption && Array.isArray(this.selectedColonies)) {
         if (enabled === false) {
           this.selectedColonies = this.selectedColonies.filter((c) => c.name !== ColonyName.VENUS);
@@ -127,7 +127,7 @@ export default Vue.extend({
         }
       }
     },
-    turmoil: function(enabled) {
+    turmoil(enabled) {
       if (this.communityCardsOption && Array.isArray(this.selectedColonies)) {
         if (enabled === false) {
           this.selectedColonies = this.selectedColonies.filter((c) => c.name !== ColonyName.PALLAS);

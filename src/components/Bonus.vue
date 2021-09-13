@@ -7,7 +7,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {SpaceBonus} from '../SpaceBonus';
+import {SpaceBonus} from '@/SpaceBonus';
 
 export default Vue.extend({
   name: 'bonus',
@@ -17,7 +17,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getClass: function(idx: number, bonus: SpaceBonus): string {
+    getClass(idx: number, bonus: SpaceBonus): string {
       let ret = 'board-space-bonus board-space-bonus--';
       if (bonus === SpaceBonus.TITANIUM) {
         ret += 'titanium';

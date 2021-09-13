@@ -3,7 +3,7 @@
         <div class="player-status-bottom">
           <div :class="getLabelAndTimerClasses()">
             <div :class="getActionStatusClasses()">{{ actionLabel }}</div>
-            <div class="player-status-timer" v-if="player.game.gameOptions.showTimers"><player-timer :timer="player.timer"/></div>
+            <div class="player-status-timer" v-if="showTimers"><player-timer :timer="timer"/></div>
           </div>
         </div>
       </div>
@@ -12,40 +12,32 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {ActionLabel} from './ActionLabel';
-import {mainAppSettings} from '../App';
-import {PlayerModel} from '../../models/PlayerModel';
-import PlayerTimer from './PlayerTimer.vue';
-
-export const hidePlayerData = (root: typeof mainAppSettings.methods, playerIndex: number) => {
-  root.setVisibilityState('pinned_player_' + playerIndex, false);
-};
+import {ActionLabel} from '@/components/overview/ActionLabel';
+import PlayerTimer from '@/components/overview/PlayerTimer.vue';
+import {TimerModel} from '@/models/TimerModel';
 
 export default Vue.extend({
   name: 'player-status',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
-    },
-    firstForGen: {
-      type: Boolean,
+    timer: {
+      type: Object as () => TimerModel,
     },
     actionLabel: {
       type: String,
     },
-    playerIndex: {
-      type: Number,
+    showTimers: {
+      type: Boolean,
     },
   },
   components: {
     PlayerTimer,
   },
   methods: {
-    getLabelAndTimerClasses: function(): string {
+    getLabelAndTimerClasses(): string {
       const classes: Array<string> = [];
       const baseClass = 'player-action-status-container';
       classes.push(baseClass);
-      if (!this.player.game.gameOptions.showTimers) {
+      if (!this.showTimers) {
         classes.push('no-timer');
       }
       if (this.actionLabel === ActionLabel.PASSED) {
@@ -55,7 +47,7 @@ export default Vue.extend({
       }
       return classes.join(' ');
     },
-    getActionStatusClasses: function(): string {
+    getActionStatusClasses(): string {
       const classes: Array<string> = ['player-action-status'];
       if (this.actionLabel === ActionLabel.NONE) {
         classes.push('visibility-hidden');

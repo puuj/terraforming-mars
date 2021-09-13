@@ -10,9 +10,9 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {CardType} from '../../cards/CardType';
-import {translateText} from '../../directives/i18n';
-import CardCorporationLogo from './CardCorporationLogo.vue';
+import {CardType} from '@/cards/CardType';
+import {translateText} from '@/directives/i18n';
+import CardCorporationLogo from '@/components/card/CardCorporationLogo.vue';
 
 export default Vue.extend({
   name: 'CardTitle',
@@ -30,13 +30,13 @@ export default Vue.extend({
     CardCorporationLogo,
   },
   methods: {
-    isCorporation: function(): boolean {
+    isCorporation(): boolean {
       return this.type === CardType.CORPORATION;
     },
-    isPrelude: function(): boolean {
+    isPrelude(): boolean {
       return this.type === CardType.PRELUDE;
     },
-    getClasses: function(title: string): string {
+    getClasses(title: string): string {
       const classes: Array<String> = ['card-title'];
 
       if (this.type === CardType.AUTOMATED) {

@@ -114,7 +114,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import Card from './card/Card.vue';
+import Card from '@/components/card/Card.vue';
 import {
   ALL_CARD_MANIFESTS,
   ALL_CORPORATION_CARD_NAMES,
@@ -122,12 +122,12 @@ import {
   ALL_PROJECT_CARD_NAMES,
   ALL_STANDARD_PROJECT_CARD_NAMES,
 } from '../cards/AllCards';
-import {GameModule} from '../GameModule';
-import {ICard} from '../cards/ICard';
-import {ICardRenderDescription, isIDescription} from '../cards/render/ICardRenderDescription';
-import {CardName} from '../CardName';
-import {ICardFactory} from '../cards/ICardFactory';
-import {PreferencesManager} from './PreferencesManager';
+import {GameModule} from '@/GameModule';
+import {ICard} from '@/cards/ICard';
+import {ICardRenderDescription, isIDescription} from '@/cards/render/ICardRenderDescription';
+import {CardName} from '@/CardName';
+import {ICardFactory} from '@/cards/ICardFactory';
+import {PreferencesManager} from '@/components/PreferencesManager';
 
 const cards: Map<CardName, {card: ICard, module: GameModule, cardNumber: string}> = new Map();
 
@@ -146,20 +146,33 @@ ALL_CARD_MANIFESTS.forEach((manifest) => {
   });
 });
 
+const BASE = 'b';
+const CORP = 'c';
+const PRELUDE = 'p';
+const VENUS = 'v';
+const COLONIES = 'o';
+const TURMOIL = 't';
+const COMMUNITY = '*';
+const PROMO = 'r';
+const ARES = 'a';
+const MOON = 'm';
+
+const ALL_MODULES = `${BASE}${CORP}${PRELUDE}${VENUS}${COLONIES}${TURMOIL}${COMMUNITY}${PROMO}${ARES}${MOON}`;
+
 export interface DebugUIModel {
   filterText: string,
-  filterDescription: boolean | unknown[],
-  sortById: boolean | unknown[],
-  base: boolean | unknown[],
-  corporateEra: boolean | unknown[],
-  prelude: boolean | unknown[],
-  venusNext: boolean | unknown[],
-  colonies: boolean | unknown[],
-  turmoil: boolean | unknown[],
-  community: boolean | unknown[],
-  ares: boolean | unknown[],
-  moon: boolean | unknown[],
-  promo: boolean | unknown[],
+  filterDescription: boolean,
+  sortById: boolean,
+  base: boolean,
+  corporateEra: boolean,
+  prelude: boolean,
+  venusNext: boolean,
+  colonies: boolean,
+  turmoil: boolean,
+  community: boolean,
+  ares: boolean,
+  moon: boolean,
+  promo: boolean,
 }
 
 export default Vue.extend({
@@ -167,7 +180,7 @@ export default Vue.extend({
   components: {
     Card,
   },
-  data: function() {
+  data() {
     return {
       filterText: '',
       filterDescription: false,
@@ -190,17 +203,81 @@ export default Vue.extend({
     if (searchString) {
       this.filterText = searchString;
     }
+    const modules = urlParams.get('m') || ALL_MODULES;
+    this.base = modules.includes(BASE);
+    this.corporateEra = modules.includes(CORP);
+    this.prelude = modules.includes(PRELUDE);
+    this.venusNext = modules.includes(VENUS);
+    this.colonies = modules.includes(COLONIES);
+    this.turmoil = modules.includes(TURMOIL);
+    this.community = modules.includes(COMMUNITY);
+    this.promo = modules.includes(PROMO);
+    this.ares = modules.includes(ARES);
+    this.moon = modules.includes(MOON);
   },
   watch: {
-    filterText(newSearchString) {
-      if (window.history.pushState) {
-        const newurl = window.location.protocol + '//' + window.location.host + window.location.pathname + '?search=' + newSearchString;
-        window.history.pushState({path: newurl}, '', newurl);
-      }
+    filterText(newSearchString: string) {
+      this.updateUrl(newSearchString);
+    },
+    base() {
+      this.updateUrl();
+    },
+    corporateEra() {
+      this.updateUrl();
+    },
+    prelude() {
+      this.updateUrl();
+    },
+    venusNext() {
+      this.updateUrl();
+    },
+    colonies() {
+      this.updateUrl();
+    },
+    turmoil() {
+      this.updateUrl();
+    },
+    community() {
+      this.updateUrl();
+    },
+    ares() {
+      this.updateUrl();
+    },
+    moon() {
+      this.updateUrl();
+    },
+    promo() {
+      this.updateUrl();
     },
   },
   methods: {
-    toggleAll: function() {
+    updateUrl(search?: string) {
+      if (window.history.pushState) {
+        let url = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        if (search) {
+          url = url + '?search=' + search;
+        }
+
+        let m = '';
+        if (this.base) m += BASE;
+        if (this.corporateEra) m += CORP;
+        if (this.prelude) m += PRELUDE;
+        if (this.venusNext) m += VENUS;
+        if (this.colonies) m += COLONIES;
+        if (this.turmoil) m += TURMOIL;
+        if (this.community) m += COMMUNITY;
+        if (this.promo) m += PROMO;
+        if (this.ares) m += ARES;
+        if (this.moon) m += MOON;
+        if (m === '') m = '-'; // - means no modules.
+
+        if (m !== ALL_MODULES) {
+          url = url + '?m=' + m;
+        }
+        window.history.pushState({path: url}, '', url);
+      }
+    },
+    toggleAll() {
       const data = this.$data;
       data.base = !data.base;
       data.corporateEra = !data.corporateEra;
@@ -213,7 +290,7 @@ export default Vue.extend({
       data.ares = !data.ares;
       data.moon = !data.moon;
     },
-    sort: function(names: Array<CardName>): Array<CardName> {
+    sort(names: Array<CardName>): Array<CardName> {
       if (this.$data.sortById) {
         return names.sort((a: CardName, b: CardName) => {
           const an = cards.get(a)?.cardNumber || '';
@@ -224,19 +301,19 @@ export default Vue.extend({
         return names.sort();
       }
     },
-    getAllStandardProjectCards: function() {
+    getAllStandardProjectCards() {
       return this.sort(ALL_STANDARD_PROJECT_CARD_NAMES);
     },
-    getAllProjectCards: function() {
+    getAllProjectCards() {
       return this.sort(ALL_PROJECT_CARD_NAMES);
     },
-    getAllCorporationCards: function() {
+    getAllCorporationCards() {
       return this.sort(ALL_CORPORATION_CARD_NAMES);
     },
-    getAllPreludeCards: function() {
+    getAllPreludeCards() {
       return this.sort(ALL_PRELUDE_CARD_NAMES);
     },
-    filtered: function(cardName: CardName): boolean {
+    filtered(cardName: CardName): boolean {
       const card = cards.get(cardName);
       const filterText = this.$data.filterText.toUpperCase();
       if (this.$data.filterText.length > 0) {

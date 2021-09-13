@@ -7,6 +7,7 @@ import {IContext} from './IHandler';
 import {BufferCache} from './BufferCache';
 import {ContentType} from './ContentType';
 import {Handler} from './Handler';
+import {isProduction} from '../utils/server';
 
 type Encoding = 'gzip' | 'br';
 
@@ -17,7 +18,7 @@ export class ServeAsset extends Handler {
   // Public for tests
   public constructor(private cacheAgeSeconds: string | number = process.env.ASSET_CACHE_MAX_AGE || 0,
     // only production caches resources
-    private cacheAssets: boolean = process.env.NODE_ENV === 'production') {
+    private cacheAssets: boolean = isProduction()) {
     super();
     // prime the cache with styles.css and a compressed copy of it styles.css
     const styles = fs.readFileSync('build/styles.css');
@@ -114,13 +115,20 @@ export class ServeAsset extends Handler {
         encoding = 'gzip';
         file += '.gz';
       }
+
+      // Return not-compressed .js files for development mode
+      if (!fs.existsSync(file)) {
+        encoding = undefined;
+        file = `build/${urlPath}`;
+      }
+
       return {file, encoding};
 
     case 'favicon.ico':
       return {file: 'assets/favicon.ico'};
 
     default:
-      if (urlPath.endsWith('.png') || urlPath.endsWith('.jpg')) {
+      if (urlPath.endsWith('.png') || urlPath.endsWith('.jpg') || urlPath.endsWith('.json')) {
         const assetsRoot = path.resolve('./assets');
         const resolvedFile = path.resolve(path.normalize(urlPath));
 

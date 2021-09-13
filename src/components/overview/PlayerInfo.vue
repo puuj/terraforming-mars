@@ -1,14 +1,14 @@
 <script lang="ts">
 import Vue from 'vue';
-import {PlayerModel} from '../../models/PlayerModel';
-import PlayerResources from './PlayerResources.vue';
-import PlayerTags from './PlayerTags.vue';
-import PlayerStatus from './PlayerStatus.vue';
-import {playerColorClass} from '../../utils/utils';
-import {mainAppSettings} from '../App';
-import {range} from '../../utils/utils';
-import {PlayerMixin} from '../PlayerMixin';
-import Button from '../common/Button.vue';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import PlayerResources from '@/components/overview/PlayerResources.vue';
+import PlayerTags from '@/components/overview/PlayerTags.vue';
+import PlayerStatus from '@/components/overview/PlayerStatus.vue';
+import {playerColorClass} from '@/utils/utils';
+import {mainAppSettings} from '@/components/App';
+import {range} from '@/utils/utils';
+import {PlayerMixin} from '@/components/PlayerMixin';
+import Button from '@/components/common/Button.vue';
 
 const isPinned = (root: any, playerIndex: number): boolean => {
   return (root as any).getVisibilityState('pinned_player_' + playerIndex);
@@ -20,10 +20,10 @@ export default Vue.extend({
   name: 'PlayerInfo',
   props: {
     player: {
-      type: Object as () => PlayerModel,
+      type: Object as () => PublicPlayerModel,
     },
-    activePlayer: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
     firstForGen: {
       type: Boolean,
@@ -49,24 +49,21 @@ export default Vue.extend({
   },
   mixins: [PlayerMixin],
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes = ['player-info'];
       classes.push(playerColorClass(this.player.color, 'bg_transparent'));
       return classes.join(' ');
     },
-    getPlayerStatusAndResClasses: function(): string {
+    getPlayerStatusAndResClasses(): string {
       const classes = ['player-status-and-res'];
       return classes.join(' ');
     },
-    getIsActivePlayer: function(): boolean {
-      return this.player.color === this.activePlayer.color;
-    },
-    pinPlayer: function() {
+    pinPlayer() {
       let hiddenPlayersIndexes: Array<Number> = [];
       const playerPinned = isPinned(this.$root, this.playerIndex);
 
       // if player is already pinned, add to hidden players (toggle)
-      hiddenPlayersIndexes = range(this.activePlayer.players.length - 1);
+      hiddenPlayersIndexes = range(this.playerView.players.length - 1);
       if (!playerPinned) {
         showPlayerData(this.$root, this.playerIndex);
         hiddenPlayersIndexes = hiddenPlayersIndexes.filter(
@@ -80,12 +77,12 @@ export default Vue.extend({
         }
       }
     },
-    buttonLabel: function(): string {
+    buttonLabel(): string {
       return isPinned(this.$root, this.playerIndex) ? 'hide' : 'show';
     },
-    togglePlayerDetails: function() {
-      // for active player => scroll to cards UI
-      if (this.player.color === this.activePlayer.color) {
+    togglePlayerDetails() {
+      // for the player viewing this page => scroll to cards UI
+      if (this.player.color === this.playerView.thisPlayer.color) {
         const el: HTMLElement = document.getElementsByClassName(
           'sidebar_icon--cards',
         )[0] as HTMLElement;
@@ -96,10 +93,10 @@ export default Vue.extend({
       // any other player show cards container and hide all other
       this.pinPlayer();
     },
-    getNrPlayedCards: function(): number {
+    getNrPlayedCards(): number {
       return this.player.playedCards.length;
     },
-    getAvailableBlueActionCount: function(): number {
+    getAvailableBlueActionCount(): number {
       return this.player.availableBlueCardActionCount;
     },
   },
@@ -112,10 +109,10 @@ export default Vue.extend({
         <div class="player-status">
           <div class="player-info-details">
             <div class="player-info-name">{{ player.name }}</div>
-            <div class="icon-first-player" v-if="firstForGen && activePlayer.players.length > 1">1st</div>
+            <div class="icon-first-player" v-if="firstForGen && playerView.players.length > 1">1st</div>
             <div class="player-info-corp" v-if="player.corporationCard !== undefined" :title="player.corporationCard.name">{{ player.corporationCard.name }}</div>
           </div>
-          <player-status :player="player" :firstForGen="firstForGen" v-trim-whitespace :actionLabel="actionLabel" :playerIndex="playerIndex"/>
+          <player-status :timer="player.timer" :showTimers="playerView.game.gameOptions.showTimers" :firstForGen="firstForGen" v-trim-whitespace :actionLabel="actionLabel" />
         </div>
           <PlayerResources :player="player" v-trim-whitespace />
           <div class="player-played-cards">
@@ -131,7 +128,7 @@ export default Vue.extend({
                 </div>
               </div>
             </div>
-            <Button class="played-cards-button" size="tiny" :onClick="togglePlayerDetails" :title="buttonLabel()" />
+            <Button class="played-cards-button" size="tiny" @click="togglePlayerDetails" :title="buttonLabel()" />
           </div>
           <div class="tag-display player-board-blue-action-counter tooltip tooltip-top" data-tooltip="The number of available actions on active cards">
             <div class="tag-count tag-action-card">
@@ -141,6 +138,6 @@ export default Vue.extend({
             <span class="tag-count-display">{{ getAvailableBlueActionCount() }}</span>
           </div>
         </div>
-        <PlayerTags :player="player" v-trim-whitespace :isActivePlayer="getIsActivePlayer()" :hideZeroTags="hideZeroTags" />
+        <PlayerTags :player="player" :playerView="playerView" :hideZeroTags="hideZeroTags" />
       </div>
 </template>

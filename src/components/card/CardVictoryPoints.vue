@@ -10,8 +10,8 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {CardRenderDynamicVictoryPoints} from '../../cards/render/CardRenderDynamicVictoryPoints';
-import CardRenderItemComponent from './CardRenderItemComponent.vue';
+import {CardRenderDynamicVictoryPoints} from '@/cards/render/CardRenderDynamicVictoryPoints';
+import CardRenderItemComponent from '@/components/card/CardRenderItemComponent.vue';
 
 export default Vue.extend({
   name: 'CardVictoryPoints',
@@ -25,7 +25,7 @@ export default Vue.extend({
     CardRenderItemComponent,
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes: string[] = ['card-points'];
       if (this.isObject(this.victoryPoints)) {
         const item = this.victoryPoints;
@@ -40,7 +40,7 @@ export default Vue.extend({
       }
       return classes.join(' ');
     },
-    isObject: function(item: any): item is CardRenderDynamicVictoryPoints {
+    isObject(item: any): item is CardRenderDynamicVictoryPoints {
       return item instanceof CardRenderDynamicVictoryPoints;
     },
   },

@@ -7,24 +7,24 @@
       <span v-if="player === 'NEUTRAL'" >Neutral</span>
       <select-player-row v-else :player="players.find((otherPlayer) => otherPlayer.color === player)"></select-player-row>
     </label>
-    <Button v-if="showsave === true" size="big" :onClick="saveData" :title="$t(playerinput.buttonLabel)" />
+    <Button v-if="showsave === true" size="big" @click="saveData" :title="$t(playerinput.buttonLabel)" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import Button from '../components/common/Button.vue';
-import {ColorWithNeutral} from '../Color';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {PlayerModel} from '../models/PlayerModel';
-import SelectPlayerRow from './SelectPlayerRow.vue';
-import {TranslateMixin} from './TranslateMixin';
+import Button from '@/components/common/Button.vue';
+import {ColorWithNeutral} from '@/Color';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {PublicPlayerModel} from '@/models/PlayerModel';
+import SelectPlayerRow from '@/components/SelectPlayerRow.vue';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 export default Vue.extend({
   name: 'SelectPartyPlayer',
   props: {
     players: {
-      type: Array as () => Array<PlayerModel>,
+      type: Array as () => Array<PublicPlayerModel>,
     },
     playerinput: {
       type: Object as () => PlayerInputModel,
@@ -39,7 +39,7 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {
       selectedPlayer: undefined as ColorWithNeutral | undefined,
     };
@@ -50,7 +50,7 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    saveData: function() {
+    saveData() {
       const result: string[][] = [];
       result.push([]);
       if (this.selectedPlayer !== undefined) {

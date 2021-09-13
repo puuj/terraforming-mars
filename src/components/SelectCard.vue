@@ -11,8 +11,8 @@
         </label>
         <div v-if="hasCardWarning()" class="card-warning">{{ $t(warning) }}</div>
         <div v-if="showsave === true" class="nofloat">
-            <Button :disabled="isOptionalToManyCards() && cardsSelected() === 0" type="submit" :onClick="saveData" :title="buttonLabel()" />
-            <Button :disabled="isOptionalToManyCards() && cardsSelected() > 0" v-if="isOptionalToManyCards()" :onClick="saveData" type="submit" :title="$t('Skip this action')" />
+            <Button :disabled="isOptionalToManyCards() && cardsSelected() === 0" type="submit" @click="saveData" :title="buttonLabel()" />
+            <Button :disabled="isOptionalToManyCards() && cardsSelected() > 0" v-if="isOptionalToManyCards()" @click="saveData" type="submit" :title="$t('Skip this action')" />
         </div>
     </div>
 </template>
@@ -20,17 +20,17 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import Button from '../components/common/Button.vue';
-import {Message} from '../Message';
-import {CardOrderStorage} from './CardOrderStorage';
-import {BasePlayerModel, PlayerModel} from '../models/PlayerModel';
-import {VueModelCheckbox, VueModelRadio} from './VueTypes';
-import Card from './card/Card.vue';
-import {CardModel} from '../models/CardModel';
-import {CardName} from '../CardName';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import {sortActiveCards} from '../components/ActiveCardsSortingOrder';
-import {TranslateMixin} from './TranslateMixin';
+import Button from '@/components/common/Button.vue';
+import {Message} from '@/Message';
+import {CardOrderStorage} from '@/components/CardOrderStorage';
+import {BasePlayerModel, PlayerViewModel} from '@/models/PlayerModel';
+import {VueModelCheckbox, VueModelRadio} from '@/components/VueTypes';
+import Card from '@/components/card/Card.vue';
+import {CardModel} from '@/models/CardModel';
+import {CardName} from '@/CardName';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {sortActiveCards} from '@/components/ActiveCardsSortingOrder';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 interface SelectCardModel {
   cards: VueModelRadio<CardModel> | VueModelCheckbox<Array<CardModel>>;
@@ -40,8 +40,8 @@ interface SelectCardModel {
 export default Vue.extend({
   name: 'SelectCard',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
     playerinput: {
       type: Object as () => PlayerInputModel,
@@ -58,7 +58,7 @@ export default Vue.extend({
       type: Boolean,
     },
   },
-  data: function() {
+  data() {
     return {
       cards: [],
       warning: undefined,
@@ -69,13 +69,13 @@ export default Vue.extend({
     Button,
   },
   watch: {
-    cards: function() {
+    cards() {
       this.$emit('cardschanged', this.getData());
     },
   },
   methods: {
     ...TranslateMixin.methods,
-    cardsSelected: function(): number {
+    cardsSelected(): number {
       if (Array.isArray(this.cards)) {
         return this.cards.length;
       } else if (this.cards === false || this.cards === undefined) {
@@ -83,7 +83,7 @@ export default Vue.extend({
       }
       return 1;
     },
-    getOrderedCards: function() {
+    getOrderedCards() {
       if (this.playerinput.cards === undefined) {
         return [];
       }
@@ -91,12 +91,12 @@ export default Vue.extend({
         return sortActiveCards(this.playerinput.cards);
       } else {
         return CardOrderStorage.getOrdered(
-          CardOrderStorage.getCardOrder(this.player.id),
+          CardOrderStorage.getCardOrder(this.playerView.id),
           this.playerinput.cards,
         );
       }
     },
-    hasCardWarning: function() {
+    hasCardWarning() {
       if (Array.isArray(this.cards)) {
         return false;
       } else if (typeof this.cards === 'object' && this.cards.warning !== undefined) {
@@ -105,35 +105,35 @@ export default Vue.extend({
       }
       return false;
     },
-    isOptionalToManyCards: function(): boolean {
+    isOptionalToManyCards(): boolean {
       return this.playerinput.maxCardsToSelect !== undefined &&
              this.playerinput.maxCardsToSelect > 1 &&
              this.playerinput.minCardsToSelect === 0;
     },
-    getData: function(): Array<CardName> {
+    getData(): Array<CardName> {
       return Array.isArray(this.$data.cards) ? this.$data.cards.map((card) => card.name) : [this.$data.cards.name];
     },
-    saveData: function() {
+    saveData() {
       this.onsave([this.getData()]);
     },
-    getCardBoxClass: function(card: CardModel): string {
+    getCardBoxClass(card: CardModel): string {
       if (this.playerinput.showOwner && this.getOwner(card) !== undefined) {
         return 'cardbox cardbox-with-owner-label';
       }
       return 'cardbox';
     },
-    getOwner: function(card: CardModel): BasePlayerModel | undefined {
-      for (const player of this.player.players) {
+    getOwner(card: CardModel): BasePlayerModel | undefined {
+      for (const player of this.playerView.players) {
         if (player.playedCards.find((c) => c.name === card.name)) {
           return {name: player.name, color: player.color};
         }
       }
       return undefined;
     },
-    isSelectOnlyOneCard: function() : boolean {
+    isSelectOnlyOneCard() : boolean {
       return this.playerinput.maxCardsToSelect === 1 && this.playerinput.minCardsToSelect === 1;
     },
-    buttonLabel: function(): string {
+    buttonLabel(): string {
       return this.isSelectOnlyOneCard() ? this.playerinput.buttonLabel : this.playerinput.buttonLabel + ' ' + this.cardsSelected();
     },
   },

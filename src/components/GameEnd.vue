@@ -3,7 +3,7 @@
             <h1>{{ constants.APP_NAME }} - Game finished!</h1>
             <div class="game_end">
                 <div v-if="isSoloGame()">
-                    <div v-if="player.game.isSoloModeWin">
+                    <div v-if="playerView.game.isSoloModeWin">
                         <div class="game_end_success">
                             <h2 v-i18n>You win!</h2>
                             <div class="game_end_solo_img">
@@ -15,7 +15,7 @@
                             <ul class="game_end_list">
                                 <li v-i18n>Try to win with expansions enabled</li>
                                 <li v-i18n>Try to win before the last generation comes</li>
-                                <li><span v-i18n>Can you get</span> {{ player.victoryPointsBreakdown.total + 10 }}<span v-i18n>+ Victory Points?</span></li>
+                                <li><span v-i18n>Can you get</span> {{ playerView.thisPlayer.victoryPointsBreakdown.total + 10 }}<span v-i18n>+ Victory Points?</span></li>
                             </ul>
                         </div>
                     </div>
@@ -41,11 +41,11 @@
                         Go to main page
                     </a>
                 </div>
-                <div v-if="!isSoloGame() || player.game.isSoloModeWin" class="game-end-winer-announcement">
+                <div v-if="!isSoloGame() || game.isSoloModeWin" class="game-end-winer-announcement">
                     <span v-for="p in getWinners()" :key="p.color"><span :class="'log-player ' + getEndGamePlayerRowColorClass(p.color)">{{ p.name }}</span></span> won!
                 </div>
                 <div class="game_end_victory_points">
-                    <h2 v-i18n>Victory points breakdown after<span> {{player.game.generation}} </span>generations</h2>
+                    <h2 v-i18n>Victory points breakdown after<span> {{game.generation}} </span>generations</h2>
                     <table class="table game_end_table">
                         <thead>
                             <tr v-i18n>
@@ -55,13 +55,13 @@
                                 <th><div class="m-and-a" title="Awards points">A</div></th>
                                 <th><div class="table-forest-tile"></div></th>
                                 <th><div class="table-city-tile"></div></th>
-                                <th v-if="player.game.moon !== undefined"><div class="table-moon-road-tile"></div></th>
-                                <th v-if="player.game.moon !== undefined"><div class="table-moon-colony-tile"></div></th>
-                                <th v-if="player.game.moon !== undefined"><div class="table-moon-mine-tile"></div></th>
+                                <th v-if="game.moon !== undefined"><div class="table-moon-road-tile"></div></th>
+                                <th v-if="game.moon !== undefined"><div class="table-moon-colony-tile"></div></th>
+                                <th v-if="game.moon !== undefined"><div class="table-moon-mine-tile"></div></th>
                                 <th><div class="vp">VP</div></th>
                                 <th class="game-end-total"><div class="game-end-total-column">Total</div></th>
                                 <th><div class="mc-icon"></div></th>
-                                <th v-if="player.game.gameOptions.showTimers" class="clock-icon">&#x1F551;</th>
+                                <th v-if="game.gameOptions.showTimers" class="clock-icon">&#x1F551;</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,16 +75,16 @@
                                 <td>{{ p.victoryPointsBreakdown.awards }}</td>
                                 <td>{{ p.victoryPointsBreakdown.greenery }}</td>
                                 <td>{{ p.victoryPointsBreakdown.city }}</td>
-                                <td v-if="player.game.moon !== undefined">{{ p.victoryPointsBreakdown.moonRoads }}</td>
-                                <td v-if="player.game.moon !== undefined">{{ p.victoryPointsBreakdown.moonColonies }}</td>
-                                <td v-if="player.game.moon !== undefined">{{ p.victoryPointsBreakdown.moonMines }}</td>
+                                <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonRoads }}</td>
+                                <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonColonies }}</td>
+                                <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonMines }}</td>
                                 <td>{{ p.victoryPointsBreakdown.victoryPoints }}</td>
                                 <td class="game-end-total">{{ p.victoryPointsBreakdown.total }}</td>
                                 <td class="game-end-mc">
                                   <div>{{ p.megaCredits }}</div>
                                 </td>
                                 <td>
-                                  <div v-if="player.game.gameOptions.showTimers" class="game-end-timer">{{ getTimer(p) }}</div>
+                                  <div v-if="game.gameOptions.showTimers" class="game-end-timer">{{ getTimer(p) }}</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -125,18 +125,18 @@
                 <div class="game_end_block--board game-end-column">
                     <h2 v-i18n>Final situation on the board</h2>
                     <board
-                        :spaces="player.game.spaces"
-                        :venusNextExtension="player.game.gameOptions.venusNextExtension"
-                        :venusScaleLevel="player.game.venusScaleLevel"
-                        :aresExtension="player.game.gameOptions.aresExtension"
-                        :boardName ="player.game.gameOptions.boardName"
-                        :oceans_count="player.game.oceans"
-                        :oxygen_level="player.game.oxygenLevel"
-                        :temperature="player.game.temperature"></board>
-                  <MoonBoard v-if="player.game.gameOptions.moonExpansion" :model="player.game.moon"></MoonBoard>
+                        :spaces="game.spaces"
+                        :venusNextExtension="game.gameOptions.venusNextExtension"
+                        :venusScaleLevel="game.venusScaleLevel"
+                        :aresExtension="game.gameOptions.aresExtension"
+                        :boardName ="game.gameOptions.boardName"
+                        :oceans_count="game.oceans"
+                        :oxygen_level="game.oxygenLevel"
+                        :temperature="game.temperature"></board>
+                  <MoonBoard v-if="game.gameOptions.moonExpansion" :model="game.moon"></MoonBoard>
                 </div>
                 <div class="game_end_block--log game-end-column">
-                  <log-panel :color="player.color" :generation="player.game.generation" :id="player.id" :lastSoloGeneration="player.game.lastSoloGeneration" :players="player.players"></log-panel>
+                  <log-panel :color="playerView.thisPlayer.color" :generation="game.generation" :id="playerView.id" :lastSoloGeneration="game.lastSoloGeneration" :players="playerView.players"></log-panel>
                 </div>
               </div>
             </div>
@@ -146,24 +146,30 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {PlayerModel, PublicPlayerModel} from '../models/PlayerModel';
-import Board from './Board.vue';
-import MoonBoard from './moon/MoonBoard.vue';
-import LogPanel from './LogPanel.vue';
-import Button from '../components/common/Button.vue';
-import {playerColorClass} from '../utils/utils';
-import {Timer} from '../Timer';
+import {GameModel} from '@/models/GameModel';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import Board from '@/components/Board.vue';
+import MoonBoard from '@/components/moon/MoonBoard.vue';
+import LogPanel from '@/components/LogPanel.vue';
+import Button from '@/components/common/Button.vue';
+import {playerColorClass} from '@/utils/utils';
+import {Timer} from '@/Timer';
 
-import * as constants from '../constants';
+import * as constants from '@/constants';
 
 export default Vue.extend({
   name: 'game-end',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
   },
-  data: function() {
+  computed: {
+    game(): GameModel {
+      return this.playerView.game;
+    },
+  },
+  data() {
     return {
       constants,
     };
@@ -175,23 +181,23 @@ export default Vue.extend({
     MoonBoard,
   },
   methods: {
-    getEndGamePlayerRowColorClass: function(color: string): string {
+    getEndGamePlayerRowColorClass(color: string): string {
       return playerColorClass(color.toLowerCase(), 'bg_transparent');
     },
-    getTimer: function(p: PublicPlayerModel): string {
+    getTimer(p: PublicPlayerModel): string {
       return Timer.toString(p.timer);
     },
-    getSortedPlayers: function() {
-      this.player.players.sort(function(a:PublicPlayerModel, b:PublicPlayerModel) {
+    getSortedPlayers() {
+      this.playerView.players.sort(function(a:PublicPlayerModel, b:PublicPlayerModel) {
         if (a.victoryPointsBreakdown.total < b.victoryPointsBreakdown.total) return -1;
         if (a.victoryPointsBreakdown.total > b.victoryPointsBreakdown.total) return 1;
         if (a.megaCredits < b.megaCredits) return -1;
         if (a.megaCredits > b.megaCredits) return 1;
         return 0;
       });
-      return this.player.players.reverse();
+      return this.playerView.players.reverse();
     },
-    getWinners: function() {
+    getWinners() {
       const sortedPlayers = this.getSortedPlayers();
       const firstWinner = sortedPlayers[0];
       const winners: PublicPlayerModel[] = [firstWinner];
@@ -203,8 +209,8 @@ export default Vue.extend({
       }
       return winners;
     },
-    isSoloGame: function(): boolean {
-      return this.player.players.length === 1;
+    isSoloGame(): boolean {
+      return this.playerView.players.length === 1;
     },
   },
 });

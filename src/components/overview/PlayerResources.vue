@@ -11,25 +11,25 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {CardName} from '../../CardName';
-import {PlayerModel} from '../../models/PlayerModel';
-import PlayerResource from './PlayerResource.vue';
-import {Resources} from '../../Resources';
+import {CardName} from '@/CardName';
+import {PublicPlayerModel} from '@/models/PlayerModel';
+import PlayerResource from '@/components/overview/PlayerResource.vue';
+import {Resources} from '@/Resources';
 
 export default Vue.extend({
   name: 'PlayerResources',
   props: {
     player: {
-      type: Object as () => PlayerModel,
+      type: Object as () => PublicPlayerModel,
     },
   },
-  data: function() {
+  data() {
     return {
       resources: Resources,
     };
   },
   methods: {
-    canUseHeatAsMegaCredits: function(): boolean {
+    canUseHeatAsMegaCredits(): boolean {
       return this.player.corporationCard?.name === CardName.HELION;
     },
   },

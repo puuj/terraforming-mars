@@ -13,10 +13,10 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import CardRenderItemComponent from './CardRenderItemComponent.vue';
-import CardRenderSymbolComponent from './CardRenderSymbolComponent.vue';
-import {CardRenderSymbol} from '../../cards/render/CardRenderSymbol';
-import {CardRenderItem} from '../../cards/render/CardRenderItem';
+import CardRenderItemComponent from '@/components/card/CardRenderItemComponent.vue';
+import CardRenderSymbolComponent from '@/components/card/CardRenderSymbolComponent.vue';
+import {CardRenderSymbol} from '@/cards/render/CardRenderSymbol';
+import {CardRenderItem} from '@/cards/render/CardRenderItem';
 
 export default Vue.extend({
   name: 'CardProductionBoxComponent',
@@ -31,11 +31,11 @@ export default Vue.extend({
     CardRenderSymbolComponent,
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes: Array<string> = ['card-production-box'];
       return classes.join(' ');
     },
-    getComponentType: function(rowItem: CardRenderSymbol | CardRenderItem): string {
+    getComponentType(rowItem: CardRenderSymbol | CardRenderItem): string {
       if (rowItem instanceof CardRenderSymbol) {
         return 'symbol';
       } else if (rowItem instanceof CardRenderItem) {

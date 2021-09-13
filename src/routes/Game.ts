@@ -5,7 +5,7 @@ import {Database} from '../database/Database';
 import {BoardName} from '../boards/BoardName';
 import {Cloner} from '../database/Cloner';
 import {GameLoader} from '../database/GameLoader';
-import {Game} from '../Game';
+import {Game, GameOptions} from '../Game';
 import {Player} from '../Player';
 import {Server} from '../models/ServerModel';
 import {ServeAsset} from './ServeAsset';
@@ -72,7 +72,7 @@ export class GameHandler extends Handler {
           gameReq.board = boards[Math.floor(Math.random() * boards.length)];
         }
 
-        const gameOptions = {
+        const gameOptions: GameOptions = {
           boardName: gameReq.board,
           clonedGamedId: gameReq.clonedGamedId,
 
@@ -108,6 +108,7 @@ export class GameHandler extends Handler {
           customColoniesList: gameReq.customColoniesList,
           requiresVenusTrackCompletion: gameReq.requiresVenusTrackCompletion,
           requiresMoonTrackCompletion: gameReq.requiresMoonTrackCompletion,
+          moonStandardProjectVariant: gameReq.moonStandardProjectVariant,
         };
 
         if (gameOptions.clonedGamedId !== undefined && !gameOptions.clonedGamedId.startsWith('#')) {
@@ -120,14 +121,14 @@ export class GameHandler extends Handler {
                 throw new Error(`game ${gameOptions.clonedGamedId} not cloned`); // how to nest errs in the way Java nests exceptions?
               }
               GameLoader.getInstance().add(game);
-              ctx.route.writeJson(res, Server.getGameModel(game));
+              ctx.route.writeJson(res, Server.getSimpleGameModel(game));
             });
           });
         } else {
           const seed = Math.random();
           const game = Game.newInstance(gameId, players, players[firstPlayerIdx], gameOptions, seed, spectatorId);
           GameLoader.getInstance().add(game);
-          ctx.route.writeJson(res, Server.getGameModel(game));
+          ctx.route.writeJson(res, Server.getSimpleGameModel(game));
         }
       } catch (error) {
         ctx.route.internalServerError(req, res, error);

@@ -5,7 +5,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {PreferencesManager} from '../PreferencesManager';
+import {PreferencesManager} from '@/components/PreferencesManager';
 
 export default Vue.extend({
   name: 'CardNumber',
@@ -16,7 +16,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    showCardNumber: function(): boolean {
+    showCardNumber(): boolean {
       return PreferencesManager.load('show_card_number') === '1';
     },
   },

@@ -8,18 +8,18 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {Shared} from './Shared';
+import {Shared} from '@/components/overview/Shared';
 
 export default Vue.extend({
   name: 'OverviewSettings',
   methods: {
-    toggleTagsView: function() {
+    toggleTagsView() {
       (this.$root as any).setVisibilityState(
         'tags_concise',
         !(this.$root as any).getVisibilityState('tags_concise'),
       );
     },
-    getTagToggleLabel: function(): string {
+    getTagToggleLabel(): string {
       return Shared.isTagsViewConcise(this.$root) ? 'full' : 'concise';
     },
   },

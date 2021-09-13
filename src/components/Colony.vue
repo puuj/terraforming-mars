@@ -499,8 +499,8 @@
 
 import Vue from 'vue';
 
-import {ColonyModel} from '../models/ColonyModel';
-import {ColonyName} from '../colonies/ColonyName';
+import {ColonyModel} from '@/models/ColonyModel';
+import {ColonyName} from '@/colonies/ColonyName';
 
 export default Vue.extend({
   name: 'colony',
@@ -509,7 +509,7 @@ export default Vue.extend({
       type: Object as () => ColonyModel,
     },
   },
-  data: function() {
+  data() {
     return {
       PLUTO: ColonyName.PLUTO,
       GANYMEDE: ColonyName.GANYMEDE,

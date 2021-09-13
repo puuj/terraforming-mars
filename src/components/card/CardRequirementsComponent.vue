@@ -12,7 +12,7 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {CardRequirements} from '../../cards/CardRequirements';
+import {CardRequirements} from '@/cards/CardRequirements';
 
 export default Vue.extend({
   name: 'CardRequirementsComponent',
@@ -23,7 +23,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       const classes: Array<string> = ['card-requirements'];
       if (this.requirements.hasMax()) {
         classes.push('card-requirements-max');

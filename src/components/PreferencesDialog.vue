@@ -1,33 +1,33 @@
 <script lang="ts">
 import Vue from 'vue';
-import {preferences, PreferencesManager} from './PreferencesManager';
-import {LANGUAGES} from '../constants';
-import {TranslateMixin} from './TranslateMixin';
+import {preferences, PreferencesManager} from '@/components/PreferencesManager';
+import {LANGUAGES} from '@/constants';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 export default Vue.extend({
   name: 'PreferencesDialog',
-  data: function() {
+  data() {
     return {
-      'hide_hand': false as boolean | unknown[],
-      'hide_awards_and_milestones': false as boolean | unknown[],
-      'hide_top_bar': false as boolean | unknown[],
-      'small_cards': false as boolean | unknown[],
-      'remove_background': false as boolean | unknown[],
-      'magnify_cards': true as boolean | unknown[],
-      'show_alerts': true as boolean | unknown[],
+      'hide_hand': false,
+      'hide_awards_and_milestones': false,
+      'hide_top_bar': false,
+      'small_cards': false,
+      'remove_background': false,
+      'magnify_cards': true,
+      'show_alerts': true,
       'lang': 'en',
       'langs': LANGUAGES,
-      'enable_sounds': false as boolean | unknown[],
-      'hide_tile_confirmation': false as boolean | unknown[],
-      'show_card_number': false as boolean | unknown[],
-      'hide_discount_on_cards': false as boolean | unknown[],
-      'learner_mode': true as boolean | unknown[],
-      'hide_animated_sidebar': false as boolean | unknown[],
+      'enable_sounds': false,
+      'hide_tile_confirmation': false,
+      'show_card_number': false,
+      'hide_discount_on_cards': false,
+      'learner_mode': true,
+      'hide_animated_sidebar': false,
     };
   },
   methods: {
     ...TranslateMixin.methods,
-    setPreferencesCSS: function(
+    setPreferencesCSS(
       val: boolean | undefined,
       cssClassSuffix: string,
     ): void {
@@ -43,7 +43,7 @@ export default Vue.extend({
         target.classList.add('language-' + this.lang);
       }
     },
-    updatePreferencesFromStorage: function(): Map<
+    updatePreferencesFromStorage(): Map<
             string,
             boolean | string
             > {
@@ -61,7 +61,7 @@ export default Vue.extend({
       }
       return PreferencesManager.preferencesValues;
     },
-    updatePreferences: function(_evt: any): void {
+    updatePreferences(_evt: any): void {
       let strVal: string = '';
       for (const k of preferences) {
         const val = PreferencesManager.preferencesValues.get(k);
@@ -77,17 +77,17 @@ export default Vue.extend({
         }
       }
     },
-    syncPreferences: function(): void {
+    syncPreferences(): void {
       for (const k of preferences) {
         this.$data[k] = PreferencesManager.preferencesValues.get(k);
         this.setPreferencesCSS(this.$data[k], k);
       }
     },
-    okClicked: function(): void {
+    okClicked(): void {
       this.$emit('okButtonClicked');
     },
   },
-  mounted: function() {
+  mounted() {
     this.updatePreferencesFromStorage();
   },
 });

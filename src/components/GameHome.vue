@@ -7,8 +7,15 @@
             <span class="turn-order">{{getTurnOrder(index)}}</span>
             <span :class="'color-square ' + getPlayerCubeColorClass(player.color)"></span>
             <span class="player-name"><a :href="getHref(player.id)">{{player.name}}</a></span>
-            <Button title="copy" size="tiny" :onClick="_=>copyUrl(player.id)"/>
+            <Button title="copy" size="tiny" @click="copyUrl(player.id)"/>
             <span v-if="isPlayerUrlCopied(player.id)" class="copied-notice">Playable link for {{player.name}} copied to clipboard <span class="dismissed" @click="setCopiedIdToDefault" >dismiss</span></span>
+          </li>
+          <li v-if="game.spectatorId">
+            <p/>
+            <span class="turn-order"></span>
+            <span class="color-square"></span>
+            <span class="player-name"><a :href="getHref(game.spectatorId)">Spectator</a></span> <b>!! Preview Mode Only !!</b>&nbsp;
+            <Button title="copy" size="tiny" @click="copyUrl(game.spectatorId || 'unreachable')"/>
           </li>
         </ul>
 
@@ -23,10 +30,12 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {SimpleGameModel} from '../models/SimpleGameModel';
-import Button from '../components/common/Button.vue';
-import {playerColorClass} from '../utils/utils';
-import GameSetupDetail from '../components/GameSetupDetail.vue';
+import {SimpleGameModel} from '@/models/SimpleGameModel';
+import Button from '@/components/common/Button.vue';
+import {playerColorClass} from '@/utils/utils';
+import GameSetupDetail from '@/components/GameSetupDetail.vue';
+import {SpectatorId} from '@/Game';
+import {PlayerId} from '@/Player';
 
 // taken from https://stackoverflow.com/a/46215202/83336
 // The solution to copying to the clipboard in this case is
@@ -49,24 +58,24 @@ export default Vue.extend({
   name: 'game-home',
   props: {
     game: {
-      type: Object as () => SimpleGameModel | undefined,
+      type: Object as () => SimpleGameModel,
     },
   },
   components: {
     Button,
     'game-setup-detail': GameSetupDetail,
   },
-  data: function() {
+  data() {
     return {
       // Variable to keep the state for the current copied player id. Used to display message of which button and which player playable link is currently in the clipboard
       urlCopiedPlayerId: DEFAULT_COPIED_PLAYER_ID as string,
     };
   },
   methods: {
-    getGameId: function(): string {
+    getGameId(): string {
       return this.game !== undefined ? this.game.id.toString() : 'n/a';
     },
-    getTurnOrder: function(index: number): string {
+    getTurnOrder(index: number): string {
       if (index === 0) {
         return '1st';
       } else if (index === 1) {
@@ -79,20 +88,23 @@ export default Vue.extend({
         return 'n/a';
       }
     },
-    setCopiedIdToDefault: function() {
+    setCopiedIdToDefault() {
       this.urlCopiedPlayerId = DEFAULT_COPIED_PLAYER_ID;
     },
-    getPlayerCubeColorClass: function(color: string): string {
+    getPlayerCubeColorClass(color: string): string {
       return playerColorClass(color.toLowerCase(), 'bg');
     },
-    getHref: function(playerId: string): string {
+    getHref(playerId: PlayerId | SpectatorId): string {
+      if (playerId === this.game.spectatorId) {
+        return `/spectator?id=${playerId}`;
+      }
       return `/player?id=${playerId}`;
     },
-    copyUrl: function(playerId: string): void {
+    copyUrl(playerId: PlayerId | SpectatorId): void {
       copyToClipboard(window.location.origin + this.getHref(playerId));
       this.urlCopiedPlayerId = playerId;
     },
-    isPlayerUrlCopied: function(playerId: string): boolean {
+    isPlayerUrlCopied(playerId: string): boolean {
       return playerId === this.urlCopiedPlayerId;
     },
   },

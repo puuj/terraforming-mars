@@ -4,13 +4,13 @@
     <player-input-factory v-for="(option, idx) in (playerinput.options || [])"
       :key="idx"
       :players="players"
-      :player="player"
+      :playerView="playerView"
       :playerinput="option"
       :onsave="playerFactorySaved(idx)"
       :showsave="false"
       :showtitle="true" />
     <div v-if="showsave" class="wf-action">
-      <Button :title="playerinput.buttonLabel" type="submit" size="normal" :onClick="saveData" />
+      <Button :title="playerinput.buttonLabel" type="submit" size="normal" @click="saveData" :disabled="!canSave()"/>
     </div>
   </div>
 </template>
@@ -18,19 +18,19 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {PlayerModel} from '../models/PlayerModel';
-import {PlayerInputModel} from '../models/PlayerInputModel';
-import Button from '../components/common/Button.vue';
-import {TranslateMixin} from '../components/TranslateMixin';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import Button from '@/components/common/Button.vue';
+import {TranslateMixin} from '@/components/TranslateMixin';
 
 export default Vue.extend({
   name: 'and-options',
   props: {
-    player: {
-      type: Object as () => PlayerModel,
+    playerView: {
+      type: Object as () => PlayerViewModel,
     },
     players: {
-      type: Array as () => Array<PlayerModel>,
+      type: Array as () => Array<PublicPlayerModel>,
     },
     playerinput: {
       type: Object as () => PlayerInputModel,
@@ -48,7 +48,7 @@ export default Vue.extend({
   components: {
     Button,
   },
-  data: function() {
+  data() {
     if (this.playerinput.options === undefined) {
       throw new Error('options must be defined');
     }
@@ -58,12 +58,27 @@ export default Vue.extend({
   },
   methods: {
     ...TranslateMixin.methods,
-    playerFactorySaved: function(idx: number) {
+    playerFactorySaved(idx: number) {
       return (out: Array<Array<string>>) => {
         this.$data.responded[idx] = out[0];
       };
     },
-    saveData: function() {
+    canSave(): boolean {
+      for (const child of this.$children) {
+        const canSave = (child as any).canSave;
+        if (canSave instanceof Function) {
+          if (canSave() === false) {
+            return false;
+          }
+        }
+      }
+      return true;
+    },
+    saveData() {
+      if (this.canSave() === false) {
+        alert('Not all options selected');
+        return;
+      }
       for (const child of this.$children) {
         if ((child as any).saveData instanceof Function) {
           (child as any).saveData();

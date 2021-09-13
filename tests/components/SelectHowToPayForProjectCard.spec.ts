@@ -1,12 +1,12 @@
 import {createLocalVue, mount} from '@vue/test-utils';
 
 import {expect} from 'chai';
-import {CardName} from '../../src/CardName';
-import {CardType} from '../../src/cards/CardType';
-import SelectHowToPayForProjectCard from '../../src/components/SelectHowToPayForProjectCard.vue';
-import {PlayerInputModel} from '../../src/models/PlayerInputModel';
-import {PlayerModel} from '../../src/models/PlayerModel';
-import {Units} from '../../src/Units';
+import {CardName} from '@/CardName';
+import {CardType} from '@/cards/CardType';
+import SelectHowToPayForProjectCard from '@/components/SelectHowToPayForProjectCard.vue';
+import {PlayerInputModel} from '@/models/PlayerInputModel';
+import {PlayerViewModel, PublicPlayerModel} from '@/models/PlayerModel';
+import {Units} from '@/Units';
 import {FakeLocalStorage} from './FakeLocalStorage';
 import {PaymentTester} from './PaymentTester';
 
@@ -36,7 +36,7 @@ describe('SelectHowToPayForProjectCard', () => {
     const sortable = mount(SelectHowToPayForProjectCard, {
       localVue: getLocalVue(),
       propsData: {
-        player: {
+        playerView: {
           cardsInHand: [{
             calculatedCost: 4,
             name: CardName.ANTS,
@@ -320,16 +320,19 @@ describe('SelectHowToPayForProjectCard', () => {
   const setupCardForPurchase = function(
     cardName: CardName,
     cardCost: number,
-    playerFields: Partial<PlayerModel>,
+    playerFields: Partial<PublicPlayerModel>,
     playerInputFields: Partial<PlayerInputModel>,
     reserveUnits: Units = Units.EMPTY) {
-    const player: Partial<PlayerModel> = Object.assign({
+    const thisPlayer: Partial<PublicPlayerModel> = Object.assign({
       cards: [{name: cardName, calculatedCost: cardCost}],
-      id: 'foo',
       steel: 0,
       titanium: 0,
     }, playerFields);
 
+    const playerView: Partial<PlayerViewModel>= {
+      id: 'foo',
+      thisPlayer: thisPlayer as PublicPlayerModel,
+    };
     const playerInput: Partial<PlayerInputModel> = {
       title: 'foo',
       cards: [{
@@ -347,7 +350,7 @@ describe('SelectHowToPayForProjectCard', () => {
     return mount(SelectHowToPayForProjectCard, {
       localVue: getLocalVue(),
       propsData: {
-        player: player,
+        playerView: playerView,
         playerinput: playerInput,
         onsave: () => {},
         showsave: true,

@@ -42,9 +42,9 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import HelpIconology from './HelpIconology.vue';
-import HelpPhases from './HelpPhases.vue';
-import HelpStandardProjects from './HelpStandardProjects.vue';
+import HelpIconology from '@/components/help/HelpIconology.vue';
+import HelpPhases from '@/components/help/HelpPhases.vue';
+import HelpStandardProjects from '@/components/help/HelpStandardProjects.vue';
 
 type Tab = 'iconology' | 'standard projects' | 'phases' | 'hotkeys';
 
@@ -54,7 +54,7 @@ export interface HelpPageModel {
 
 export default Vue.extend({
   name: 'Help',
-  data: function(): HelpPageModel {
+  data(): HelpPageModel {
     return {
       currentPage: 'iconology',
     };
@@ -65,10 +65,10 @@ export default Vue.extend({
     HelpPhases,
   },
   methods: {
-    setTab: function(tab: Tab): void {
+    setTab(tab: Tab): void {
       this.currentPage = tab;
     },
-    isOpen: function(tab: Tab): boolean {
+    isOpen(tab: Tab): boolean {
       return tab === this.currentPage;
     },
   },

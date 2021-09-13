@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {playerColorClass} from '../../utils/utils';
+import {playerColorClass} from '@/utils/utils';
 
 export default Vue.extend({
   name: 'DynamicTitle',
@@ -27,7 +27,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    getClasses: function(): string {
+    getClasses(): string {
       return [
         playerColorClass(this.color, 'shadow'),
         'dynamic-title',

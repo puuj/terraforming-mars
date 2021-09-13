@@ -1,7 +1,7 @@
-import {CardModel} from '../models/CardModel';
-import {CardType} from '../cards/CardType';
-import {PlayerModel} from '../models/PlayerModel';
-import {sortActiveCards} from '../components/ActiveCardsSortingOrder';
+import {CardModel} from '@/models/CardModel';
+import {CardType} from '@/cards/CardType';
+import {PublicPlayerModel} from '@/models/PlayerModel';
+import {sortActiveCards} from '@/components/ActiveCardsSortingOrder';
 
 // Common code for player layouts
 
@@ -9,7 +9,7 @@ export const PlayerMixin = {
   'name': 'PlayerMixin',
   'methods': {
     sortActiveCards: sortActiveCards,
-    getCardsByType: function(
+    getCardsByType(
       inCards: Array<CardModel>,
       cardType: Array<CardType>,
     ) {
@@ -21,28 +21,28 @@ export const PlayerMixin = {
       }
       return cards.reverse();
     },
-    getPlayerCardsPlayed: function(
-      player: PlayerModel,
+    getPlayerCardsPlayed(
+      player: PublicPlayerModel,
       withCorp: boolean,
     ): number {
       const playedCardsNr = player.playedCards.length || 0;
       return withCorp ? playedCardsNr + 1 : playedCardsNr;
     },
-    getActiveCardType: function() {
+    getActiveCardType() {
       return CardType.ACTIVE;
     },
-    getEventCardType: function() {
+    getEventCardType() {
       return CardType.EVENT;
     },
-    getAutomatedCardType: function() {
+    getAutomatedCardType() {
       return CardType.AUTOMATED;
     },
-    getPreludeCardType: function() {
+    getPreludeCardType() {
       return CardType.PRELUDE;
     },
-    isCardActivated: function(
+    isCardActivated(
       card: CardModel,
-      player: PlayerModel,
+      player: PublicPlayerModel,
     ): boolean {
       return (
         (player !== undefined &&

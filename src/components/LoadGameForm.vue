@@ -1,17 +1,17 @@
 <script lang="ts">
 import Vue from 'vue';
-import Button from '../components/common/Button.vue';
-import {SimpleGameModel} from '../models/SimpleGameModel';
-import {mainAppSettings} from './App';
+import Button from '@/components/common/Button.vue';
+import {SimpleGameModel} from '@/models/SimpleGameModel';
+import {mainAppSettings} from '@/components/App';
 
-import * as constants from '../constants';
+import * as constants from '@/constants';
 
 export default Vue.extend({
   name: 'LoadGameForm',
   components: {
     Button,
   },
-  data: function() {
+  data() {
     return {
       constants,
       gameId: '',
@@ -19,7 +19,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    loadGame: function() {
+    loadGame() {
       const gameId = this.$data.gameId;
       const rollbackCount = this.$data.rollbackCount;
       const xhr = new XMLHttpRequest();
@@ -62,7 +62,7 @@ export default Vue.extend({
                   <input class="form-input form-inline load-game-id" :placeholder="'Game Id'" v-model="gameId" /><br/>
                   <label for="rollbackCount">Number of saves to delete before loading:</label><br/>
                   <input class="form-input form-inline load-game-id" value="0" v-model="rollbackCount" /><br/>
-                  <Button title="Load Game" size="big" type="success" :onClick="loadGame" />
+                  <Button title="Load Game" size="big" type="success" @click="loadGame" />
               </div>
           </div>
       </div>
