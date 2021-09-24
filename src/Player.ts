@@ -204,7 +204,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   public getTitaniumValue(): number {
-    if (PartyHooks.shouldApplyPolicy(this.game, PartyName.UNITY)) return this.titaniumValue + 1;
+    if (PartyHooks.shouldApplyPolicy(this, PartyName.UNITY)) return this.titaniumValue + 1;
     return this.titaniumValue;
   }
 
@@ -223,7 +223,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   public getSteelValue(): number {
-    if (PartyHooks.shouldApplyPolicy(this.game, PartyName.MARS, TurmoilPolicy.MARS_FIRST_POLICY_3)) return this.steelValue + 1;
+    if (PartyHooks.shouldApplyPolicy(this, PartyName.MARS, TurmoilPolicy.MARS_FIRST_POLICY_3)) return this.steelValue + 1;
     return this.steelValue;
   }
 
@@ -253,7 +253,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     }
 
     // Turmoil Reds capacity
-    if (PartyHooks.shouldApplyPolicy(this.game, PartyName.REDS)) {
+    if (PartyHooks.shouldApplyPolicy(this, PartyName.REDS)) {
       if (this.canAfford(REDS_RULING_POLICY_COST)) {
         this.game.defer(new SelectHowToPayDeferred(this, REDS_RULING_POLICY_COST, {title: 'Select how to pay for TR increase'}));
       } else {
@@ -452,6 +452,18 @@ export class Player implements ISerializable<SerializedPlayer> {
       this.heat - units.heat >= 0;
   }
 
+  public addUnits(units: Partial<Units>, options? : {
+    log?: boolean,
+    from? : Player | GlobalEventName,
+  }) {
+    this.addResource(Resources.MEGACREDITS, units.megacredits || 0, options);
+    this.addResource(Resources.STEEL, units.steel || 0, options);
+    this.addResource(Resources.TITANIUM, units.titanium || 0, options);
+    this.addResource(Resources.PLANTS, units.plants || 0, options);
+    this.addResource(Resources.ENERGY, units.energy || 0, options);
+    this.addResource(Resources.HEAT, units.heat || 0, options);
+  }
+
   public deductUnits(units: Units) {
     this.deductResource(Resources.MEGACREDITS, units.megacredits);
     this.deductResource(Resources.STEEL, units.steel);
@@ -572,8 +584,8 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   public cardIsInEffect(cardName: CardName): boolean {
-    return this.playedCards.find(
-      (playedCard) => playedCard.name === cardName) !== undefined;
+    return this.playedCards.some(
+      (playedCard) => playedCard.name === cardName);
   }
 
   public hasProtectedHabitats(): boolean {
@@ -602,11 +614,11 @@ export class Player implements ISerializable<SerializedPlayer> {
   public getNoTagsCount() {
     let noTagsCount: number = 0;
 
-    if (this.corporationCard !== undefined && this.corporationCard.tags.filter((tag) => tag !== Tags.WILDCARD).length === 0) {
+    if (this.corporationCard !== undefined && this.corporationCard.tags.every((tag) => tag === Tags.WILDCARD)) {
       noTagsCount++;
     }
 
-    noTagsCount += this.playedCards.filter((card) => card.cardType !== CardType.EVENT && card.tags.filter((tag) => tag !== Tags.WILDCARD).length === 0).length;
+    noTagsCount += this.playedCards.filter((card) => card.cardType !== CardType.EVENT && card.tags.every((tag) => tag === Tags.WILDCARD)).length;
 
     return noTagsCount;
   }
@@ -658,7 +670,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     }
 
     // PoliticalAgendas Scientists P2 hook
-    if (PartyHooks.shouldApplyPolicy(this.game, PartyName.SCIENTISTS, TurmoilPolicy.SCIENTISTS_POLICY_2)) {
+    if (PartyHooks.shouldApplyPolicy(this, PartyName.SCIENTISTS, TurmoilPolicy.SCIENTISTS_POLICY_2)) {
       requirementsBonus += 2;
     }
 
@@ -1269,7 +1281,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     });
 
     // PoliticalAgendas Unity P4 hook
-    if (card.tags.includes(Tags.SPACE) && PartyHooks.shouldApplyPolicy(this.game, PartyName.UNITY, TurmoilPolicy.UNITY_POLICY_4)) {
+    if (card.tags.includes(Tags.SPACE) && PartyHooks.shouldApplyPolicy(this, PartyName.UNITY, TurmoilPolicy.UNITY_POLICY_4)) {
       cost -= 2;
     }
 
@@ -1290,6 +1302,10 @@ export class Player implements ISerializable<SerializedPlayer> {
 
   private canUseFloaters(card: ICard): boolean {
     return card.tags.includes(Tags.VENUS);
+  }
+
+  private canUseScience(card: ICard): boolean {
+    return card.tags.includes(Tags.MOON);
   }
 
   private getMcTradeCost(): number {
@@ -1797,6 +1813,7 @@ export class Player implements ISerializable<SerializedPlayer> {
         titanium: this.canUseTitanium(card),
         floaters: this.canUseFloaters(card),
         microbes: this.canUseMicrobes(card),
+        science: this.canUseScience(card),
         reserveUnits: MoonExpansion.adjustedReserveCosts(this, card),
       });
 
@@ -1810,6 +1827,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     titanium?: boolean,
     floaters?: boolean,
     microbes?: boolean,
+    science?: boolean,
     reserveUnits?: Units
   }) {
     const reserveUnits = options?.reserveUnits ?? Units.EMPTY;
@@ -1821,6 +1839,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     const canUseTitanium: boolean = options?.titanium ?? false;
     const canUseFloaters: boolean = options?.floaters ?? false;
     const canUseMicrobes: boolean = options?.microbes ?? false;
+    const canUseScience: boolean = options?.science ?? false;
 
     return cost <=
       this.megaCredits - reserveUnits.megacredits +
@@ -1828,22 +1847,28 @@ export class Player implements ISerializable<SerializedPlayer> {
       (canUseSteel ? (this.steel - reserveUnits.steel) * this.getSteelValue() : 0) +
       (canUseTitanium ? (this.titanium - reserveUnits.titanium) * this.getTitaniumValue() : 0) +
       (canUseFloaters ? this.getFloatersCanSpend() * 3 : 0) +
-      (canUseMicrobes ? this.getMicrobesCanSpend() * 2 : 0);
+      (canUseMicrobes ? this.getMicrobesCanSpend() * 2 : 0) +
+      (canUseScience ? this.getSpendableScienceResources() : 0);
   }
 
   private getStandardProjects(): Array<StandardProjectCard> {
     return new CardLoader(this.game.gameOptions)
       .getStandardProjects()
       .filter((card) => {
+        switch (card.name) {
         // sell patents is not displayed as a card
-        if (card.name === CardName.SELL_PATENTS_STANDARD_PROJECT) {
+        case CardName.SELL_PATENTS_STANDARD_PROJECT:
           return false;
-        }
         // For buffer gas, show ONLY IF in solo AND 63TR mode
-        if (card.name === CardName.BUFFER_GAS_STANDARD_PROJECT) {
-          return (this.game.isSoloMode() && this.game.gameOptions.soloTR);
-        }
-        return true;
+        case CardName.BUFFER_GAS_STANDARD_PROJECT:
+          return this.game.isSoloMode() && this.game.gameOptions.soloTR;
+        case CardName.AIR_SCRAPPING_STANDARD_PROJECT:
+          return this.game.gameOptions.altVenusBoard === false;
+        case CardName.AIR_SCRAPPING_STANDARD_PROJECT_VARIANT:
+          return this.game.gameOptions.altVenusBoard === true;
+        default:
+          return true;
+        };
       })
       .sort((a, b) => a.cost - b.cost);
   }
