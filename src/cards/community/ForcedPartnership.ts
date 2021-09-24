@@ -30,7 +30,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
   }
 
   public canPlay(player: Player): boolean {
-    if (PartyHooks.shouldApplyPolicy(player.game, PartyName.REDS)) {
+    if (PartyHooks.shouldApplyPolicy(player, PartyName.REDS)) {
       return player.canAfford(player.getCardCost(this) + REDS_RULING_POLICY_COST * 2, {steel: true});
     }
     return true;
@@ -39,7 +39,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
   public play(player: Player) {
     player.increaseTerraformRatingSteps(2);
 
-    const redsCost = ( PartyHooks.shouldApplyPolicy(player.game, PartyName.REDS) ? REDS_RULING_POLICY_COST : 0 );
+    const redsCost = ( PartyHooks.shouldApplyPolicy(player, PartyName.REDS) ? REDS_RULING_POLICY_COST : 0 );
     const availablePlayerTargets = player.game.getPlayers().filter((p) => p.id !== player.id);
 
     availablePlayerTargets.forEach((target) => {
