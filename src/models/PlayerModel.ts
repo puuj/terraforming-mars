@@ -7,11 +7,13 @@ import {TimerModel} from './TimerModel';
 import {GameModel} from './GameModel';
 import {PlayerId} from '../Player';
 import {SpectatorId} from '../Game';
+import {CardName} from '@/CardName';
 
 export interface ViewModel {
   game: GameModel;
   players: Array<PublicPlayerModel>;
   id: PlayerId | SpectatorId;
+  thisPlayer: PublicPlayerModel | undefined;
 }
 
 /** The public information about a player */
@@ -35,6 +37,7 @@ export interface PublicPlayerModel {
   id: string; // Color
   influence: number;
   isActive: boolean;
+  lastCardPlayed?: CardName;
   megaCredits: number;
   megaCreditProduction: number;
   name: string;

@@ -117,7 +117,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   // This generation / this round
   public actionsTakenThisRound: number = 0;
   private actionsThisGeneration: Set<CardName> = new Set();
-  public lastCardPlayed: IProjectCard | undefined;
+  public lastCardPlayed: CardName | undefined;
   private corporationInitialActionDone: boolean = false;
 
   // Cards
@@ -643,9 +643,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   public getResourcesOnCard(card: ICard): number | undefined {
-    if (card.resourceCount !== undefined) {
-      return card.resourceCount;
-    } else return undefined;
+    return card.resourceCount;
   }
 
   public getResourcesOnCorporation():number {
@@ -737,7 +735,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     return result;
   }
 
-  public getResourceCards(resource: ResourceType | undefined): Array<ICard> {
+  public getResourceCards(resource?: ResourceType): Array<ICard> {
     let result: Array<ICard> = this.playedCards.filter((card) => card.resourceType !== undefined);
 
     if (this.corporationCard !== undefined && this.corporationCard.resourceType !== undefined) {
@@ -754,7 +752,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   public getResourceCount(resource: ResourceType): number {
     let count: number = 0;
     this.getCardsWithResources(resource).forEach((card) => {
-      count += this.getResourcesOnCard(card)!;
+      count += (this.getResourcesOnCard(card) ?? 0);
     });
     return count;
   }
@@ -1400,23 +1398,23 @@ export class Player implements ISerializable<SerializedPlayer> {
 
   public getMicrobesCanSpend(): number {
     const psychrophiles = this.playedCards.find((card) => card.name === CardName.PSYCHROPHILES);
-    if (psychrophiles !== undefined) return this.getResourcesOnCard(psychrophiles)!;
-
-    return 0;
+    return psychrophiles !== undefined ?
+      this.getResourcesOnCard(psychrophiles) ?? 0 :
+      0;
   }
 
   public getFloatersCanSpend(): number {
     const dirigibles = this.playedCards.find((card) => card.name === CardName.DIRIGIBLES);
-    if (dirigibles !== undefined) return this.getResourcesOnCard(dirigibles)!;
-
-    return 0;
+    return dirigibles !== undefined ?
+      this.getResourcesOnCard(dirigibles) ?? 0 :
+      0;
   }
 
   public getSpendableScienceResources(): number {
     const lunaArchives = this.playedCards.find((card) => card.name === CardName.LUNA_ARCHIVES);
-    if (lunaArchives !== undefined) return this.getResourcesOnCard(lunaArchives)!;
-
-    return 0;
+    return lunaArchives !== undefined ?
+      this.getResourcesOnCard(lunaArchives) ?? 0 :
+      0;
   }
 
   public playCard(selectedCard: IProjectCard, howToPay?: HowToPay, addToPlayedCards: boolean = true): undefined {
@@ -1458,7 +1456,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     }
 
     if (selectedCard.cardType !== CardType.PROXY) {
-      this.lastCardPlayed = selectedCard;
+      this.lastCardPlayed = selectedCard.name;
       this.game.log('${0} played ${1}', (b) => b.player(this).card(selectedCard));
     }
 
@@ -2238,7 +2236,7 @@ export class Player implements ISerializable<SerializedPlayer> {
       timer: this.timer.serialize(),
     };
     if (this.lastCardPlayed !== undefined) {
-      result.lastCardPlayed = this.lastCardPlayed.name;
+      result.lastCardPlayed = this.lastCardPlayed;
     }
     return result;
   }
@@ -2283,9 +2281,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     player.turmoilPolicyActionUsed = d.turmoilPolicyActionUsed;
     player.politicalAgendasActionUsedCount = d.politicalAgendasActionUsedCount;
 
-    player.lastCardPlayed = d.lastCardPlayed !== undefined ?
-      cardFinder.getProjectCardByName(d.lastCardPlayed) :
-      undefined;
+    player.lastCardPlayed = d.lastCardPlayed;
 
     // Rebuild removed from play cards (Playwrights)
     player.removedFromPlayCards = cardFinder.cardsFromJSON(d.removedFromPlayCards);

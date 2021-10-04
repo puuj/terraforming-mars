@@ -600,7 +600,7 @@ describe('Game', () => {
   it('grant space bonus sanity test', () => {
     const player = TestPlayers.BLUE.newPlayer();
     const game = Game.newInstance('foobar', [player], player);
-    const space = game.board.getAvailableSpacesOnLand()[0];
+    const space = game.board.getAvailableSpacesOnLand(player)[0];
 
     space.bonus = [SpaceBonus.DRAW_CARD, SpaceBonus.DRAW_CARD, SpaceBonus.DRAW_CARD, SpaceBonus.DRAW_CARD, SpaceBonus.PLANT, SpaceBonus.TITANIUM];
     expect(player.cardsInHand).has.length(0);
@@ -626,12 +626,13 @@ describe('Game', () => {
     const serializedKeys = Object.keys(serialized);
     const gameKeys = Object.keys(game);
     expect(gameKeys).not.include('moonData');
-    expect(serializedKeys).to.have.members(gameKeys.concat('moonData'));
+    expect(gameKeys).not.include('pathfindersData');
+    expect(serializedKeys).to.have.members(gameKeys.concat('moonData', 'pathfindersData'));
   });
 
   it('serializes every property', () => {
     const player = TestPlayers.BLUE.newPlayer();
-    const game = Game.newInstance('foobar', [player], player, TestingUtils.setCustomGameOptions({moonExpansion: true}));
+    const game = Game.newInstance('foobar', [player], player, TestingUtils.setCustomGameOptions({moonExpansion: true, pathfindersExpansion: true}));
     const serialized = game.serialize();
     const serializedKeys = Object.keys(serialized);
     const gameKeys = Object.keys(game);
@@ -654,5 +655,14 @@ describe('Game', () => {
     (serialized.gameOptions as any).altVenusBoard = undefined;
     const deserialized = Game.deserialize(serialized);
     expect(deserialized.gameOptions.altVenusBoard).is.false;
+  });
+
+  it('deserializing a game without pathfinders still loads', () => {
+    const player = TestPlayers.BLUE.newPlayer();
+    const game = Game.newInstance('foobar', [player], player, TestingUtils.setCustomGameOptions({pathfindersExpansion: false}));
+    const serialized = game.serialize();
+    (serialized.gameOptions as any).pathfindersData = undefined;
+    const deserialized = Game.deserialize(serialized);
+    expect(deserialized.pathfindersData).is.undefined;
   });
 });
