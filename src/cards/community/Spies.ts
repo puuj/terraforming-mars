@@ -8,6 +8,7 @@ import {Tags} from '../Tags';
 import {CardName} from '../../CardName';
 import {SelectOption} from '../../inputs/SelectOption';
 import {CardRenderer} from '../render/CardRenderer';
+import {all} from '../Options';
 
 export class Spies extends Card implements IProjectCard {
   constructor() {
@@ -22,7 +23,7 @@ export class Spies extends Card implements IProjectCard {
         renderData: CardRenderer.builder((b) => {
           b.action('Spend 1 MC to steal a standard resource', (eb) => {
             eb.megacredits(1).startAction.minus();
-            eb.wild(1).any;
+            eb.wild(1, {all});
           }).br;
         }),
       },

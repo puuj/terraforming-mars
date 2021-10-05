@@ -9,6 +9,7 @@ import {Resources} from '../../Resources';
 import {Tags} from '../Tags';
 import {CardName} from '../../CardName';
 import {CardRenderer} from '../render/CardRenderer';
+import {all} from '../Options';
 
 export class ForcedPartnership extends Card implements IProjectCard {
   constructor() {
@@ -22,7 +23,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
         cardNumber: 'J007',
         renderData: CardRenderer.builder((b) => {
           b.tr(2).br;
-          b.minus().megacredits(10).any.nbsp.tr(1).any;
+          b.minus().megacredits(10, {all}).nbsp.tr(1, {all});
         }),
         description: 'Raise your TR 2 steps. All other players with at least 10 MC spend 10 MC to raise their TR 1 step.',
       },
