@@ -6,6 +6,7 @@ import {CardName} from '../../CardName';
 import {Tags} from '../Tags';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
+import {max} from '../Options';
 
 export class DarkHorse extends Card implements IProjectCard {
   constructor() {
@@ -14,7 +15,7 @@ export class DarkHorse extends Card implements IProjectCard {
       name: CardName.DARK_HORSE,
       tags: [Tags.SPACE],
       cost: 16,
-      requirements: CardRequirements.builder((b) => b.temperature(-16).max()),
+      requirements: CardRequirements.builder((b) => b.temperature(-16, {max})),
       metadata: {
         cardNumber: 'J008',
         renderData: CardRenderer.builder((b) => {
