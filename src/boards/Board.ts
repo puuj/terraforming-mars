@@ -274,3 +274,26 @@ export abstract class Board {
     return spaces.map((space) => Board.deserializeSpace(space, players));
   }
 }
+
+export function nextToNoOtherTileFn(board: Board): (space: ISpace) => boolean {
+  return (space: ISpace) => board.getAdjacentSpaces(space).every((space) => space.tile === undefined);
+};
+
+export function playerTileFn(player: Player) {
+  return (space: ISpace) => space.player?.id === player.id;
+}
+
+export function isSpecialTile(space: ISpace): boolean {
+  switch (space.tile?.tileType) {
+  case TileType.GREENERY:
+  case TileType.OCEAN:
+  case TileType.CITY:
+  case TileType.MOON_COLONY:
+  case TileType.MOON_MINE:
+  case TileType.MOON_ROAD:
+  case undefined:
+    return false;
+  default:
+    return true;
+  }
+};

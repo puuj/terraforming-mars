@@ -15,7 +15,7 @@ import {CorporationCard} from './cards/corporation/CorporationCard';
 import {Game} from './Game';
 import {HowToPay} from './inputs/HowToPay';
 import {IAward} from './awards/IAward';
-import {ICard, IResourceCard} from './cards/ICard';
+import {ICard, IResourceCard, TRSource} from './cards/ICard';
 import {Colony} from './colonies/Colony';
 import {ISerializable} from './ISerializable';
 import {IMilestone} from './milestones/IMilestone';
@@ -245,7 +245,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     this.terraformRating--;
   }
 
-  public increaseTerraformRating() {
+  public increaseTerraformRating(opts: {log?: boolean} = {}) {
     if (!this.game.gameOptions.turmoilExtension) {
       this.terraformRating++;
       this.hasIncreasedTerraformRatingThisGeneration = true;
@@ -264,11 +264,18 @@ export class Player implements ISerializable<SerializedPlayer> {
 
     this.terraformRating++;
     this.hasIncreasedTerraformRatingThisGeneration = true;
+    if (opts.log === true) {
+      this.game.log('${0} gained 1 TR', (b) => b.player(this));
+    }
   }
 
-  public increaseTerraformRatingSteps(value: number) {
-    for (let i = 0; i < value; i++) {
+  public increaseTerraformRatingSteps(steps: number, opts: {log?: boolean} = {}) {
+    for (let i = 0; i < steps; i++) {
       this.increaseTerraformRating();
+    }
+
+    if (opts.log === true) {
+      this.game.log('${0} gained ${1} TR', (b) => b.player(this).number(steps));
     }
   }
 
@@ -449,7 +456,8 @@ export class Player implements ISerializable<SerializedPlayer> {
       this.titanium - units.titanium >= 0 &&
       this.plants - units.plants >= 0 &&
       this.energy - units.energy >= 0 &&
-      this.heat - units.heat >= 0;
+      // Stormcraft Incorporated can supply heat, so use `availableHeat`
+      this.availableHeat - units.heat >= 0;
   }
 
   public addUnits(units: Partial<Units>, options? : {
@@ -598,6 +606,10 @@ export class Player implements ISerializable<SerializedPlayer> {
 
   public alloysAreProtected(): boolean {
     return this.cardIsInEffect(CardName.LUNAR_SECURITY_STATIONS);
+  }
+
+  public megaCreditsAreProtected(): boolean {
+    return this.cardIsInEffect(CardName.PRIVATE_SECURITY);
   }
 
   // TODO(kberg): counting cities on the board is done in 3 different places, consolidate.
@@ -1804,8 +1816,10 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
 
   public canPlay(card: IProjectCard): boolean {
+    const baseCost = this.getCardCost(card);
+
     const canAfford = this.canAfford(
-      this.getCardCost(card),
+      baseCost,
       {
         steel: this.canUseSteel(card),
         titanium: this.canUseTitanium(card),
@@ -1813,9 +1827,23 @@ export class Player implements ISerializable<SerializedPlayer> {
         microbes: this.canUseMicrobes(card),
         science: this.canUseScience(card),
         reserveUnits: MoonExpansion.adjustedReserveCosts(this, card),
+        tr: card.tr,
       });
 
-    return canAfford && (card.canPlay === undefined || card.canPlay(this));
+    if (!canAfford) {
+      return false;
+    }
+
+    return this.canPlayIgnoringCost(card);
+  }
+
+  // Verify if requirements for the card can be met, ignoring the project cost.
+  // Only made public for tests.
+  public canPlayIgnoringCost(card: IProjectCard): boolean {
+    if (card.requirements !== undefined && !card.requirements.satisfies(this)) {
+      return false;
+    }
+    return card.canPlay(this);
   }
 
   // Checks if the player can afford to pay `cost` mc (possibly replaceable with steel, titanium etc.)
@@ -1826,7 +1854,8 @@ export class Player implements ISerializable<SerializedPlayer> {
     floaters?: boolean,
     microbes?: boolean,
     science?: boolean,
-    reserveUnits?: Units
+    reserveUnits?: Units,
+    tr?: TRSource,
   }) {
     const reserveUnits = options?.reserveUnits ?? Units.EMPTY;
     if (!this.hasUnits(reserveUnits)) {
@@ -1839,9 +1868,20 @@ export class Player implements ISerializable<SerializedPlayer> {
     const canUseMicrobes: boolean = options?.microbes ?? false;
     const canUseScience: boolean = options?.science ?? false;
 
-    return cost <=
-      this.megaCredits - reserveUnits.megacredits +
-      (this.canUseHeatAsMegaCredits ? this.heat - reserveUnits.heat : 0) +
+    const redsCost = TurmoilHandler.computeTerraformRatingBump(this, options?.tr) * REDS_RULING_POLICY_COST;
+
+    let availableMegacredits = this.megaCredits;
+    if (this.canUseHeatAsMegaCredits) {
+      availableMegacredits += this.heat;
+      availableMegacredits -= reserveUnits.heat;
+    }
+    availableMegacredits -= reserveUnits.megacredits;
+    availableMegacredits -= redsCost;
+
+    if (availableMegacredits < 0) {
+      return false;
+    }
+    return cost <= availableMegacredits +
       (canUseSteel ? (this.steel - reserveUnits.steel) * this.getSteelValue() : 0) +
       (canUseTitanium ? (this.titanium - reserveUnits.titanium) * this.getTitaniumValue() : 0) +
       (canUseFloaters ? this.getFloatersCanSpend() * 3 : 0) +
@@ -2049,9 +2089,9 @@ export class Player implements ISerializable<SerializedPlayer> {
       let sendDelegate;
       if (turmoil.lobby.has(this.id)) {
         sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (from lobby)');
-      } else if (this.isCorporation(CardName.INCITE) && this.canAfford(3) && turmoil.getDelegatesInReserve(this.id) > 0) {
+      } else if (this.isCorporation(CardName.INCITE) && this.canAfford(3) && turmoil.hasAvailableDelegates(this.id)) {
         sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (3 M€)', {cost: 3});
-      } else if (this.canAfford(5) && turmoil.getDelegatesInReserve(this.id) > 0) {
+      } else if (this.canAfford(5) && turmoil.hasAvailableDelegates(this.id)) {
         sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (5 M€)', {cost: 5});
       }
       if (sendDelegate) {
@@ -2350,7 +2390,7 @@ export class Player implements ISerializable<SerializedPlayer> {
         });
       }
       if (card instanceof MiningCard && element.bonusResource !== undefined) {
-        card.bonusResource = element.bonusResource;
+        card.bonusResource = Array.isArray(element.bonusResource) ? element.bonusResource : [element.bonusResource];
       }
       return card;
     });
