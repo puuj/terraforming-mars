@@ -15,6 +15,8 @@ const RESOURCE_TO_ITEM_TYPE = new Map([
   [ResourceType.ASTEROID, CardRenderItemType.ASTEROIDS],
   [ResourceType.FIGHTER, CardRenderItemType.FIGHTER],
   [ResourceType.FLOATER, CardRenderItemType.FLOATERS],
+  [ResourceType.VENUSIAN_HABITAT, CardRenderItemType.VENUSIAN_HABITAT],
+  [ResourceType.SPECIALIZED_ROBOT, CardRenderItemType.SPECIALIZED_ROBOT],
 ]);
 
 export class CardRenderDynamicVictoryPoints {
@@ -42,7 +44,7 @@ export class CardRenderDynamicVictoryPoints {
     return new CardRenderDynamicVictoryPoints(new CardRenderItem(itemType), points, target);
   }
   public static tag(type: Tags, points: number, target: number): CardRenderDynamicVictoryPoints {
-    const map: any = new Map([
+    const map = new Map<Tags, CardRenderItemType>([
       [Tags.JOVIAN, CardRenderItemType.JOVIAN],
       [Tags.MOON, CardRenderItemType.MOON],
       [Tags.VENUS, CardRenderItemType.VENUS],
