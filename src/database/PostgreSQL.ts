@@ -218,7 +218,7 @@ export class PostgreSQL implements IDatabase {
     });
   }
 
-  saveGame(game: Game): void {
+  saveGame(game: Game): Promise<void> {
     const gameJSON = game.toJSON();
     this.client.query(
       'INSERT INTO games (game_id, save_id, game, players) VALUES ($1, $2, $3, $4) ON CONFLICT (game_id, save_id) DO UPDATE SET game = $3',
@@ -232,6 +232,7 @@ export class PostgreSQL implements IDatabase {
 
     // This must occur after the save.
     game.lastSaveId++;
+    return Promise.resolve();
   }
 
   deleteGameNbrSaves(game_id: GameId, rollbackCount: number): void {

@@ -15,9 +15,11 @@ const firstLetterUpperCase = (s: string): string => s.charAt(0).toUpperCase() + 
 export class CardRequirement {
   public readonly isMax: boolean = false;
   public readonly isAny: boolean = false;
+  public readonly text: string | undefined = undefined;
   constructor(public type: RequirementType, public amount: number = 1, options?: Options) {
     this.isMax = options?.max ?? false;
     this.isAny = options?.all ?? false;
+    this.text = options?.text;
   }
 
   private amountToString(): string {
@@ -62,6 +64,9 @@ export class CardRequirement {
     }
     result += this.parseType();
 
+    if (this.text) {
+      result += this.text;
+    }
     return result;
   }
 
@@ -216,14 +221,14 @@ export class TagCardRequirement extends CardRequirement {
     return firstLetterUpperCase(this.tag);
   }
   public satisfies(player: Player): boolean {
-    const includeWildTags = this.isMax !== true;
-    let tagCount = player.getTagCount(this.tag, false, includeWildTags);
+    const mode = this.isMax !== true ? 'default' : 'raw';
+    let tagCount = player.getTagCount(this.tag, mode);
 
     if (this.isAny) {
       player.game.getPlayers().forEach((p) => {
         if (p.id !== player.id) {
           // Don't include opponents' wild tags because they are not performing the action.
-          tagCount += p.getTagCount(this.tag, false, false);
+          tagCount += p.getTagCount(this.tag, 'raw');
         }
       });
     }

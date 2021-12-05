@@ -40,6 +40,7 @@
                       :oxygen_level="game.oxygenLevel"
                       :temperature="game.temperature"
                       :aresExtension="game.gameOptions.aresExtension"
+                      :pathfindersExpansion="game.gameOptions.pathfindersExpansion"
                       :altVenusBoard="game.gameOptions.altVenusBoard"
                       :aresData="game.aresData"
                       :hideTiles="hideTiles"
@@ -206,6 +207,7 @@
                           :venusScaleLevel="game.venusScaleLevel"
                           :boardName ="game.gameOptions.boardName"
                           :aresExtension="game.gameOptions.aresExtension"
+                          :pathfindersExpansion="game.gameOptions.pathfindersExpansion"
                           :aresData="game.aresData"
                           :altVenusBoard="game.gameOptions.altVenusBoard">
                         </board>
@@ -232,6 +234,7 @@
                     </div>
                 </div>
             </div>
+            <PlanetaryTracks v-if="game.gameOptions.pathfindersExpansion" :tracks="game.pathfinders" :gameOptions="game.gameOptions"/>
         </div>
 </template>
 
@@ -250,6 +253,7 @@ import LogPanel from '@/client/components/LogPanel.vue';
 import {PlayerMixin} from '@/client/mixins/PlayerMixin';
 import Turmoil from '@/client/components/Turmoil.vue';
 import {playerColorClass} from '@/utils/utils';
+import PlanetaryTracks from '@/client/components/pathfinders/PlanetaryTracks.vue';
 import DynamicTitle from '@/client/components/common/DynamicTitle.vue';
 import SortableCards from '@/client/components/SortableCards.vue';
 import TopBar from '@/client/components/TopBar.vue';
@@ -326,6 +330,7 @@ export default Vue.extend({
     'sortable-cards': SortableCards,
     'top-bar': TopBar,
     MoonBoard,
+    PlanetaryTracks,
     'stacked-cards': StackedCards,
   },
   mixins: [PlayerMixin],

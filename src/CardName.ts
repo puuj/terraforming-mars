@@ -467,6 +467,7 @@ export enum CardName {
     BIO_PRINTING_FACILITY = 'Bio Printing Facility',
     BACTOVIRAL_RESEARCH = 'Bactoviral Research',
     HARVEST = 'Harvest',
+    OUTDOOR_SPORTS = 'Outdoor Sports',
 
     // Community corps
     AGRICOLA_INC = 'Agricola Inc',
@@ -737,7 +738,7 @@ export enum CardName {
     PLANET_PR = 'planet pr',
     AMBIENT = 'Ambient',
     RINGCOM = 'Ringcom',
-    CHIIMERA = 'Chiimera',
+    CHIMERA = 'Chimera',
     SISTEMAS_SEEBECK = 'Sistemas Seebeck',
     SPIRE = 'Spire',
     SOYLENT_SEEDLING_SYSTEMS = 'Soylent Seedling Systems',

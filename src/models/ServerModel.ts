@@ -43,6 +43,7 @@ import {Units} from '../Units';
 import {SelectPartyToSendDelegate} from '../inputs/SelectPartyToSendDelegate';
 import {GameModel} from './GameModel';
 import {Turmoil} from '../turmoil/Turmoil';
+import {PathfindersModel} from './PathfindersModel';
 
 export class Server {
   public static getSimpleGameModel(game: Game): SimpleGameModel {
@@ -79,6 +80,7 @@ export class Server {
       oceans: game.board.getOceansOnBoard(),
       oxygenLevel: game.getOxygenLevel(),
       passedPlayers: game.getPassedPlayers(),
+      pathfinders: PathfindersModel.serialize(game),
       phase: game.phase,
       spaces: this.getSpaces(game.board),
       spectatorId: game.spectatorId,
@@ -373,6 +375,7 @@ export class Server {
     const game = player.game;
     return {
       actionsTakenThisRound: player.actionsTakenThisRound,
+      actionsTakenThisGame: player.actionsTakenThisGame,
       actionsThisGeneration: Array.from(player.getActionsThisGeneration()),
       availableBlueCardActionCount: player.getAvailableBlueActionCount(),
       cardCost: player.cardCost,
@@ -482,10 +485,15 @@ export class Server {
       communityCardsOption: options.communityCardsOption,
       corporateEra: options.corporateEra,
       draftVariant: options.draftVariant,
+      escapeVelocityMode: options.escapeVelocityMode,
+      escapeVelocityThreshold: options.escapeVelocityThreshold,
+      escapeVelocityPeriod: options.escapeVelocityPeriod,
+      escapeVelocityPenalty: options.escapeVelocityPenalty,
       fastModeOption: options.fastModeOption,
       includeVenusMA: options.includeVenusMA,
       initialDraftVariant: options.initialDraftVariant,
       moonExpansion: options.moonExpansion,
+      pathfindersExpansion: options.pathfindersExpansion,
       preludeExtension: options.preludeExtension,
       promoCardsOption: options.promoCardsOption,
       politicalAgendasExtension: options.politicalAgendasExtension,
@@ -496,10 +504,10 @@ export class Server {
       solarPhaseOption: options.solarPhaseOption,
       soloTR: options.soloTR,
       randomMA: options.randomMA,
-      turmoilExtension: options.turmoilExtension,
-      venusNextExtension: options.venusNextExtension,
       requiresMoonTrackCompletion: options.requiresMoonTrackCompletion,
       requiresVenusTrackCompletion: options.requiresVenusTrackCompletion,
+      turmoilExtension: options.turmoilExtension,
+      venusNextExtension: options.venusNextExtension,
       undoOption: options.undoOption,
     };
   }
