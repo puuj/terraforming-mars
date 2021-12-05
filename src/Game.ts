@@ -1128,7 +1128,7 @@ export class Game implements ISerializable<SerializedGame> {
   }
 
 
-  public increaseOxygenLevel(player: Player, increments: -1 | 1 | 2): undefined {
+  public increaseOxygenLevel(player: Player, increments: -2 | -1 | 1 | 2): undefined {
     if (this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL && increments > 0) {
       return undefined;
     }
