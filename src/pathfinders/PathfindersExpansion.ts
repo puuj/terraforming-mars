@@ -74,13 +74,18 @@ export class PathfindersExpansion {
   ]);
 
   public static raiseTrack(tag: Tags, player: Player, steps: number = 1): void {
-    PathfindersExpansion.raiseTrack2(tag, player, player.game, steps, true);
+    PathfindersExpansion.raiseTrackEssense(tag, player, player.game, steps, true);
   }
 
-  public static raiseTrack2(tag: Tags, from: Player | GlobalEventName, game: Game, steps: number = 1, gainRewards: boolean = true): void {
+  public static raiseTrackForGlobalEvent(tag: Tags, name: GlobalEventName, game: Game, steps: number = 1, gainRewards: boolean = true): void {
+    PathfindersExpansion.raiseTrackEssense(tag, name, game, steps, gainRewards);
+  }
+
+  private static raiseTrackEssense(tag: Tags, from: Player | GlobalEventName, game: Game, steps: number = 1, gainRewards: boolean = true): void {
     const data = game.pathfindersData;
     if (data === undefined) {
-      throw new Error('Pathfinders not defined');
+      return;
+      // throw new Error('Pathfinders not defined');
     }
 
     const track = PathfindersExpansion.trackMap.get(tag);

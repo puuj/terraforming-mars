@@ -686,6 +686,8 @@ export class Game implements ISerializable<SerializedGame> {
       }
     }
 
+    PathfindersExpansion.onCardPlayed(player, corporationCard);
+
     this.playerIsFinishedWithResearchPhase(player);
   }
 
@@ -1319,11 +1321,9 @@ export class Game implements ISerializable<SerializedGame> {
       throw new Error(`Select a valid location: ${space.spaceType} is not ${spaceType}`);
     }
 
-    AresHandler.ifAres(this, () => {
-      if (!AresHandler.canCover(space, tile)) {
-        throw new Error('Selected space is occupied: ' + space.id);
-      }
-    });
+    if (!AresHandler.canCover(space, tile)) {
+      throw new Error('Selected space is occupied: ' + space.id);
+    }
 
     // Oceans are not subject to Ares adjacency production penalties.
     const subjectToHazardAdjacency = tile.tileType !== TileType.OCEAN;
@@ -1462,12 +1462,17 @@ export class Game implements ISerializable<SerializedGame> {
     });
   }
 
+  public canAddOcean(): boolean {
+    if (this.board.getOceansOnBoard() === constants.MAX_OCEAN_TILES) {
+      return false;
+    }
+    return true;
+  }
   public addOceanTile(
     player: Player, spaceId: SpaceId,
     spaceType: SpaceType = SpaceType.OCEAN): void {
-    if (this.board.getOceansOnBoard() === constants.MAX_OCEAN_TILES) {
-      return;
-    }
+    if (this.canAddOcean() === false) return;
+
     this.addTile(player, spaceType, this.board.getSpace(spaceId), {
       tileType: TileType.OCEAN,
     });
