@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 import * as constants from './constants';
 import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, ENERGY_TRADE_COST, MAX_FLEET_SIZE, MC_TRADE_COST, MILESTONE_COST, REDS_RULING_POLICY_COST, TITANIUM_TRADE_COST} from './constants';
 import {AndOptions} from './inputs/AndOptions';
@@ -55,7 +53,6 @@ import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
 import {SelectProductionToLose} from './inputs/SelectProductionToLose';
 import {IAresGlobalParametersResponse, ShiftAresGlobalParameters} from './inputs/ShiftAresGlobalParameters';
 import {Timer} from './Timer';
-import {Notifier} from './Notifier';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
 import {TurmoilPolicy} from './turmoil/TurmoilPolicy';
 import {CardLoader} from './CardLoader';
@@ -135,7 +132,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   public passingTo: string = '';
 
   public timer: Timer = Timer.newInstance();
-  public notifier: Notifier = Notifier.newInstance(process.env.NOTIFICATION_SENDER, process.env.URL);
+  public notification: any = undefined;
 
   // Colonies
   private fleetSize: number = 1;
@@ -2236,7 +2233,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     this.waitingForCb = undefined;
     try {
       this.timer.stop();
-      this.notifier.clearNotification();
+      if (this.notification) clearTimeout(this.notification);
       this.runInput(input, waitingFor);
       waitingForCb();
     } catch (err) {
@@ -2250,7 +2247,7 @@ export class Player implements ISerializable<SerializedPlayer> {
   }
   public setWaitingFor(input: PlayerInput, cb: () => void = () => {}): void {
     this.timer.start();
-    this.notifier.registerNotification(setTimeout(Notifier.notify, 90000, this));
+    this.notification = this.game.makeNotification(this);
     this.waitingFor = input;
     this.waitingForCb = cb;
   }

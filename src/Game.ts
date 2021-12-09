@@ -28,6 +28,7 @@ import {LogHelper} from './LogHelper';
 import {LogMessage} from './LogMessage';
 import {ALL_MILESTONES} from './milestones/Milestones';
 import {ALL_AWARDS} from './awards/Awards';
+import {Notifier} from './Notifier';
 import {OriginalBoard} from './boards/OriginalBoard';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {Phase} from './Phase';
@@ -411,9 +412,14 @@ export class Game implements ISerializable<SerializedGame> {
     return game;
   }
 
+  public makeNotification(player: Player) : NodeJS.Timeout {
+    return Notifier.getInstance().makeNotification(player, 60*1000);
+  }
+  
   public save(): void {
     Database.getInstance().saveGame(this);
   }
+
 
   public toJSON(): string {
     return JSON.stringify(this.serialize());
