@@ -7,11 +7,10 @@ import {Resources} from '../../Resources';
 import {PathfindersExpansion} from '../../pathfinders/PathfindersExpansion';
 import {Tags} from '../../cards/Tags';
 import {CardRenderer} from '../../cards/render/CardRenderer';
-import {AltSecondaryTag} from '../../cards/render/CardRenderItem';
+import {Size} from '../../cards/render/Size';
 
 const RENDER_DATA = CardRenderer.builder((b) => {
-  b.minus().megacredits(10, {secondaryTag: AltSecondaryTag.INFLUENCE}).br;
-  b.planetaryTrack().text('2');
+  b.minus().megacredits(10).influence({size: Size.SMALL}).planetaryTrack().text('2');
 });
 
 export class ConstantStruggle extends GlobalEvent implements IGlobalEvent {

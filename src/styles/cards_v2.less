@@ -763,6 +763,13 @@
                 background-size: 180px 50px;
                 margin-top: 10px;
             }
+            .card-polaris-logo {
+                background-image: url(./assets/pathfinders/corp-logo-polaris.png);
+                height: 54px;
+                width: 180px;
+                background-size: 180px 54px;
+                margin-top: 10px;
+            }
             .card-ringcom-logo {
                 background-image: url(./assets/pathfinders/corp-logo-ringcom.png);
                 height: 35px;
@@ -1235,6 +1242,7 @@
                     background-size: 25px 25px;
                 }
             }
+            // TODO(kberg) This set of tags looks like a duplicate of cards.less.
             .card-tag-wild {
                 background-image: url("../assets/tags/wild.png");
             }
@@ -1707,6 +1715,14 @@
                     top: 2px;
                 }
             }
+            .card-tr--req {
+                width: 30px !important;
+                height: 23px !important;
+                background-size: 30px 23px !important;
+                vertical-align: middle !important;
+                box-shadow: none !important;
+                background-repeat: no-repeat;
+            }
             .card-delegate {
                 display: inline-block;
                 background-image: url(./assets/misc/delegate.png);
@@ -1933,6 +1949,16 @@ each(@parties, {
     background-size: 41px 30px;
     width: 41px;
     height: 30px;
+  }
+})
+
+@parties: greens, kelvinists, mars-first, reds, scientists, unity;
+each(@parties, {
+  .card-party--@{value}-req {
+    background-image: url("./assets/parties/@{value}.png");
+    background-size: 31px 23px;
+    width: 31px;
+    height: 23px;
   }
 })
 
