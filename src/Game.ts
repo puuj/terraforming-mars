@@ -415,7 +415,7 @@ export class Game implements ISerializable<SerializedGame> {
   public makeNotification(player: Player) : NodeJS.Timeout {
     return Notifier.getInstance().makeNotification(player, 60*1000);
   }
-  
+
   public save(): void {
     Database.getInstance().saveGame(this);
   }
