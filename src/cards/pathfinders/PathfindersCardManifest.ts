@@ -4,6 +4,7 @@ import {GameModule} from '../../GameModule';
 
 import {AdvancedPowerGrid} from './AdvancedPowerGrid';
 import {AgroDrones} from './AgroDrones';
+import {Ambient} from './Ambient';
 import {Anthozoa} from './Anthozoa';
 import {AntidesertificationTechniques} from './AntidesertificationTechniques';
 import {AsteroidResources} from './AsteroidResources';
@@ -42,6 +43,7 @@ import {LastResortIngenuity} from './LastResortIngenuity';
 import {LobbyHalls} from './LobbyHalls';
 import {LunarEmbassy} from './LunarEmbassy';
 import {LuxuryEstate} from './LuxuryEstate';
+import {MarsDirect} from './MarsDirect';
 import {MartianCulture} from './MartianCulture';
 import {MartianDustProcessingPlant} from './MartianDustProcessingPlant';
 import {MartianInsuranceGroup} from './MartianInsuranceGroup';
@@ -67,6 +69,7 @@ import {Ringcom} from './Ringcom';
 import {ResearchGrant} from './ResearchGrant';
 import {ReturntoAbandonedTechnology} from './ReturntoAbandonedTechnology';
 import {RichDeposits} from './RichDeposits';
+import {RobinHaulings} from './RobinHaulings';
 import {SecretLabs} from './SecretLabs';
 import {SmallOpenPitMine} from './SmallOpenPitMine';
 import {SmallComet} from './SmallComet';
@@ -168,7 +171,7 @@ export const PATHFINDERS_CARD_MANIFEST = new CardManifest({
   corporationCards: [
     {cardName: CardName.POLARIS, Factory: Polaris},
     // {cardName: CardName.PLANET_PR, Factory: planetpr},
-    // {cardName: CardName.AMBIENT, Factory: Ambient},
+    {cardName: CardName.AMBIENT, Factory: Ambient, compatibility: GameModule.Venus},
     {cardName: CardName.RINGCOM, Factory: Ringcom},
     {cardName: CardName.CHIMERA, Factory: Chimera},
     // {cardName: CardName.SISTEMAS_SEEBECK, Factory: SistemasSeebeck},
@@ -176,13 +179,13 @@ export const PATHFINDERS_CARD_MANIFEST = new CardManifest({
     // {cardName: CardName.SOYLENT_SEEDLING_SYSTEMS, Factory: SoylentSeedlingSystems},
     {cardName: CardName.STEELARIS, Factory: Steelaris},
     // {cardName: CardName.MARS_MATHS, Factory: MarsMaths},
-    // {cardName: CardName.MARS_DIRECT, Factory: MarsDirect},
+    {cardName: CardName.MARS_DIRECT, Factory: MarsDirect},
     {cardName: CardName.MARTIAN_INSURANCE_GROUP, Factory: MartianInsuranceGroup},
     // {cardName: CardName.SOLBANK, Factory: SolBank},
     // {cardName: CardName.BIO_SOL, Factory: BioSol},
     // {cardName: CardName.AURORAI, Factory: Aurorai},
     // {cardName: CardName.COLLEGIUM_COPERNICUS, Factory: CollegiumCopernicus},
-    // {cardName: CardName.ROBIN_HAULINGS, Factory: RobinHaulings},
+    {cardName: CardName.ROBIN_HAULINGS, Factory: RobinHaulings, compatibility: GameModule.Venus},
     // {cardName: CardName.ODYSSEY_EFFECT, Factory: OdysseyEffect},
     // {cardName: CardName.GAGARIN_MOBILE_BASE, Factory: GagarinMobileBase},
     // {cardName: CardName.MARS_FRONTIER_ALLIANCE, Factory: MarsFrontierAlliance},

@@ -24,6 +24,7 @@ import {PatentPortfolio} from './PatentPortfolio';
 import {Spies} from './Spies';
 import {Uno} from './Uno';
 import {Windfall} from './Windfall';
+import {ExecutiveOrder} from './ExecutiveOrder';
 
 export const COMMUNITY_CARD_MANIFEST = new CardManifest({
   module: GameModule.Community,
@@ -79,5 +80,6 @@ export const COMMUNITY_CARD_MANIFEST = new CardManifest({
       Factory: ByElection,
       compatibility: GameModule.Turmoil,
     },
+    {cardName: CardName.EXECUTIVE_ORDER, Factory: ExecutiveOrder, compatibility: GameModule.Turmoil},
   ],
 });

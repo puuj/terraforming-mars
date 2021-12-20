@@ -6,7 +6,6 @@ import {Board} from './boards/Board';
 import {CardFinder} from './CardFinder';
 import {CardName} from './CardName';
 import {CardType} from './cards/CardType';
-import {ColonyModel} from './models/ColonyModel';
 import {ColonyName} from './colonies/ColonyName';
 import {Color} from './Color';
 import {CorporationCard} from './cards/corporation/CorporationCard';
@@ -73,6 +72,7 @@ import {CrashSiteCleanup} from './cards/promo/CrashSiteCleanup';
 import {Turmoil} from './turmoil/Turmoil';
 import {PathfindersExpansion} from './pathfinders/PathfindersExpansion';
 import {deserializeProjectCard, serializeProjectCard} from './cards/CardSerialization';
+import {ColoniesHandler} from './colonies/ColoniesHandler';
 
 export type PlayerId = string;
 
@@ -537,7 +537,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     return this.actionsThisGeneration;
   }
 
-  public setActionsThisGeneration(cardName: CardName): void {
+  public addActionThisGeneration(cardName: CardName): void {
     this.actionsThisGeneration.add(cardName);
     return;
   }
@@ -896,7 +896,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     return tagCount + this.getRawTagCount(Tags.WILDCARD, false);
   }
 
-  // TODO(kberg): Describe this function.
+  // Counts the number of distinct tags
   public getDistinctTagCount(countWild: boolean, extraTag?: Tags): number {
     const allTags: Tags[] = [];
     let wildcardCount: number = 0;
@@ -923,9 +923,14 @@ export class Player implements ISerializable<SerializedPlayer> {
       }
     }
     if (countWild) {
+      // TODO(kberg): it might be more correct to count all the tags
+      // in a game regardless of expansion? But if that happens it needs
+      // to be done once, during set-up so that this operation doesn't
+      // always go through every tag every time.
       let maxTagCount = 10;
       if (this.game.gameOptions.venusNextExtension) maxTagCount++;
       if (this.game.gameOptions.moonExpansion) maxTagCount++;
+      if (this.game.gameOptions.pathfindersExpansion) maxTagCount++;
       return Math.min(uniqueTags.size + wildcardCount, maxTagCount);
     } else {
       return uniqueTags.size;
@@ -1008,10 +1013,11 @@ export class Player implements ISerializable<SerializedPlayer> {
       this.runInputCb(pi.cb());
     } else if (pi instanceof SelectColony) {
       this.checkInputLength(input, 1, 1);
-      const colony: ColonyName = (input[0][0]) as ColonyName;
-      if (colony === undefined) {
+      const colonyName: ColonyName = (input[0][0]) as ColonyName;
+      if (colonyName === undefined) {
         throw new Error('No colony selected');
       }
+      const colony = ColoniesHandler.getColony(this.game, colonyName, true);
       this.runInputCb(pi.cb(colony));
     } else if (pi instanceof OrOptions) {
       // input length is variable, can't test it with checkInputLength
@@ -1641,45 +1647,38 @@ export class Player implements ISerializable<SerializedPlayer> {
 
   private tradeWithColony(openColonies: Array<Colony>): PlayerInput {
     let payWith: Resources | ResourceType | undefined = undefined;
-    const coloniesModel: Array<ColonyModel> = this.game.getColoniesModel(openColonies);
     const titanFloatingLaunchPad = this.playedCards.find((card) => card.name === CardName.TITAN_FLOATING_LAUNCHPAD);
     const mcTradeAmount: number = this.getMcTradeCost();
     const energyTradeAmount: number = this.getEnergyTradeCost();
     const titaniumTradeAmount: number = this.getTitaniumTradeCost();
 
-    const selectColony = new SelectColony('Select colony tile for trade', 'trade', coloniesModel, (colonyName: ColonyName) => {
-      openColonies.forEach((colony) => {
-        if (colony.name === colonyName) {
-          if (payWith === Resources.MEGACREDITS) {
-            this.game.defer(new SelectHowToPayDeferred(
-              this,
-              mcTradeAmount,
-              {
-                title: 'Select how to pay ' + mcTradeAmount + ' for colony trade',
-                afterPay: () => {
-                  this.game.log('${0} spent ${1} M€ to trade with ${2}', (b) => b.player(this).number(mcTradeAmount).colony(colony));
-                  colony.trade(this);
-                },
-              },
-            ));
-          } else if (payWith === Resources.ENERGY) {
-            this.deductResource(Resources.ENERGY, energyTradeAmount);
-            this.game.log('${0} spent ${1} energy to trade with ${2}', (b) => b.player(this).number(energyTradeAmount).colony(colony));
-            colony.trade(this);
-          } else if (payWith === Resources.TITANIUM) {
-            this.deductResource(Resources.TITANIUM, titaniumTradeAmount);
-            this.game.log('${0} spent ${1} titanium to trade with ${2}', (b) => b.player(this).number(titaniumTradeAmount).colony(colony));
-            colony.trade(this);
-          } else if (payWith === ResourceType.FLOATER && titanFloatingLaunchPad !== undefined && titanFloatingLaunchPad.resourceCount) {
-            titanFloatingLaunchPad.resourceCount--;
-            this.actionsThisGeneration.add(titanFloatingLaunchPad.name);
-            this.game.log('${0} spent 1 floater to trade with ${1}', (b) => b.player(this).colony(colony));
-            colony.trade(this);
-          }
-          return undefined;
-        }
-        return undefined;
-      });
+    const selectColony = new SelectColony('Select colony tile for trade', 'trade', openColonies, (colony: Colony) => {
+      if (payWith === Resources.MEGACREDITS) {
+        this.game.defer(new SelectHowToPayDeferred(
+          this,
+          mcTradeAmount,
+          {
+            title: 'Select how to pay ' + mcTradeAmount + ' for colony trade',
+            afterPay: () => {
+              this.game.log('${0} spent ${1} M€ to trade with ${2}', (b) => b.player(this).number(mcTradeAmount).colony(colony));
+              colony.trade(this);
+            },
+          },
+        ));
+      } else if (payWith === Resources.ENERGY) {
+        this.deductResource(Resources.ENERGY, energyTradeAmount);
+        this.game.log('${0} spent ${1} energy to trade with ${2}', (b) => b.player(this).number(energyTradeAmount).colony(colony));
+        colony.trade(this);
+      } else if (payWith === Resources.TITANIUM) {
+        this.deductResource(Resources.TITANIUM, titaniumTradeAmount);
+        this.game.log('${0} spent ${1} titanium to trade with ${2}', (b) => b.player(this).number(titaniumTradeAmount).colony(colony));
+        colony.trade(this);
+      } else if (payWith === ResourceType.FLOATER && titanFloatingLaunchPad !== undefined && titanFloatingLaunchPad.resourceCount) {
+        titanFloatingLaunchPad.resourceCount--;
+        this.actionsThisGeneration.add(titanFloatingLaunchPad.name);
+        this.game.log('${0} spent 1 floater to trade with ${1}', (b) => b.player(this).colony(colony));
+        colony.trade(this);
+      }
       return undefined;
     });
 
