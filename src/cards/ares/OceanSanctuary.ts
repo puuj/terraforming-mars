@@ -4,9 +4,9 @@ import {CardName} from '../../CardName';
 import {SelectSpace} from '../../inputs/SelectSpace';
 import {ISpace} from '../../boards/ISpace';
 import {Player} from '../../Player';
-import {ResourceType} from '../../ResourceType';
+import {ResourceType} from '../../common/ResourceType';
 import {SpaceBonus} from '../../SpaceBonus';
-import {TileType} from '../../TileType';
+import {TileType} from '../../common/TileType';
 import {CardType} from '../CardType';
 import {IResourceCard} from '../ICard';
 import {Tags} from '../Tags';
@@ -40,7 +40,7 @@ export class OceanSanctuary extends Card implements IResourceCard {
     player.addResourceTo(this, 1);
     return new SelectSpace(
       'Select space for Ocean Sanctuary',
-      player.game.board.getOceansTiles(false),
+      player.game.board.getOceanSpaces(false),
       (space: ISpace) => {
         const tile = {
           tileType: TileType.OCEAN_SANCTUARY,

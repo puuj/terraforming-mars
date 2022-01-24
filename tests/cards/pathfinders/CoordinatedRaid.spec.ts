@@ -7,7 +7,7 @@ import {Game} from '../../../src/Game';
 import {TestPlayer} from '../../TestPlayer';
 import {Colony} from '../../../src/colonies/Colony';
 import {ColonyBenefit} from '../../../src/colonies/ColonyBenefit';
-import {Resources} from '../../../src/Resources';
+import {Resources} from '../../../src/common/Resources';
 import {TestingUtils} from '../../TestingUtils';
 import {Units} from '../../../src/Units';
 
@@ -15,14 +15,14 @@ export class TestColony extends Colony {
   public name = 'TestColony' as ColonyName;
   public description = 'Test';
   public buildType = ColonyBenefit.GAIN_RESOURCES;
-  public buildQuantity = [3, 3, 3];
-  public buildResource = Resources.TITANIUM;
+  public override buildQuantity = [3, 3, 3];
+  public override buildResource = Resources.TITANIUM;
   public tradeType = ColonyBenefit.GAIN_RESOURCES;
-  public tradeQuantity = [4, 5, 6, 7, 8, 9, 10];
-  public tradeResource = Resources.MEGACREDITS;
+  public override tradeQuantity = [4, 5, 6, 7, 8, 9, 10];
+  public override tradeResource = Resources.MEGACREDITS;
   public colonyBonusType = ColonyBenefit.GAIN_RESOURCES;
-  public colonyBonusQuantity = 7;
-  public colonyBonusResource = Resources.STEEL;
+  public override colonyBonusQuantity = 7;
+  public override colonyBonusResource = Resources.STEEL;
 }
 
 describe('CoordinatedRaid', function() {

@@ -3,7 +3,7 @@ import {Party} from './Party';
 import {PartyName} from './PartyName';
 import {Game} from '../../Game';
 import {Tags} from '../../cards/Tags';
-import {Resources} from '../../Resources';
+import {Resources} from '../../common/Resources';
 import {Bonus} from '../Bonus';
 import {Policy} from '../Policy';
 import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
@@ -14,7 +14,7 @@ import {DeferredAction} from '../../deferredActions/DeferredAction';
 import {OrOptions} from '../../inputs/OrOptions';
 import {SelectCard} from '../../inputs/SelectCard';
 import {SelectOption} from '../../inputs/SelectOption';
-import {ResourceType} from '../../ResourceType';
+import {ResourceType} from '../../common/ResourceType';
 
 export class Unity extends Party implements IParty {
   name = PartyName.UNITY;

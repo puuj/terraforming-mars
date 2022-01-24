@@ -1,4 +1,5 @@
 import * as constants from './constants';
+import {PlayerId} from './common/Types';
 import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, MAX_FLEET_SIZE, MILESTONE_COST, REDS_RULING_POLICY_COST} from './constants';
 import {AndOptions} from './inputs/AndOptions';
 import {Aridor} from './cards/colonies/Aridor';
@@ -17,15 +18,15 @@ import {ISerializable} from './ISerializable';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
 import {ITagCount} from './ITagCount';
-import {LogMessageDataType} from './LogMessageDataType';
+import {LogMessageDataType} from './common/logs/LogMessageDataType';
 import {OrOptions} from './inputs/OrOptions';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {PartyName} from './turmoil/parties/PartyName';
 import {PharmacyUnion} from './cards/promo/PharmacyUnion';
 import {Phase} from './Phase';
 import {PlayerInput} from './PlayerInput';
-import {ResourceType} from './ResourceType';
-import {Resources} from './Resources';
+import {Resources} from './common/Resources';
+import {ResourceType} from './common/ResourceType';
 import {SelectAmount} from './inputs/SelectAmount';
 import {SelectCard} from './inputs/SelectCard';
 import {SellPatentsStandardProject} from './cards/base/standardProjects/SellPatentsStandardProject';
@@ -46,7 +47,7 @@ import {SerializedPlayer} from './SerializedPlayer';
 import {SpaceType} from './SpaceType';
 import {StormCraftIncorporated} from './cards/colonies/StormCraftIncorporated';
 import {Tags} from './cards/Tags';
-import {CITY_TILES, TileType} from './TileType';
+import {TileType} from './common/TileType';
 import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
 import {SelectProductionToLose} from './inputs/SelectProductionToLose';
 import {IAresGlobalParametersResponse, ShiftAresGlobalParameters} from './inputs/ShiftAresGlobalParameters';
@@ -71,8 +72,6 @@ import {Turmoil} from './turmoil/Turmoil';
 import {PathfindersExpansion} from './pathfinders/PathfindersExpansion';
 import {deserializeProjectCard, serializeProjectCard} from './cards/CardSerialization';
 import {ColoniesHandler} from './colonies/ColoniesHandler';
-
-export type PlayerId = string;
 
 export class Player implements ISerializable<SerializedPlayer> {
   public readonly id: PlayerId;
@@ -648,11 +647,6 @@ export class Player implements ISerializable<SerializedPlayer> {
     return this.cardIsInEffect(CardName.PRIVATE_SECURITY);
   }
 
-  public getCitiesCount() {
-    return Array.from(CITY_TILES).map((tileType) => this.game.getSpaceCount(tileType, this))
-      .reduce((previous, current) => previous + current, 0);
-  }
-
   // Return the number of cards in the player's hand without tags.
   // Wildcard tags are ignored in this computation. (why?)
   public getNoTagsCount() {
@@ -1204,7 +1198,7 @@ export class Player implements ISerializable<SerializedPlayer> {
         }),
       );
     }
-    if (game.board.getOceansOnBoard() < constants.MAX_OCEAN_TILES) {
+    if (game.canAddOcean()) {
       action.options.push(
         new SelectSpace(
           'Add an ocean',

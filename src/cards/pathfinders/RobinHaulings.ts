@@ -5,7 +5,7 @@ import {Player} from '../../Player';
 import {CardName} from '../../CardName';
 import {CardType} from '../CardType';
 import {CardRenderer} from '../render/CardRenderer';
-import {ResourceType} from '../../ResourceType';
+import {ResourceType} from '../../common/ResourceType';
 import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
 import {played} from '../Options';
 import {IProjectCard} from '../IProjectCard';
@@ -41,7 +41,8 @@ export class RobinHaulings extends Card implements CorporationCard {
 
   public override resourceCount = 0;
 
-  public play() {
+  public play(player: Player) {
+    player.addResourceTo(this, 1);
     return undefined;
   }
 

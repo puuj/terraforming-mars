@@ -3,7 +3,7 @@ import {Player} from '../../Player';
 import {CardType} from '../CardType';
 import {IProjectCard} from '../IProjectCard';
 import {Tags} from '../Tags';
-import {Resources} from '../../Resources';
+import {Resources} from '../../common/Resources';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {CardRenderer} from '../render/CardRenderer';
 import {CardRenderDynamicVictoryPoints} from '../render/CardRenderDynamicVictoryPoints';
@@ -35,14 +35,14 @@ export class OffWorldCityLiving extends Card implements IProjectCard {
   };
 
   public play(player: Player) {
-    const amount = player.game.getCitiesInPlay() - player.game.getCitiesInPlayOnMars();
+    const amount = player.game.getCitiesCount() - player.game.getCitiesOnMarsCount();
     player.addProduction(Resources.MEGACREDITS, amount, {log: true});
     MoonExpansion.raiseColonyRate(player);
     return undefined;
   }
 
   public override getVictoryPoints(player: Player) {
-    const amount = player.game.getCitiesInPlay();
+    const amount = player.game.getCitiesCount();
     return Math.floor(amount / 3);
   }
 }

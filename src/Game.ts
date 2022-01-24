@@ -24,17 +24,18 @@ import {ISpace, SpaceId} from './boards/ISpace';
 import {ITile} from './ITile';
 import {LogBuilder} from './LogBuilder';
 import {LogHelper} from './LogHelper';
-import {LogMessage} from './LogMessage';
+import {LogMessage} from './common/logs/LogMessage';
 import {ALL_MILESTONES} from './milestones/Milestones';
 import {ALL_AWARDS} from './awards/Awards';
 import {Notifier} from './Notifier';
 import {OriginalBoard} from './boards/OriginalBoard';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {Phase} from './Phase';
-import {Player, PlayerId} from './Player';
+import {Player} from './Player';
+import {PlayerId, GameId, SpectatorId} from './common/Types';
 import {PlayerInput} from './PlayerInput';
-import {ResourceType} from './ResourceType';
-import {Resources} from './Resources';
+import {ResourceType} from './common/ResourceType';
+import {Resources} from './common/Resources';
 import {DeferredAction, Priority} from './deferredActions/DeferredAction';
 import {DeferredActionsQueue} from './deferredActions/DeferredActionsQueue';
 import {SelectHowToPayDeferred} from './deferredActions/SelectHowToPayDeferred';
@@ -48,7 +49,7 @@ import {SpaceBonus} from './SpaceBonus';
 import {SpaceName} from './SpaceName';
 import {SpaceType} from './SpaceType';
 import {Tags} from './cards/Tags';
-import {TileType} from './TileType';
+import {TileType} from './common/TileType';
 import {Turmoil} from './turmoil/Turmoil';
 import {RandomMAOptionType} from './RandomMAOptionType';
 import {AresHandler} from './ares/AresHandler';
@@ -71,9 +72,6 @@ import {IPathfindersData} from './pathfinders/IPathfindersData';
 import {ArabiaTerraBoard} from './boards/ArabiaTerraBoard';
 import {AddResourcesToCard} from './deferredActions/AddResourcesToCard';
 import {isProduction} from './utils/server';
-
-export type GameId = string;
-export type SpectatorId = string;
 
 export interface Score {
   corporation: String;
@@ -512,14 +510,10 @@ export class Game implements ISerializable<SerializedGame> {
     );
   }
 
-  public noOceansAvailable(): boolean {
-    return this.board.getOceansOnBoard() >= constants.MAX_OCEAN_TILES;
-  }
-
   public marsIsTerraformed(): boolean {
     const oxygenMaxed = this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL;
     const temperatureMaxed = this.temperature >= constants.MAX_TEMPERATURE;
-    const oceansMaxed = this.board.getOceansOnBoard() === constants.MAX_OCEAN_TILES;
+    const oceansMaxed = !this.canAddOcean();
     let globalParametersMaxed = oxygenMaxed && temperatureMaxed && oceansMaxed;
     const venusMaxed = this.getVenusScaleLevel() === constants.MAX_VENUS_SCALE;
 
@@ -1268,17 +1262,20 @@ export class Game implements ISerializable<SerializedGame> {
     return player;
   }
 
-  public getCitiesInPlayOnMars(): number {
+  public getCitiesOnMarsCount(): number {
     return this.board.spaces.filter(
       (space) => Board.isCitySpace(space) && space.spaceType !== SpaceType.COLONY).length;
   }
-  public getCitiesInPlay(): number {
-    return this.board.spaces.filter((space) => Board.isCitySpace(space)).length;
+
+  public getCitiesCount(player?: Player): number {
+    let cities = this.board.spaces.filter((space) => Board.isCitySpace(space));
+    if (player !== undefined) cities = cities.filter(Board.ownedBy(player));
+    return cities.length;
   }
+
   public getSpaceCount(tileType: TileType, player: Player): number {
     return this.board.spaces.filter(
-      (space) => space.tile !== undefined &&
-                  space.tile.tileType === tileType &&
+      (space) => space.tile?.tileType === tileType &&
                   space.player !== undefined &&
                   space.player === player,
     ).length;
@@ -1328,7 +1325,7 @@ export class Game implements ISerializable<SerializedGame> {
 
     // Hellas special requirements ocean tile
     if (space.id === SpaceName.HELLAS_OCEAN_TILE &&
-        this.board.getOceansOnBoard() < constants.MAX_OCEAN_TILES &&
+        this.canAddOcean() &&
         this.gameOptions.boardName === BoardName.HELLAS) {
       if (player.color !== Color.NEUTRAL) {
         this.defer(new PlaceOceanTile(player, 'Select space for ocean from placement bonus'));
@@ -1454,11 +1451,14 @@ export class Game implements ISerializable<SerializedGame> {
   }
 
   public canAddOcean(): boolean {
-    if (this.board.getOceansOnBoard() === constants.MAX_OCEAN_TILES) {
-      return false;
-    }
-    return true;
+    return this.board.getOceanCount() < constants.MAX_OCEAN_TILES;
   }
+
+  public canRemoveOcean(): boolean {
+    const count = this.board.getOceanCount();
+    return count > 0 && count < constants.MAX_OCEAN_TILES;
+  }
+
   public addOceanTile(
     player: Player, spaceId: SpaceId,
     spaceType: SpaceType = SpaceType.OCEAN): void {

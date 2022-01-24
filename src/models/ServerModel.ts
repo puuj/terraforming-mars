@@ -21,9 +21,9 @@ import {SelectHowToPayForProjectCard} from '../inputs/SelectHowToPayForProjectCa
 import {SelectPlayer} from '../inputs/SelectPlayer';
 import {SelectSpace} from '../inputs/SelectSpace';
 import {SpaceHighlight, SpaceModel} from './SpaceModel';
-import {TileType} from '../TileType';
+import {TileType} from '../common/TileType';
 import {Phase} from '../Phase';
-import {Resources} from '../Resources';
+import {Resources} from '../common/Resources';
 import {CardType} from '../cards/CardType';
 import {
   ClaimedMilestoneModel,
@@ -77,7 +77,7 @@ export class Server {
       lastSoloGeneration: game.lastSoloGeneration(),
       milestones: this.getMilestones(game),
       moon: MoonModel.serialize(game),
-      oceans: game.board.getOceansOnBoard(),
+      oceans: game.board.getOceanCount(),
       oxygenLevel: game.getOxygenLevel(),
       passedPlayers: game.getPassedPlayers(),
       pathfinders: PathfindersModel.serialize(game),
@@ -386,7 +386,7 @@ export class Server {
       cardCost: player.cardCost,
       cardDiscount: player.cardDiscount,
       cardsInHandNbr: player.cardsInHand.length,
-      citiesCount: player.getCitiesCount(),
+      citiesCount: player.game.getCitiesCount(player),
       coloniesCount: player.getColoniesCount(),
       color: player.color,
       corporationCard: Server.getCorporationCard(player),

@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {DEFAULT_GAME_OPTIONS, Game} from '../../src/Game';
 import {ArabiaTerraBoard} from '../../src/boards/ArabiaTerraBoard';
 import {Player} from '../../src/Player';
-import {TileType} from '../../src/TileType';
+import {TileType} from '../../src/common/TileType';
 import {SpaceType} from '../../src/SpaceType';
 import {TestPlayers} from '../TestPlayers';
 import {Random} from '../../src/Random';
@@ -12,7 +12,7 @@ import {BoardName} from '../../src/boards/BoardName';
 import {ProcessorFactory} from '../../src/cards/moon/ProcessorFactory';
 import {SearchForLife} from '../../src/cards/base/SearchForLife';
 import {Decomposers} from '../../src/cards/base/Decomposers';
-import {Resources} from '../../src/Resources';
+import {Resources} from '../../src/common/Resources';
 import {LandClaim} from '../../src/cards/base/LandClaim';
 import {SelectSpace} from '../../src/inputs/SelectSpace';
 
