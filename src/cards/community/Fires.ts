@@ -2,6 +2,7 @@ import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
+import {CardRequirements} from '../CardRequirements';
 import {Tags} from '../Tags';
 import {CardName} from '../../CardName';
 import {CardRenderer} from '../render/CardRenderer';
@@ -13,7 +14,7 @@ export class Fires extends Card implements IProjectCard {
       name: CardName.FIRES,
       tags: [Tags.ENERGY],
       cost: 10,
-
+      requirements: CardRequirements.builder((b) => b.oxygen(1)),
       metadata: {
         cardNumber: 'J002',
         renderData: CardRenderer.builder((b) => {
@@ -23,10 +24,6 @@ export class Fires extends Card implements IProjectCard {
         description: 'Reduce oxygen 1 step. Increase temperature 1 step.',
       },
     });
-  }
-
-  public canPlay(player: Player): boolean {
-    return super.canPlay(player) && player.game.getOxygenLevel() > 1;
   }
 
   public play(player: Player) {

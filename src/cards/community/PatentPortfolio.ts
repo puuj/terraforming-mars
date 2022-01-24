@@ -4,7 +4,7 @@ import {CardType} from '../CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardName} from '../../CardName';
-import {Resources} from '../../Resources';
+import {Resources} from '../../common/Resources';
 import {CardRenderer} from '../render/CardRenderer';
 
 export class PatentPortfolio extends Card implements IProjectCard {

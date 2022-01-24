@@ -27,7 +27,7 @@ export class DarkHorse extends Card implements IProjectCard {
     });
   }
 
-  public canPlay(player: Player): boolean {
+  public override canPlay(player: Player): boolean {
     if (!super.canPlay(player)) {
       return false;
     }
@@ -56,7 +56,4 @@ export class DarkHorse extends Card implements IProjectCard {
     return undefined;
   }
 
-  public getVictoryPoints() {
-    return 5;
-  }
 }

@@ -21,23 +21,11 @@ export class CardRequirements {
     f(builder);
     return builder.build();
   }
-<<<<<<< HEAD
-  public getRequirementsText(): string {
-    const reqTexts: Array<string> = this.requirements.map((req) => req.getLabel());
-    if (this.hasAny()) {
-      reqTexts.unshift('Any');
-    }
-    const reqText = reqTexts.join(' ');
-    if (reqText.length > 50) {
-      return 'See description';
-    }
-    return reqText;
-  }
-=======
->>>>>>> upstream/main
+
   public hasMax(): boolean {
     return this.requirements.some((req) => req.isMax);
   }
+
   public satisfies(player: Player): boolean {
     // Process tags separately, though max & any tag criteria will be processed later.
     // This pre-computation takes the wild tag into account.

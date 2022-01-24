@@ -3,7 +3,7 @@ import {CardType} from '../CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {Tags} from '../Tags';
-import {Resources} from '../../Resources';
+import {Resources} from '../../common/Resources';
 import {CardName} from '../../CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -28,16 +28,12 @@ export class HorizontalIntegration extends Card implements IProjectCard {
     });
   }
 
-  public canPlay(player: Player): boolean {
+  public override canPlay(player: Player): boolean {
     if (player.megaCredits > 0 && player.steel > 0 && player.titanium > 0 &&
       player.plants > 0 && player.energy > 0 && player.heat > 0) {
       return true;
     }
     return false;
-  }
-
-  public getVictoryPoints() {
-    return 1;
   }
 
   public play(player: Player) {

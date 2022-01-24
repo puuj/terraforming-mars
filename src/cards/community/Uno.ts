@@ -24,15 +24,11 @@ export class Uno extends Card implements IProjectCard {
     });
   }
 
-  public canPlay(player: Player): boolean {
+  public override canPlay(player: Player): boolean {
     if (player.cardsInHand.length <= 1) {
       return super.canPlay(player);
     }
     return false;
-  }
-
-  public getVictoryPoints(): number {
-    return 4;
   }
 
   public play() {
