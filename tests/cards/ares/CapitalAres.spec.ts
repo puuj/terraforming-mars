@@ -2,11 +2,11 @@ import {expect} from 'chai';
 import {CapitalAres} from '../../../src/cards/ares/CapitalAres';
 import {TestPlayer} from '../../TestPlayer';
 import {Game} from '../../../src/Game';
-import {SpaceType} from '../../../src/SpaceType';
+import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {SelectSpace} from '../../../src/inputs/SelectSpace';
 import {Resources} from '../../../src/common/Resources';
 import {TileType} from '../../../src/common/TileType';
-import {SpaceBonus} from '../../../src/SpaceBonus';
+import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
 import {ARES_OPTIONS_NO_HAZARDS} from '../../ares/AresTestHelper';
 import {TestPlayers} from '../../TestPlayers';
 

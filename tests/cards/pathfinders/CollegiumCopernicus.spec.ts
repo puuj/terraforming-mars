@@ -14,7 +14,7 @@ import {Europa} from '../../../src/colonies/Europa';
 import {Io} from '../../../src/colonies/Io';
 import {Pluto} from '../../../src/colonies/Pluto';
 import {LunarObservationPost} from '../../../src/cards/moon/LunarObservationPost';
-import {Tags} from '../../../src/cards/Tags';
+import {Tags} from '../../../src/common/cards/Tags';
 import {SelectCard} from '../../../src/inputs/SelectCard';
 
 describe('CollegiumCopernicus', function() {
@@ -125,5 +125,12 @@ describe('CollegiumCopernicus', function() {
 
     expect(lunarObservationPost.resourceCount).eq(1);
     expect(card.resourceCount).eq(0);
+  });
+
+  it('initialAction', function() {
+    expect(player.cardsInHand).is.empty;
+    card.initialAction(player);
+    expect(player.cardsInHand).has.length(2);
+    expect(player.cardsInHand.filter((card) => card.tags.includes(Tags.SCIENCE))).has.length(2);
   });
 });

@@ -1,5 +1,5 @@
 import {RequirementType} from './RequirementType';
-import {Tags} from './Tags';
+import {Tags} from '../common/cards/Tags';
 import {PartyName} from '../turmoil/parties/PartyName';
 import {Resources} from '../common/Resources';
 import {Player} from '../Player';
@@ -51,12 +51,7 @@ export class CardRequirement {
       return this.satisfiesInequality(player.getResourceCount(ResourceType.FLOATER));
 
     case RequirementType.GREENERIES:
-      const greeneries = player.game.board.spaces.filter(
-        (space) => space.tile !== undefined &&
-            space.tile.tileType === TileType.GREENERY &&
-            (space.player === player || this.isAny),
-      ).length;
-      return this.satisfiesInequality(greeneries);
+      return this.satisfiesInequality(player.game.getGreeneriesCount(this.isAny ? undefined : player));
 
     case RequirementType.PARTY_LEADERS:
       const turmoil = Turmoil.getTurmoil(player.game);
@@ -121,7 +116,7 @@ export class CardRequirement {
 
     switch (parameter) {
     case GlobalParameter.OCEANS:
-      currentLevel = player.game.board.getOceanCount();
+      currentLevel = player.game.board.getOceanCount({upgradedOceans: true, wetlands: true});
       break;
     case GlobalParameter.OXYGEN:
       currentLevel = player.game.getOxygenLevel();

@@ -45,10 +45,10 @@ import {RemoveColonyFromGame} from './deferredActions/RemoveColonyFromGame';
 import {GainResources} from './deferredActions/GainResources';
 import {SerializedGame} from './SerializedGame';
 import {SerializedPlayer} from './SerializedPlayer';
-import {SpaceBonus} from './SpaceBonus';
+import {SpaceBonus} from './common/boards/SpaceBonus';
 import {SpaceName} from './SpaceName';
-import {SpaceType} from './SpaceType';
-import {Tags} from './cards/Tags';
+import {SpaceType} from './common/boards/SpaceType';
+import {Tags} from './common/cards/Tags';
 import {TileType} from './common/TileType';
 import {Turmoil} from './turmoil/Turmoil';
 import {RandomMAOptionType} from './RandomMAOptionType';
@@ -1010,7 +1010,6 @@ export class Game implements ISerializable<SerializedGame> {
 
 
   public playerIsFinishedTakingActions(): void {
-    // Deferred actions hook
     if (this.deferredActions.length > 0) {
       this.deferredActions.runAll(() => this.playerIsFinishedTakingActions());
       return;
@@ -1046,11 +1045,7 @@ export class Game implements ISerializable<SerializedGame> {
       this.log('This game id was ' + this.id);
     }
 
-    const oldSave = this.lastSaveId;
-    this.phase = Phase.END;
-    this.save();
-
-    Database.getInstance().cleanSaves(this.id, oldSave);
+    Database.getInstance().cleanSaves(this.id);
     const scores: Array<Score> = [];
     this.players.forEach((player) => {
       let corponame: string = '';
@@ -1273,12 +1268,16 @@ export class Game implements ISerializable<SerializedGame> {
     return cities.length;
   }
 
+  public getGreeneriesCount(player?: Player): number {
+    let greeneries = this.board.spaces.filter((space) => Board.isGreenerySpace(space));
+    if (player !== undefined) greeneries = greeneries.filter(Board.ownedBy(player));
+    return greeneries.length;
+  }
+
   public getSpaceCount(tileType: TileType, player: Player): number {
-    return this.board.spaces.filter(
-      (space) => space.tile?.tileType === tileType &&
-                  space.player !== undefined &&
-                  space.player === player,
-    ).length;
+    return this.board.spaces.filter(Board.ownedBy(player))
+      .filter((space) => space.tile?.tileType === tileType)
+      .length;
   }
 
   // addTile applies to the Mars board, but not the Moon board, see MoonExpansion.addTile for placing
@@ -1482,6 +1481,7 @@ export class Game implements ISerializable<SerializedGame> {
     space.player = undefined;
   }
 
+  // Players returned in play order starting with first player this generation.
   public getPlayers(): Array<Player> {
     // We always return them in turn order
     const ret: Array<Player> = [];

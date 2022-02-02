@@ -1,10 +1,10 @@
 import {IProjectCard} from '../IProjectCard';
-import {Tags} from '../Tags';
+import {Tags} from '../../common/cards/Tags';
 import {Card} from '../Card';
 import {CardType} from '../CardType';
 import {Player} from '../../Player';
 import {SpaceName} from '../../SpaceName';
-import {SpaceType} from '../../SpaceType';
+import {SpaceType} from '../../common/boards/SpaceType';
 import {CardName} from '../../CardName';
 import {CardRenderer} from '../render/CardRenderer';
 

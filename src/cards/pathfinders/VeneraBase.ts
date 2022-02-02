@@ -7,12 +7,12 @@ import {CardName} from '../../CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
 import {ResourceType} from '../../common/ResourceType';
-import {Tags} from '../Tags';
+import {Tags} from '../../common/cards/Tags';
 import {CardRequirements} from '../CardRequirements';
 import {PartyName} from '../../turmoil/parties/PartyName';
 import {Resources} from '../../common/Resources';
 import {SpaceName} from '../../SpaceName';
-import {SpaceType} from '../../SpaceType';
+import {SpaceType} from '../../common/boards/SpaceType';
 
 export class VeneraBase extends Card implements IProjectCard, IActionCard {
   constructor() {

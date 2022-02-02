@@ -1,12 +1,12 @@
 import {expect} from 'chai';
-import {SpaceBonus} from '../../src/SpaceBonus';
+import {SpaceBonus} from '../../src/common/boards/SpaceBonus';
 import {Player} from '../../src/Player';
 import {DEFAULT_GAME_OPTIONS, Game} from '../../src/Game';
 import {ARES_OPTIONS_NO_HAZARDS, AresTestHelper, ARES_OPTIONS_WITH_HAZARDS} from './AresTestHelper';
 import {EmptyBoard} from './EmptyBoard';
 import {TileType} from '../../src/common/TileType';
 import {ITile} from '../../src/ITile';
-import {SpaceType} from '../../src/SpaceType';
+import {SpaceType} from '../../src/common/boards/SpaceType';
 import {Resources} from '../../src/common/Resources';
 import {SelectProductionToLose} from '../../src/inputs/SelectProductionToLose';
 import {OriginalBoard} from '../../src/boards/OriginalBoard';

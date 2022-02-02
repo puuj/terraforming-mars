@@ -230,6 +230,12 @@
     <template v-else-if="title ===  CardName.SOYLENT_SEEDLING_SYSTEMS">
       <div class="card-soylent-logo"></div>
     </template>
+    <template v-else-if="title ===  CardName.BIO_SOL">
+      <div class="card-bio-sol-logo"></div>
+    </template>
+    <template v-else-if="title ===  CardName.ADHAI_HIGH_ORBIT_CONSTRUCTIONS">
+      <div class="card-adhai-high-orbit-constructions-logo"></div>
+    </template>
     <template v-else-if="title ===  CardName.CURIOSITY_II">
       <div class="card-curiosity-ii-logo">Curiosity II</div>
     </template>

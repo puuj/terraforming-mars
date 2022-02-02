@@ -5,10 +5,10 @@ import {ARES_OPTIONS_NO_HAZARDS} from '../../ares/AresTestHelper';
 import {expect} from 'chai';
 import {Resources} from '../../../src/common/Resources';
 import {TileType} from '../../../src/common/TileType';
-import {SpaceType} from '../../../src/SpaceType';
+import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {TestPlayers} from '../../TestPlayers';
 import {Capital} from '../../../src/cards/base/Capital';
-import {SpaceBonus} from '../../../src/SpaceBonus';
+import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
 import {TestingUtils} from '../../TestingUtils';
 
 describe('OceanCity', function() {

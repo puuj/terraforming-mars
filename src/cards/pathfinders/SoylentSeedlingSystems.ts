@@ -3,13 +3,13 @@ import {CardType} from '../CardType';
 import {CardName} from '../../CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Card} from '../Card';
-import {Tags} from '../Tags';
+import {Tags} from '../../common/cards/Tags';
 import {Size} from '../render/Size';
 import {played} from '../Options';
 import {CorporationCard} from '../corporation/CorporationCard';
 import {ResourceType} from '../../common/ResourceType';
 import {ISpace} from '../../boards/ISpace';
-import {TileType} from '../../common/TileType';
+import {Board} from '../../boards/Board';
 
 export class SoylentSeedlingSystems extends Card implements CorporationCard {
   constructor() {
@@ -47,7 +47,7 @@ export class SoylentSeedlingSystems extends Card implements CorporationCard {
     if (cardOwner.id !== activePlayer.id) {
       return;
     }
-    if (space.tile?.tileType === TileType.GREENERY) {
+    if (Board.isGreenerySpace(space)) {
       cardOwner.addResourceTo(this, {log: true});
     }
   }

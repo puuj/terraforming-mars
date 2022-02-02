@@ -4,7 +4,7 @@
  */
 import {CardRenderItemType} from './CardRenderItemType';
 import {Size} from './Size';
-import {Tags} from '../Tags';
+import {Tags} from '../../common/cards/Tags';
 
 // Tags that belong in `CardRenderItem.secondaryTag` that aren't part of `Tags`.
 export enum AltSecondaryTag {
@@ -21,13 +21,15 @@ export enum AltSecondaryTag {
   MOON_MINING_RATE = 'moon-mine',
   MOON_COLONY_RATE = 'moon-colony',
   MOON_LOGISTICS_RATE = 'moon-road',
+
+  NO_PLANETARY_TAG = 'no_planetary_tag',
 }
 
 export interface ItemOptions {
   size?: Size;
   amount?: number;
   all?: boolean;
-  digit?: true | false | 'large';
+  digit?: boolean;
   played?: boolean;
   secondaryTag?: Tags | AltSecondaryTag;
   multiplier?: boolean; /** Mark any amount to be a multiplier 'X' */
@@ -62,7 +64,6 @@ export class CardRenderItem {
       break;
     case false:
       break; // it's undefined
-    case 'large':
     default:
       this.showDigit = Math.abs(this.amount) > 5 ? true : undefined;
     }

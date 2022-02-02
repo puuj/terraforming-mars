@@ -17,7 +17,7 @@ import {ICard, IResourceCard, isIActionCard, TRSource, IActionCard} from './card
 import {ISerializable} from './ISerializable';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
-import {ITagCount} from './ITagCount';
+import {ITagCount} from './common/cards/ITagCount';
 import {LogMessageDataType} from './common/logs/LogMessageDataType';
 import {OrOptions} from './inputs/OrOptions';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
@@ -44,10 +44,9 @@ import {SelectSpace} from './inputs/SelectSpace';
 import {RobotCard, SelfReplicatingRobots} from './cards/promo/SelfReplicatingRobots';
 import {SerializedCard} from './SerializedCard';
 import {SerializedPlayer} from './SerializedPlayer';
-import {SpaceType} from './SpaceType';
+import {SpaceType} from './common/boards/SpaceType';
 import {StormCraftIncorporated} from './cards/colonies/StormCraftIncorporated';
-import {Tags} from './cards/Tags';
-import {TileType} from './common/TileType';
+import {Tags} from './common/cards/Tags';
 import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
 import {SelectProductionToLose} from './inputs/SelectProductionToLose';
 import {IAresGlobalParametersResponse, ShiftAresGlobalParameters} from './inputs/ShiftAresGlobalParameters';
@@ -573,15 +572,15 @@ export class Player implements ISerializable<SerializedPlayer> {
     // Victory points from board
     this.game.board.spaces.forEach((space) => {
       // Victory points for greenery tiles
-      if (space.tile && space.tile.tileType === TileType.GREENERY && space.player !== undefined && space.player.id === this.id) {
+      if (Board.isGreenerySpace(space) && Board.spaceOwnedBy(space, this)) {
         victoryPointsBreakdown.setVictoryPoints('greenery', 1);
       }
 
       // Victory points for greenery tiles adjacent to cities
-      if (Board.isCitySpace(space) && space.player !== undefined && space.player.id === this.id) {
+      if (Board.isCitySpace(space) && Board.spaceOwnedBy(space, this)) {
         const adjacent = this.game.board.getAdjacentSpaces(space);
         for (const adj of adjacent) {
-          if (adj.tile && adj.tile.tileType === TileType.GREENERY) {
+          if (Board.isGreenerySpace(adj)) {
             victoryPointsBreakdown.setVictoryPoints('city', 1);
           }
         }
@@ -742,6 +741,10 @@ export class Player implements ISerializable<SerializedPlayer> {
       card.resourceCount += count;
     }
 
+    if (typeof(options) !== 'number' && options.log === true) {
+      LogHelper.logAddResource(this, card, count);
+    }
+
     // Topsoil contract hook
     if (card.resourceType === ResourceType.MICROBE && this.playedCards.map((card) => card.name).includes(CardName.TOPSOIL_CONTRACT)) {
       this.megaCredits += count;
@@ -752,8 +755,20 @@ export class Player implements ISerializable<SerializedPlayer> {
       this.megaCredits += count * 2;
     }
 
-    if (typeof(options) !== 'number' && options.log === true) {
-      LogHelper.logAddResource(this, card, count);
+    // Communication Center Hook
+    if (card.name === CardName.COMMUNICATION_CENTER) {
+      PathfindersExpansion.communicationCenterHook(card, this.game);
+    }
+
+    // Botanical Experience Hook
+    if (card.name === CardName.BOTANICAL_EXPERIENCE && card.resourceCount >= 3) {
+      const delta = Math.floor(card.resourceCount / 3);
+      const deducted = delta * 3;
+      card.resourceCount -= deducted;
+      // This assumes this player is the card owner. Bad?
+      this.addProduction(Resources.PLANTS, delta, {log: false});
+      this.game.log('${0} removed ${1} data from ${2} to increase plant production ${3} steps.',
+        (b) => b.player(this).number(deducted).cardName(CardName.BOTANICAL_EXPERIENCE).number(delta));
     }
   }
 
@@ -842,7 +857,7 @@ export class Player implements ISerializable<SerializedPlayer> {
 
     if (includeTagSubstitutions) {
       // Earth Embassy hook
-      if (tag === Tags.EARTH && this.playedCards.some((c) => c.name === CardName.EARTH_EMBASSY)) {
+      if (tag === Tags.EARTH && this.cardIsInEffect(CardName.EARTH_EMBASSY)) {
         tagCount += this.getRawTagCount(Tags.MOON, includeEvents);
       }
       if (tag !== Tags.WILDCARD) {
@@ -890,7 +905,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     });
 
     // This is repeated behavior from getTagCount, sigh, OK.
-    if (tags.includes(Tags.EARTH) && !tags.includes(Tags.MOON) && this.playedCards.some((c) => c.name === CardName.EARTH_EMBASSY)) {
+    if (tags.includes(Tags.EARTH) && !tags.includes(Tags.MOON) && this.cardIsInEffect(CardName.EARTH_EMBASSY)) {
       tagCount += this.getRawTagCount(Tags.MOON, false);
     }
 

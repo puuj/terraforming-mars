@@ -1,8 +1,8 @@
 import {IAdjacencyBonus} from '../ares/IAdjacencyBonus';
 import {ITile} from '../ITile';
 import {PlayerId} from '../common/Types';
-import {SpaceBonus} from '../SpaceBonus';
-import {SpaceType} from '../SpaceType';
+import {SpaceBonus} from '../common/boards/SpaceBonus';
+import {SpaceType} from '../common/boards/SpaceType';
 import {SpaceId} from './ISpace';
 
 export interface SerializedBoard {

@@ -3,10 +3,10 @@ import {NewVenice} from '../../../src/cards/pathfinders/NewVenice';
 import {expect} from 'chai';
 import {Resources} from '../../../src/common/Resources';
 import {TileType} from '../../../src/common/TileType';
-import {SpaceType} from '../../../src/SpaceType';
+import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {TestPlayers} from '../../TestPlayers';
 import {Capital} from '../../../src/cards/base/Capital';
-import {SpaceBonus} from '../../../src/SpaceBonus';
+import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
 import {TestingUtils} from '../../TestingUtils';
 import {TestPlayer} from 'tests/TestPlayer';
 
