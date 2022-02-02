@@ -2,7 +2,7 @@ import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
-import {Tags} from '../Tags';
+import {Tags} from '../../common/cards/Tags';
 import {CardName} from '../../CardName';
 import {CardRequirements} from '../CardRequirements';
 import {max} from '../Options';

@@ -4,7 +4,7 @@ import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardName} from '../../CardName';
 import {CardRequirements} from '../CardRequirements';
-import {Tags} from '../Tags';
+import {Tags} from '../../common/cards/Tags';
 import {RemoveOceanTile} from '../../deferredActions/RemoveOceanTile';
 import {CardRenderer} from '../render/CardRenderer';
 
