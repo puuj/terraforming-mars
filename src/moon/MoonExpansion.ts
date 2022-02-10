@@ -5,15 +5,15 @@ import {Player} from '../Player';
 import {TileType} from '../common/TileType';
 import {SpaceType} from '../common/boards/SpaceType';
 import {IMoonData} from './IMoonData';
-import {CardName} from '../CardName';
+import {CardName} from '../common/cards/CardName';
 import {IProjectCard} from '../cards/IProjectCard';
-import {Units} from '../Units';
+import {Units} from '../common/Units';
 import {IMoonCard} from '../cards/moon/IMoonCard';
 import {Tags} from '../common/cards/Tags';
 import {ISpace} from '../boards/ISpace';
 import {MAXIMUM_COLONY_RATE, MAXIMUM_LOGISTICS_RATE, MAXIMUM_MINING_RATE} from '../constants';
 import {Resources} from '../common/Resources';
-import {Phase} from '../Phase';
+import {Phase} from '../common/Phase';
 import {BoardType} from '../boards/BoardType';
 import {VictoryPointsBreakdown} from '../VictoryPointsBreakdown';
 

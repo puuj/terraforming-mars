@@ -2,8 +2,8 @@ import {Card} from '../Card';
 import {CorporationCard} from '../corporation/CorporationCard';
 import {Tags} from '../../common/cards/Tags';
 import {Player} from '../../Player';
-import {CardName} from '../../CardName';
-import {CardType} from '../CardType';
+import {CardName} from '../../common/cards/CardName';
+import {CardType} from '../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
 import {ResourceType} from '../../common/ResourceType';
 import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
@@ -77,7 +77,7 @@ export class RobinHaulings extends Card implements CorporationCard {
             this.resourceCount -= 3;
             return undefined;
           }));
-    };
+    }
     if (this.canRaiseOxygen(player)) {
       options.options.push(
         new SelectOption(
@@ -88,7 +88,7 @@ export class RobinHaulings extends Card implements CorporationCard {
             this.resourceCount -= 3;
             return undefined;
           }));
-    };
+    }
 
     if (options.options.length === 0) {
       return undefined;

@@ -1,15 +1,15 @@
 import * as constants from './constants';
 import {BeginnerCorporation} from './cards/corporation/BeginnerCorporation';
 import {Board} from './boards/Board';
-import {BoardName} from './boards/BoardName';
+import {BoardName} from './common/boards/BoardName';
 import {CardFinder} from './CardFinder';
-import {CardName} from './CardName';
-import {CardType} from './cards/CardType';
+import {CardName} from './common/cards/CardName';
+import {CardType} from './common/cards/CardType';
 import {ClaimedMilestone, serializeClaimedMilestones, deserializeClaimedMilestones} from './milestones/ClaimedMilestone';
 import {Colony} from './colonies/Colony';
 import {ColonyDealer, loadColoniesFromJSON} from './colonies/ColonyDealer';
-import {ColonyName} from './colonies/ColonyName';
-import {Color} from './Color';
+import {ColonyName} from './common/colonies/ColonyName';
+import {Color} from './common/Color';
 import {CorporationCard} from './cards/corporation/CorporationCard';
 import {Database} from './database/Database';
 import {Dealer} from './Dealer';
@@ -20,7 +20,7 @@ import {IAward} from './awards/IAward';
 import {ISerializable} from './ISerializable';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
-import {ISpace, SpaceId} from './boards/ISpace';
+import {ISpace} from './boards/ISpace';
 import {ITile} from './ITile';
 import {LogBuilder} from './LogBuilder';
 import {LogHelper} from './LogHelper';
@@ -30,9 +30,9 @@ import {ALL_AWARDS} from './awards/Awards';
 import {Notifier} from './Notifier';
 import {OriginalBoard} from './boards/OriginalBoard';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
-import {Phase} from './Phase';
+import {Phase} from './common/Phase';
 import {Player} from './Player';
-import {PlayerId, GameId, SpectatorId} from './common/Types';
+import {PlayerId, GameId, SpectatorId, SpaceId} from './common/Types';
 import {PlayerInput} from './PlayerInput';
 import {ResourceType} from './common/ResourceType';
 import {Resources} from './common/Resources';
@@ -53,11 +53,11 @@ import {TileType} from './common/TileType';
 import {Turmoil} from './turmoil/Turmoil';
 import {RandomMAOptionType} from './RandomMAOptionType';
 import {AresHandler} from './ares/AresHandler';
-import {IAresData} from './ares/IAresData';
+import {IAresData} from './common/ares/IAresData';
 import {AgendaStyle} from './turmoil/PoliticalAgendas';
 import {GameSetup} from './GameSetup';
 import {CardLoader} from './CardLoader';
-import {GlobalParameter} from './GlobalParameter';
+import {GlobalParameter} from './common/GlobalParameter';
 import {AresSetup} from './ares/AresSetup';
 import {IMoonData} from './moon/IMoonData';
 import {MoonExpansion} from './moon/MoonExpansion';
@@ -1090,7 +1090,7 @@ export class Game implements ISerializable<SerializedGame> {
       } else {
         this.donePlayers.add(player.id);
       }
-    };
+    }
     this.gotoEndGame();
   }
 

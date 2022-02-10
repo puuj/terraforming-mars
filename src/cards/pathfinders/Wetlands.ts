@@ -1,15 +1,15 @@
 import {Card} from '../Card';
-import {CardName} from '../../CardName';
+import {CardName} from '../../common/cards/CardName';
 import {SelectSpace} from '../../inputs/SelectSpace';
 import {ISpace} from '../../boards/ISpace';
 import {Player} from '../../Player';
 import {TileType} from '../../common/TileType';
-import {CardType} from '../CardType';
+import {CardType} from '../../common/cards/CardType';
 import {IProjectCard} from '../IProjectCard';
 import {Tags} from '../../common/cards/Tags';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../Units';
+import {Units} from '../../common/Units';
 import {Board} from '../../boards/Board';
 import {Size} from '../render/Size';
 
@@ -54,7 +54,7 @@ export class Wetlands extends Card implements IProjectCard {
   public override canPlay(player: Player) {
     if (!player.hasUnits(this.reserveUnits)) {
       return false;
-    };
+    }
     return this.availableSpaces(player).length > 0;
   }
 

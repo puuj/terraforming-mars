@@ -1,11 +1,11 @@
 import {RequirementType} from './RequirementType';
 import {Tags} from '../common/cards/Tags';
-import {PartyName} from '../turmoil/parties/PartyName';
+import {PartyName} from '../common/turmoil/PartyName';
 import {Resources} from '../common/Resources';
 import {Player} from '../Player';
 import {ResourceType} from '../common/ResourceType';
 import {TileType} from '../common/TileType';
-import {GlobalParameter} from '../GlobalParameter';
+import {GlobalParameter} from '../common/GlobalParameter';
 import {MoonExpansion} from '../moon/MoonExpansion';
 import {Turmoil} from '../turmoil/Turmoil';
 import {Options} from './CardRequirements';
@@ -106,7 +106,7 @@ export class CardRequirement {
     case RequirementType.TAG:
     case RequirementType.PARTY:
     case RequirementType.PRODUCTION:
-      throw `Use subclass satisfies() for requirement type ${this.type}`;
+      throw new Error(`Use subclass satisfies() for requirement type ${this.type}`);
     }
   }
 

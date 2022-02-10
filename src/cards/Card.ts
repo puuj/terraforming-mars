@@ -1,11 +1,11 @@
 import {ICardMetadata} from './ICardMetadata';
-import {CardName} from '../CardName';
-import {CardType} from './CardType';
+import {CardName} from '../common/cards/CardName';
+import {CardType} from '../common/cards/CardType';
 import {IAdjacencyBonus} from '../ares/IAdjacencyBonus';
 import {ResourceType} from '../common/ResourceType';
 import {Tags} from '../common/cards/Tags';
 import {Player} from '../Player';
-import {Units} from '../Units';
+import {Units} from '../common/Units';
 import {CardRequirements} from './CardRequirements';
 import {CardDiscount, TRSource, VictoryPoints} from './ICard';
 import {CardRenderDynamicVictoryPoints} from './render/CardRenderDynamicVictoryPoints';

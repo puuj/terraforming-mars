@@ -33,9 +33,9 @@
 import Vue from 'vue';
 import {CardRequirement, PartyCardRequirement, ProductionCardRequirement, /* ProductionCardRequirement,*/ TagCardRequirement} from '@/cards/CardRequirement';
 import {RequirementType} from '@/cards/RequirementType';
-import {generateClassString, range} from '@/utils/utils';
+import {generateClassString, range} from '@/common/utils/utils';
 import CardParty from '@/client/components/card/CardParty.vue';
-import {PartyName} from '@/turmoil/parties/PartyName';
+import {PartyName} from '@/common/turmoil/PartyName';
 
 export default Vue.extend({
   name: 'CardRequirementComponent',

@@ -1,9 +1,8 @@
-
 import {Color} from '../Color';
-import {TileType} from '../common/TileType';
-import {SpaceBonus} from '../common/boards/SpaceBonus';
-import {SpaceType} from '../common/boards/SpaceType';
-import {SpaceId} from '../boards/ISpace';
+import {TileType} from '../TileType';
+import {SpaceBonus} from '../boards/SpaceBonus';
+import {SpaceType} from '../boards/SpaceType';
+import {SpaceId} from '../Types';
 
 export type SpaceHighlight = undefined | 'noctis' | 'volcanic';
 

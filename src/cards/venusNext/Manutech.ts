@@ -3,10 +3,10 @@ import {Player} from '../../Player';
 import {Tags} from '../../common/cards/Tags';
 import {Resources} from '../../common/Resources';
 import {Card} from '../Card';
-import {CardName} from '../../CardName';
-import {CardType} from '../CardType';
+import {CardName} from '../../common/cards/CardName';
+import {CardType} from '../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../Units';
+import {Units} from '../../common/Units';
 
 export class Manutech extends Card implements CorporationCard {
   constructor() {

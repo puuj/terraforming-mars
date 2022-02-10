@@ -1,8 +1,8 @@
 import {IProjectCard} from '../IProjectCard';
 import {Player} from '../../Player';
 import {Card} from '../Card';
-import {CardType} from '../CardType';
-import {CardName} from '../../CardName';
+import {CardType} from '../../common/cards/CardType';
+import {CardName} from '../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Tags} from '../../common/cards/Tags';
 import {LogHelper} from '../../LogHelper';
@@ -41,7 +41,7 @@ export class CharityDonation extends Card implements IProjectCard {
 }
 
 export class SelectCharityDonationCard implements DeferredAction {
-  public priority = Priority.DRAW_CARDS
+  public priority = Priority.DRAW_CARDS;
   public player: Player;
   constructor(private players: Array<Player>, private playerIdx: number, private boundaryIndex: number, private cards: Array<IProjectCard>) {
     this.player = this.players[playerIdx];

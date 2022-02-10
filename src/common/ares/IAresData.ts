@@ -1,4 +1,4 @@
-import {PlayerId} from '../common/Types';
+import {PlayerId} from '../Types';
 
 export interface IAresData {
     active: boolean;
@@ -17,7 +17,7 @@ export interface IHazardData {
     removeDustStormsOceanCount: IHazardConstraint,
     severeErosionTemperature: IHazardConstraint,
     severeDustStormOxygen: IHazardConstraint
-};
+}
 
 export interface IMilestoneCount {
     id: PlayerId;

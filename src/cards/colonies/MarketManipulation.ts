@@ -1,8 +1,8 @@
 import {IProjectCard} from '../IProjectCard';
 import {Tags} from '../../common/cards/Tags';
-import {CardType} from '../CardType';
+import {CardType} from '../../common/cards/CardType';
 import {Player} from '../../Player';
-import {CardName} from '../../CardName';
+import {CardName} from '../../common/cards/CardName';
 import {Game} from '../../Game';
 import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
@@ -71,7 +71,7 @@ export class MarketManipulation extends Card implements IProjectCard {
           );
 
           selectColonies.options.push(colonySelect);
-        };
+        }
       });
     });
 

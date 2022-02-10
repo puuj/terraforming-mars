@@ -4,8 +4,8 @@ import {Tags} from '../../common/cards/Tags';
 import {Player} from '../../Player';
 import {ISpace} from '../../boards/ISpace';
 import {Resources} from '../../common/Resources';
-import {CardName} from '../../CardName';
-import {CardType} from '../CardType';
+import {CardName} from '../../common/cards/CardName';
+import {CardType} from '../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../render/Size';
 import {DeferredAction} from '../../deferredActions/DeferredAction';
@@ -15,8 +15,8 @@ import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferr
 import {DrawCards} from '../../deferredActions/DrawCards';
 import {SpaceType} from '../../common/boards/SpaceType';
 import {SpaceBonus} from '../../common/boards/SpaceBonus';
-import {Phase} from '../../Phase';
-import {Units} from '../../Units';
+import {Phase} from '../../common/Phase';
+import {Units} from '../../common/Units';
 
 export class CuriosityII extends Card implements CorporationCard {
   constructor() {

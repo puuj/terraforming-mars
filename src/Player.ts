@@ -5,10 +5,10 @@ import {AndOptions} from './inputs/AndOptions';
 import {Aridor} from './cards/colonies/Aridor';
 import {Board} from './boards/Board';
 import {CardFinder} from './CardFinder';
-import {CardName} from './CardName';
-import {CardType} from './cards/CardType';
-import {ColonyName} from './colonies/ColonyName';
-import {Color} from './Color';
+import {CardName} from './common/cards/CardName';
+import {CardType} from './common/cards/CardType';
+import {ColonyName} from './common/colonies/ColonyName';
+import {Color} from './common/Color';
 import {CorporationCard} from './cards/corporation/CorporationCard';
 import {Game} from './Game';
 import {HowToPay} from './inputs/HowToPay';
@@ -21,9 +21,9 @@ import {ITagCount} from './common/cards/ITagCount';
 import {LogMessageDataType} from './common/logs/LogMessageDataType';
 import {OrOptions} from './inputs/OrOptions';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
-import {PartyName} from './turmoil/parties/PartyName';
+import {PartyName} from './common/turmoil/PartyName';
 import {PharmacyUnion} from './cards/promo/PharmacyUnion';
-import {Phase} from './Phase';
+import {Phase} from './common/Phase';
 import {PlayerInput} from './PlayerInput';
 import {Resources} from './common/Resources';
 import {ResourceType} from './common/ResourceType';
@@ -54,14 +54,14 @@ import {Timer} from './Timer';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
 import {CardLoader} from './CardLoader';
 import {DrawCards} from './deferredActions/DrawCards';
-import {Units} from './Units';
+import {Units} from './common/Units';
 import {MoonExpansion} from './moon/MoonExpansion';
 import {StandardProjectCard} from './cards/StandardProjectCard';
 import {ConvertPlants} from './cards/base/standardActions/ConvertPlants';
 import {ConvertHeat} from './cards/base/standardActions/ConvertHeat';
 import {Manutech} from './cards/venusNext/Manutech';
 import {LunaProjectOffice} from './cards/moon/LunaProjectOffice';
-import {GlobalParameter} from './GlobalParameter';
+import {GlobalParameter} from './common/GlobalParameter';
 import {GlobalEventName} from './turmoil/globalEvents/GlobalEventName';
 import {LogHelper} from './LogHelper';
 import {UndoActionOption} from './inputs/UndoActionOption';
@@ -463,7 +463,7 @@ export class Player implements ISerializable<SerializedPlayer> {
     if (this.isCorporation(CardName.MANUTECH)) {
       Manutech.onProductionGain(this, resource, amount);
     }
-  };
+  }
 
   // Returns true when the player has the supplied units in its inventory.
   public hasUnits(units: Units): boolean {
@@ -870,7 +870,7 @@ export class Player implements ISerializable<SerializedPlayer> {
       // Milestones don't count wild tags, so in this case one will be added.
       if (mode === 'award') {
         tagCount++;
-      };
+      }
       // Milestones count wild tags, so in this case one will be deducted.
       if (mode === 'milestone') {
         tagCount--;
@@ -1919,7 +1919,7 @@ export class Player implements ISerializable<SerializedPlayer> {
           return this.game.gameOptions.altVenusBoard === true;
         default:
           return true;
-        };
+        }
       })
       .sort((a, b) => a.cost - b.cost);
   }

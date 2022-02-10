@@ -55,8 +55,8 @@
 import Vue from 'vue';
 
 import {PlayerInputModel} from '@/models/PlayerInputModel';
-import {IPayProductionModel} from '@/models/IPayProductionUnitsModel';
-import {Units} from '@/Units';
+import {IPayProductionModel} from '@/common/models/IPayProductionUnitsModel';
+import {Units} from '@/common/Units';
 
 interface SelectProductionToLoseModel {
     megacredits: number;

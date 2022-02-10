@@ -1,12 +1,12 @@
 import {CardModel} from './CardModel';
-import {Color} from '../Color';
+import {Color} from '../common/Color';
 import {VictoryPointsBreakdown} from '../VictoryPointsBreakdown';
 import {ITagCount} from '@/common/cards/ITagCount';
 import {PlayerInputModel} from './PlayerInputModel';
-import {TimerModel} from './TimerModel';
+import {TimerModel} from '../common/models/TimerModel';
 import {GameModel} from './GameModel';
 import {PlayerId, SpectatorId} from '../common/Types';
-import {CardName} from '../CardName';
+import {CardName} from '../common/cards/CardName';
 
 export interface ViewModel {
   game: GameModel;

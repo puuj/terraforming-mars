@@ -1,6 +1,6 @@
-import {CardName} from '../../CardName';
+import {CardName} from '../../common/cards/CardName';
 import {Player} from '../../Player';
-import {CardType} from '../CardType';
+import {CardType} from '../../common/cards/CardType';
 import {Tags} from '../../common/cards/Tags';
 import {CorporationCard} from '../corporation/CorporationCard';
 import {IProjectCard} from '../IProjectCard';
@@ -54,7 +54,7 @@ export class TheArchaicFoundationInstitute extends Card implements CorporationCa
         player.removeResourceFrom(this, 3, player.game, player, true);
         player.increaseTerraformRating();
       }
-    };
+    }
     return undefined;
   }
 }

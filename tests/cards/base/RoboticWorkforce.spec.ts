@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {CardName} from '../../../src/CardName';
+import {CardName} from '../../../src/common/cards/CardName';
 import {ALL_CARD_MANIFESTS} from '../../../src/cards/AllCards';
 import {CapitalAres} from '../../../src/cards/ares/CapitalAres';
 import {SolarFarm} from '../../../src/cards/ares/SolarFarm';
@@ -21,13 +21,13 @@ import {TestPlayers} from '../../TestPlayers';
 import {TileType} from '../../../src/common/TileType';
 import {ICard} from '../../../src/cards/ICard';
 import {TestPlayer} from '../../TestPlayer';
-import {Units} from '../../../src/Units';
+import {Units} from '../../../src/common/Units';
 import {fail} from 'assert';
 import {SolarWindPower} from '../../../src/cards/base/SolarWindPower';
 import {MarsUniversity} from '../../../src/cards/base/MarsUniversity';
 import {Gyropolis} from '../../../src/cards/venusNext/Gyropolis';
 import {VenusGovernor} from '../../../src/cards/venusNext/VenusGovernor';
-import {CardType} from '../../../src/cards/CardType';
+import {CardType} from '../../../src/common/cards/CardType';
 import {CorporationCard} from '../../../src/cards/corporation/CorporationCard';
 import {IProjectCard} from '../../../src/cards/IProjectCard';
 
@@ -267,7 +267,7 @@ describe('RoboticWorkforce', () => {
           if (card.productionBox === undefined || isEmpty(card.productionBox)) {
             fail(card.name + ' should be registered for Robotic Workforce');
           }
-        };
+        }
       }
     };
   });

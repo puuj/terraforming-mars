@@ -1,4 +1,4 @@
-import {CardType} from './CardType';
+import {CardType} from '../common/cards/CardType';
 import {AndOptions} from '../inputs/AndOptions';
 import {IProjectCard} from './IProjectCard';
 import {ISpace} from '../boards/ISpace';
@@ -14,13 +14,13 @@ import {SelectSpace} from '../inputs/SelectSpace';
 import {OrOptions} from '../inputs/OrOptions';
 import {SelectOption} from '../inputs/SelectOption';
 import {ResourceType} from '../common/ResourceType';
-import {CardName} from '../CardName';
+import {CardName} from '../common/cards/CardName';
 import {ICardMetadata} from './ICardMetadata';
 import {StandardProjectCard} from './StandardProjectCard';
 import {CardRequirements} from './CardRequirements';
-import {GlobalParameter} from '../GlobalParameter';
+import {GlobalParameter} from '../common/GlobalParameter';
 import {BoardType} from '../boards/BoardType';
-import {Units} from '../Units';
+import {Units} from '../common/Units';
 
 export interface IActionCard {
     action: (player: Player) => OrOptions | SelectOption | AndOptions | SelectAmount | SelectCard<ICard> | SelectCard<IProjectCard> | SelectHowToPay | SelectPlayer | SelectSpace | undefined;

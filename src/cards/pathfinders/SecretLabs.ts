@@ -1,8 +1,8 @@
 import {IProjectCard} from '../IProjectCard';
 import {Player} from '../../Player';
 import {Card} from '../Card';
-import {CardType} from '../CardType';
-import {CardName} from '../../CardName';
+import {CardType} from '../../common/cards/CardType';
+import {CardName} from '../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Tags} from '../../common/cards/Tags';
 import {CardRequirements} from '../CardRequirements';
@@ -40,7 +40,7 @@ export class SecretLabs extends Card implements IProjectCard {
 
   private canAfford(player: Player, tr: TRSource, megacrdits: number = this.cost): boolean {
     return player.canAfford(megacrdits, {steel: true, titanium: true, tr});
-  };
+  }
 
   public override canPlay(player: Player) {
     return this.canAfford(player, {oceans: 1}) || this.canAfford(player, {temperature: 1}) || this.canAfford(player, {oxygen: 1});

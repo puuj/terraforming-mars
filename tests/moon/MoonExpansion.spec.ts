@@ -15,7 +15,7 @@ import {TileType} from '../../src/common/TileType';
 import {TestingUtils} from '../TestingUtils';
 import {TestPlayer} from '../TestPlayer';
 import {TestPlayers} from '../TestPlayers';
-import {Phase} from '../../src/Phase';
+import {Phase} from '../../src/common/Phase';
 
 const MOON_OPTIONS = TestingUtils.setCustomGameOptions({moonExpansion: true});
 
@@ -104,7 +104,7 @@ describe('MoonExpansion', () => {
         mines: vps.moonMines,
         roads: vps.moonRoads,
       };
-    };
+    }
 
     expect(computeVps()).eql({colonies: 0, mines: 0, roads: 0});
     MoonExpansion.addTile(player, 'm02', {tileType: TileType.MOON_ROAD});

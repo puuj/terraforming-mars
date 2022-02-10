@@ -6,11 +6,11 @@ import {IActionCard} from '../ICard';
 import {Resources} from '../../common/Resources';
 import {SelectOption} from '../../inputs/SelectOption';
 import {OrOptions} from '../../inputs/OrOptions';
-import {CardName} from '../../CardName';
-import {CardType} from '../CardType';
+import {CardName} from '../../common/cards/CardName';
+import {CardType} from '../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../render/Size';
-import {Units} from '../../Units';
+import {Units} from '../../common/Units';
 
 export class Factorum extends Card implements IActionCard, CorporationCard {
   constructor() {

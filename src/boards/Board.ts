@@ -1,10 +1,11 @@
-import {ISpace, SpaceId} from './ISpace';
+import {ISpace} from './ISpace';
 import {Player} from '../Player';
-import {PlayerId} from '../common/Types';
+import {PlayerId, SpaceId} from '../common/Types';
 import {SpaceType} from '../common/boards/SpaceType';
 import {BASE_OCEAN_TILES as UNCOVERED_OCEAN_TILES, CITY_TILES, GREENERY_TILES, OCEAN_TILES, OCEAN_UPGRADE_TILES, TileType} from '../common/TileType';
 import {AresHandler} from '../ares/AresHandler';
 import {SerializedBoard, SerializedSpace} from './SerializedBoard';
+import {SpaceName} from '../SpaceName';
 
 /**
  * A representation of any hex board. This is normally Mars (Tharsis, Hellas, Elysium) but can also be The Moon.
@@ -24,7 +25,7 @@ export abstract class Board {
     spaces.forEach((space) => {
       this.adjacentSpaces.set(space.id, this.computeAdjacentSpaces(space));
     });
-  };
+  }
 
   public abstract getVolcanicSpaceIds(): Array<string>;
 
@@ -301,6 +302,16 @@ export abstract class Board {
       y: serialized.y,
     };
 
+    // Patch for games with a broken spacetype for noctis city.
+    // TODO(kberg): Remove this patch by 2022-04-01
+    // See https://github.com/terraforming-mars/terraforming-mars/issues/4056
+    if (serialized.spaceType === undefined) {
+      console.log(`Undefined space type for ${space.id}`);
+      if (space.id === SpaceName.NOCTIS_CITY) {
+        space.spaceType = SpaceType.LAND;
+      }
+    }
+
     if (serialized.tile !== undefined) {
       space.tile = serialized.tile;
     }
@@ -321,7 +332,7 @@ export abstract class Board {
 
 export function nextToNoOtherTileFn(board: Board): (space: ISpace) => boolean {
   return (space: ISpace) => board.getAdjacentSpaces(space).every((space) => space.tile === undefined);
-};
+}
 
 export function playerTileFn(player: Player) {
   return (space: ISpace) => space.player?.id === player.id;
@@ -340,4 +351,4 @@ export function isSpecialTile(space: ISpace): boolean {
   default:
     return true;
   }
-};
+}

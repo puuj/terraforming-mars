@@ -11,12 +11,12 @@ import {TestPlayers} from './TestPlayers';
 import {SerializedPlayer} from '../src/SerializedPlayer';
 import {SerializedTimer} from '../src/SerializedTimer';
 import {Player} from '../src/Player';
-import {Color} from '../src/Color';
+import {Color} from '../src/common/Color';
 import {VictoryPointsBreakdown} from '../src/VictoryPointsBreakdown';
-import {CardName} from '../src/CardName';
-import {GlobalParameter} from '../src/GlobalParameter';
+import {CardName} from '../src/common/cards/CardName';
+import {GlobalParameter} from '../src/common/GlobalParameter';
 import {TestingUtils} from './TestingUtils';
-import {Units} from '../src/Units';
+import {Units} from '../src/common/Units';
 import {SelfReplicatingRobots} from '../src/cards/promo/SelfReplicatingRobots';
 import {Pets} from '../src/cards/base/Pets';
 import {GlobalEventName} from '../src/turmoil/globalEvents/GlobalEventName';
@@ -340,7 +340,7 @@ describe('Player', function() {
         energy: player.energy,
         heat: player.heat,
       };
-    };
+    }
 
     const player = TestPlayers.BLUE.newPlayer();
 
@@ -431,7 +431,7 @@ describe('Player', function() {
         energy: player.energy,
         heat: player.heat,
       };
-    };
+    }
 
     const player = TestPlayers.BLUE.newPlayer();
 
@@ -522,7 +522,7 @@ describe('Player', function() {
         energy: player.getProduction(Resources.ENERGY),
         heat: player.getProduction(Resources.HEAT),
       };
-    };
+    }
 
     const player = TestPlayers.BLUE.newPlayer();
 
@@ -646,7 +646,7 @@ describe('Player', function() {
     player2.megaCredits = 3;
     game.monsInsuranceOwner = player2.id;
     player1.addResource(Resources.MEGACREDITS, -3, {from: player2, log: false});
-    expect(player2.megaCredits).eq(3); ;
+    expect(player2.megaCredits).eq(3);
     player1.addProduction(Resources.MEGACREDITS, -3, {from: player2, log: false});
     expect(player2.megaCredits).eq(3);
   });

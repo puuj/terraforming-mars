@@ -1,12 +1,12 @@
 import {IActionCard, IResourceCard} from '../ICard';
 import {Tags} from '../../common/cards/Tags';
-import {CardType} from '../CardType';
+import {CardType} from '../../common/cards/CardType';
 import {Player} from '../../Player';
 import {ResourceType} from '../../common/ResourceType';
 import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
 import {MAX_VENUS_SCALE} from '../../constants';
-import {CardName} from '../../CardName';
+import {CardName} from '../../common/cards/CardName';
 import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
 import {LogHelper} from '../../LogHelper';
 import {CardRenderer} from '../render/CardRenderer';
@@ -34,7 +34,7 @@ export class ForcedPrecipitation extends Card implements IActionCard, IResourceC
         }),
       },
     });
-  };
+  }
   public override resourceCount: number = 0;
 
   public play() {
@@ -57,7 +57,7 @@ export class ForcedPrecipitation extends Card implements IActionCard, IResourceC
       opts.push(spendResource);
     } else {
       return this.addResource(player);
-    };
+    }
 
     if (player.canAfford(2)) {
       opts.push(addResource);
