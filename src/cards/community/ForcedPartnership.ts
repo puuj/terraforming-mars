@@ -1,13 +1,10 @@
 import {IProjectCard} from '../IProjectCard';
-import {CardType} from '../CardType';
+import {CardType} from '../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
-import {PartyHooks} from '../../turmoil/parties/PartyHooks';
-import {PartyName} from '../../turmoil/parties/PartyName';
-import {REDS_RULING_POLICY_COST} from '../../constants';
 import {Resources} from '../../common/Resources';
 import {Tags} from '../../common/cards/Tags';
-import {CardName} from '../../CardName';
+import {CardName} from '../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {all} from '../Options';
 
@@ -30,21 +27,12 @@ export class ForcedPartnership extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
-    if (PartyHooks.shouldApplyPolicy(player, PartyName.REDS)) {
-      return player.canAfford(player.getCardCost(this) + REDS_RULING_POLICY_COST * 2, {steel: true});
-    }
-    return true;
-  }
-
   public play(player: Player) {
     player.increaseTerraformRatingSteps(2);
 
-    const redsCost = ( PartyHooks.shouldApplyPolicy(player, PartyName.REDS) ? REDS_RULING_POLICY_COST : 0 );
     const availablePlayerTargets = player.game.getPlayers().filter((p) => p.id !== player.id);
-
     availablePlayerTargets.forEach((target) => {
-      if (target.megaCredits >= 10+redsCost) {
+      if (target.megaCredits >= 10) {
         target.addResource(Resources.MEGACREDITS, -10, {log: true, from: player});
         target.increaseTerraformRatingSteps(1);
       }
