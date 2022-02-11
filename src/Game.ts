@@ -1045,6 +1045,9 @@ export class Game implements ISerializable<SerializedGame> {
       this.log('This game id was ' + this.id);
     }
 
+    this.phase = Phase.END;
+    this.save();
+
     Database.getInstance().cleanSaves(this.id);
     const scores: Array<Score> = [];
     this.players.forEach((player) => {
@@ -1056,9 +1059,7 @@ export class Game implements ISerializable<SerializedGame> {
       scores.push({corporation: corponame, playerScore: vpb.total});
     });
 
-    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
-    this.phase = Phase.END;
-    
+    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);    
   }
 
   // Part of final greenery placement.
