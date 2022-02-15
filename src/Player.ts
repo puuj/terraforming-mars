@@ -125,7 +125,6 @@ export class Player implements ISerializable<SerializedPlayer> {
   public draftedCards: Array<IProjectCard> = [];
   public cardCost: number = constants.CARD_COST;
   public needsToDraft: boolean | undefined = undefined;
-  public cardDiscount: number = 0;
   public passingTo: string = '';
 
   public timer: Timer = Timer.newInstance();
