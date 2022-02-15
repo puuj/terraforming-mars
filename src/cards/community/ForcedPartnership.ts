@@ -15,6 +15,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
       name: CardName.FORCED_PARTNERSHIP,
       tags: [Tags.BUILDING],
       cost: 10,
+      tr: {tr: 2},
 
       metadata: {
         cardNumber: 'J007',
@@ -30,7 +31,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
   public play(player: Player) {
     player.increaseTerraformRatingSteps(2);
 
-    const availablePlayerTargets = player.game.getPlayers().filter((p) => p.id !== player.id);
+    const availablePlayerTargets = player.game.getPlayersInGenerationOrder().filter((p) => p.id !== player.id);
     availablePlayerTargets.forEach((target) => {
       if (target.megaCredits >= 10) {
         target.addResource(Resources.MEGACREDITS, -10, {log: true, from: player});
