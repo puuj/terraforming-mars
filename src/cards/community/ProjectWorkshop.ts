@@ -10,8 +10,8 @@ import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
 import {Card} from '../Card';
 import {CardRenderer} from '../render/CardRenderer';
-import {Size} from '../render/Size';
-import {AltSecondaryTag} from '../render/CardRenderItem';
+import {Size} from '../../common/cards/render/Size';
+import {AltSecondaryTag} from '../../common/cards/render/AltSecondaryTag';
 import {Resources} from '../../common/Resources';
 import {digit} from '../Options';
 

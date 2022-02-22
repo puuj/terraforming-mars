@@ -1,7 +1,7 @@
 import {Resources} from '../common/Resources';
 import {PartyName} from '../common/turmoil/PartyName';
 import {CardRequirement, PartyCardRequirement, ProductionCardRequirement, TagCardRequirement} from './CardRequirement';
-import {RequirementType} from './RequirementType';
+import {RequirementType} from '../common/cards/RequirementType';
 import {Tags} from '../common/cards/Tags';
 import {Player} from '../Player';
 import {
@@ -11,7 +11,7 @@ import {
   MIN_OXYGEN_LEVEL,
   MIN_TEMPERATURE,
   MIN_VENUS_SCALE,
-} from '../constants';
+} from '../common/constants';
 
 export class CardRequirements {
   constructor(public requirements: Array<CardRequirement>) {}

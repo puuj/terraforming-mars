@@ -10,7 +10,7 @@ import {Units} from '../common/Units';
 import {CardRequirements} from './CardRequirements';
 import {TRSource, VictoryPoints} from './ICard';
 import {CardRenderDynamicVictoryPoints} from './render/CardRenderDynamicVictoryPoints';
-import {CardRenderItemType} from './render/CardRenderItemType';
+import {CardRenderItemType} from '../common/cards/render/CardRenderItemType';
 
 export interface StaticCardProperties {
   adjacencyBonus?: IAdjacencyBonus;
@@ -25,7 +25,7 @@ export interface StaticCardProperties {
   startingMegaCredits?: number;
   tags?: Array<Tags>;
   productionBox?: Units;
-  cardDiscount?: ICardDiscount;
+  cardDiscount?: ICardDiscount | Array<ICardDiscount>;
   reserveUnits?: Units,
   tr?: TRSource,
   victoryPoints?: number | 'special' | VictoryPoints,

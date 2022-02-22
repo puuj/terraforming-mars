@@ -9,8 +9,8 @@ import {ResourceType} from '../../common/ResourceType';
 import {IProjectCard} from '../IProjectCard';
 import {PLANETARY_TAGS} from '../../pathfinders/PathfindersExpansion';
 import {played} from '../Options';
-import {Size} from '../render/Size';
-import {AltSecondaryTag} from '../render/CardRenderItem';
+import {Size} from '../../common/cards/render/Size';
+import {AltSecondaryTag} from '../../common/cards/render/AltSecondaryTag';
 
 export class AdhaiHighOrbitConstructions extends Card implements CorporationCard {
   constructor() {

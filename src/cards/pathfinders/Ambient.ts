@@ -10,8 +10,8 @@ import {digit, played} from '../Options';
 import {IProjectCard} from '../IProjectCard';
 import {ICard} from '../ICard';
 import {DeferredAction} from '../../deferredActions/DeferredAction';
-import {MAX_TEMPERATURE} from '../../constants';
-import {Size} from '../render/Size';
+import {MAX_TEMPERATURE} from '../../common/constants';
+import {Size} from '../../common/cards/render/Size';
 
 export class Ambient extends Card implements CorporationCard {
   constructor() {

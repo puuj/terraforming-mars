@@ -1,6 +1,6 @@
-import * as constants from './constants';
+import * as constants from './common/constants';
 import {PlayerId} from './common/Types';
-import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, MAX_FLEET_SIZE, MILESTONE_COST, REDS_RULING_POLICY_COST} from './constants';
+import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, MAX_FLEET_SIZE, MILESTONE_COST, REDS_RULING_POLICY_COST} from './common/constants';
 import {AndOptions} from './inputs/AndOptions';
 import {Aridor} from './cards/colonies/Aridor';
 import {Board} from './boards/Board';
@@ -709,21 +709,19 @@ export class Player implements ISerializable<SerializedPlayer> {
     return requirementsBonus;
   }
 
-  public removeResourceFrom(card: ICard, count: number = 1, game? : Game, removingPlayer? : Player, shouldLogAction: boolean = true): void {
+  public removeResourceFrom(card: ICard, count: number = 1, removingPlayer? : Player): void {
     if (card.resourceCount) {
-      card.resourceCount = Math.max(card.resourceCount - count, 0);
-      // Mons Insurance hook
-      if (game !== undefined && removingPlayer !== undefined) {
-        if (removingPlayer !== this) this.resolveMonsInsurance();
+      const amountRemoved = Math.min(card.resourceCount, count);
+      card.resourceCount -= amountRemoved;
 
-        if (shouldLogAction) {
-          game.log('${0} removed ${1} resource(s) from ${2}\'s ${3}', (b) =>
-            b.player(removingPlayer)
-              .number(count)
-              .player(this)
-              .card(card));
-        }
-      }
+      if (removingPlayer !== undefined && removingPlayer !== this) this.resolveMonsInsurance();
+
+      this.game.log('${0} removed ${1} resource(s) from ${2}\'s ${3}', (b) =>
+        b.player(removingPlayer ?? this)
+          .number(amountRemoved)
+          .player(this)
+          .card(card));
+
       // Lawsuit hook
       if (removingPlayer !== undefined && removingPlayer !== this && this.removingPlayers.includes(removingPlayer.id) === false) {
         this.removingPlayers.push(removingPlayer.id);
@@ -742,31 +740,10 @@ export class Player implements ISerializable<SerializedPlayer> {
       LogHelper.logAddResource(this, card, count);
     }
 
-    // Topsoil contract hook
-    if (card.resourceType === ResourceType.MICROBE && this.playedCards.map((card) => card.name).includes(CardName.TOPSOIL_CONTRACT)) {
-      this.megaCredits += count;
+    for (const playedCard of this.playedCards) {
+      playedCard.onResourceAdded?.(this, card, count);
     }
-
-    // Meat industry hook
-    if (card.resourceType === ResourceType.ANIMAL && this.playedCards.map((card) => card.name).includes(CardName.MEAT_INDUSTRY)) {
-      this.megaCredits += count * 2;
-    }
-
-    // Communication Center Hook
-    if (card.name === CardName.COMMUNICATION_CENTER) {
-      PathfindersExpansion.communicationCenterHook(card, this.game);
-    }
-
-    // Botanical Experience Hook
-    if (card.name === CardName.BOTANICAL_EXPERIENCE && card.resourceCount >= 3) {
-      const delta = Math.floor(card.resourceCount / 3);
-      const deducted = delta * 3;
-      card.resourceCount -= deducted;
-      // This assumes this player is the card owner. Bad?
-      this.addProduction(Resources.PLANTS, delta, {log: false});
-      this.game.log('${0} removed ${1} data from ${2} to increase plant production ${3} steps.',
-        (b) => b.player(this).number(deducted).cardName(CardName.BOTANICAL_EXPERIENCE).number(delta));
-    }
+    this.corporationCard?.onResourceAdded?.(this, card, count);
   }
 
   public getCardsWithResources(resource?: ResourceType): Array<ICard & IResourceCard> {
