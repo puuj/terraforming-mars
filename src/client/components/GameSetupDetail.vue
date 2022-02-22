@@ -2,16 +2,16 @@
         <div id="game-setup-detail" class="game-setup-detail-container">
           <ul>
             <li><div class="setup-item" v-i18n>Expansion:</div>
-              <div v-if="gameOptions.communityCardsOption" class="create-game-expansion-icon expansion-icon-community"></div>
-              <div v-if="gameOptions.venusNextExtension" class="create-game-expansion-icon expansion-icon-venus"></div>
-              <div v-if="gameOptions.preludeExtension" class="create-game-expansion-icon expansion-icon-prelude"></div>
-              <div v-if="gameOptions.coloniesExtension" class="create-game-expansion-icon expansion-icon-colony"></div>
-              <div v-if="gameOptions.turmoilExtension" class="create-game-expansion-icon expansion-icon-turmoil"></div>
-              <div v-if="gameOptions.promoCardsOption" class="create-game-expansion-icon expansion-icon-promo"></div>
-              <div v-if="gameOptions.aresExtension" class="create-game-expansion-icon expansion-icon-ares"></div>
-              <div v-if="gameOptions.moonExpansion" class="create-game-expansion-icon expansion-icon-themoon"></div>
-              <div v-if="gameOptions.pathfindersExpansion" class="create-game-expansion-icon expansion-icon-pathfinders"></div>
-              <div v-if="isPoliticalAgendasOn()" class="create-game-expansion-icon expansion-icon-agendas"></div>
+              <div v-if="gameOptions.communityCardsOption" class="create-game-expansion-icon expansion-icon-community" title="Community"></div>
+              <div v-if="gameOptions.venusNextExtension" class="create-game-expansion-icon expansion-icon-venus" title="Venus Next"></div>
+              <div v-if="gameOptions.preludeExtension" class="create-game-expansion-icon expansion-icon-prelude" title="Prelude"></div>
+              <div v-if="gameOptions.coloniesExtension" class="create-game-expansion-icon expansion-icon-colony" title="Colonies"></div>
+              <div v-if="gameOptions.turmoilExtension" class="create-game-expansion-icon expansion-icon-turmoil" title="Turmoil"></div>
+              <div v-if="gameOptions.promoCardsOption" class="create-game-expansion-icon expansion-icon-promo" title="Promos"></div>
+              <div v-if="gameOptions.aresExtension" class="create-game-expansion-icon expansion-icon-ares" title="Ares"></div>
+              <div v-if="gameOptions.moonExpansion" class="create-game-expansion-icon expansion-icon-themoon" title="The Moon"></div>
+              <div v-if="gameOptions.pathfindersExpansion" class="create-game-expansion-icon expansion-icon-pathfinders" title="Pathfinders"></div>
+              <div v-if="isPoliticalAgendasOn()" class="create-game-expansion-icon expansion-icon-agendas" title="Agendas"></div>
             </li>
 
             <li><div class="setup-item" v-i18n>Board:</div>
@@ -24,9 +24,14 @@
               <div v-if="gameOptions.solarPhaseOption" class="game-config generic" v-i18n>On</div>
               <div v-else class="game-config generic" v-i18n>Off</div>
             </li>
-            <li v-if="gameOptions.requiresVenusTrackCompletion">Require Terraforming Venus to end the game</li>
-            <li v-if="gameOptions.requiresMoonTrackCompletion">Require Terraforming The Moon to end the game</li>
-
+            <li><div class="setup-item" v-i18n>Venus Terraforming:</div>
+              <div v-if="gameOptions.requiresVenusTrackCompletion" class="game-config exception">Mandatory</div>
+              <div v-else class="game-config generic" v-i18n>Optional</div>
+            </li>
+            <li><div class="setup-item" v-i18n>Moon Terraforming:</div>
+              <div v-if="gameOptions.requiresMoonTrackCompletion" class="game-config exception">Mandatory</div>
+              <div v-else class="game-config generic" v-i18n>Optional</div>              
+            </li>
             <li v-if="playerNumber > 1">
               <div class="setup-item" v-i18n>Milestones and Awards:</div>
               <div v-if="isRandomMANone()" class="game-config generic" v-i18n>Board-defined</div>
@@ -40,8 +45,10 @@
             <li v-if="playerNumber > 1">
               <div class="setup-item" v-i18n>Draft:</div>
               <div v-if="gameOptions.initialDraftVariant" class="game-config generic" v-i18n>Initial</div>
+              <div v-else class="game-config exception" v-i18n>NO Initial Draft</div>
               <div v-if="gameOptions.draftVariant" class="game-config generic" v-i18n>Research phase</div>
-              <div v-if="!gameOptions.initialDraftVariant && !gameOptions.draftVariant" class="game-config generic" v-i18n>Off</div>
+              <div v-else class="game-config exception" v-i18n>NO Research Draft</div>              
+              <div v-if="!gameOptions.initialDraftVariant && !gameOptions.draftVariant" class="game-config exception" v-i18n>Off</div>
             </li>
 
             <li v-if="gameOptions.escapeVelocityMode">
