@@ -10,7 +10,24 @@ export class NotifierInstance {
     this.sender = sender;
   }
 
-  sendMessage(player: Player, transporter: any, url: string, sender: string) : void {
+  sendEndMessage(player: Player, scores: string) : void {
+    if (player.email === undefined) { return; }
+    const transporter = nodemailer.createTransport({
+      sendmail: true,
+    });
+    const link = this.url+'/player?id='+player.id;
+    // console.log(`Would notify ${player.name} for ${delay}`);
+    transporter.sendMail({
+      from: this.sender,
+      to: player.email,
+      subject: 'Terraforming Mars game results',
+      text: `Your Terraforming Mars game has ended. Final scores:
+                ${scores}.  
+See the full results at: ${link}`,
+    });
+  }
+  
+  sendTurnMessage(player: Player, transporter: any, url: string, sender: string) : void {
     const delay=Math.floor(player.timer.getActingTime()/60);
     const link = url+'/player?id='+player.id;
     // console.log(`Would notify ${player.name} for ${delay}`);
@@ -22,20 +39,20 @@ export class NotifierInstance {
     });
   }
 
-  makeNotification(player: Player, interval: number) : NodeJS.Timeout {
+  makeTurnNotification(player: Player, interval: number) : NodeJS.Timeout {
     const transporter = nodemailer.createTransport({
       sendmail: true,
     });
 
     return setTimeout(function(ni, player, transporter, url, sender) {
       if (player.email !== undefined) {
-        ni.sendMessage(player, transporter, url, sender);
+        ni.sendTurnMessage(player, transporter, url, sender);
         if (interval < 2*60*1000) {
           interval = 15*60*1000;
         } else {
           interval = interval*3;
         }
-        player.notification = ni.makeNotification(player, interval);
+        player.notification = ni.makeTurnNotification(player, interval);
       }
     },
     interval, this, player, transporter, this.url, this.sender);

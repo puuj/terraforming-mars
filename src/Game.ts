@@ -409,8 +409,8 @@ export class Game implements ISerializable<SerializedGame> {
     return game;
   }
 
-  public makeNotification(player: Player) : NodeJS.Timeout {
-    return Notifier.getInstance().makeNotification(player, 60*1000);
+  public makeTurnNotification(player: Player) : NodeJS.Timeout {
+    return Notifier.getInstance().makeTurnNotification(player, 60*1000);
   }
 
   public save(): void {
@@ -1045,11 +1045,12 @@ export class Game implements ISerializable<SerializedGame> {
       this.log('This game id was ' + this.id);
     }
 
-    this.phase = Phase.END;
+    this.phase = Phase.END
     this.save();
 
     Database.getInstance().cleanSaves(this.id);
     const scores: Array<Score> = [];
+    let score_msg: string = '';
     this.players.forEach((player) => {
       let corponame: string = '';
       const vpb = player.getVictoryPoints();
@@ -1057,8 +1058,14 @@ export class Game implements ISerializable<SerializedGame> {
         corponame = player.corporationCard.name;
       }
       scores.push({corporation: corponame, playerScore: vpb.total});
+      score_msg += `${player.name}: ${vpb.total} points`;
+      score_msg += "\n";      
     });
-
+    
+    this.players.forEach((player) => {
+      Notifier.getInstance().sendEndMessage(player, score_msg);
+    });
+    
     Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);    
   }
 
