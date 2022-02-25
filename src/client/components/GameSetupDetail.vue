@@ -30,7 +30,7 @@
             </li>
             <li><div class="setup-item" v-i18n>Moon Terraforming:</div>
               <div v-if="gameOptions.requiresMoonTrackCompletion" class="game-config exception">Mandatory</div>
-              <div v-else class="game-config generic" v-i18n>Optional</div>              
+              <div v-else class="game-config generic" v-i18n>Optional</div>
             </li>
             <li v-if="playerNumber > 1">
               <div class="setup-item" v-i18n>Milestones and Awards:</div>
@@ -47,7 +47,7 @@
               <div v-if="gameOptions.initialDraftVariant" class="game-config generic" v-i18n>Initial</div>
               <div v-else class="game-config exception" v-i18n>NO Initial Draft</div>
               <div v-if="gameOptions.draftVariant" class="game-config generic" v-i18n>Research phase</div>
-              <div v-else class="game-config exception" v-i18n>NO Research Draft</div>              
+              <div v-else class="game-config exception" v-i18n>NO Research Draft</div>
               <div v-if="!gameOptions.initialDraftVariant && !gameOptions.draftVariant" class="game-config exception" v-i18n>Off</div>
             </li>
 

@@ -11,7 +11,9 @@ export class NotifierInstance {
   }
 
   sendEndMessage(player: Player, scores: string) : void {
-    if (player.email === undefined) { return; }
+    if (player.email === undefined) {
+      return;
+    }
     const transporter = nodemailer.createTransport({
       sendmail: true,
     });
@@ -22,11 +24,11 @@ export class NotifierInstance {
       to: player.email,
       subject: 'Terraforming Mars game results',
       text: `Your Terraforming Mars game has ended. Final scores:
-                ${scores}.  
+${scores}
 See the full results at: ${link}`,
     });
   }
-  
+
   sendTurnMessage(player: Player, transporter: any, url: string, sender: string) : void {
     const delay=Math.floor(player.timer.getActingTime()/60);
     const link = url+'/player?id='+player.id;
