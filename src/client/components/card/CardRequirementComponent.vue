@@ -120,7 +120,7 @@ export default Vue.extend({
         return ['card-party-leader--req'];
       case RequirementType.TAG:
         const tagRequirement = this.requirement as ITagCardRequirement;
-        return ['card-resource-tag--S', 'card-tag-' + tagRequirement.tag];
+        return ['card-resource-tag--S', 'card-tag-' + tagRequirement.tag.toLowerCase()];
       case RequirementType.COLONY_RATE:
         return ['card-colony-rate', 'card-colony-rate--req'];
       case RequirementType.MINING_RATE:
