@@ -111,11 +111,11 @@ export class PathfindersExpansion {
 
     if (from instanceof Player) {
       game.log('${0} raised the ${1} planetary track ${2} ${3}', (b) => {
-        b.player(from).titleCaseWord(string(tag)).number(distance).string(distance > 1 ? 'steps' : 'step');
+        b.player(from).string(PathfindersExpansion.titleCaseWord(tag)).number(distance).string(distance > 1 ? 'steps' : 'step');
       });
     } else {
       game.log('Global Event ${0} raised the ${1} planetary track ${2} ${3}', (b) => {
-        b.globalEventName(from).titleCaseWord(string(tag)).number(distance).string(distance > 1 ? 'steps' : 'step');
+        b.globalEventName(from).string(PathfindersExpansion.titleCaseWord(tag)).number(distance).string(distance > 1 ? 'steps' : 'step');
       });
     }
 
@@ -159,11 +159,11 @@ export class PathfindersExpansion {
     switch (reward) {
     case '1vp':
       game.pathfindersData?.vps.push({id: player.id, tag, points: 1});
-      game.log('${0} has the most ${1} tags and earns 1VP', (b) => b.player(player).titleCaseWord(string(tag)));
+      game.log('${0} has the most ${1} tags and earns 1VP', (b) => b.player(player).string(PathfindersExpansion.titleCaseWord(tag)));
       break;
     case '2vp':
       game.pathfindersData?.vps.push({id: player.id, tag, points: 2});
-      game.log('${0} has the most ${1} tags and earns 2VP', (b) => b.player(player).titleCaseWord(string(tag)));
+      game.log('${0} has the most ${1} tags and earns 2VP', (b) => b.player(player).string(PathfindersExpansion.titleCaseWord(tag)));
       break;
     case '3mc':
       player.addResource(Resources.MEGACREDITS, 3, {log: true});
