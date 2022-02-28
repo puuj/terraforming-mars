@@ -24,11 +24,13 @@
               <div v-if="gameOptions.solarPhaseOption" class="game-config generic" v-i18n>On</div>
               <div v-else class="game-config generic" v-i18n>Off</div>
             </li>
-            <li><div class="setup-item" v-i18n>Venus Terraforming:</div>
+            <li v-if="gameOptions.venusNextExtension">
+            <div class="setup-item" v-i18n>Venus Terraforming:</div>
               <div v-if="gameOptions.requiresVenusTrackCompletion" class="game-config exception">Mandatory</div>
               <div v-else class="game-config generic" v-i18n>Optional</div>
             </li>
-            <li><div class="setup-item" v-i18n>Moon Terraforming:</div>
+            <li v-if="gameOptions.moonExpansion">
+            <div class="setup-item" v-i18n>Moon Terraforming:</div>
               <div v-if="gameOptions.requiresMoonTrackCompletion" class="game-config exception">Mandatory</div>
               <div v-else class="game-config generic" v-i18n>Optional</div>
             </li>
