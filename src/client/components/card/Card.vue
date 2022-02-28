@@ -31,9 +31,9 @@ import CardExpansion from './CardExpansion.vue';
 import CardTags from './CardTags.vue';
 import {CardType} from '@/common/cards/CardType';
 import CardContent from './CardContent.vue';
-import {ICardMetadata} from '@/cards/ICardMetadata';
+import {ICardMetadata} from '@/common/cards/ICardMetadata';
+import {ICardRequirements} from '@/common/cards/ICardRequirements';
 import {Tags} from '@/common/cards/Tags';
-import {CardRequirements} from '@/cards/CardRequirements';
 import {PreferencesManager} from '@/client/utils/PreferencesManager';
 import {ResourceType} from '@/common/ResourceType';
 import {getCard} from '@/client/cards/ClientCardManifest';
@@ -130,7 +130,7 @@ export default Vue.extend({
     getCardMetadata(): ICardMetadata | undefined {
       return this.getCard()?.metadata;
     },
-    getCardRequirements(): CardRequirements | undefined {
+    getCardRequirements(): ICardRequirements | undefined {
       return this.getCard()?.requirements;
     },
     getResourceAmount(card: CardModel): number {
