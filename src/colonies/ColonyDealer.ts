@@ -29,7 +29,6 @@ export interface IColonyFactory<T> {
     Factory: new () => T
 }
 
-// ALL COLONIES TILES is now a const not and attribute of Colony Dealer
 export const ALL_COLONIES_TILES: Array<IColonyFactory<Colony>> = [
   {colonyName: ColonyName.CERES, Factory: Ceres},
   {colonyName: ColonyName.ENCELADUS, Factory: Enceladus},
@@ -82,10 +81,9 @@ export function loadColoniesFromJSON(colonies: Array<SerializedColony>): Array<C
 }
 
 export class ColonyDealer {
-  public coloniesDeck: Array<Colony> = [];
   public discardedColonies: Array<Colony> = [];
 
-  public shuffle(cards: Array<Colony>): Array<Colony> {
+  private shuffle(cards: Array<Colony>): Array<Colony> {
     const deck: Array<Colony> = [];
     const copy = cards.slice();
     while (copy.length) {
@@ -93,11 +91,7 @@ export class ColonyDealer {
     }
     return deck;
   }
-  public discard(card: Colony): void {
-    this.discardedColonies.push(card);
-  }
   public drawColonies(players: number, allowList: Array<ColonyName> = [], venusNextExtension: boolean, turmoilExtension: boolean, addCommunityColonies: boolean = false): Array<Colony> {
-    let count: number = players + 2;
     let colonyTiles = ALL_COLONIES_TILES;
     if (addCommunityColonies) colonyTiles = colonyTiles.concat(COMMUNITY_COLONIES_TILES);
     if (!venusNextExtension) colonyTiles = colonyTiles.filter((c) => c.colonyName !== ColonyName.VENUS);
@@ -106,11 +100,9 @@ export class ColonyDealer {
     if (allowList.length === 0) {
       colonyTiles.forEach((e) => allowList.push(e.colonyName));
     }
-    if (players === 1) {
-      count = 4;
-    } else if (players === 2) {
-      count = 5;
-    }
+
+    // Two-player games and solo games get one more colony.
+    const count: number = (players + 2) + (players <= 2 ? 1 : 0);
 
     const tempDeck = this.shuffle(
       colonyTiles.filter(
@@ -119,13 +111,14 @@ export class ColonyDealer {
         (cf) => new cf.Factory(),
       ),
     );
+    const deck = [];
     for (let i = 0; i < count; i++) {
-      this.coloniesDeck.push(tempDeck.pop()!);
+      deck.push(tempDeck.pop()!);
     }
     this.discardedColonies.push(...tempDeck);
     this.discardedColonies.sort((a, b) => (a.name > b.name) ? 1 : -1);
-    this.coloniesDeck.sort((a, b) => (a.name > b.name) ? 1 : -1);
+    deck.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
-    return this.coloniesDeck;
+    return deck;
   }
 }

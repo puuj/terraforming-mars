@@ -345,7 +345,7 @@ export class Player implements ISerializable<SerializedPlayer> {
       if (stealing === true) {
         message = message + ' stolen';
       }
-      message = message + ' by ' + ((from instanceof Player) ? '${4}' : 'Global Event');
+      message = message + ' by ${4}';
     }
 
     this.game.log(message, (b) => {
@@ -355,6 +355,8 @@ export class Player implements ISerializable<SerializedPlayer> {
         .number(absAmount);
       if (from instanceof Player) {
         b.player(from);
+      } else if (from !== undefined) {
+        b.globalEventName(from);
       }
     });
   }
