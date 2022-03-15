@@ -6,7 +6,8 @@ import {CardFinder} from './CardFinder';
 import {CardName} from './common/cards/CardName';
 import {CardType} from './common/cards/CardType';
 import {ClaimedMilestone, serializeClaimedMilestones, deserializeClaimedMilestones} from './milestones/ClaimedMilestone';
-import {Colony, serializeColonies} from './colonies/Colony';
+import {IColony} from './colonies/IColony';
+import {serializeColonies} from './colonies/Colony';
 import {ColonyDealer, loadColoniesFromJSON} from './colonies/ColonyDealer';
 import {ColonyName} from './common/colonies/ColonyName';
 import {Color} from './common/Color';
@@ -17,7 +18,6 @@ import {ElysiumBoard} from './boards/ElysiumBoard';
 import {FundedAward, serializeFundedAwards, deserializeFundedAwards} from './awards/FundedAward';
 import {HellasBoard} from './boards/HellasBoard';
 import {IAward} from './awards/IAward';
-import {ISerializable} from './ISerializable';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
 import {ISpace} from './boards/ISpace';
@@ -167,7 +167,7 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   venusNextExtension: false,
 };
 
-export class Game implements ISerializable<SerializedGame> {
+export class Game {
   // Game-level data
   public lastSaveId: number = 0;
   private clonedGamedId: string | undefined;
@@ -208,7 +208,7 @@ export class Game implements ISerializable<SerializedGame> {
   public awards: Array<IAward> = [];
 
   // Expansion-specific data
-  public colonies: Array<Colony> = [];
+  public colonies: Array<IColony> = [];
   public colonyDealer: ColonyDealer | undefined = undefined;
   public turmoil: Turmoil | undefined;
   public aresData: IAresData | undefined;
@@ -298,7 +298,7 @@ export class Game implements ISerializable<SerializedGame> {
 
     // Add colonies stuff
     if (gameOptions.coloniesExtension) {
-      game.colonyDealer = new ColonyDealer();
+      game.colonyDealer = new ColonyDealer(rng);
       const communityColoniesSelected = GameSetup.includesCommunityColonies(gameOptions);
       const allowCommunityColonies = gameOptions.communityCardsOption || communityColoniesSelected;
 
@@ -1533,7 +1533,7 @@ export class Game implements ISerializable<SerializedGame> {
     return ret;
   }
 
-  public getCardPlayer(name: string): Player {
+  public getCardPlayer(name: CardName): Player {
     for (const player of this.players) {
       // Check cards player has played
       for (const card of player.playedCards) {
@@ -1546,7 +1546,7 @@ export class Game implements ISerializable<SerializedGame> {
         return player;
       }
     }
-    throw new Error('No player has played requested card');
+    throw new Error(`No player has played ${name}`);
   }
 
   public getCardsInHandByResource(player: Player, resourceType: ResourceType) {
@@ -1659,7 +1659,7 @@ export class Game implements ISerializable<SerializedGame> {
     }
     // Reload colonies elements if needed
     if (gameOptions.coloniesExtension) {
-      game.colonyDealer = new ColonyDealer();
+      game.colonyDealer = new ColonyDealer(game.rng);
 
       if (d.colonyDealer !== undefined) {
         game.colonyDealer.discardedColonies = loadColoniesFromJSON(d.colonyDealer.discardedColonies);

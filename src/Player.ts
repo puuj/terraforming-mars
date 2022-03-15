@@ -11,10 +11,9 @@ import {ColonyName} from './common/colonies/ColonyName';
 import {Color} from './common/Color';
 import {ICorporationCard} from './cards/corporation/ICorporationCard';
 import {Game} from './Game';
-import {HowToPay} from './inputs/HowToPay';
+import {HowToPay} from './common/inputs/HowToPay';
 import {IAward} from './awards/IAward';
 import {ICard, IResourceCard, isIActionCard, TRSource, IActionCard} from './cards/ICard';
-import {ISerializable} from './ISerializable';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
 import {ITagCount} from './common/cards/ITagCount';
@@ -50,7 +49,8 @@ import {Tags} from './common/cards/Tags';
 import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
 import {IVictoryPointsBreakdown} from './common/game/IVictoryPointsBreakdown';
 import {SelectProductionToLose} from './inputs/SelectProductionToLose';
-import {IAresGlobalParametersResponse, ShiftAresGlobalParameters} from './inputs/ShiftAresGlobalParameters';
+import {ShiftAresGlobalParameters} from './inputs/ShiftAresGlobalParameters';
+import {IAresGlobalParametersResponse} from './common/inputs/IAresGlobalParametersResponse';
 import {Timer} from './Timer';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
 import {CardLoader} from './CardLoader';
@@ -73,7 +73,7 @@ import {PathfindersExpansion} from './pathfinders/PathfindersExpansion';
 import {deserializeProjectCard, serializeProjectCard} from './cards/CardSerialization';
 import {ColoniesHandler} from './colonies/ColoniesHandler';
 
-export class Player implements ISerializable<SerializedPlayer> {
+export class Player {
   public readonly id: PlayerId;
   protected waitingFor?: PlayerInput;
   protected waitingForCb?: () => void;
@@ -839,8 +839,16 @@ export class Player implements ISerializable<SerializedPlayer> {
       if (tag === Tags.EARTH && this.cardIsInEffect(CardName.EARTH_EMBASSY)) {
         tagCount += this.getRawTagCount(Tags.MOON, includeEvents);
       }
+
       if (tag !== Tags.WILDCARD) {
         tagCount += this.getRawTagCount(Tags.WILDCARD, includeEvents);
+      }
+    }
+
+    // Habitat Marte hook
+    if (mode !== 'raw') {
+      if (tag === Tags.SCIENCE && this.corporationCard?.name === CardName.HABITAT_MARTE) {
+        tagCount += this.getRawTagCount(Tags.MARS, includeEvents);
       }
     }
 
@@ -856,6 +864,29 @@ export class Player implements ISerializable<SerializedPlayer> {
       }
     }
     return tagCount;
+  }
+
+  public cardHasTag(card: ICard, target: Tags): boolean {
+    for (const tag of card.tags) {
+      if (tag === target) return true;
+      if (tag === Tags.MARS &&
+        target === Tags.SCIENCE &&
+        this.corporationCard?.name === CardName.HABITAT_MARTE) {
+        return true;
+      }
+    }
+    return false;
+  }
+  public cardTagCount(card: ICard, target: Tags): number {
+    let count = 0;
+    for (const tag of card.tags) {
+      if (tag === target) count++;
+      if (tag === Tags.MARS && target === Tags.SCIENCE &&
+        this.corporationCard?.name === CardName.HABITAT_MARTE) {
+        count++;
+      }
+    }
+    return count;
   }
 
   // Counts the tags in the player's play area only.
