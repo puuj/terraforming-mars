@@ -9,6 +9,7 @@ import {Ambient} from './Ambient';
 import {Anthozoa} from './Anthozoa';
 import {AntidesertificationTechniques} from './AntidesertificationTechniques';
 import {AsteroidResources} from './AsteroidResources';
+import {Aurorai} from './Aurorai';
 import {BotanicalExperience} from './BotanicalExperience';
 import {BreedingFarms} from './BreedingFarms';
 import {BioSol} from './BioSol';
@@ -63,6 +64,7 @@ import {MindSetMars} from './MindSetMars';
 import {MuseumofEarlyColonisation} from './MuseumofEarlyColonisation';
 import {NewVenice} from './NewVenice';
 import {NobelLabs} from './NobelLabs';
+import {Odyssey} from './Odyssey';
 import {OrbitalLaboratories} from './OrbitalLaboratories';
 import {OumuamuaTypeObjectSurvey} from './OumuamuaTypeObjectSurvey';
 import {OzoneGenerators} from './OzoneGenerators';
@@ -100,7 +102,6 @@ import {VeneraBase} from './VeneraBase';
 import {VenusFirst} from './VenusFirst';
 import {VitalColony} from './VitalColony';
 import {Wetlands} from './Wetlands';
-// import {VitalColony} from './VitalColony';
 
 export const PATHFINDERS_CARD_MANIFEST = new CardManifest({
   module: GameModule.Pathfinders,
@@ -197,10 +198,10 @@ export const PATHFINDERS_CARD_MANIFEST = new CardManifest({
     {cardName: CardName.MARTIAN_INSURANCE_GROUP, Factory: MartianInsuranceGroup},
     // {cardName: CardName.SOLBANK, Factory: SolBank},
     {cardName: CardName.BIO_SOL, Factory: BioSol},
-    // {cardName: CardName.AURORAI, Factory: Aurorai},
+    {cardName: CardName.AURORAI, Factory: Aurorai},
     {cardName: CardName.COLLEGIUM_COPERNICUS, Factory: CollegiumCopernicus},
     {cardName: CardName.ROBIN_HAULINGS, Factory: RobinHaulings, compatibility: GameModule.Venus},
-    // {cardName: CardName.ODYSSEY_EFFECT, Factory: OdysseyEffect},
+    {cardName: CardName.ODYSSEY, Factory: Odyssey},
     // {cardName: CardName.GAGARIN_MOBILE_BASE, Factory: GagarinMobileBase},
     // {cardName: CardName.MARS_FRONTIER_ALLIANCE, Factory: MarsFrontierAlliance},
     {cardName: CardName.MIND_SET_MARS, Factory: MindSetMars, compatibility: GameModule.Turmoil},

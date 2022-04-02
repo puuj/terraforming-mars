@@ -26,7 +26,7 @@ export class AdhaiHighOrbitConstructions extends Card implements ICorporationCar
         description: 'You start with 43 M€',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(43).nbsp.nbsp.space({played, secondaryTag: AltSecondaryTag.NO_PLANETARY_TAG}).colon().orbital().br;
-          b.text('(Effect: When ever you play a card with a space tag BUT NO PLANETARY TAG (including this) add 1 orbital on this card.)', Size.SMALL, false, false);
+          b.text('(Effect: Whenever you play a card with a space tag BUT NO PLANETARY TAG (including this) add 1 orbital on this card.)', Size.SMALL, false, false);
           b.br;
           b.effect('For every 2 orbitals on this card, cards with a space tag but with no planetary tag or the standard colony project or trade action costs 1M€ less.', (eb) => {
             eb.space({played, secondaryTag: AltSecondaryTag.NO_PLANETARY_TAG}).slash(Size.SMALL).colonies(1, {size: Size.SMALL}).slash(Size.SMALL).trade({size: Size.SMALL})
@@ -60,7 +60,8 @@ export class AdhaiHighOrbitConstructions extends Card implements ICorporationCar
     }
   }
 
-  public getCardDiscount(player: Player, card: IProjectCard) {
+  // TODO(kberg): it's not possible to make this a cardDiscount type, which just means rendering is tricky.
+  public override getCardDiscount(player: Player, card: IProjectCard) {
     if (player.isCorporation(CardName.ADHAI_HIGH_ORBIT_CONSTRUCTIONS) && this.matchingTags(card.tags)) {
       return Math.floor(this.resourceCount / 2);
     } else {

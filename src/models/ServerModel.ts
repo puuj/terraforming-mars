@@ -240,6 +240,7 @@ export class Server {
       canUseTitanium: undefined,
       canUseHeat: undefined,
       canUseSeeds: undefined,
+      canUseData: undefined,
       players: undefined,
       availableSpaces: undefined,
       min: undefined,
@@ -249,6 +250,7 @@ export class Server {
       floaters: undefined,
       science: undefined,
       seeds: undefined,
+      data: undefined,
       coloniesModel: undefined,
       payProduction: undefined,
       aresData: undefined,
@@ -306,6 +308,8 @@ export class Server {
       playerInputModel.canUseHeat = (waitingFor as SelectHowToPay).canUseHeat;
       playerInputModel.canUseSeeds = (waitingFor as SelectHowToPay).canUseSeeds;
       playerInputModel.seeds = player.getSpendableSeedResources();
+      playerInputModel.canUseData = (waitingFor as SelectHowToPay).canUseData;
+      playerInputModel.data = player.getSpendableData();
       break;
     case PlayerInputTypes.SELECT_PLAYER:
       playerInputModel.players = (waitingFor as SelectPlayer).players.map(
