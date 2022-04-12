@@ -186,7 +186,8 @@ export class PathfindersExpansion {
           game.defer(new SendDelegateToArea(player, 'Select where to send a delegate', {source: 'reserve'}));
         },
         () => {
-          player.game.log('TODO: come up with some reward in place of Add Delegate.');
+          player.game.log('Awarding megacredits since Turmoil is inactive.');
+          player.addResource(Resources.MEGACREDITS, 3, {log: true});
         });
       break;
     case 'energy':
