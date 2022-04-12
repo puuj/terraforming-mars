@@ -95,50 +95,49 @@
             <section class="debug-ui-cards-list">
                 <h2>Project Cards</h2>
                 <div class="cardbox" v-for="card in getAllProjectCards()" :key="card">
-                    <Card v-show="filtered(card)" :card="{'name': card}" />
+                    <Card v-show="showCard(card)" :card="{'name': card}" />
                 </div>
             </section>
             <br>
             <section class="debug-ui-cards-list">
                 <h2>Corporations</h2>
                 <div class="cardbox" v-for="card in getAllCorporationCards()" :key="card">
-                    <Card v-show="filtered(card)" :card="{'name': card}" />
+                    <Card v-show="showCard(card)" :card="{'name': card}" />
                 </div>
             </section>
             <br>
             <section class="debug-ui-cards-list">
                 <h2>Preludes</h2>
                 <div class="cardbox" v-for="card in getAllPreludeCards()" :key="card">
-                    <Card v-show="filtered(card)" :card="{'name': card}" />
+                    <Card v-show="showCard(card)" :card="{'name': card}" />
                 </div>
             </section>
             <br>
             <section class="debug-ui-cards-list">
               <h2>Standard Projects</h2>
               <div class="cardbox" v-for="card in getAllStandardProjectCards()" :key="card">
-                  <Card v-show="filtered(card)" :card="{'name': card}" />
+                  <Card v-show="showCard(card)" :card="{'name': card}" />
               </div>
             </section>
 
             <section class="debug-ui-cards-list">
               <h2>Global Events</h2>
               <div class="cardbox" v-for="globalEventName in getAllGlobalEvents()" :key="globalEventName">
-                <global-event :globalEvent="getGlobalEventModel(globalEventName)" type="prior"></global-event>
+                <global-event v-show="showGlobalEvent(globalEventName)" :globalEvent="getGlobalEventModel(globalEventName)" type="prior"></global-event>
               </div>
             </section>
-
-          <!-- <div class="player_home_colony_cont">
-              <div class="player_home_colony" v-for="colony in game.colonies" :key="colony.name">
-                  <colony :colony="colony"></colony>
-              </div>
-          </div> -->
 
             <section>
               <h2>Colonies</h2>
-              <div class="player_home_colony" v-for="colonyName in getAllColonyNames()" :key="colonyName">
-                <colony :colony="colonyModel(colonyName)"></colony>
+              <div class="player_home_colony_cont">
+                <div class="player_home_colony" v-for="colonyName in getAllColonyNames()" :key="colonyName">
+                  <colony v-show="showColony(colonyName)" :colony="colonyModel(colonyName)"></colony>
+                </div>
               </div>
             </section>
+            <div class="free-floating-preferences-icon">
+              <preferences-icon></preferences-icon>
+            </div>
         </div>
 </template>
 
@@ -153,12 +152,13 @@ import {getPreferences} from '@/client/utils/PreferencesManager';
 import {GlobalEventName} from '@/common/turmoil/globalEvents/GlobalEventName';
 import {GlobalEventModel} from '@/common/models/TurmoilModel';
 import {allGlobalEventNames, getGlobalEventModel} from '@/client/turmoil/ClientGlobalEventManifest';
-import GlobalEvent from '@/client/components/GlobalEvent.vue';
+import GlobalEvent from '@/client/components/turmoil/GlobalEvent.vue';
 import {byType, getCard, getCards, toName} from '@/client/cards/ClientCardManifest';
-import Colony from '@/client/components/Colony.vue';
+import Colony from '@/client/components/colonies/Colony.vue';
 import {COMMUNITY_COLONY_NAMES, OFFICIAL_COLONY_NAMES} from '@/common/colonies/AllColonies';
 import {ColonyModel} from '@/common/models/ColonyModel';
 import {ColonyName} from '@/common/colonies/ColonyName';
+import PreferencesIcon from '@/client/components/PreferencesIcon.vue';
 
 const MODULE_BASE = 'b';
 const MODULE_CORP = 'c';
@@ -200,7 +200,6 @@ export interface DebugUIModel {
   pathfinders: boolean,
   promo: boolean,
   types: Record<CardType, boolean>,
-  colonyCount: number,
 }
 
 export default Vue.extend({
@@ -209,8 +208,9 @@ export default Vue.extend({
     Card,
     GlobalEvent,
     Colony,
+    PreferencesIcon,
   },
-  data() {
+  data(): DebugUIModel {
     return {
       filterText: '',
       sortById: false,
@@ -232,9 +232,10 @@ export default Vue.extend({
         prelude: true,
         corporation: true,
         standard_project: true,
+        standard_action: false,
+        proxy: false,
       },
-      colonyCount: 0,
-    } as DebugUIModel;
+    };
   },
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -291,14 +292,6 @@ export default Vue.extend({
     },
     types() {
       this.updateUrl();
-    },
-    colonyCount: {
-      immediate: true,
-      handler() {
-        setTimeout(() => {
-          this.colonyCount = (this.colonyCount + 1) % 4;
-        }, 1000);
-      },
     },
   },
   computed: {
@@ -395,17 +388,21 @@ export default Vue.extend({
     getGlobalEventModel(globalEventName: GlobalEventName): GlobalEventModel {
       return getGlobalEventModel(globalEventName);
     },
-    filtered(cardName: CardName): boolean {
+    filterByName(name: string) {
+      const filterText = this.$data.filterText.toUpperCase();
+      if (this.$data.filterText.length > 0) {
+        if (name.toUpperCase().includes(filterText) === false) {
+          return false;
+        }
+      }
+      return true;
+    },
+    showCard(cardName: CardName): boolean {
+      if (!this.filterByName(cardName)) return false;
+
       const card = getCard(cardName);
       if (card === undefined) {
         return false;
-      }
-
-      const filterText = this.$data.filterText.toUpperCase();
-      if (this.$data.filterText.length > 0) {
-        if (cardName.toUpperCase().includes(filterText) === false) {
-          return false;
-        }
       }
 
       if (!this.types[card.card.cardType]) return false;
@@ -437,13 +434,19 @@ export default Vue.extend({
         return true;
       }
     },
+    showGlobalEvent(name: GlobalEventName): boolean {
+      return this.filterByName(name);
+    },
+    showColony(name: ColonyName): boolean {
+      return this.filterByName(name);
+    },
     getLanguageCssClass() {
       const language = getPreferences().lang;
       return 'language-' + language;
     },
     colonyModel(colonyName: ColonyName): ColonyModel {
       return {
-        colonies: Array(this.colonyCount).fill('blue'),
+        colonies: [],
         isActive: true,
         name: colonyName,
         trackPosition: 5,

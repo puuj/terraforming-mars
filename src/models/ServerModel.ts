@@ -434,6 +434,7 @@ export class Server {
       titaniumValue: player.getTitaniumValue(),
       tradesThisGeneration: player.tradesThisGeneration,
       victoryPointsBreakdown: player.getVictoryPoints(),
+      victoryPointsByGeneration: player.victoryPointsByGeneration,
     };
   }
 

@@ -24,6 +24,7 @@
               <div v-if="gameOptions.solarPhaseOption" class="game-config generic" v-i18n>On</div>
               <div v-else class="game-config generic" v-i18n>Off</div>
             </li>
+
             <li v-if="gameOptions.venusNextExtension">
             <div class="setup-item" v-i18n>Venus Terraforming:</div>
               <div v-if="gameOptions.requiresVenusTrackCompletion" class="game-config exception">Mandatory</div>
@@ -34,14 +35,12 @@
               <div v-if="gameOptions.requiresMoonTrackCompletion" class="game-config exception">Mandatory</div>
               <div v-else class="game-config generic" v-i18n>Optional</div>
             </li>
+
             <li v-if="playerNumber > 1">
               <div class="setup-item" v-i18n>Milestones and Awards:</div>
               <div v-if="isRandomMANone()" class="game-config generic" v-i18n>Board-defined</div>
               <div v-if="isRandomMALimited()" class="game-config generic" v-i18n>Randomized with limited synergy</div>
               <div v-if="isRandomMAUnlimited()" class="game-config generic" v-i18n>Full randomized</div>
-              <div v-if="isRandomMANone() && gameOptions.venusNextExtension" class="game-config generic" v-i18n>HoverLord & Venuphile</div>
-              <div v-if="!isRandomMANone() && !gameOptions.includeVenusMA" class="game-config generic" v-i18n>(5 each)</div>
-              <div v-if="!isRandomMANone() && gameOptions.includeVenusMA" class="game-config generic" v-i18n>(6 each)</div>
             </li>
 
             <li v-if="playerNumber > 1">
