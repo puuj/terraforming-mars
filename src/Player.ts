@@ -2278,7 +2278,7 @@ export class Player {
 
   public static deserialize(d: SerializedPlayer, game: SerializedGame): Player {
     const player = new Player(d.name, d.color, d.beginner, Number(d.handicap), d.id, d.email);
-  
+
     const cardFinder = new CardFinder();
 
     player.actionsTakenThisGame = d.actionsTakenThisGame;

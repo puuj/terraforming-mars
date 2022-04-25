@@ -77,7 +77,7 @@ export class PathfindersExpansion {
     if (!word) return word;
     return word[0].toUpperCase() + word.substr(1).toLowerCase();
   }
-  
+
   public static raiseTrack(tag: Tags, player: Player, steps: number = 1): void {
     PathfindersExpansion.raiseTrackEssense(tag, player, player.game, steps, true);
   }

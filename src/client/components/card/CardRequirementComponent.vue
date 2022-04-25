@@ -10,6 +10,7 @@
         <template v-if="requirement.type === RequirementType.PRODUCTION">
           <div class="card-production-box card-production-box--req">
             <div class="card-production-box-row">
+              <span v-if="isRepeated">{{amount()}}</span>
               <div class="card-production-box-row-item">
                 <div class="card-item-container">
                   <div :class="getProductionClass()"></div>
