@@ -1146,14 +1146,6 @@ export class Player {
   public runProductionPhase(): void {
     this.actionsThisGeneration.clear();
     this.removingPlayers = [];
-    // Syndicate Pirate Raids hook. If it is in effect, then only the syndicate pirate raider will
-    // retrieve their fleets.
-    // See Colony.ts for the other half of this effect, and Game.ts which disables it.
-    if (this.game.syndicatePirateRaider === undefined) {
-      this.tradesThisGeneration = 0;
-    } else if (this.game.syndicatePirateRaider === this.id) {
-      this.tradesThisGeneration = 0;
-    }
 
     this.turmoilPolicyActionUsed = false;
     this.politicalAgendasActionUsedCount = 0;
@@ -1170,6 +1162,16 @@ export class Player {
     }
   }
 
+  public returnTradeFleets(): void {
+    // Syndicate Pirate Raids hook. If it is in effect, then only the syndicate pirate raider will
+    // retrieve their fleets.
+    // See Colony.ts for the other half of this effect, and Game.ts which disables it.
+    if (this.game.syndicatePirateRaider === undefined) {
+      this.tradesThisGeneration = 0;
+    } else if (this.game.syndicatePirateRaider === this.id) {
+      this.tradesThisGeneration = 0;
+    }
+  }
   private doneWorldGovernmentTerraforming(): void {
     this.game.deferredActions.runAll(() => this.game.doneWorldGovernmentTerraforming());
   }
@@ -1938,6 +1940,7 @@ export class Player {
    * should only be false in testing and when this method is called during game deserialization. In other
    * words, don't set this value unless you know what you're doing.
    */
+  // @ts-ignore saveBeforeTakingAction is unused at the moment.
   public takeAction(saveBeforeTakingAction: boolean = true): void {
     const game = this.game;
 
@@ -1948,7 +1951,8 @@ export class Player {
 
     const allOtherPlayersHavePassed = this.allOtherPlayersHavePassed();
 
-    if (saveBeforeTakingAction) game.save();
+    if (this.actionsTakenThisRound === 0 || game.gameOptions.undoOption) game.save();
+    // if (saveBeforeTakingAction) game.save();
 
     // Prelude cards have to be played first
     if (this.preludeCardsInHand.length > 0) {

@@ -86,6 +86,18 @@
                     <span v-i18n>{{type}}</span>
                 </label>
               </span>
+              <span>
+                <input type="checkbox" name="globalEvents-cardType" id="globalEvents-checkbox" v-model="types.globalEvents">
+                <label for="globalEvents-checkbox" class="expansion-button">
+                    <span v-i18n>Global Events</span>
+                </label>
+              </span>
+              <span>
+                <input type="checkbox" name="colonyTiles-cardType" id="colonyTiles-checkbox" v-model="types.colonyTiles">
+                <label for="colonyTiles-checkbox" class="expansion-button">
+                    <span v-i18n>Colony Tiles</span>
+                </label>
+              </span>
             </div>
 
             <section class="debug-ui-cards-list">
@@ -118,18 +130,22 @@
 
             <section class="debug-ui-cards-list">
               <h2>Global Events</h2>
-              <div class="cardbox" v-for="globalEventName in getAllGlobalEvents()" :key="globalEventName">
-                <global-event v-show="showGlobalEvent(globalEventName)" :globalEvent="getGlobalEventModel(globalEventName)" type="prior"></global-event>
-              </div>
+              <template v-if="types.globalEvents">
+                <div class="cardbox" v-for="globalEventName in getAllGlobalEvents()" :key="globalEventName">
+                  <global-event v-show="showGlobalEvent(globalEventName)" :globalEvent="getGlobalEventModel(globalEventName)" type="prior"></global-event>
+                </div>
+              </template>
             </section>
 
             <section>
               <h2>Colonies</h2>
-              <div class="player_home_colony_cont">
-                <div class="player_home_colony" v-for="colonyName in getAllColonyNames()" :key="colonyName">
-                  <colony v-show="showColony(colonyName)" :colony="colonyModel(colonyName)"></colony>
+              <template v-if="types.colonyTiles">
+                <div class="player_home_colony_cont">
+                  <div class="player_home_colony" v-for="colonyName in getAllColonyNames()" :key="colonyName">
+                    <colony v-show="showColony(colonyName)" :colony="colonyModel(colonyName)"></colony>
+                  </div>
                 </div>
-              </div>
+              </template>
             </section>
             <div class="free-floating-preferences-icon">
               <preferences-icon></preferences-icon>
@@ -141,7 +157,6 @@
 
 import Vue from 'vue';
 import Card from '@/client/components/card/Card.vue';
-import {GameModule} from '@/common/cards/GameModule';
 import {CardType} from '@/common/cards/CardType';
 import {CardName} from '@/common/cards/CardName';
 import {getPreferences} from '@/client/utils/PreferencesManager';
@@ -194,7 +209,7 @@ export interface DebugUIModel {
   moon: boolean,
   pathfinders: boolean,
   promo: boolean,
-  types: Record<CardType, boolean>,
+  types: Record<CardType | 'colonyTiles' | 'globalEvents', boolean>,
 }
 
 export default Vue.extend({
@@ -228,6 +243,8 @@ export default Vue.extend({
         standard_project: true,
         standard_action: false,
         proxy: false,
+        globalEvents: true,
+        colonyTiles: true,
       },
     };
   },
@@ -394,27 +411,27 @@ export default Vue.extend({
       if (!this.types[card.cardType]) return false;
 
       switch (card.module) {
-      case GameModule.Base:
+      case 'base':
         return this.base === true;
-      case GameModule.CorpEra:
+      case 'corpera':
         return this.corporateEra === true;
-      case GameModule.Promo:
+      case 'promo':
         return this.promo === true;
-      case GameModule.Venus:
+      case 'venus':
         return this.venusNext === true;
-      case GameModule.Colonies:
+      case 'colonies':
         return this.colonies === true;
-      case GameModule.Prelude:
+      case 'prelude':
         return this.prelude === true;
-      case GameModule.Turmoil:
+      case 'turmoil':
         return this.turmoil === true;
-      case GameModule.Community:
+      case 'community':
         return this.community === true;
-      case GameModule.Ares:
+      case 'ares':
         return this.ares === true;
-      case GameModule.Moon:
+      case 'moon':
         return this.moon === true;
-      case GameModule.Pathfinders:
+      case 'pathfinders':
         return this.pathfinders === true;
       default:
         return true;
