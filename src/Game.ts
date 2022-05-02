@@ -1185,14 +1185,13 @@ export class Game {
         player.increaseTerraformRating();
       }
       if (this.gameOptions.altVenusBoard) {
-        // The second half of this equation removes any increases earler than 16-to-18.
-
         const newValue = this.venusScaleLevel + steps * 2;
         const minimalBaseline = Math.max(this.venusScaleLevel, 16);
         const maximumBaseline = Math.min(newValue, 30);
         const standardResourcesGranted = Math.max((maximumBaseline - minimalBaseline) / 2, 0);
 
         const grantWildResource = this.venusScaleLevel + (steps * 2) >= 30;
+        // The second half of this expression removes any increases earler than 16-to-18.
         if (grantWildResource || standardResourcesGranted > 0) {
           this.defer(new GrantVenusAltTrackBonusDeferred(player, standardResourcesGranted, grantWildResource));
         }
@@ -1284,7 +1283,7 @@ export class Game {
   }
 
   public getCitiesCount(player?: Player): number {
-    let cities = this.board.spaces.filter((space) => Board.isCitySpace(space));
+    let cities = this.board.spaces.filter(Board.isCitySpace);
     if (player !== undefined) cities = cities.filter(Board.ownedBy(player));
     return cities.length;
   }

@@ -902,7 +902,7 @@ export class Player {
 
   // Return the total number of tags assocaited with these types.
   // Tag substitutions are included
-  public getMultipleTagCount(tags: Array<Tags>): number {
+  public getMultipleTagCount(tags: Array<Tags>, mode: 'default' | 'milestones' = 'default'): number {
     let tagCount = 0;
     tags.forEach((tag) => {
       tagCount += this.getRawTagCount(tag, false);
@@ -913,13 +913,18 @@ export class Player {
       tagCount += this.getRawTagCount(Tags.MOON, false);
     }
 
-    return tagCount + this.getRawTagCount(Tags.WILDCARD, false);
+    tagCount += this.getRawTagCount(Tags.WILDCARD, false);
+
+    // Chimera has 2 wild tags but should only count as one for milestones.
+    if (this.corporationCard?.name === CardName.CHIMERA && mode === 'milestones') tagCount--;
+
+    return tagCount;
   }
 
   // Counts the number of distinct tags
-  public getDistinctTagCount(countWild: boolean, extraTag?: Tags): number {
+  public getDistinctTagCount(mode: 'default' | 'milestone' | 'globalEvent', extraTag?: Tags): number {
     const allTags: Tags[] = [];
-    let wildcardCount: number = 0;
+    let wildTagCount: number = 0;
     if (extraTag !== undefined) {
       allTags.push(extraTag);
     }
@@ -937,24 +942,25 @@ export class Player {
     });
     for (const tags of allTags) {
       if (tags === Tags.WILDCARD) {
-        wildcardCount++;
+        wildTagCount++;
       } else {
         uniqueTags.add(tags);
       }
     }
-    if (countWild) {
-      // TODO(kberg): it might be more correct to count all the tags
-      // in a game regardless of expansion? But if that happens it needs
-      // to be done once, during set-up so that this operation doesn't
-      // always go through every tag every time.
-      let maxTagCount = 10;
-      if (this.game.gameOptions.venusNextExtension) maxTagCount++;
-      if (this.game.gameOptions.moonExpansion) maxTagCount++;
-      if (this.game.gameOptions.pathfindersExpansion) maxTagCount++;
-      return Math.min(uniqueTags.size + wildcardCount, maxTagCount);
-    } else {
-      return uniqueTags.size;
-    }
+
+    if (mode === 'globalEvent') return uniqueTags.size;
+
+    if (mode === 'milestone' && this.corporationCard?.name === CardName.CHIMERA) wildTagCount--;
+
+    // TODO(kberg): it might be more correct to count all the tags
+    // in a game regardless of expansion? But if that happens it needs
+    // to be done once, during set-up so that this operation doesn't
+    // always go through every tag every time.
+    let maxTagCount = 10;
+    if (this.game.gameOptions.venusNextExtension) maxTagCount++;
+    if (this.game.gameOptions.moonExpansion) maxTagCount++;
+    if (this.game.gameOptions.pathfindersExpansion) maxTagCount++;
+    return Math.min(uniqueTags.size + wildTagCount, maxTagCount);
   }
 
   // Return true if this player has all the tags in `tags` showing.
@@ -1009,6 +1015,18 @@ export class Player {
     }
   }
 
+  private parseUnitsJSON(json: string): Units {
+    try {
+      const units: unknown = JSON.parse(json);
+      if (!Units.isUnits(units)) {
+        throw new Error('not a units object');
+      }
+
+      return units;
+    } catch (err) {
+      throw new Error('Unable to parse Units input ' + err);
+    }
+  }
   protected runInput(input: InputResponse, pi: PlayerInput): void {
     if (pi instanceof AndOptions) {
       this.checkInputLength(input, pi.options.length);
@@ -1100,8 +1118,14 @@ export class Player {
     } else if (pi instanceof SelectHowToPay) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectProductionToLose) {
-      // TODO(kberg): I'm sure there's some input validation required.
-      const units: Units = JSON.parse(input[0][0]);
+      this.checkInputLength(input, 1, 1);
+      const units: Units = this.parseUnitsJSON(input[0][0]);
+      if (!Units.keys.every((k) => units[k] >= 0)) {
+        throw new Error('All units must be positive');
+      }
+      if (!this.canAdjustProduction(Units.negative(units))) {
+        throw new Error('You do not have those units');
+      }
       pi.cb(units);
     } else if (pi instanceof ShiftAresGlobalParameters) {
       // TODO(kberg): I'm sure there's some input validation required.
@@ -1865,14 +1889,6 @@ export class Player {
       return false;
     }
 
-    const canUseSteel: boolean = options?.steel ?? false;
-    const canUseTitanium: boolean = options?.titanium ?? false;
-    const canUseFloaters: boolean = options?.floaters ?? false;
-    const canUseMicrobes: boolean = options?.microbes ?? false;
-    const canUseScience: boolean = options?.science ?? false;
-    const canUseSeeds: boolean = options?.seeds ?? false;
-    const canUseData: boolean = options?.data ?? false;
-
     const redsCost = TurmoilHandler.computeTerraformRatingBump(this, options?.tr) * REDS_RULING_POLICY_COST;
 
     let availableMegacredits = this.megaCredits;
@@ -1886,18 +1902,20 @@ export class Player {
     if (availableMegacredits < 0) {
       return false;
     }
-    return cost <= availableMegacredits +
-      (canUseSteel ? (this.steel - reserveUnits.steel) * this.getSteelValue() : 0) +
-      (canUseTitanium ? (this.titanium - reserveUnits.titanium) * this.getTitaniumValue() : 0) +
-      (canUseFloaters ? this.getFloatersCanSpend() * 3 : 0) +
-      (canUseMicrobes ? this.getMicrobesCanSpend() * 2 : 0) +
-      (canUseScience ? this.getSpendableScienceResources() : 0) +
-      (canUseSeeds ? this.getSpendableSeedResources() * constants.SEED_VALUE : 0) +
-      (canUseData ? this.getSpendableData() * constants.DATA_VALUE : 0);
+
+    if (options?.steel) availableMegacredits += (this.steel - reserveUnits.steel) * this.getSteelValue();
+    if (options?.titanium) availableMegacredits += (this.titanium - reserveUnits.titanium) * this.getTitaniumValue();
+    if (options?.floaters) availableMegacredits += this.getFloatersCanSpend() * 3;
+    if (options?.microbes) availableMegacredits += this.getMicrobesCanSpend() * 2;
+    if (options?.science) availableMegacredits += this.getSpendableScienceResources();
+    if (options?.seeds) availableMegacredits += this.getSpendableSeedResources() * constants.SEED_VALUE;
+    if (options?.data) availableMegacredits += this.getSpendableData() * constants.DATA_VALUE;
+    return cost <= availableMegacredits;
   }
 
   private getStandardProjects(): Array<StandardProjectCard> {
-    return new CardLoader(this.game.gameOptions)
+    const gameOptions = this.game.gameOptions;
+    return new CardLoader(gameOptions)
       .getStandardProjects()
       .filter((card) => {
         switch (card.name) {
@@ -1906,11 +1924,15 @@ export class Player {
           return false;
         // For buffer gas, show ONLY IF in solo AND 63TR mode
         case CardName.BUFFER_GAS_STANDARD_PROJECT:
-          return this.game.isSoloMode() && this.game.gameOptions.soloTR;
+          return this.game.isSoloMode() && gameOptions.soloTR;
         case CardName.AIR_SCRAPPING_STANDARD_PROJECT:
-          return this.game.gameOptions.altVenusBoard === false;
+          return gameOptions.altVenusBoard === false;
         case CardName.AIR_SCRAPPING_STANDARD_PROJECT_VARIANT:
-          return this.game.gameOptions.altVenusBoard === true;
+          return gameOptions.altVenusBoard === true;
+        case CardName.MOON_COLONY_STANDARD_PROJECT_V2:
+        case CardName.MOON_MINE_STANDARD_PROJECT_V2:
+        case CardName.MOON_ROAD_STANDARD_PROJECT_V2:
+          return gameOptions.moonStandardProjectVariant === true;
         default:
           return true;
         }
@@ -1918,6 +1940,7 @@ export class Player {
       .sort((a, b) => a.cost - b.cost);
   }
 
+  // Subclassed by TestPlayer for testing.
   protected getStandardProjectOption(): SelectCard<StandardProjectCard> {
     const standardProjects: Array<StandardProjectCard> = this.getStandardProjects();
 

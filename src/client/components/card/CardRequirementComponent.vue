@@ -13,7 +13,9 @@
               <span v-if="isRepeated">{{amount()}}</span>
               <div class="card-production-box-row-item">
                 <div class="card-item-container">
-                  <div :class="getProductionClass()"></div>
+                  <template v-for="num in repeats">
+                    <div :class="getProductionClass()" :key="num"></div>
+                  </template>
                 </div>
               </div>
             </div>
