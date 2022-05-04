@@ -1084,17 +1084,17 @@ export class Player {
       this.deferInputCb(pi.cb(foundCard, howToPay));
     } else if (pi instanceof SelectCard) {
       this.checkInputLength(input, 1);
-      if (input[0].length < pi.minCardsToSelect) {
+      if (input[0].length < pi.config.min) {
         throw new Error('Not enough cards selected');
       }
-      if (input[0].length > pi.maxCardsToSelect) {
+      if (input[0].length > pi.config.max) {
         throw new Error('Too many cards selected');
       }
       const mappedCards: Array<ICard> = [];
       for (const cardName of input[0]) {
         const cardIndex = PlayerInput.getCard(pi.cards, cardName);
         mappedCards.push(cardIndex.card);
-        if (pi.enabled?.[cardIndex.idx] === false) {
+        if (pi.config.enabled?.[cardIndex.idx] === false) {
           throw new Error('Selected unavailable card');
         }
       }
@@ -1333,9 +1333,7 @@ export class Player {
         });
         this.game.playerIsFinishedWithDraftingPhase(initialDraft, this, cards);
         return undefined;
-      }, cardsToKeep, cardsToKeep,
-      false, undefined, false,
-      ),
+      }, {min: cardsToKeep, max: cardsToKeep, played: false}),
     );
   }
 
@@ -1663,7 +1661,7 @@ export class Player {
         }
         this.actionsThisGeneration.add(foundCard.name);
         return undefined;
-      }, 1, 1, true,
+      }, {selectBlueCardAction: true},
     );
   }
 
@@ -1949,8 +1947,7 @@ export class Player {
       'Confirm',
       standardProjects,
       (card) => card[0].action(this),
-      1, 1, false,
-      standardProjects.map((card) => card.canAct(this)),
+      {enabled: standardProjects.map((card) => card.canAct(this))},
     );
   }
 
