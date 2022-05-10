@@ -7,14 +7,14 @@ import {ICard} from '../cards/ICard';
 import {Deck} from '../Deck';
 import {GameModule} from '../common/cards/GameModule';
 import {IGlobalEvent} from '../turmoil/globalEvents/IGlobalEvent';
-import {ALL_EVENTS} from '../turmoil/globalEvents/GlobalEventDealer';
+import {ALL_EVENTS, getGlobalEventModule} from '../turmoil/globalEvents/GlobalEventDealer';
 import {IClientGlobalEvent} from '../common/turmoil/IClientGlobalEvent';
 import {IClientCard} from '../common/cards/IClientCard';
 import {CardType} from '../common/cards/CardType';
 import {ICorporationCard} from '../cards/corporation/ICorporationCard';
 import {PreludeCard} from '../cards/prelude/PreludeCard';
 import {IColonyMetadata} from '../common/colonies/IColonyMetadata';
-import {ALL_COLONIES_TILES} from '../colonies/ColonyManifest';
+import {ALL_COLONIES_TILES, getColonyModule} from '../colonies/ColonyManifest';
 
 class ProjectCardProcessor {
   public static json: Array<IClientCard> = [];
@@ -30,11 +30,11 @@ class ProjectCardProcessor {
 
   private static processDeck(module: GameModule, deck: Deck<ICard>) {
     deck.factories.forEach((factory) => {
-      ProjectCardProcessor.processCard(module, new factory.Factory());
+      ProjectCardProcessor.processCard(module, new factory.Factory(), factory.compatibility);
     });
   }
 
-  private static processCard(module: GameModule, card: ICard) {
+  private static processCard(module: GameModule, card: ICard, compatibility: undefined | GameModule | Array<GameModule>) {
     let startingMegaCredits = undefined;
     let cardCost = undefined;
     if (card.cardType === CardType.PRELUDE) {
@@ -59,8 +59,14 @@ class ProjectCardProcessor {
       resourceType: card.resourceType,
       startingMegaCredits: startingMegaCredits,
       cardCost: cardCost,
+      compatibility: [],
     };
 
+    if (Array.isArray(compatibility)) {
+      clientCard.compatibility.push(...compatibility);
+    } else if (compatibility !== undefined) {
+      clientCard.compatibility.push(compatibility);
+    }
     ProjectCardProcessor.json.push(clientCard);
   }
 }
@@ -76,6 +82,7 @@ class GlobalEventProcessor {
 
   private static processGlobalEvent(globalEvent: IGlobalEvent) {
     const event: IClientGlobalEvent = {
+      module: getGlobalEventModule(globalEvent.name),
       name: globalEvent.name,
       description: globalEvent.description,
       revealedDelegate: globalEvent.revealedDelegate,
@@ -101,6 +108,7 @@ class ColoniesProcessor {
     // into the JSON. Could do some other form, but this works and matches
     // the patterns above.
     const clientMetadata: IColonyMetadata = {
+      module: getColonyModule(metadata.name),
       name: metadata.name,
       buildType: metadata.buildType,
       buildQuantity: metadata.buildQuantity,

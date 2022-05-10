@@ -636,8 +636,31 @@ export class Player {
     return this.cardIsInEffect(CardName.LUNAR_SECURITY_STATIONS);
   }
 
-  public productionIsProtected(): boolean {
-    return this.cardIsInEffect(CardName.PRIVATE_SECURITY);
+  public canReduceAnyProduction(resource: Resources, minQuantity: number = 1): boolean {
+    // in soloMode you don't have to decrease resources
+    const game = this.game;
+    if (game.isSoloMode()) return true;
+    return game.getPlayers().some((p) => p.canHaveProductionReduced(resource, minQuantity, this));
+  }
+
+  public canHaveProductionReduced(resource: Resources, minQuantity: number, attacker: Player) {
+    if (resource === Resources.MEGACREDITS) {
+      if ((this.getProduction(resource) + 5) < minQuantity) return false;
+    } else {
+      if (this.getProduction(resource) < minQuantity) return false;
+    }
+
+    if (resource === Resources.STEEL || resource === Resources.TITANIUM) {
+      if (this.alloysAreProtected()) return false;
+    }
+
+    // The pathfindersExpansion test is just an optimization for non-Pathfinders games.
+    if (this.game.gameOptions.pathfindersExpansion && this.productionIsProtected(attacker)) return false;
+    return true;
+  }
+
+  public productionIsProtected(attacker: Player): boolean {
+    return attacker !== this && this.cardIsInEffect(CardName.PRIVATE_SECURITY);
   }
 
   // Return the number of cards in the player's hand without tags.
@@ -1083,22 +1106,7 @@ export class Player {
       }
       this.deferInputCb(pi.cb(foundCard, howToPay));
     } else if (pi instanceof SelectCard) {
-      this.checkInputLength(input, 1);
-      if (input[0].length < pi.config.min) {
-        throw new Error('Not enough cards selected');
-      }
-      if (input[0].length > pi.config.max) {
-        throw new Error('Too many cards selected');
-      }
-      const mappedCards: Array<ICard> = [];
-      for (const cardName of input[0]) {
-        const cardIndex = PlayerInput.getCard(pi.cards, cardName);
-        mappedCards.push(cardIndex.card);
-        if (pi.config.enabled?.[cardIndex.idx] === false) {
-          throw new Error('Selected unavailable card');
-        }
-      }
-      this.deferInputCb(pi.cb(mappedCards));
+      this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectAmount) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectSpace) {
