@@ -142,8 +142,8 @@ export class SQLite implements IDatabase {
       }
       try {
         cb(undefined, JSON.parse(row.game));        
-      } catch (exception) {
-        console.error(`unable to get game ${game_id}`, exception);
+      } catch (e) {
+        console.error(`unable to get game ${game_id}`, e);
         const error = e instanceof Error ? e : new Error(String(e));
         cb(error, undefined);
       }
