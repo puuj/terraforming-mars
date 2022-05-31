@@ -80,12 +80,12 @@ export class Player {
   public readonly id: PlayerId;
   protected waitingFor?: PlayerInput;
   protected waitingForCb?: () => void;
-  private _game: Game | undefined = undefined;
+  private _game?: Game;
 
   // Corporate identity
-  public corporationCard: ICorporationCard | undefined = undefined;
+  public corporationCard?: ICorporationCard;
   // Used only during set-up
-  public pickedCorporationCard: ICorporationCard | undefined = undefined;
+  public pickedCorporationCard?: ICorporationCard;
 
   // Terraforming Rating
   private terraformRating: number = 20;
@@ -127,7 +127,7 @@ export class Player {
   public playedCards: Array<IProjectCard> = [];
   public draftedCards: Array<IProjectCard> = [];
   public cardCost: number = constants.CARD_COST;
-  public needsToDraft: boolean | undefined = undefined;
+  public needsToDraft?: boolean;
   public passingTo: string = '';
 
   public timer: Timer = Timer.newInstance();
@@ -724,7 +724,8 @@ export class Player {
     return requirementsBonus;
   }
 
-  public removeResourceFrom(card: ICard, count: number = 1, removingPlayer? : Player): void {
+  public removeResourceFrom(card: ICard, count: number = 1, options?: {removingPlayer? : Player, log?: boolean}): void {
+    const removingPlayer = options?.removingPlayer;
     if (card.resourceCount) {
       const amountRemoved = Math.min(card.resourceCount, count);
       if (amountRemoved === 0) return;
@@ -732,9 +733,9 @@ export class Player {
 
       if (removingPlayer !== undefined && removingPlayer !== this) MonsInsurance.resolveInsurance(this);
 
-      if (amountRemoved > 0) {
+      if (options?.log ?? true === true) {
         this.game.log('${0} removed ${1} resource(s) from ${2}\'s ${3}', (b) =>
-          b.player(removingPlayer ?? this)
+          b.player(options?.removingPlayer ?? this)
             .number(amountRemoved)
             .player(this)
             .card(card));
@@ -1037,71 +1038,27 @@ export class Player {
     }
   }
 
-  protected runInput(input: InputResponse, pi: PlayerInput): void {
+  public runInput(input: InputResponse, pi: PlayerInput): void {
     if (pi instanceof AndOptions) {
-      this.checkInputLength(input, pi.options.length);
-      for (let i = 0; i < input.length; i++) {
-        this.runInput([input[i]], pi.options[i]);
-      }
-      this.deferInputCb(pi.cb());
+      this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectAmount) {
-      this.checkInputLength(input, 1, 1);
-      const amount: number = parseInt(input[0][0]);
-      if (isNaN(amount)) {
-        throw new Error('Number not provided for amount');
-      }
-      if (amount > pi.max) {
-        throw new Error('Amount provided too high (max ' + String(pi.max) + ')');
-      }
-      if (amount < pi.min) {
-        throw new Error('Amount provided too low (min ' + String(pi.min) + ')');
-      }
-      this.deferInputCb(pi.cb(amount));
+      this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectOption) {
       this.deferInputCb(pi.cb());
     } else if (pi instanceof SelectColony) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof OrOptions) {
-      // input length is variable, can't test it with checkInputLength
-      if (input.length === 0 || input[0].length !== 1) {
-        throw new Error('Incorrect options provided');
-      }
-      const optionIndex = parseInt(input[0][0]);
-      const selectedOptionInput = input.slice(1);
-      this.runInput(selectedOptionInput, pi.options[optionIndex]);
-      this.deferInputCb(pi.cb());
-    } else if (pi instanceof SelectHowToPayForProjectCard) {
-      this.checkInputLength(input, 1, 2);
-      const cardName = input[0][0];
-      const _data = PlayerInput.getCard(pi.cards, cardName);
-      const foundCard: IProjectCard = _data.card;
-      const howToPay: HowToPay = this.parseHowToPayJSON(input[0][1]);
-      const reserveUnits = pi.reserveUnits[_data.idx];
-      if (reserveUnits.steel + howToPay.steel > this.steel) {
-        throw new Error(`${reserveUnits.steel} units of steel must be reserved for ${cardName}`);
-      }
-      if (reserveUnits.titanium + howToPay.titanium > this.titanium) {
-        throw new Error(`${reserveUnits.titanium} units of titanium must be reserved for ${cardName}`);
-      }
-      this.deferInputCb(pi.cb(foundCard, howToPay));
-    } else if (pi instanceof SelectCard) {
       this.deferInputCb(pi.process(input, this));
-    } else if (pi instanceof SelectAmount) {
+    } else if (pi instanceof SelectHowToPayForProjectCard) {
+      this.deferInputCb(pi.process(input, this));
+    } else if (pi instanceof SelectCard) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectSpace) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectPlayer) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectDelegate) {
-      this.checkInputLength(input, 1, 1);
-      const foundPlayer = pi.players.find((player) =>
-        player === input[0][0] ||
-        (player instanceof Player && (player.id === input[0][0] || player.color === input[0][0])),
-      );
-      if (foundPlayer === undefined) {
-        throw new Error('Player not available');
-      }
-      this.deferInputCb(pi.cb(foundPlayer));
+      this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectHowToPay) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectProductionToLose) {
@@ -1109,12 +1066,7 @@ export class Player {
     } else if (pi instanceof ShiftAresGlobalParameters) {
       this.deferInputCb(pi.process(input, this));
     } else if (pi instanceof SelectPartyToSendDelegate) {
-      this.checkInputLength(input, 1, 1);
-      const party: PartyName = (input[0][0]) as PartyName;
-      if (party === undefined) {
-        throw new Error('No party selected');
-      }
-      this.deferInputCb(pi.cb(party));
+      this.deferInputCb(pi.process(input, this));
     } else {
       throw new Error('Unsupported waitingFor');
     }

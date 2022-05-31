@@ -1,58 +1,65 @@
+require('dotenv').config();
 import {expect} from 'chai';
 import {Game} from '../../src/Game';
-import {GameId} from '../../src/common/Types';
 import {TestPlayers} from '../TestPlayers';
-import {IN_MEMORY_SQLITE_PATH, SQLite} from '../../src/database/SQLite';
+import {PostgreSQL} from '../../src/database/PostgreSQL';
 import {Database} from '../../src/database/Database';
 import {restoreTestDatabase} from '../utils/setup';
+import {GameId} from '../../src/common/Types';
 import {sleep} from '../TestingUtils';
 
-class TestSQLite extends SQLite {
+/*
+ How to set up this integration test.
+
+ This test only works manually.
+*/
+class TestPostgreSQL extends PostgreSQL {
   public saveGamePromise: Promise<void> = Promise.resolve();
 
   constructor() {
-    super(IN_MEMORY_SQLITE_PATH, true);
+    super({
+      user: 'tfmtest',
+      database: 'tfmtest',
+      host: 'localhost',
+      password: process.env.POSTGRES_INTEGRATION_TEST_PASSWORD,
+    });
   }
 
-  public get database() {
-    return this.db;
-  }
-
+  // Tests can wait for saveGamePromise since save() is called inside other methods.
   public override saveGame(game: Game): Promise<void> {
     this.saveGamePromise = super.saveGame(game);
     return this.saveGamePromise;
   }
 
-  public getSaveIds(gameId: GameId): Promise<Array<number>> {
-    return new Promise((resolve, reject) => {
-      const allSaveIds: Array<number> = [];
-      const sql: string = 'SELECT distinct save_id FROM games WHERE game_id = ?';
-      this.db.all(sql, [gameId], (err, rows) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        if (rows) {
-          rows.forEach((row) => {
-            allSaveIds.push(row.save_id);
-          });
-        }
-        resolve(allSaveIds);
-      });
+  public async getSaveIds(gameId: GameId): Promise<Array<number>> {
+    const res = await this.client.query('SELECT distinct save_id FROM games WHERE game_id = $1', [gameId]);
+    const allSaveIds: Array<number> = [];
+    res.rows.forEach((row) => {
+      allSaveIds.push(row.save_id);
+    });
+    return Promise.resolve(allSaveIds);
+  }
+
+  public async tearDown() {
+    return this.client.query('DROP TABLE games').then(() => {
+      this.client.query('DROP TABLE game_results');
+    }).catch((err) => {
+      throw err;
     });
   }
 }
 
-describe('SQLite', () => {
-  let db: TestSQLite;
+describe('PostgreSQL', () => {
+  let db: TestPostgreSQL;
   beforeEach(() => {
-    db = new TestSQLite();
+    db = new TestPostgreSQL();
     Database.getInstance = () => db;
     return db.initialize();
   });
 
   afterEach(() => {
     restoreTestDatabase();
+    return db.tearDown();
   });
 
   it('game is saved', async () => {
@@ -96,13 +103,13 @@ describe('SQLite', () => {
 
     db.cleanSaves(game.id);
 
-    await sleep(400);
+    await sleep(1000);
 
     const saveIds = await db.getSaveIds(game.id);
     expect(saveIds).has.members([0, 3]);
   });
 
-  it('gets player count', async () => {
+  it('gets player count by id', async () => {
     const player = TestPlayers.BLACK.newPlayer();
     const game = Game.newInstance('game-id-1212', [player], player);
     await db.saveGamePromise;
@@ -114,19 +121,19 @@ describe('SQLite', () => {
     });
   });
 
-  it('does not find player count by id', async () => {
+  it('does not find player count for game by id', async () => {
     const player = TestPlayers.BLACK.newPlayer();
     const game = Game.newInstance('game-id-1212', [player], player);
     await db.saveGamePromise;
     expect(game.lastSaveId).eq(1);
 
-    db.getPlayerCount('notfound', (err, gameData) => {
+    db.getPlayerCount('notfound', (err, playerCount) => {
       expect(err).to.be.undefined;
-      expect(gameData).to.be.undefined;
+      expect(playerCount).to.be.undefined;
     });
   });
 
-  it('purgeUnfinishedGames', async () => {
+  it('cleanSaves', async () => {
     const player = TestPlayers.BLACK.newPlayer();
     const game = Game.newInstance('game-id-1212', [player], player);
     await db.saveGamePromise;
@@ -138,11 +145,9 @@ describe('SQLite', () => {
 
     expect(await db.getSaveIds(game.id)).has.members([0, 1, 2, 3]);
 
-    await db.purgeUnfinishedGames('1');
-    expect(await db.getSaveIds(game.id)).has.members([0, 1, 2, 3]);
-    // Doesn't purge until the time has passed.
-    await db.purgeUnfinishedGames('-1');
-    // await db.purgeUnfinishedGames('0'); This doesn't work! I wonder if it's just too precise a clock problem.
-    expect(await db.getSaveIds(game.id)).is.empty;
+    db.cleanSaves(game.id);
+    await sleep(500);
+    const saveIds = await db.getSaveIds(game.id);
+    expect(saveIds).has.members([0, 3]);
   });
 });

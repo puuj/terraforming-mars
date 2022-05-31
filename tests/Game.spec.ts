@@ -8,7 +8,7 @@ import * as constants from '../src/common/constants';
 import {Birds} from '../src/cards/base/Birds';
 import {WaterImportFromEuropa} from '../src/cards/base/WaterImportFromEuropa';
 import {Phase} from '../src/common/Phase';
-import {TestingUtils} from './TestingUtils';
+import * as TestingUtils from './TestingUtils';
 import {TestPlayers} from './TestPlayers';
 import {SaturnSystems} from '../src/cards/corporation/SaturnSystems';
 import {Resources} from '../src/common/Resources';
@@ -623,14 +623,16 @@ describe('Game', () => {
   it('serializes properties', () => {
     const player = TestPlayers.BLUE.newPlayer();
     const game = Game.newInstance('foobar', [player], player);
+    game.monsInsuranceOwner = undefined;
+    game.syndicatePirateRaider = undefined;
+    game.moonData = undefined;
+    game.pathfindersData = undefined;
     const serialized = game.serialize();
     const serializedKeys = Object.keys(serialized);
     expect(serializedKeys).not.include('rng');
     const gameKeys = Object.keys(game);
-    expect(gameKeys).not.include('moonData');
-    expect(gameKeys).not.include('pathfindersData');
     expect(serializedKeys.concat('rng', 'discardedColonies').sort())
-      .deep.eq(gameKeys.concat('moonData', 'pathfindersData', 'seed', 'currentSeed').sort());
+      .deep.eq(gameKeys.concat('seed', 'currentSeed').sort());
   });
 
   it('deserializing a game without moon data still loads', () => {
