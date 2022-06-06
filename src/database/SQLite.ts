@@ -70,7 +70,7 @@ export class SQLite implements IDatabase {
 
   getGames(): Promise<Array<GameId>> {
     return new Promise((resolve, reject) => {
-      const sql: string = 'SELECT distinct game_id game_id FROM games WHERE status = \'running\ or status = \'finished\'';
+      const sql: string = 'SELECT distinct game_id game_id FROM games WHERE status = \'running\' or status = \'finished\'';
 
       this.db.all(sql, [], (err, rows) => {
         if (err) {
