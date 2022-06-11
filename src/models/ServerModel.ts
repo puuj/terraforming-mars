@@ -404,7 +404,7 @@ export class Server {
       actionsTakenThisRound: player.actionsTakenThisRound,
       actionsTakenThisGame: player.actionsTakenThisGame,
       actionsThisGeneration: Array.from(player.getActionsThisGeneration()),
-      availableBlueCardActionCount: player.getAvailableBlueActionCount(),
+      availableBlueCardActionCount: player.getPlayableActionCards().length,
       cardCost: player.cardCost,
       cardDiscount: player.cardDiscount,
       cardsInHandNbr: player.cardsInHand.length,

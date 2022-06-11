@@ -9,6 +9,13 @@ export class PostgreSQL implements IDatabase {
   protected client: Pool;
   private databaseName: string | undefined = undefined; // Use this only for stats.
 
+  protected statistics = {
+    saveCount: 0,
+    saveErrorCount: 0,
+    saveConflictUndoCount: 0,
+    saveConflictNormalCount: 0,
+  };
+
   constructor(
     config: ClientConfig = {
       connectionString: process.env.POSTGRES_HOST,
@@ -72,26 +79,16 @@ export class PostgreSQL implements IDatabase {
       });
   }
 
-  loadCloneableGame(game_id: GameId, cb: DbLoadCallback<SerializedGame>) {
+  loadCloneableGame(game_id: GameId): Promise<SerializedGame> {
     // Retrieve first save from database
-    this.client.query('SELECT game_id game_id, game game FROM games WHERE game_id = $1 AND save_id = 0', [game_id], (err: Error | undefined, res) => {
-      if (err) {
-        console.error('PostgreSQL:restoreReferenceGame', err);
-        return cb(err, undefined);
-      }
-      if (res.rows.length === 0) {
-        return cb(new Error(`Game ${game_id} not found`), undefined);
-      }
-      try {
+    return this.client.query('SELECT game_id, game FROM games WHERE game_id = $1 AND save_id = 0', [game_id])
+      .then((res) => {
+        if (res.rows.length === 0) {
+          throw new Error(`Game ${game_id} not found`);
+        }
         const json = JSON.parse(res.rows[0].game);
-        return cb(undefined, json);
-      } catch (exception) {
-        const error = exception instanceof Error ? exception : new Error(String(exception));
-        console.error(`Unable to restore game ${game_id}`, error);
-        cb(error, undefined);
-        return;
-      }
-    });
+        return json;
+      });
   }
 
   getGame(game_id: GameId, cb: (err: Error | undefined, game?: SerializedGame) => void): void {
@@ -216,6 +213,7 @@ export class PostgreSQL implements IDatabase {
 
   restoreGame(game_id: GameId, save_id: number, cb: DbLoadCallback<Game>): void {
     // Retrieve last save from database
+    logForUndo(game_id, 'restore to', save_id);
     this.client.query('SELECT game game FROM games WHERE game_id = $1 AND save_id = $2 ORDER BY save_id DESC LIMIT 1', [game_id, save_id], (err, res) => {
       if (err) {
         console.error('PostgreSQL:restoreGame', err);
@@ -231,6 +229,7 @@ export class PostgreSQL implements IDatabase {
         // Transform string to json
         const json = JSON.parse(res.rows[0].game);
         const game = Game.deserialize(json);
+        logForUndo(game.id, 'restored to', game.lastSaveId, 'from', save_id);
         cb(undefined, game);
       } catch (e) {
         const error = e instanceof Error ? e : new Error(String(e));
@@ -241,25 +240,60 @@ export class PostgreSQL implements IDatabase {
 
   async saveGame(game: Game): Promise<void> {
     const gameJSON = game.toJSON();
+    this.statistics.saveCount++;
+    if (game.gameOptions.undoOption) logForUndo(game.id, 'start save', game.lastSaveId);
+    // xmax = 0 is described at https://stackoverflow.com/questions/39058213/postgresql-upsert-differentiate-inserted-and-updated-rows-using-system-columns-x
     return this.client.query(
-      'INSERT INTO games (game_id, save_id, game, players) VALUES ($1, $2, $3, $4) ON CONFLICT (game_id, save_id) DO UPDATE SET game = $3',
+      `INSERT INTO games (game_id, save_id, game, players)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (game_id, save_id) DO UPDATE SET game = $3
+      RETURNING (xmax = 0) AS inserted`,
       [game.id, game.lastSaveId, gameJSON, game.getPlayers().length])
-      .then((_ignored) => {
+      .then((res) => {
+        let inserted: boolean = true;
+        try {
+          inserted = res.rows[0].inserted;
+        } catch (err) {
+          console.error(err);
+        }
+        if (inserted === false) {
+          if (game.gameOptions.undoOption) {
+            this.statistics.saveConflictUndoCount++;
+          } else {
+            this.statistics.saveConflictNormalCount++;
+          }
+        }
+
         game.lastSaveId++;
+        if (game.gameOptions.undoOption) logForUndo(game.id, 'increment save id, now', game.lastSaveId);
       })
       .catch((err) => {
+        this.statistics.saveErrorCount++;
         console.error('PostgreSQL:saveGame', err);
       });
   }
 
   deleteGameNbrSaves(game_id: GameId, rollbackCount: number): void {
-    if (rollbackCount > 0) {
-      this.client.query('DELETE FROM games WHERE ctid IN (SELECT ctid FROM games WHERE game_id = $1 ORDER BY save_id DESC LIMIT $2)', [game_id, rollbackCount], (err) => {
-        if (err) {
-          return console.warn(err.message);
-        }
-      });
+    if (rollbackCount <= 0) {
+      console.error(`invalid rollback count for ${game_id}: $rollbackCount`);
+      return;
     }
+    logForUndo(game_id, 'deleting', rollbackCount, 'saves');
+    this.getSaveIds(game_id)
+      .then((first) => {
+        this.client.query('DELETE FROM games WHERE ctid IN (SELECT ctid FROM games WHERE game_id = $1 ORDER BY save_id DESC LIMIT $2)', [game_id, rollbackCount], (err, res) => {
+          if (err) {
+            console.error(err.message);
+          }
+          logForUndo(game_id, 'deleted', res.rowCount, 'rows');
+          this.getSaveIds(game_id)
+            .then((second) => {
+              const difference = first.filter((x) => !second.includes(x));
+              logForUndo(game_id, 'second', second);
+              logForUndo(game_id, 'Rollback difference', difference);
+            });
+        });
+      });
   }
 
   public async stats(): Promise<{[key: string]: string | number}> {
@@ -268,6 +302,10 @@ export class PostgreSQL implements IDatabase {
       'pool-total-count': this.client.totalCount,
       'pool-idle-count': this.client.idleCount,
       'pool-waiting-count': this.client.waitingCount,
+      'save-count': this.statistics.saveCount,
+      'save-error-count': this.statistics.saveErrorCount,
+      'save-confict-normal-count': this.statistics.saveConflictNormalCount,
+      'save-confict-undo-count': this.statistics.saveConflictUndoCount,
     };
 
     // TODO(kberg): return row counts
@@ -284,4 +322,8 @@ export class PostgreSQL implements IDatabase {
         return map;
       });
   }
+}
+
+function logForUndo(gameId: string, ...message: any[]) {
+  console.error(['TRACKING:', gameId, ...message]);
 }
