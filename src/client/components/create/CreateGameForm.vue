@@ -863,8 +863,8 @@ export default (Vue as WithRefs<Refs>).extend({
       const venusNext = component.venusNext;
       const colonies = component.colonies;
       const turmoil = component.turmoil;
-      const solarPhaseOption = this.solarPhaseOption;
-      const shuffleMapOption = this.shuffleMapOption;
+      const solarPhaseOption = component.solarPhaseOption;
+      const shuffleMapOption = component.shuffleMapOption;
       const customCorporationsList = component.customCorporationsList;
       const customColoniesList = component.customColoniesList;
       const cardsBlackList = component.cardsBlackList;
@@ -873,7 +873,7 @@ export default (Vue as WithRefs<Refs>).extend({
       const promoCardsOption = component.promoCardsOption;
       const communityCardsOption = component.communityCardsOption;
       const aresExtension = component.aresExtension;
-      const politicalAgendasExtension = this.politicalAgendasExtension;
+      const politicalAgendasExtension = component.politicalAgendasExtension;
       const moonExpansion = component.moonExpansion;
       const pathfindersExpansion = component.pathfindersExpansion;
       const undoOption = component.undoOption;
