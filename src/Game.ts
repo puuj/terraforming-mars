@@ -1214,7 +1214,7 @@ export class Game {
   }
 
   public increaseTemperature(player: Player, increments: -2 | -1 | 1 | 2 | 3): undefined {
-    if (this.temperature >= constants.MAX_TEMPERATURE) {
+    if (this.temperature >= constants.MAX_TEMPERATURE && increments > 0) {
       return undefined;
     }
 
