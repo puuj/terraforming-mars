@@ -33,7 +33,6 @@ import {SerializedGame} from '../SerializedGame';
  * Finally, `players` as a number merely represents the number of players
  * in the game. Why, I have no idea, says kberg.
  */
-
 export type DbLoadCallback<T> = (err: Error | undefined, game: T | undefined) => void
 
 export interface IDatabase {
@@ -105,7 +104,7 @@ export interface IDatabase {
      */
     // TODO(kberg): it's not clear to me how this save_id is known to
     // be the absolute prior game id, so that could use some clarification.
-    restoreGame(game_id: GameId, save_id: number, cb: DbLoadCallback<SerializedGame>): void;
+    restoreGame(game_id: GameId, save_id: number): Promise<SerializedGame>;
 
     /**
      * Load a game at save point 0, and provide it in the callback.
@@ -132,7 +131,7 @@ export interface IDatabase {
     // TODO(kberg): rename to represent that it's closing out
     // this game. Also consider not needing the save_id, and
     // also to make the maintenance behavior a first-class method.
-    cleanSaves(game_id: GameId): void;
+    cleanSaves(game_id: GameId): Promise<void>;
 
     /**
      * A maintenance task that purges abandoned solo games older
@@ -145,7 +144,7 @@ export interface IDatabase {
      * * In Sqlite, it doesn't purge
      * * This whole method is ignored in LocalFilesystem.
      */
-    purgeUnfinishedGames(): void;
+    purgeUnfinishedGames(maxGameDays?: string): void;
 
     /**
      * Generate database statistics for admin purposes.

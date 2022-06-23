@@ -1,4 +1,4 @@
-import {DbLoadCallback, IDatabase} from './IDatabase';
+import {IDatabase} from './IDatabase';
 import {Game, GameOptions, Score} from '../Game';
 import {GameId} from '../common/Types';
 import {SerializedGame} from '../SerializedGame';
@@ -119,30 +119,33 @@ export class Localfilesystem implements IDatabase {
     return Promise.resolve(gameIds);
   }
 
-  restoreReferenceGame(_gameId: GameId, cb: DbLoadCallback<Game>) {
-    cb(new Error('Does not work'), undefined);
+  restoreReferenceGame(_gameId: GameId): Promise<Game> {
+    throw new Error('Does not work');
   }
 
   saveGameResults(_gameId: GameId, _players: number, _generations: number, _gameOptions: GameOptions, _scores: Array<Score>, _game: Game): void {
     // Not implemented
   }
 
-  cleanSaves(_gameId: GameId): void {
+  cleanSaves(_gameId: GameId): Promise<void> {
     // Not implemented here.
+    return Promise.resolve();
   }
 
   purgeUnfinishedGames(): void {
     // Not implemented.
   }
 
-  restoreGame(gameId: GameId, saveId: number, cb: DbLoadCallback<SerializedGame>): void {
-    fs.copyFileSync(this._historyFilename(gameId, saveId), this._filename(gameId));
-    this.getGame(gameId, (err, serializedGame) => {
-      if (err) {
-        cb(err, undefined);
-      } else {
-        cb(err, serializedGame!);
-      }
+  async restoreGame(gameId: GameId, saveId: number): Promise<SerializedGame> {
+    await fs.copyFile(this._historyFilename(gameId, saveId), this._filename(gameId));
+    return new Promise((resolve, reject) => {
+      this.getGame(gameId, (err, serializedGame) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(serializedGame!);
+        }
+      });
     });
   }
 

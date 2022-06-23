@@ -18,6 +18,6 @@ export interface IGameLoader {
    * @param {LoadCallback} cb called with game when available
    */
   getByGameId(gameId: GameId, bypassCache: boolean, cb: LoadCallback): void;
-  getByParticipantId(playerId: PlayerId | SpectatorId, cb: LoadCallback): void;
-  restoreGameAt(gameId: GameId, saveId: number, cb: LoadCallback): void;
+  getByParticipantId(playerId: PlayerId | SpectatorId): Promise<Game | undefined>;
+  restoreGameAt(gameId: GameId, saveId: number): Promise<Game>;
 }

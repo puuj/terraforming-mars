@@ -1056,10 +1056,14 @@ export class Game {
       this.log('This game id was ' + this.id);
     }
 
+
     this.phase = Phase.END;
     this.save();
 
-    Database.getInstance().cleanSaves(this.id);
+    Database.getInstance().cleanSaves(this.id).catch((err) => {
+      console.error(err);
+    });
+
     const scores: Array<Score> = [];
     let score_msg: string = '';
     this.players.forEach((player) => {

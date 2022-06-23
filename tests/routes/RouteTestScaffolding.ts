@@ -32,11 +32,15 @@ export class RouteTestScaffolding {
   public get(handler: Handler, res: MockResponse) {
     handler.get(this.req, res.hide(), this.ctx);
   }
-  public async asyncGet(handler: AsyncHandler, res: MockResponse) {
+  public async asyncGet(handler: AsyncHandler, res: MockResponse): Promise<void> {
     return handler.get(this.req, res.hide(), this.ctx);
   }
 
   public post(handler: Handler, res: MockResponse) {
     handler.post(this.req, res.hide(), this.ctx);
+  }
+
+  public async asyncPost(handler: AsyncHandler, res: MockResponse) {
+    return handler.post(this.req, res.hide(), this.ctx);
   }
 }
