@@ -277,6 +277,7 @@ describe('Player', function() {
         lastStoppedAt: 0,
       } as SerializedTimer,
       email: 'test@example.com',
+      totalDelegatesPlaced: 0,
       victoryPointsByGeneration: [],
     };
 

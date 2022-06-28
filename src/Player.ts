@@ -155,6 +155,7 @@ export class Player {
   // Stats
   public actionsTakenThisGame: number = 0;
   public victoryPointsByGeneration: Array<number> = [];
+  public totalDelegatesPlaced: number = 0;
 
   constructor(
     public name: string,
@@ -954,6 +955,9 @@ export class Player {
         allTags.push(tag);
       });
     });
+    // Leavitt Station hook
+    if (this.scienceTagCount > 0) allTags.push(Tags.SCIENCE);
+
     for (const tags of allTags) {
       if (tags === Tags.WILD) {
         wildTagCount++;
@@ -2178,6 +2182,7 @@ export class Player {
       // Stats
       actionsTakenThisGame: this.actionsTakenThisGame,
       victoryPointsByGeneration: this.victoryPointsByGeneration,
+      totalDelegatesPlaced: this.totalDelegatesPlaced,
     };
 
     if (this.lastCardPlayed !== undefined) {
@@ -2230,6 +2235,7 @@ export class Player {
     player.titanium = d.titanium;
     player.titaniumProduction = d.titaniumProduction;
     player.titaniumValue = d.titaniumValue;
+    player.totalDelegatesPlaced = d.totalDelegatesPlaced;
     player.tradesThisGeneration = d.tradesThisTurn;
     player.turmoilPolicyActionUsed = d.turmoilPolicyActionUsed;
     player.politicalAgendasActionUsedCount = d.politicalAgendasActionUsedCount;

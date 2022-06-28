@@ -59,6 +59,7 @@ export interface SerializedPlayer {
     titanium: number;
     titaniumProduction: number;
     titaniumValue: number;
+    totalDelegatesPlaced: number;
     // TODO(kberg): change tradesThisTurn to tradeThisGeneration later
     tradesThisTurn: number;
     turmoilPolicyActionUsed: boolean;
