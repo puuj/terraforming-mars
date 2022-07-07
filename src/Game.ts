@@ -58,7 +58,7 @@ import {AresSetup} from './ares/AresSetup';
 import {IMoonData} from './moon/IMoonData';
 import {MoonExpansion} from './moon/MoonExpansion';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
-import {Random} from './Random';
+import {SeededRandom} from './Random';
 import {MilestoneAwardSelector} from './MilestoneAwardSelector';
 import {BoardType} from './boards/BoardType';
 import {Multiset} from './utils/Multiset';
@@ -166,7 +166,7 @@ export class Game {
   // Game-level data
   public lastSaveId: number = 0;
   private clonedGamedId: string | undefined;
-  public rng: Random;
+  public rng: SeededRandom;
   public spectatorId: SpectatorId | undefined;
   public deferredActions: DeferredActionsQueue = new DeferredActionsQueue();
   public gameAge: number = 0; // Each log event increases it
@@ -224,7 +224,7 @@ export class Game {
     private first: Player,
     activePlayer: PlayerId,
     public gameOptions: GameOptions,
-    rng: Random,
+    rng: SeededRandom,
     board: Board,
     dealer: Dealer) {
     const playerIds = players.map((p) => p.id);
@@ -262,7 +262,7 @@ export class Game {
       throw new Error('Cloning should not come through this execution path.');
     }
 
-    const rng = new Random(seed);
+    const rng = new SeededRandom(seed);
     const board = GameSetup.newBoard(gameOptions, rng);
     const cardFinder = new CardFinder();
     const cardLoader = new CardLoader(gameOptions);
@@ -479,7 +479,7 @@ export class Game {
   }
 
   // Function to retrieve a player by it's id
-  public getPlayerById(id: string): Player {
+  public getPlayerById(id: PlayerId): Player {
     const player = this.players.find((p) => p.id === id);
     if (player === undefined) {
       throw new Error(`player ${id} does not exist on game ${this.id}`);
@@ -488,7 +488,7 @@ export class Game {
   }
 
   // Function to return an array of players from an array of player ids
-  public getPlayersById(ids: Array<string>): Array<Player> {
+  public getPlayersById(ids: Array<PlayerId>): Array<Player> {
     return ids.map((id) => this.getPlayerById(id));
   }
 
@@ -607,12 +607,14 @@ export class Game {
     return this.claimedMilestones.length >= constants.MAX_MILESTONES;
   }
 
-  private playerHasPickedCorporationCard(player: Player, corporationCard: ICorporationCard) {
+  private playerHasPickedCorporationCard(player: Player, corporationCard: ICorporationCard): void {
     player.pickedCorporationCard = corporationCard;
-    // if all players picked corporationCard
     if (this.players.every((p) => p.pickedCorporationCard !== undefined)) {
       for (const somePlayer of this.getPlayersInGenerationOrder()) {
-        this.playCorporationCard(somePlayer, somePlayer.pickedCorporationCard!);
+        if (somePlayer.pickedCorporationCard === undefined) {
+          throw new Error(`pickedCorporationCard is not defined for ${somePlayer.id}`);
+        }
+        this.playCorporationCard(somePlayer, somePlayer.pickedCorporationCard);
       }
     }
   }
@@ -1055,7 +1057,7 @@ export class Game {
     this.phase = Phase.END;
     this.save();
 
-    Database.getInstance().cleanSaves(this.id).catch((err) => {
+    Database.getInstance().cleanGame(this.id).catch((err) => {
       console.error(err);
     });
 
@@ -1633,7 +1635,7 @@ export class Game {
 
     // Rebuild dealer object to be sure that we will have cards in the same order
     const dealer = Dealer.deserialize(d.dealer);
-    const rng = new Random(d.seed, d.currentSeed);
+    const rng = new SeededRandom(d.seed, d.currentSeed);
     const game = new Game(d.id, players, first, d.activePlayer, gameOptions, rng, board, dealer);
     game.spectatorId = d.spectatorId;
 
