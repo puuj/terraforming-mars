@@ -82,7 +82,7 @@ export const COMMUNITY_CARD_MANIFEST = new CardManifest({
     {
       cardName: CardName.EXECUTIVE_ORDER,
       Factory: ExecutiveOrder,
-      compatibility: 'turmoil'
+      compatibility: 'turmoil',
     },
   ],
 });

@@ -592,7 +592,7 @@ describe('Game', () => {
   });
 
   it('fails when the same color appears in two players', () => {
-    const player1 = new Player('name', Color.RED, false, 0, 'p-id1',  undefined);
+    const player1 = new Player('name', Color.RED, false, 0, 'p-id1', undefined);
     const player2 = new Player('name', Color.RED, false, 0, 'p-id2', undefined);
     expect(
       () => Game.newInstance('gameid', [player1, player2], player1))

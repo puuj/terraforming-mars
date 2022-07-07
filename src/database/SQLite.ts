@@ -133,13 +133,12 @@ export class SQLite implements IDatabase {
         return cb(err ?? undefined);
       }
       try {
-        cb(undefined, JSON.parse(row.game));        
+        cb(undefined, JSON.parse(row.game));
       } catch (e) {
         console.error(`unable to get game ${game_id}`, e);
         const error = e instanceof Error ? e : new Error(String(e));
         cb(error, undefined);
       }
-
     });
   }
 
