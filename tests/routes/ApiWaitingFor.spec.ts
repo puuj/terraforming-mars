@@ -4,6 +4,7 @@ import {Game} from '../../src/Game';
 import {TestPlayers} from '../TestPlayers';
 import {MockResponse} from './HttpMocks';
 import {RouteTestScaffolding} from './RouteTestScaffolding';
+import {GameId} from '../../src/common/Types';
 
 describe('ApiWaitingFor', function() {
   let scaffolding: RouteTestScaffolding;
@@ -16,21 +17,21 @@ describe('ApiWaitingFor', function() {
 
   it('fails when game not found', async () => {
     scaffolding.url = '/api/waitingfor?id=p-some-player-id&gameAge=123&undoCount=0';
-    await scaffolding.asyncGet(ApiWaitingFor.INSTANCE, res);
+    await scaffolding.get(ApiWaitingFor.INSTANCE, res);
     expect(res.statusCode).eq(404);
     expect(res.content).eq('Not found: cannot find game for that player');
   });
 
   it('fails when player not found', async () => {
     const player = TestPlayers.BLACK.newPlayer();
-    const game = Game.newInstance(player.id, [player], player);
+    const game = Game.newInstance('g' + player.id as GameId, [player], player);
     await scaffolding.ctx.gameLoader.add(game);
     (game as any).getPlayerById = function() {
       throw new Error('player does not exist');
     };
 
     scaffolding.url = '/api/waitingfor?id=' + player.id + '&gameAge=50&undoCount=0';
-    await scaffolding.asyncGet(ApiWaitingFor.INSTANCE, res);
+    await scaffolding.get(ApiWaitingFor.INSTANCE, res);
     expect(res.statusCode).eq(404);
     expect(res.content).eq('Not found: player not found');
   });
@@ -41,7 +42,7 @@ describe('ApiWaitingFor', function() {
     await scaffolding.ctx.gameLoader.add(game);
 
     scaffolding.url = '/api/waitingfor?id=' + player.id + '&gameAge=50&undoCount=0';
-    await scaffolding.asyncGet(ApiWaitingFor.INSTANCE, res);
+    await scaffolding.get(ApiWaitingFor.INSTANCE, res);
     expect(res.statusCode).eq(200);
     expect(res.content).eq('{"result":"GO"}');
   });
@@ -56,7 +57,7 @@ describe('ApiWaitingFor', function() {
     };
 
     scaffolding.url = '/api/waitingfor?id=' + game.spectatorId + '-invalid' + '&gameAge=50&undoCount=0';
-    await scaffolding.asyncGet(ApiWaitingFor.INSTANCE, res);
+    await scaffolding.get(ApiWaitingFor.INSTANCE, res);
     expect(res.statusCode).eq(404);
     expect(res.content).eq('Not found: cannot find game for that player');
   });
@@ -68,7 +69,7 @@ describe('ApiWaitingFor', function() {
     await scaffolding.ctx.gameLoader.add(game);
 
     scaffolding.url = '/api/waitingfor?id=' + game.spectatorId + '&gameAge=50&undoCount=0';
-    await scaffolding.asyncGet(ApiWaitingFor.INSTANCE, res);
+    await scaffolding.get(ApiWaitingFor.INSTANCE, res);
     expect(res.statusCode).eq(200);
     expect(res.content).eq('{"result":"WAIT"}');
   });

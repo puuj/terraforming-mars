@@ -2,6 +2,8 @@ import {Game, GameOptions, Score} from '../Game';
 import {GameId, PlayerId, SpectatorId} from '../common/Types';
 import {SerializedGame} from '../SerializedGame';
 
+export type GameIdLedger = {gameId: GameId, participantIds: Array<PlayerId | SpectatorId>}
+
 /**
  * A game store. Load, save, you know the drill.
  *
@@ -32,7 +34,7 @@ import {SerializedGame} from '../SerializedGame';
  *
  * Finally, `players` as a number merely represents the number of players
  * in the game. Why, I have no idea, says kberg.
- */
+*/
 export interface IDatabase {
 
     /**
@@ -67,8 +69,12 @@ export interface IDatabase {
 
     /**
      * Return a list of all `game_id`s.
+     *
+     * When the server starts games will be loaded from first to last. The postgres implmentation
+     * speeds up loading by sorting game ids so games most recently updated are loaded first, thereby
+     * being available sooner than other games.
      */
-    getGames(): Promise<Array<GameId>>;
+    getGameIds(): Promise<Array<GameId>>;
 
     /**
      * Get the player count for a game.
@@ -139,7 +145,7 @@ export interface IDatabase {
      * * In Sqlite, it doesn't purge
      * * This whole method is ignored in LocalFilesystem.
      */
-    purgeUnfinishedGames(maxGameDays?: string): void;
+    purgeUnfinishedGames(maxGameDays?: string): Promise<void>;
 
     /**
      * Generate database statistics for admin purposes.
@@ -147,4 +153,7 @@ export interface IDatabase {
      * Key/value responses will vary between databases.
      */
     stats(): Promise<{[key: string]: string | number}>;
+
+    storeParticipants(entry: GameIdLedger): Promise<void>;
+    getParticipants(): Promise<Array<GameIdLedger>>;
 }

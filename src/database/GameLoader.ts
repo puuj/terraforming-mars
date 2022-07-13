@@ -1,9 +1,18 @@
+import * as prometheus from 'prom-client';
 import {Database} from './Database';
 import {Game} from '../Game';
-import {PlayerId, GameId, SpectatorId} from '../common/Types';
-import {GameIdLedger, IGameLoader} from './IGameLoader';
+import {PlayerId, GameId, SpectatorId, isGameId} from '../common/Types';
+import {IGameLoader} from './IGameLoader';
+import {GameIdLedger} from './IDatabase';
 import {GameIds} from './GameIds';
 import {MultiMap} from 'mnemonist';
+import {timeAsync} from '../utils/timer';
+
+const initialize = new prometheus.Gauge({
+  name: 'gameloader_initialize',
+  help: 'Time to load all games',
+  registers: [prometheus.register],
+});
 
 /**
  * Loads games from javascript memory or database
@@ -15,7 +24,10 @@ export class GameLoader implements IGameLoader {
   private idsContainer = new GameIds();
 
   private constructor() {
-    this.idsContainer.load();
+    timeAsync(this.idsContainer.load())
+      .then((v) => {
+        initialize.set(v.duration);
+      });
   }
 
   public reset(): void {
@@ -41,35 +53,43 @@ export class GameLoader implements IGameLoader {
     }
   }
 
-  public async getLoadedGameIds(): Promise<Array<GameIdLedger>> {
+  public async getIds(): Promise<Array<GameIdLedger>> {
     const d = await this.idsContainer.getGames();
     const map = new MultiMap<GameId, SpectatorId | PlayerId>();
     d.participantIds.forEach((gameId, participantId) => map.set(gameId, participantId));
     const arry: Array<[GameId, Array<PlayerId | SpectatorId>]> = Array.from(map.associations());
-    return arry.map(([id, participants]) => ({id: id, participants: participants}));
+    return arry.map(([gameId, participantIds]) => ({gameId, participantIds}));
   }
 
-  public async getByGameId(gameId: GameId, bypassCache: boolean): Promise<Game | undefined> {
+  public async getGame(id: GameId | PlayerId | SpectatorId, forceLoad: boolean = false): Promise<Game | undefined> {
     const d = await this.idsContainer.getGames();
-    if (bypassCache === false && d.games.get(gameId) !== undefined) {
-      return d.games.get(gameId);
-    } else if (d.games.has(gameId)) {
-      return this.loadGameAsync(gameId, bypassCache);
-    } else {
-      return undefined;
-    }
-  }
+    const gameId = isGameId(id) ? id : d.participantIds.get(id);
+    if (gameId === undefined) return undefined;
 
-  public async getByParticipantId(id: PlayerId | SpectatorId): Promise<Game | undefined> {
-    const d = await this.idsContainer.getGames();
-    const gameId = d.participantIds.get(id);
-    if (gameId !== undefined && d.games.get(gameId) !== undefined) {
-      return d.games.get(gameId);
-    } else if (gameId !== undefined) {
-      return this.loadParticipant(id);
-    } else {
-      return undefined;
+    // 1. Check the cache as long as forceLoad isn't true.
+    if (forceLoad === false && d.games.get(gameId) !== undefined) return d.games.get(gameId);
+
+    // 2. The game isn't cached. If it's in the database, there will still be an entry
+    // for it in the cache.
+    if (d.games.has(gameId)) {
+      try {
+        const serializedGame = await Database.getInstance().getGame(gameId);
+        if (serializedGame === undefined) {
+          console.error(`GameLoader:loadGame: game ${gameId} not found`);
+          return undefined;
+        }
+        const game = Game.deserialize(serializedGame);
+        await this.add(game);
+        console.log(`GameLoader loaded game ${gameId} into memory from database`);
+        return game;
+      } catch (e) {
+        console.error('GameLoader:loadGame', e);
+        return undefined;
+      }
     }
+
+    // Otherwise the game ID isn't valid.
+    return undefined;
   }
 
   public async restoreGameAt(gameId: GameId, saveId: number): Promise<Game> {
@@ -80,42 +100,5 @@ export class GameLoader implements IGameLoader {
     await this.add(game);
     game.undoCount++;
     return game;
-  }
-
-  private async loadGameAsync(gameId: GameId, bypassCache: boolean): Promise<Game | undefined> {
-    const d = await this.idsContainer.getGames();
-    if (bypassCache === false) {
-      const game = d.games.get(gameId);
-      if (game !== undefined) {
-        return game;
-      }
-    }
-    try {
-      const serializedGame = await Database.getInstance().getGame(gameId);
-      if (serializedGame === undefined) {
-        console.error(`loadGameAsync: game ${gameId} not found`);
-        return undefined;
-      }
-      const game = Game.deserialize(serializedGame);
-      await this.add(game);
-      console.log(`GameLoader loaded game ${gameId} into memory from database`);
-      return game;
-    } catch (e) {
-      console.error('GameLoader:loadGame', e);
-      return undefined;
-    }
-  }
-
-  private async loadParticipant(id: PlayerId | SpectatorId): Promise<Game | undefined> {
-    const d = await this.idsContainer.getGames();
-    const gameId = d.participantIds.get(id);
-    if (gameId === undefined) {
-      return undefined;
-    }
-    const game = d.games.get(gameId);
-    if (game !== undefined) {
-      return game;
-    }
-    return this.loadGameAsync(gameId, false);
   }
 }
