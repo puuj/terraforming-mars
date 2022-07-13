@@ -1070,10 +1070,10 @@ export class Game {
       Notifier.getInstance().sendEndMessage(player, score_msg);
     });
 
-    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
-
-    
     this.phase = Phase.END;
+
+    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
+    
     Database.getInstance().saveGame(this).then(() => {
       return Database.getInstance().cleanGame(this.id);
     }).catch((err) => {
