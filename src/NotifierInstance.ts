@@ -22,7 +22,7 @@ export class NotifierInstance {
     transporter.sendMail({
       from: this.sender,
       to: player.email,
-      subject: 'Terraforming Mars game results',
+      subject: `Terraforming Mars game results for ${player.id}`,
       text: `Your Terraforming Mars game has ended. Final scores:
 ${scores}
 See the full results at: ${link}`,
@@ -36,7 +36,7 @@ See the full results at: ${link}`,
     transporter.sendMail({
       from: sender,
       to: player.email,
-      subject: 'Terraforming Mars turn notification',
+      subject: `Terraforming Mars turn notification for ${player.id}`,
       text: `It's been your turn for ${delay} minutes. Take your turn at: ${link}`,
     });
   }
