@@ -382,10 +382,10 @@ describe('Game', () => {
   });
 
   it('Final greenery placement skips players without enough plants', () => {
-    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id');
-    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id');
-    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id');
-    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id');
+    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id', undefined);
+    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id', undefined);
+    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id', undefined);
+    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id', undefined);
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player2);
     (game as any).incrementFirstPlayer();
 

@@ -229,7 +229,7 @@ describe('GameLoader', function() {
     database.data.delete('gameid');
     const numberOfGames : number = 10;
     for (let i = 0; i < numberOfGames; i++) {
-      const player = new Player('name', Color.BLUE, false, 0, 'p-' + i as PlayerId);
+      const player = new Player('name', Color.BLUE, false, 0, 'p-' + i as PlayerId, undefined);
       Game.newInstance('game-' + i as GameId, [player], player);
     }
     database.getGameSleep = 500;

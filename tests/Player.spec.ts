@@ -234,6 +234,7 @@ describe('Player', function() {
       dealtProjectCards: [CardName.FLOATER_LEASING, CardName.BUTTERFLY_EFFECT],
       dealtPreludeCards: [CardName.MOHOLE_EXCAVATION, CardName.LAVA_TUBE_SETTLEMENT],
       cardsInHand: [CardName.EARTH_ELEVATOR, CardName.DUST_SEALS],
+      passingTo: undefined,
       preludeCardsInHand: [CardName.METAL_RICH_ASTEROID, CardName.PSYCHROPHILES],
       playedCards: [], // TODO(kberg): these are SerializedCard.
       draftedCards: [CardName.FISH, CardName.EXTREME_COLD_FUNGUS],

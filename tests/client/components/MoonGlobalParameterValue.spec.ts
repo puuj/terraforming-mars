@@ -40,25 +40,6 @@ describe('MoonGlobalParameterValue', () => {
     expect(wrapper.text()).to.include(moonData.miningRate);
   });
 
-  it(`doesn't show any rating if every rating is on its max (or above)`, () => {
-    const moonData: MoonModel = {
-      colonyRate: MAXIMUM_COLONY_RATE,
-      logisticsRate: MAXIMUM_LOGISTICS_RATE + 1,
-      miningRate: MAXIMUM_MINING_RATE + 2,
-      spaces: [],
-    };
-
-    const wrapper = mount(MoonGlobalParameterValue, {
-      localVue: getLocalVue(),
-      propsData: {moonData},
-    });
-
-    expect(wrapper.text()).to.not.include.oneOf([
-      MAXIMUM_COLONY_RATE,
-      MAXIMUM_LOGISTICS_RATE + 1,
-      MAXIMUM_MINING_RATE + 2,
-    ]);
-  });
 
   it('shows completed-checkmark if every of rate is its on max (or above)', () => {
     const moonData: MoonModel = {
