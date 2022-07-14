@@ -60,14 +60,14 @@ export class GameHandler extends Handler {
           const gameReq: NewGameConfig = JSON.parse(body);
           const gameId = this.generateRandomId('g') as GameId;
           const spectatorId = this.generateRandomId('s') as SpectatorId;
-          const parts = obj.name.split('|');
-          let email = undefined;
-          let name = obj.name;
-          if (parts.length > 1) {
-            name = parts[0];
-            email = parts[1];
-          }
           const players = gameReq.players.map((obj: any) => {
+            const parts = obj.name.split('|');
+            let email = undefined;
+            let name = obj.name;
+            if (parts.length > 1) {
+              name = parts[0];
+              email = parts[1];
+            }
             return new Player(
               name,
               obj.color,
