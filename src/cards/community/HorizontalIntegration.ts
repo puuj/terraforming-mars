@@ -14,10 +14,10 @@ export class HorizontalIntegration extends Card implements IProjectCard {
       name: CardName.HORIZONTAL_INTEGRATION,
       tags: [Tags.EARTH],
       cost: 7,
-
+      victoryPoints: 1,
+      
       metadata: {
         cardNumber: 'J009',
-        victoryPoints: 1,
         renderData: CardRenderer.builder((b) => {
           b.minus().megacredits(1).nbsp.minus().steel(1).nbsp.minus().titanium(1).br;
           b.minus().plants(1).nbsp.minus().energy(1).nbsp.minus().heat(1).br;

@@ -15,6 +15,8 @@ export class DarkHorse extends Card implements IProjectCard {
       name: CardName.DARK_HORSE,
       tags: [Tags.SPACE],
       cost: 16,
+      victoryPoints: 5,
+      
       requirements: CardRequirements.builder((b) => b.temperature(-16, {max})),
       metadata: {
         cardNumber: 'J008',
@@ -22,7 +24,6 @@ export class DarkHorse extends Card implements IProjectCard {
           b.plate('Claim Milestone');
         }),
         description: 'If all milestones have been claimed, gain 5 VP if you can claim a milestone not already claimed.',
-        victoryPoints: 5,
       },
     });
   }

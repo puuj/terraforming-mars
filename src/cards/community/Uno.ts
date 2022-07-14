@@ -14,12 +14,12 @@ export class Uno extends Card implements IProjectCard {
       name: CardName.UNO,
       tags: [Tags.MICROBE],
       cost: 8,
-
+      victoryPoints: 4,
+      
       requirements: CardRequirements.builder((b) => b.cardsInHand(1, {max}).temperature(2, {max}).oxygen(12, {max}).oceans(7, {max})),
       metadata: {
         cardNumber: 'J006',
         description: 'Must be colder than 2 C, under 12% oxygen, and fewer than 8 oceans. Must be the only card in your hand. Worth 4 VP.',
-        victoryPoints: 4,
       },
     });
   }
