@@ -44,7 +44,7 @@ import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
 import {IVictoryPointsBreakdown} from './common/game/IVictoryPointsBreakdown';
 import {Timer} from './common/Timer';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
-import {CardLoader} from './CardLoader';
+import {GameCards} from './GameCards';
 import {DrawCards} from './deferredActions/DrawCards';
 import {Units} from './common/Units';
 import {MoonExpansion} from './moon/MoonExpansion';
@@ -71,7 +71,7 @@ export class Player {
   public readonly id: PlayerId;
   protected waitingFor?: PlayerInput;
   protected waitingForCb?: () => void;
-  private _game?: Game;
+  public game: Game;
 
   // Corporate identity
   public corporationCard?: ICorporationCard;
@@ -165,6 +165,13 @@ export class Player {
     id: PlayerId,
     public email: string | undefined) {
     this.id = id;
+    // This seems pretty bad. The game will be set before the Player is actually
+    // used, and if that doesn't happen, well, it's a worthy error.
+    // The alterantive, to make game type Game | undefined, will cause compilation
+    // issues throughout the app.
+    // Ideally the right thing is to invert how players and games get created.
+    // But one thing at a time.
+    this.game = undefined as unknown as Game;
   }
 
   public static initialize(
@@ -178,19 +185,8 @@ export class Player {
     return player;
   }
 
-  public set game(game: Game) {
-    if (this._game !== undefined) {
-      // TODO(kberg): Replace this with an Error.
-      console.warn(`Reinitializing game ${game.id} for player ${this.color}`);
-    }
-    this._game = game;
-  }
-
-  public get game(): Game {
-    if (this._game === undefined) {
-      throw new Error(`Fetching game for player ${this.color} too soon.`);
-    }
-    return this._game;
+  public tearDown() {
+    this.game = undefined as unknown as Game;
   }
 
   public isCorporation(corporationName: CardName): boolean {
@@ -252,7 +248,7 @@ export class Player {
         this.game.log('${0} gained ${1} TR', (b) => b.player(this).number(steps));
       }
       // Aurori hook
-      if (this.corporationCard?.name === CardName.AURORAI) {
+      if (this.isCorporation(CardName.AURORAI)) {
         (this.corporationCard as Aurorai).onIncreaseTerraformRating(this, steps);
       }
     };
@@ -458,7 +454,7 @@ export class Player {
       this.plants - units.plants >= 0 &&
       this.energy - units.energy >= 0 &&
       // Stormcraft Incorporated can supply heat, so use `availableHeat`
-      this.availableHeat - units.heat >= 0;
+      this.availableHeat() - units.heat >= 0;
   }
 
   public addUnits(units: Partial<Units>, options? : {
@@ -680,18 +676,16 @@ export class Player {
     return coloniesCount;
   }
 
+  /*
+   * When playing Pharmacy Union, if the card is discarded, then it sits in the event pile.
+   * That's why it's included below. The FAQ describes how this applies to things like the
+   * Legend Milestone, Media Archives, and NOT Media Group.
+   */
   public getPlayedEventsCount(): number {
     let count = this.playedCards.filter((card) => card.cardType === CardType.EVENT).length;
     if (this.isCorporation(CardName.PHARMACY_UNION) && this.corporationCard?.isDisabled) count++;
 
     return count;
-  }
-
-  public getResourcesOnCorporation():number {
-    if (this.corporationCard !== undefined &&
-      this.corporationCard.resourceCount !== undefined) {
-      return this.corporationCard.resourceCount;
-    } else return 0;
   }
 
   public getRequirementsBonus(parameter: GlobalParameter): number {
@@ -832,7 +826,7 @@ export class Player {
    * 'raw-pf': Same as raw, but includes Mars Tags when tag is Science  (Habitat Marte)
    */
   public getTagCount(tag: Tags, mode: 'default' | 'raw' | 'milestone' | 'award' | 'vps' | 'raw-pf' = 'default') {
-    const includeEvents = this.corporationCard?.name === CardName.ODYSSEY;
+    const includeEvents = this.isCorporation(CardName.ODYSSEY);
     const includeTagSubstitutions = (mode === 'default' || mode === 'milestone');
 
     let tagCount = this.getRawTagCount(tag, includeEvents);
@@ -856,13 +850,13 @@ export class Player {
 
     // Habitat Marte hook
     if (mode !== 'raw') {
-      if (tag === Tags.SCIENCE && this.corporationCard?.name === CardName.HABITAT_MARTE) {
+      if (tag === Tags.SCIENCE && this.isCorporation(CardName.HABITAT_MARTE)) {
         tagCount += this.getRawTagCount(Tags.MARS, includeEvents);
       }
     }
 
     // Chimera hook
-    if (this.corporationCard?.name === CardName.CHIMERA) {
+    if (this.isCorporation(CardName.CHIMERA)) {
       // Milestones don't count wild tags, so in this case one will be added.
       if (mode === 'award') {
         tagCount++;
@@ -880,7 +874,7 @@ export class Player {
       if (tag === target) return true;
       if (tag === Tags.MARS &&
         target === Tags.SCIENCE &&
-        this.corporationCard?.name === CardName.HABITAT_MARTE) {
+        this.isCorporation(CardName.HABITAT_MARTE)) {
         return true;
       }
     }
@@ -891,7 +885,7 @@ export class Player {
     for (const tag of card.tags) {
       if (tag === target) count++;
       if (tag === Tags.MARS && target === Tags.SCIENCE &&
-        this.corporationCard?.name === CardName.HABITAT_MARTE) {
+        this.isCorporation(CardName.HABITAT_MARTE)) {
         count++;
       }
     }
@@ -931,7 +925,7 @@ export class Player {
     tagCount += this.getRawTagCount(Tags.WILD, false);
 
     // Chimera has 2 wild tags but should only count as one for milestones.
-    if (this.corporationCard?.name === CardName.CHIMERA && mode === 'milestones') tagCount--;
+    if (this.isCorporation(CardName.CHIMERA) && mode === 'milestones') tagCount--;
 
     return tagCount;
   }
@@ -963,7 +957,7 @@ export class Player {
 
     if (mode === 'globalEvent') return uniqueTags.size;
 
-    if (mode === 'milestone' && this.corporationCard?.name === CardName.CHIMERA) wildTagCount--;
+    if (mode === 'milestone' && this.isCorporation(CardName.CHIMERA)) wildTagCount--;
 
     // TODO(kberg): it might be more correct to count all the tags
     // in a game regardless of expansion? But if that happens it needs
@@ -1406,7 +1400,10 @@ export class Player {
   }
 
   public getSpendableData(): number {
-    return this.corporationCard?.name === CardName.AURORAI ? this.corporationCard.resourceCount : 0;
+    if (this.isCorporation(CardName.AURORAI)) {
+      return this.corporationCard?.resourceCount ?? 0;
+    }
+    return 0;
   }
 
   public playCard(selectedCard: IProjectCard, howToPay?: HowToPay, addToPlayedCards: boolean = true): undefined {
@@ -1570,12 +1567,13 @@ export class Player {
     this.game.log('${0} discarded ${1}', (b) => b.player(this).card(card));
   }
 
-  public get availableHeat(): number {
-    return this.heat + (this.isCorporation(CardName.STORMCRAFT_INCORPORATED) ? this.getResourcesOnCorporation() * 2 : 0);
+  public availableHeat(): number {
+    const floaters = this.isCorporation(CardName.STORMCRAFT_INCORPORATED) ? (this.corporationCard?.resourceCount ?? 0) : 0;
+    return this.heat + (floaters * 2);
   }
 
   public spendHeat(amount: number, cb: () => (undefined | PlayerInput) = () => undefined) : PlayerInput | undefined {
-    if (this.isCorporation(CardName.STORMCRAFT_INCORPORATED) && this.getResourcesOnCorporation() > 0 ) {
+    if (this.isCorporation(CardName.STORMCRAFT_INCORPORATED) && (this.corporationCard?.resourceCount ?? 0) > 0) {
       return (<StormCraftIncorporated> this.corporationCard).spendHeat(this, amount, cb);
     }
     this.deductResource(Resources.HEAT, amount);
@@ -1810,7 +1808,7 @@ export class Player {
 
   private getStandardProjects(): Array<StandardProjectCard> {
     const gameOptions = this.game.gameOptions;
-    return new CardLoader(gameOptions)
+    return new GameCards(gameOptions)
       .getStandardProjects()
       .filter((card) => {
         switch (card.name) {

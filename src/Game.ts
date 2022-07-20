@@ -52,7 +52,7 @@ import {AresHandler} from './ares/AresHandler';
 import {IAresData} from './common/ares/IAresData';
 import {AgendaStyle} from './common/turmoil/Types';
 import {GameSetup} from './GameSetup';
-import {CardLoader} from './CardLoader';
+import {GameCards} from './GameCards';
 import {GlobalParameter} from './common/GlobalParameter';
 import {AresSetup} from './ares/AresSetup';
 import {IMoonData} from './moon/IMoonData';
@@ -68,6 +68,7 @@ import {IPathfindersData} from './pathfinders/IPathfindersData';
 import {AddResourcesToCard} from './deferredActions/AddResourcesToCard';
 import {isProduction} from './utils/server';
 import {ColonyDeserializer} from './colonies/ColonyDeserializer';
+import {GameLoader} from './database/GameLoader';
 
 export interface Score {
   corporation: String;
@@ -265,8 +266,8 @@ export class Game {
     const rng = new SeededRandom(seed);
     const board = GameSetup.newBoard(gameOptions, rng);
     const cardFinder = new CardFinder();
-    const cardLoader = new CardLoader(gameOptions);
-    const dealer = Dealer.newInstance(cardLoader);
+    const cardsForGame = new GameCards(gameOptions);
+    const dealer = Dealer.newInstance(cardsForGame);
 
     const activePlayer = firstPlayer.id;
 
@@ -1075,6 +1076,7 @@ export class Game {
     Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
     
     Database.getInstance().saveGame(this).then(() => {
+      GameLoader.getInstance().mark(this.id);
       return Database.getInstance().cleanGame(this.id);
     }).catch((err) => {
       console.error(err);
@@ -1555,7 +1557,7 @@ export class Game {
         }
       }
       // Check player corporation
-      if (player.corporationCard !== undefined && player.corporationCard.name === name) {
+      if (player.isCorporation(name)) {
         return player;
       }
     }
@@ -1740,6 +1742,7 @@ export class Game {
       game.getPlayerById(game.activePlayer).takeAction(/* saveBeforeTakingAction */ false);
     }
 
+    if (game.phase === Phase.END) GameLoader.getInstance().mark(game.id);
     return game;
   }
 
