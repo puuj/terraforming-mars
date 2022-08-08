@@ -7,13 +7,11 @@ import {PowerSupplyConsortium} from '../src/cards/base/PowerSupplyConsortium';
 import {SaturnSystems} from '../src/cards/corporation/SaturnSystems';
 import {SelectOption} from '../src/inputs/SelectOption';
 import {Resources} from '../src/common/Resources';
-import {TestPlayers} from './TestPlayers';
 import {SerializedPlayer} from '../src/SerializedPlayer';
 import {SerializedTimer} from '../src/common/SerializedTimer';
 import {SerializedGame} from '../src/SerializedGame';
 import {Player} from '../src/Player';
 import {Color} from '../src/common/Color';
-import {VictoryPointsBreakdown} from '../src/VictoryPointsBreakdown';
 import {CardName} from '../src/common/cards/CardName';
 import {GlobalParameter} from '../src/common/GlobalParameter';
 import {formatLogMessage, setCustomGameOptions} from './TestingUtils';
@@ -24,11 +22,11 @@ import {GlobalEventName} from '../src/common/turmoil/globalEvents/GlobalEventNam
 
 describe('Player', function() {
   it('should initialize with right defaults', function() {
-    const player = TestPlayers.BLUE.newPlayer();
-    expect(player.corporationCard).is.undefined;
+    const player = new Player('name', Color.BLUE, false, 0, 'p-blue');
+    expect(player.corporations).is.empty;
   });
   it('Should throw error if nothing to process', function() {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     Game.newInstance('gameid', [player], player);
     (player as any).setWaitingFor(undefined, undefined);
     expect(function() {
@@ -37,9 +35,9 @@ describe('Player', function() {
   });
   it('Should run select player for PowerSupplyConsortium', function() {
     const card = new PowerSupplyConsortium();
-    const player = TestPlayers.BLUE.newPlayer();
-    const player2 = TestPlayers.RED.newPlayer();
-    const player3 = TestPlayers.YELLOW.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player2 = new Player('red', Color.RED, false, 0, 'p-red');
+    const player3 = new Player('yellow', Color.YELLOW, false, 0, 'p-yellow');
     Game.newInstance('gameid', [player, player2, player3], player);
     player2.addProduction(Resources.ENERGY, 2);
     player3.addProduction(Resources.ENERGY, 2);
@@ -54,8 +52,7 @@ describe('Player', function() {
   });
   it('Should error with input for run select player for PowerSupplyConsortium', function() {
     const card = new PowerSupplyConsortium();
-    const player = TestPlayers.BLUE.newPlayer();
-    // const redPlayer = TestPlayers.RED.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
 
     Game.newInstance('gameid', [player], player);
     player.playedCards.push(new LunarBeam());
@@ -77,8 +74,8 @@ describe('Player', function() {
   });
   it('Should run select amount for Insulation', function() {
     const card = new Insulation();
-    const player = TestPlayers.BLUE.newPlayer();
-    const redPlayer = TestPlayers.RED.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const redPlayer = new Player('red', Color.RED, false, 0, 'p-red');
 
     player.addProduction(Resources.HEAT, 2);
     Game.newInstance('gameid', [player, redPlayer], player);
@@ -102,18 +99,18 @@ describe('Player', function() {
     expect(player.getWaitingFor()).is.undefined;
   });
   it('Runs SaturnSystems when other player plays card', function() {
-    const player1 = TestPlayers.BLUE.newPlayer();
-    const player2 = TestPlayers.RED.newPlayer();
+    const player1 = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player2 = new Player('red', Color.RED, false, 0, 'p-red');
     Game.newInstance('gto', [player1, player2], player1);
     const card = new IoMiningIndustries();
     const corporationCard = new SaturnSystems();
     expect(player1.getProduction(Resources.MEGACREDITS)).to.eq(0);
-    player1.corporationCard = corporationCard;
+    player1.corporations = [corporationCard];
     player2.playCard(card, undefined);
     expect(player1.getProduction(Resources.MEGACREDITS)).to.eq(1);
   });
   it('Chains onend functions from player inputs', function(done) {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     Game.newInstance('gameid', [player], player);
     const mockOption3 = new SelectOption('Mock select option 3', 'Save', () => {
       return undefined;
@@ -133,15 +130,15 @@ describe('Player', function() {
     expect(player.getWaitingFor()).to.be.undefined;
   });
   it('Omits buffer gas for non solo games', function() {
-    const player = TestPlayers.BLUE.newPlayer();
-    const player2= TestPlayers.RED.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player2= new Player('red', Color.RED, false, 0, 'p-red');
     Game.newInstance('gameid', [player, player2], player);
     const option = player.getStandardProjectOption();
     const bufferGas = option.cards.find((card) => card.name === CardName.BUFFER_GAS_STANDARD_PROJECT);
     expect(bufferGas).to.be.undefined;
   });
   it('Omit buffer gas for solo games without 63 TR', function() {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     Game.newInstance('gameid', [player], player);
     const option = player.getStandardProjectOption();
     const bufferGas = option.cards.find((card) => card.name === CardName.BUFFER_GAS_STANDARD_PROJECT);
@@ -149,7 +146,7 @@ describe('Player', function() {
   });
 
   it('wgt includes all parameters at the game start', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const gameOptions = setCustomGameOptions({venusNextExtension: false});
     Game.newInstance('gameid', [player], player, gameOptions);
     player.worldGovernmentTerraforming();
@@ -161,7 +158,7 @@ describe('Player', function() {
   });
 
   it('wgt includes all parameters at the game start, with Venus', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const gameOptions = setCustomGameOptions({venusNextExtension: true});
     Game.newInstance('gameid', [player], player, gameOptions);
     player.worldGovernmentTerraforming();
@@ -174,7 +171,7 @@ describe('Player', function() {
   });
 
   it('wgt includes all parameters at the game start, with The Moon', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const gameOptions = setCustomGameOptions({venusNextExtension: false, moonExpansion: true});
     Game.newInstance('gameid', [player], player, gameOptions);
     player.worldGovernmentTerraforming();
@@ -189,7 +186,7 @@ describe('Player', function() {
   });
 
   it('Include buffer gas for solo games with 63 TR', function() {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player);
     game.gameOptions.soloTR = true;
     const option = player.getStandardProjectOption();
@@ -198,17 +195,17 @@ describe('Player', function() {
   });
 
   it('serialization test for pickedCorporationCard', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     player.pickedCorporationCard = new SaturnSystems();
     const json = player.serialize();
     expect(json.pickedCorporationCard).eq('Saturn Systems');
   });
   it('serialization test', () => {
-    const json = {
-      id: 'p-blue-id',
-      pickedCorporationCard: 'Tharsis Republic',
+    const json: SerializedPlayer = {
+      id: 'p-blue',
+      pickedCorporationCard: 'Tharsis Republic' as CardName,
       terraformRating: 20,
-      corporationCard: undefined,
+      corporations: [],
       hasIncreasedTerraformRatingThisGeneration: false,
       terraformRatingAtGenerationStart: 20,
       megaCredits: 1,
@@ -230,6 +227,7 @@ describe('Player', function() {
       actionsTakenThisGame: 30,
       actionsThisGeneration: [CardName.FACTORUM, CardName.GHG_PRODUCING_BACTERIA],
       corporationInitialActionDone: false,
+      pendingInitialActions: [],
       dealtCorporationCards: [CardName.THARSIS_REPUBLIC],
       dealtProjectCards: [CardName.FLOATER_LEASING, CardName.BUTTERFLY_EFFECT],
       dealtPreludeCards: [CardName.MOHOLE_EXCAVATION, CardName.LAVA_TUBE_SETTLEMENT],
@@ -249,24 +247,12 @@ describe('Player', function() {
       turmoilPolicyActionUsed: false,
       politicalAgendasActionUsedCount: 0,
       hasTurmoilScienceTagBonus: false,
-      victoryPointsBreakdown: {
-        terraformRating: 1,
-        milestones: 2,
-        awards: 3,
-        greenery: 4,
-        city: 5,
-        victoryPoints: 6,
-        total: 7,
-        detailsCards: [],
-        detailsMilestones: [],
-        detailsAwards: [],
-      } as unknown as VictoryPointsBreakdown, // needs double-conversion as it expects the VPB methods.
       oceanBonus: 86,
       scienceTagCount: 97,
       plantsNeededForGreenery: 5,
       removingPlayers: [],
       removedFromPlayCards: [],
-      name: 'player-blue',
+      name: 'p-blue',
       color: 'purple' as Color,
       beginner: true,
       handicap: 4,
@@ -282,13 +268,13 @@ describe('Player', function() {
       victoryPointsByGeneration: [],
     };
 
-    const newPlayer = Player.deserialize(json as SerializedPlayer, {generation: 1} as SerializedGame);
+    const newPlayer = Player.deserialize(json, {generation: 1} as SerializedGame);
 
     expect(newPlayer.color).eq(Color.PURPLE);
     expect(newPlayer.tradesThisGeneration).eq(100);
   });
   it('pulls self replicating robots target cards', function() {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     expect(player.getSelfReplicatingRobotsTargetCards().length).eq(0);
     const srr = new SelfReplicatingRobots();
     player.playedCards.push(srr);
@@ -297,7 +283,7 @@ describe('Player', function() {
   });
 
   it('has units', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
 
     const units: Units = Units.of({});
     expect(player.hasUnits(units)).is.true;
@@ -346,7 +332,7 @@ describe('Player', function() {
       };
     }
 
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
 
     expect(asUnits(player)).deep.eq({
       megacredits: 0,
@@ -437,7 +423,7 @@ describe('Player', function() {
       };
     }
 
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
 
     expect(asUnits(player)).deep.eq({
       megacredits: 0,
@@ -528,7 +514,7 @@ describe('Player', function() {
       };
     }
 
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
 
     expect(asProductionUnits(player)).deep.eq({
       megacredits: 0,
@@ -539,14 +525,12 @@ describe('Player', function() {
       heat: 0,
     });
 
-    player.setProductionForTest({
-      megacredits: 20,
-      steel: 19,
-      titanium: 18,
-      plants: 17,
-      energy: 16,
-      heat: 15,
-    });
+    player.addProduction(Resources.MEGACREDITS, 20);
+    player.addProduction(Resources.STEEL, 19);
+    player.addProduction(Resources.TITANIUM, 18);
+    player.addProduction(Resources.PLANTS, 17);
+    player.addProduction(Resources.ENERGY, 16);
+    player.addProduction(Resources.HEAT, 15);
 
     player.adjustProduction(Units.of({megacredits: -10}));
     expect(asProductionUnits(player)).deep.eq({
@@ -610,7 +594,7 @@ describe('Player', function() {
   });
 
   it('addResourceTo', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player);
 
     const log = game.gameLog;
@@ -640,13 +624,11 @@ describe('Player', function() {
   });
 
   it('addResourceTo with Mons Insurance hook does not remove when no credits', () => {
-    const player1 = TestPlayers.BLUE.newPlayer();
-    const player2 = TestPlayers.RED.newPlayer();
+    const player1 = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player2 = new Player('red', Color.RED, false, 0, 'p-red');
     const game = Game.newInstance('gameid', [player1, player2], player1);
     player1.megaCredits = 0;
-    player1.setProductionForTest({
-      megacredits: -5,
-    });
+    player1.addProduction(Resources.MEGACREDITS, -5);
     player2.megaCredits = 3;
     game.monsInsuranceOwner = player2.id;
     player1.addResource(Resources.MEGACREDITS, -3, {from: player2, log: false});
@@ -656,7 +638,7 @@ describe('Player', function() {
   });
 
   it('removeResourcesFrom', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player);
 
     const log = game.gameLog;
@@ -694,7 +676,7 @@ describe('Player', function() {
   });
 
   it('adds resources', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     Game.newInstance('gameid', [player], player);
     player.megaCredits = 10;
     // adds any positive amount
@@ -715,7 +697,7 @@ describe('Player', function() {
   });
 
   it('addResource logging', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player);
 
     const log = game.gameLog;
@@ -730,8 +712,8 @@ describe('Player', function() {
   });
 
   it('addResource logging from player', () => {
-    const player = TestPlayers.BLUE.newPlayer();
-    const player2 = TestPlayers.RED.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player2 = new Player('red', Color.RED, false, 0, 'p-red');
     const game = Game.newInstance('gameid', [player, player2], player);
 
     player.megaCredits = 5;
@@ -743,7 +725,7 @@ describe('Player', function() {
   });
 
   it('addResource logging from global event', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player);
 
     player.addResource(Resources.MEGACREDITS, 12, {log: true, from: GlobalEventName.ASTEROID_MINING});
@@ -754,7 +736,7 @@ describe('Player', function() {
   });
 
   it('addResource logs error when deducting too much', () => {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     Game.newInstance('gameid', [player], player);
 
     player.megaCredits = 10;
@@ -773,12 +755,12 @@ describe('Player', function() {
         'gameId': 'gameid',
         'lastSaveId': 0,
         'logAge': 7,
-        'currentPlayer': 'p-blue-id',
+        'currentPlayer': 'p-blue',
         'metadata': {
           'player': {
             'color': 'blue',
-            'id': 'p-blue-id',
-            'name': 'player-blue',
+            'id': 'p-blue',
+            'name': 'blue',
           },
           'resource': 'megacredits',
           'amount': -12,

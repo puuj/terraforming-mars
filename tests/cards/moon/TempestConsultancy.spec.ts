@@ -4,7 +4,6 @@ import {expect} from 'chai';
 import {PartyName} from '../../../src/common/turmoil/PartyName';
 import {Turmoil} from '../../../src/turmoil/Turmoil';
 import {TestPlayer} from '../../TestPlayer';
-import {TestPlayers} from '../../TestPlayers';
 import {SendDelegateToArea} from '../../../src/deferredActions/SendDelegateToArea';
 import {Greens} from '../../../src/turmoil/parties/Greens';
 import {runAllActions, setCustomGameOptions} from '../../TestingUtils';
@@ -17,8 +16,8 @@ describe('TempestConsultancy', () => {
   let turmoil: Turmoil;
 
   beforeEach(() => {
-    player = TestPlayers.BLUE.newPlayer();
-    otherPlayer = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    otherPlayer = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, otherPlayer], player, setCustomGameOptions());
     card = new TempestConsultancy();
     turmoil = game.turmoil!;
@@ -89,7 +88,7 @@ describe('TempestConsultancy', () => {
   });
 
   it('new chairman', () => {
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
     turmoil.rulingParty = new Greens();
     turmoil.rulingParty.partyLeader = player.id;
     expect(player.getTerraformRating()).eq(20);

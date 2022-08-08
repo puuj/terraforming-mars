@@ -1,7 +1,6 @@
 import {Game} from '../../../src/Game';
-import {Player} from '../../../src/Player';
 import {setCustomGameOptions} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {TheArchaicFoundationInstitute} from '../../../src/cards/moon/TheArchaicFoundationInstitute';
 import {expect} from 'chai';
 import {MicroMills} from '../../../src/cards/base/MicroMills';
@@ -15,17 +14,17 @@ import {Habitat14} from '../../../src/cards/moon/Habitat14';
 const MOON_OPTIONS = setCustomGameOptions({moonExpansion: true});
 
 describe('TheArchaicFoundationInstitute', () => {
-  let player: Player;
+  let player: TestPlayer;
   let card: TheArchaicFoundationInstitute;
 
   beforeEach(() => {
-    player = TestPlayers.BLUE.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
     Game.newInstance('gameid', [player], player, MOON_OPTIONS);
     card = new TheArchaicFoundationInstitute();
   });
 
   it('effect', () => {
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
     card.resourceCount = 0;
     expect(player.getTerraformRating()).eq(14);
 

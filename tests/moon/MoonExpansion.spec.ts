@@ -14,7 +14,6 @@ import {SpaceName} from '../../src/SpaceName';
 import {TileType} from '../../src/common/TileType';
 import {setCustomGameOptions} from '../TestingUtils';
 import {TestPlayer} from '../TestPlayer';
-import {TestPlayers} from '../TestPlayers';
 import {Phase} from '../../src/common/Phase';
 import {VictoryPointsBreakdown} from '../../src/VictoryPointsBreakdown';
 
@@ -27,8 +26,8 @@ describe('MoonExpansion', () => {
   let moonData: IMoonData;
 
   beforeEach(() => {
-    player = TestPlayers.BLUE.newPlayer();
-    player2 = TestPlayers.PINK.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    player2 = TestPlayer.PINK.newPlayer();
     game = Game.newInstance('gameid', [player, player2], player, MOON_OPTIONS);
     moonData = MoonExpansion.moonData(game);
   });
@@ -63,7 +62,7 @@ describe('MoonExpansion', () => {
   // changing these tests, but I would be surprised if that were the case.
   it('Adding a tile while someone has cards with onTilePlaced behavior does not trigger them.', () => {
     player.cardsInHand = [new EcologicalSurvey(), new GeologicalSurvey()];
-    player.corporationCard = new Philares();
+    player.setCorporationForTest(new Philares());
     player.steel = 0;
     MoonExpansion.addTile(player, 'm03', {tileType: TileType.MOON_ROAD});
     expect(player.steel).eq(1);

@@ -4,8 +4,26 @@ import {Color} from '../src/common/Color';
 import {Units} from '../src/common/Units';
 import {Tags} from '../src/common/cards/Tags';
 import {InputResponse} from '../src/common/inputs/InputResponse';
+import {ICorporationCard} from '@/cards/corporation/ICorporationCard';
+
+class TestPlayerFactory {
+  constructor(private color: Color) {}
+  newPlayer(beginner: boolean = false, idSuffix = ''): TestPlayer {
+    return new TestPlayer(this.color, beginner, idSuffix);
+  }
+}
 
 export class TestPlayer extends Player {
+  // Prefer these players when testing, as their IDs are easy to recognize in output. Plus TestPlayer instances have useful support methods.
+  public static BLUE: TestPlayerFactory = new TestPlayerFactory(Color.BLUE);
+  public static RED: TestPlayerFactory = new TestPlayerFactory(Color.RED);
+  public static YELLOW: TestPlayerFactory = new TestPlayerFactory(Color.YELLOW);
+  public static GREEN: TestPlayerFactory = new TestPlayerFactory(Color.GREEN);
+  public static BLACK: TestPlayerFactory = new TestPlayerFactory(Color.BLACK);
+  public static PURPLE: TestPlayerFactory = new TestPlayerFactory(Color.PURPLE);
+  public static ORANGE: TestPlayerFactory = new TestPlayerFactory(Color.ORANGE);
+  public static PINK: TestPlayerFactory = new TestPlayerFactory(Color.PINK);
+
   constructor(color: Color, beginner: boolean = false, idSuffix = '') {
     super('player-' + color, color, beginner, 0, `p-${color}-id${idSuffix}`, undefined);
   }
@@ -53,11 +71,6 @@ export class TestPlayer extends Player {
     };
   }
 
-  // Just makes it public, and therefore callable for testing.
-  public override getStandardProjectOption() {
-    return super.getStandardProjectOption();
-  }
-
   public tagsForTest: Partial<TagsForTest> | undefined = undefined;
 
   public override getRawTagCount(tag: Tags, includeEventsTags:boolean = false): number {
@@ -81,11 +94,27 @@ export class TestPlayer extends Player {
     });
   }
 
+  public popWaitingFor2(): [PlayerInput | undefined, (() => void) | undefined] {
+    const waitingFor = this.waitingFor;
+    const waitingForCb = this.waitingForCb;
+    this.waitingFor = undefined;
+    this.waitingForCb = undefined;
+    return [waitingFor, waitingForCb];
+  }
+
   public popWaitingFor(): PlayerInput | undefined {
     const waitingFor = this.getWaitingFor();
     this.waitingFor = undefined;
     this.waitingForCb = undefined;
     return waitingFor;
+  }
+
+  public setCorporationForTest(card: ICorporationCard | undefined) {
+    if (card === undefined) {
+      this.corporations = [];
+    } else {
+      this.corporations = [card];
+    }
   }
 }
 

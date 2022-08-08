@@ -1,26 +1,28 @@
 import {expect} from 'chai';
 import {AirRaid} from '../../../src/cards/colonies/AirRaid';
 import {Dirigibles} from '../../../src/cards/venusNext/Dirigibles';
-import {Player} from '../../../src/Player';
 import {StormCraftIncorporated} from '../../../src/cards/colonies/StormCraftIncorporated';
 import {Game} from '../../../src/Game';
 import {SelectCard} from '../../../src/inputs/SelectCard';
 import {ICard} from '../../../src/cards/ICard';
 import {OrOptions} from '../../../src/inputs/OrOptions';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {cast} from '../../TestingUtils';
 
 describe('AirRaid', function() {
-  let card : AirRaid; let player : Player; let player2 : Player; let corpo: StormCraftIncorporated;
+  let card: AirRaid;
+  let player: TestPlayer;
+  let player2: TestPlayer;
+  let corpo: StormCraftIncorporated;
 
   beforeEach(function() {
     card = new AirRaid();
-    player = TestPlayers.BLUE.newPlayer();
-    player2 = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    player2 = TestPlayer.RED.newPlayer();
     Game.newInstance('gameid', [player, player2], player);
 
     corpo = new StormCraftIncorporated();
-    player.corporationCard = corpo;
+    player.setCorporationForTest(corpo);
   });
 
   it('Can not play', function() {
@@ -28,7 +30,7 @@ describe('AirRaid', function() {
   });
 
   it('Should play - multiple targets', function() {
-    const player3 = TestPlayers.YELLOW.newPlayer();
+    const player3 = TestPlayer.YELLOW.newPlayer();
     Game.newInstance('gameid', [player, player2, player3], player);
     player.addResourceTo(corpo);
     expect(card.canPlay(player)).is.true;

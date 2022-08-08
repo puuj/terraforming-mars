@@ -9,8 +9,7 @@ import {Game} from '../../../src/Game';
 import {OrOptions} from '../../../src/inputs/OrOptions';
 import {SelectCard} from '../../../src/inputs/SelectCard';
 import {SelectOption} from '../../../src/inputs/SelectOption';
-import {Player} from '../../../src/Player';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {AncientShipyards} from '../../../src/cards/moon/AncientShipyards';
 import {cast, runAllActions} from '../../TestingUtils';
 import {Phase} from '../../../src/common/Phase';
@@ -18,19 +17,25 @@ import {Reds} from '../../../src/turmoil/parties/Reds';
 import {PoliticalAgendas} from '../../../src/turmoil/PoliticalAgendas';
 import {getTestPlayer, newTestGame} from '../../TestGame';
 import {Birds} from '../../../src/cards/base/Birds';
+import {Helion} from '../../../src/cards/corporation/Helion';
+import {SelectHowToPay} from '../../../src/inputs/SelectHowToPay';
+import {HowToPay} from '../../../src/common/inputs/HowToPay';
 
 describe('ProjectWorkshop', function() {
-  let card : ProjectWorkshop; let player : Player; let game : Game; let advancedAlloys : AdvancedAlloys;
+  let card: ProjectWorkshop;
+  let player: TestPlayer;
+  let game: Game;
+  let advancedAlloys : AdvancedAlloys;
 
   beforeEach(function() {
     card = new ProjectWorkshop();
-    player = TestPlayers.BLUE.newPlayer();
-    const redPlayer = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    const redPlayer = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, redPlayer], player);
     advancedAlloys = new AdvancedAlloys();
 
     card.play(player);
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
   });
 
   it('Starts with correct resources', function() {
@@ -52,6 +57,7 @@ describe('ProjectWorkshop', function() {
 
     expect(card.canAct(player)).is.true;
     card.action(player).cb();
+    runAllActions(game);
     expect(player.cardsInHand).has.lengthOf(1);
     expect(player.cardsInHand[0].cardType).to.eq(CardType.ACTIVE);
   });
@@ -123,7 +129,7 @@ describe('ProjectWorkshop', function() {
     game = newTestGame(1, {turmoilExtension: true});
     const player = getTestPlayer(game, 0);
     card.play(player);
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
     player.game.phase = Phase.ACTION;
 
     const turmoil = game.turmoil!;
@@ -169,5 +175,28 @@ describe('ProjectWorkshop', function() {
     expect(game.dealer.discarded).contains(birds);
     expect(player.getTerraformRating()).to.eq(originalTR + 1);
     expect(player.megaCredits).eq(2); // Spent 3MC for the reds tax.
+  });
+
+  it('Project Workshop + Helion', function() {
+    const helion = new Helion();
+    helion.play(player);
+    player.corporations.push(helion);
+
+    player.megaCredits = 2;
+    expect(card.canAct(player)).is.false;
+    player.heat = 1;
+    expect(card.canAct(player)).is.true;
+
+    // Setting a larger amount of heat just to make the test results more interesting
+    player.heat = 5;
+
+    card.action(player).cb();
+    runAllActions(game);
+    const howToPay = cast(player.popWaitingFor(), SelectHowToPay);
+    howToPay.cb({...HowToPay.EMPTY, megaCredits: 1, heat: 2});
+    expect(player.megaCredits).to.eq(1);
+    expect(player.heat).to.eq(3);
+    expect(player.cardsInHand).has.lengthOf(1);
+    expect(player.cardsInHand[0].cardType).to.eq(CardType.ACTIVE);
   });
 });

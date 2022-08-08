@@ -4,7 +4,11 @@ import {Color} from './common/Color';
 import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from './common/SerializedTimer';
 
-export interface SerializedPlayer {
+interface DeprecatedFields {
+    corporationCard?: SerializedCard | undefined; // TODO(kberg): remove after 2022-09-01
+    corporationInitialActionDone?: boolean; // TODO(kberg): remove field after 2022-09-01
+}
+export interface SerializedPlayer extends DeprecatedFields{
     actionsTakenThisGame: number;
     actionsTakenThisRound: number;
     actionsThisGeneration: Array<CardName>;
@@ -17,8 +21,7 @@ export interface SerializedPlayer {
     colonyTradeOffset: number;
     colonyVictoryPoints: number;
     color: Color;
-    corporationCard: SerializedCard | undefined;
-    corporationInitialActionDone: boolean;
+    corporations: Array<SerializedCard> | undefined; // TODO(kberg): remove undefined once it's applied across the board.
     dealtCorporationCards: Array<CardName>;
     dealtPreludeCards: Array<CardName>;
     dealtProjectCards: Array<CardName>;
@@ -40,6 +43,7 @@ export interface SerializedPlayer {
     needsToDraft: boolean | undefined;
     oceanBonus: number;
     passingTo: string | undefined,
+    pendingInitialActions: Array<CardName> | undefined;
     pickedCorporationCard: CardName | undefined;
     plantProduction: number;
     plants: number;

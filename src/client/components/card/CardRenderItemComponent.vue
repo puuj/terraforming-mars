@@ -302,7 +302,7 @@ export default Vue.extend({
     },
     getAmountAbs(): number {
       if (this.item.amountInside) return 1;
-      return Math.abs(this.item.amount || 1);
+      return Math.abs(this.item.amount);
     },
     itemsToShow(): number {
       if (this.item.showDigit) return 1;
@@ -352,6 +352,15 @@ export default Vue.extend({
       }
       if (this.item.type === CardRenderItemType.PRELUDE) {
         result = '<div class="card-prelude-container"><span class="card-prelude-icon">prel</span></div>';
+      }
+      if (this.item.type === CardRenderItemType.CORPORATION) {
+        result = '<div class="card-corporation-icon"></div>';
+      }
+      if (this.item.type === CardRenderItemType.FIRST_PLAYER) {
+        result = '<div class="card-first-player-icon"></div>';
+      }
+      if (this.item.type === CardRenderItemType.RULING_PARTY) {
+        result = '<div class="card-party-icon"></div>';
       }
       if (this.item.type === CardRenderItemType.AWARD) {
         // iconography on card shows plural (awards)

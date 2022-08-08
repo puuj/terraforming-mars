@@ -1,4 +1,5 @@
-import {Game, GameOptions, Score} from '../../src/Game';
+import {Game, Score} from '../../src/Game';
+import {GameOptions} from '../../src/GameOptions';
 import {SerializedGame} from '../../src/SerializedGame';
 import {GameIdLedger, IDatabase} from '../../src/database/IDatabase';
 import {GameId, PlayerId, SpectatorId} from '../../src/common/Types';
@@ -67,7 +68,7 @@ export class InMemoryDatabase implements IDatabase {
   loadCloneableGame(_game_id: string): Promise<SerializedGame> {
     throw new Error('Method not implemented.');
   }
-  deleteGameNbrSaves(_game_id: string, _rollbackCount: number): void {
+  deleteGameNbrSaves(_game_id: string, _rollbackCount: number): Promise<void> {
     throw new Error('Method not implemented.');
   }
   cleanGame(_game_id: string): Promise<void> {

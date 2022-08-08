@@ -3,7 +3,7 @@ import {IMoonData} from '../../../src/moon/IMoonData';
 import {MoonExpansion} from '../../../src/moon/MoonExpansion';
 import {Player} from '../../../src/Player';
 import {setCustomGameOptions} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {MooncrateConvoysToMars} from '../../../src/cards/moon/MooncrateConvoysToMars';
 import {expect} from 'chai';
 import {SelectAmount} from '../../../src/inputs/SelectAmount';
@@ -16,14 +16,14 @@ describe('MooncrateConvoysToMars', () => {
   let game: Game;
   let player1: Player;
   let player2: Player;
-  let player3: Player;
+  let player3: TestPlayer;
   let moonData: IMoonData;
   let card: MooncrateConvoysToMars;
 
   beforeEach(() => {
-    player1 = TestPlayers.BLUE.newPlayer();
-    player2 = TestPlayers.RED.newPlayer();
-    player3 = TestPlayers.GREEN.newPlayer();
+    player1 = TestPlayer.BLUE.newPlayer();
+    player2 = TestPlayer.RED.newPlayer();
+    player3 = TestPlayer.GREEN.newPlayer();
     game = Game.newInstance('gameid', [player1, player2, player3], player1, MOON_OPTIONS);
     moonData = MoonExpansion.moonData(game);
     card = new MooncrateConvoysToMars();

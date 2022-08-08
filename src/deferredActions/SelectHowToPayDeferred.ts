@@ -3,6 +3,7 @@ import {SelectHowToPay} from '../inputs/SelectHowToPay';
 import {HowToPay} from '../common/inputs/HowToPay';
 import {DeferredAction, Priority} from './DeferredAction';
 import {Resources} from '../common/Resources';
+import {CardName} from '../common/cards/CardName';
 
 export class SelectHowToPayDeferred extends DeferredAction {
   constructor(
@@ -23,10 +24,10 @@ export class SelectHowToPayDeferred extends DeferredAction {
     if (this.options.canUseTitanium && this.player.titanium > 0) {
       return false;
     }
-    if (this.options.canUseSeeds && (this.player.corporationCard?.resourceCount ?? 0 > 0)) {
+    if (this.options.canUseSeeds && (this.player.getCorporation(CardName.SOYLENT_SEEDLING_SYSTEMS)?.resourceCount ?? 0) > 0) {
       return false;
     }
-    if (this.options.canUseData && (this.player.corporationCard?.resourceCount ?? 0 > 0)) {
+    if (this.options.canUseSeeds && (this.player.getCorporation(CardName.ADHAI_HIGH_ORBIT_CONSTRUCTIONS)?.resourceCount ?? 0) > 0) {
       return false;
     }
     return true;
@@ -48,16 +49,10 @@ export class SelectHowToPayDeferred extends DeferredAction {
       this.options.canUseData || false,
       this.amount,
       (howToPay: HowToPay) => {
-        this.player.deductResource(Resources.STEEL, howToPay.steel);
-        this.player.deductResource(Resources.TITANIUM, howToPay.titanium);
-        this.player.deductResource(Resources.MEGACREDITS, howToPay.megaCredits);
-        this.player.deductResource(Resources.HEAT, howToPay.heat);
-        if (howToPay.seeds > 0 && this.player.corporationCard !== undefined) {
-          this.player.removeResourceFrom(this.player.corporationCard, howToPay.seeds);
+        if (!this.player.canSpend(howToPay)) {
+          throw new Error('You do not have that many resources to spend');
         }
-        if (howToPay.data > 0 && this.player.corporationCard !== undefined) {
-          this.player.removeResourceFrom(this.player.corporationCard, howToPay.data);
-        }
+        this.player.pay(howToPay);
         this.options.afterPay?.();
         return undefined;
       },

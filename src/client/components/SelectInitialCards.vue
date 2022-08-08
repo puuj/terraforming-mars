@@ -1,4 +1,4 @@
-<template>
+ClientCard<template>
   <div class="select-initial-cards">
     <confirm-dialog
       message="Continue without buying any project cards?"
@@ -22,12 +22,12 @@ import Button from '@/client/components/common/Button.vue';
 import {getCard, getCardOrThrow} from '@/client/cards/ClientCardManifest';
 import {CardName} from '@/common/cards/CardName';
 import * as constants from '@/common/constants';
-import {IClientCard} from '@/common/cards/IClientCard';
+import {ClientCard} from '@/common/cards/ClientCard';
 import {PlayerInputModel} from '@/common/models/PlayerInputModel';
 import {PlayerViewModel} from '@/common/models/PlayerModel';
 import SelectCard from '@/client/components/SelectCard.vue';
 import ConfirmDialog from '@/client/components/common/ConfirmDialog.vue';
-import {IPreferences, PreferencesManager} from '@/client/utils/PreferencesManager';
+import {Preferences, PreferencesManager} from '@/client/utils/PreferencesManager';
 import {Tags} from '@/common/cards/Tags';
 import {InputResponse} from '@/common/inputs/InputResponse';
 import {CardType} from '@/common/cards/CardType';
@@ -55,7 +55,7 @@ export default (Vue as WithRefs<Refs>).extend({
       type: Boolean,
     },
     preferences: {
-      type: Object as () => Readonly<IPreferences>,
+      type: Object as () => Readonly<Preferences>,
       default: () => PreferencesManager.INSTANCE.values(),
     },
   },
@@ -67,7 +67,7 @@ export default (Vue as WithRefs<Refs>).extend({
   data() {
     return {
       selectedCards: [] as Array<CardName>,
-      selectedCorporation: undefined as IClientCard | undefined,
+      selectedCorporation: undefined as ClientCard | undefined,
       selectedPreludes: [] as Array<CardName>,
     };
   },

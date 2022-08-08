@@ -1,30 +1,32 @@
 import {expect} from 'chai';
 import {MiningGuild} from '../../../src/cards/corporation/MiningGuild';
 import {Game} from '../../../src/Game';
-import {Player} from '../../../src/Player';
 import {Resources} from '../../../src/common/Resources';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
 import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {Phase} from '../../../src/common/Phase';
 import {maxOutOceans, setCustomGameOptions, runAllActions} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {BoardType} from '../../../src/boards/BoardType';
 import {TileType} from '../../../src/common/TileType';
 import {OceanCity} from '../../../src/cards/ares/OceanCity';
 
 describe('MiningGuild', () => {
-  let card : MiningGuild; let player : Player; let player2 : Player; let game: Game;
+  let card: MiningGuild;
+  let player: TestPlayer;
+  let player2: TestPlayer;
+  let game: Game;
 
   beforeEach(() => {
     card = new MiningGuild();
-    player = TestPlayers.BLUE.newPlayer();
-    player2 = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    player2 = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, player2], player, setCustomGameOptions({
       aresExtension: true,
       aresHazards: false,
     }));
 
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
   });
 
   it('Should play', () => {

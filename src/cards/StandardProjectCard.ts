@@ -1,15 +1,7 @@
 import {CardType} from '../common/cards/CardType';
 import {Player} from '../Player';
 import {IActionCard, ICard, TRSource} from './ICard';
-import {OrOptions} from '../inputs/OrOptions';
-import {SelectAmount} from '../inputs/SelectAmount';
-import {SelectHowToPay} from '../inputs/SelectHowToPay';
-import {SelectOption} from '../inputs/SelectOption';
-import {IProjectCard} from './IProjectCard';
-import {SelectPlayer} from '../inputs/SelectPlayer';
-import {AndOptions} from '../inputs/AndOptions';
-import {SelectCard} from '../inputs/SelectCard';
-import {SelectSpace} from '../inputs/SelectSpace';
+import {PlayerInput} from '../PlayerInput';
 import {ICardMetadata} from '../common/cards/ICardMetadata';
 import {CardName} from '../common/cards/CardName';
 import {SelectHowToPayDeferred} from '../deferredActions/SelectHowToPayDeferred';
@@ -44,14 +36,8 @@ export abstract class StandardProjectCard extends Card implements IActionCard, I
   protected abstract actionEssence(player: Player): void
 
   public onStandardProject(player: Player): void {
-    if (player.corporationCard?.onStandardProject !== undefined) {
-      player.corporationCard.onStandardProject(player, this);
-    }
-
-    for (const playedCard of player.playedCards) {
-      if (playedCard.onStandardProject !== undefined) {
-        playedCard.onStandardProject(player, this);
-      }
+    for (const playedCard of player.tableau) {
+      playedCard.onStandardProject?.(player, this);
     }
   }
 
@@ -79,7 +65,7 @@ export abstract class StandardProjectCard extends Card implements IActionCard, I
     return cardName.split(':')[0];
   }
 
-  public action(player: Player): OrOptions | SelectOption | AndOptions | SelectAmount | SelectCard<ICard> | SelectCard<IProjectCard> | SelectHowToPay | SelectPlayer | SelectSpace | undefined {
+  public action(player: Player): PlayerInput | undefined {
     const canPayWith = this.canPayWith(player);
     player.game.defer(new SelectHowToPayDeferred(
       player,

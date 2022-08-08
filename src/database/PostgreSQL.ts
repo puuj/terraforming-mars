@@ -1,5 +1,6 @@
 import {IDatabase} from './IDatabase';
-import {Game, GameOptions, Score} from '../Game';
+import {Game, Score} from '../Game';
+import {GameOptions} from '../GameOptions';
 import {GameId, PlayerId, SpectatorId} from '../common/Types';
 import {SerializedGame} from '../SerializedGame';
 import {Pool, ClientConfig} from 'pg';
@@ -93,7 +94,7 @@ export class PostgreSQL implements IDatabase {
 
   public async getGameId(id: string): Promise<GameId> {
     try {
-      const res = await this.client.query('select game_id from participants where $1 in ids', [id]);
+      const res = await this.client.query('select game_id from participants where $1 = ANY(participants)', [id]);
       if (res.rowCount === 0) {
         throw new Error(`Game for player id ${id} not found`);
       }
@@ -232,27 +233,20 @@ export class PostgreSQL implements IDatabase {
     }
   }
 
-  deleteGameNbrSaves(game_id: GameId, rollbackCount: number): void {
+  async deleteGameNbrSaves(game_id: GameId, rollbackCount: number): Promise<void> {
     if (rollbackCount <= 0) {
-      console.error(`invalid rollback count for ${game_id}: $rollbackCount`);
+      console.error(`invalid rollback count for ${game_id}: ${rollbackCount}`);
+      // Should this be an error?
       return;
     }
     logForUndo(game_id, 'deleting', rollbackCount, 'saves');
-    this.getSaveIds(game_id)
-      .then((first) => {
-        this.client.query('DELETE FROM games WHERE ctid IN (SELECT ctid FROM games WHERE game_id = $1 ORDER BY save_id DESC LIMIT $2)', [game_id, rollbackCount], (err, res) => {
-          if (err) {
-            console.error(err.message);
-          }
-          logForUndo(game_id, 'deleted', res.rowCount, 'rows');
-          this.getSaveIds(game_id)
-            .then((second) => {
-              const difference = first.filter((x) => !second.includes(x));
-              logForUndo(game_id, 'second', second);
-              logForUndo(game_id, 'Rollback difference', difference);
-            });
-        });
-      });
+    const first = await this.getSaveIds(game_id);
+    const res = await this.client.query('DELETE FROM games WHERE ctid IN (SELECT ctid FROM games WHERE game_id = $1 ORDER BY save_id DESC LIMIT $2)', [game_id, rollbackCount]);
+    logForUndo(game_id, 'deleted', res?.rowCount, 'rows');
+    const second = await this.getSaveIds(game_id);
+    const difference = first.filter((x) => !second.includes(x));
+    logForUndo(game_id, 'second', second);
+    logForUndo(game_id, 'Rollback difference', difference);
   }
 
   public async storeParticipants(entry: GameIdLedger): Promise<void> {

@@ -1,15 +1,15 @@
 import {expect} from 'chai';
 import {FuelFactory} from '../../../src/cards/base/FuelFactory';
-import {Player} from '../../../src/Player';
 import {Resources} from '../../../src/common/Resources';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 
 describe('FuelFactory', function() {
-  let card : FuelFactory; let player : Player;
+  let card: FuelFactory;
+  let player: TestPlayer;
 
   beforeEach(function() {
     card = new FuelFactory();
-    player = TestPlayers.BLUE.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
   });
 
   it('Can not play', function() {

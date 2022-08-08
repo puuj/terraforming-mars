@@ -1,7 +1,6 @@
 import {Game} from '../../../src/Game';
-import {Player} from '../../../src/Player';
 import {setCustomGameOptions} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {TheGrandLunaCapitalGroup} from '../../../src/cards/moon/TheGrandLunaCapitalGroup';
 import {expect} from 'chai';
 import {MoonExpansion} from '../../../src/moon/MoonExpansion';
@@ -10,14 +9,14 @@ import {IMoonData} from '../../../src/moon/IMoonData';
 const MOON_OPTIONS = setCustomGameOptions({moonExpansion: true});
 
 describe('TheGrandLunaCapitalGroup', () => {
-  let player: Player;
-  let otherPlayer: Player;
+  let player: TestPlayer;
+  let otherPlayer: TestPlayer;
   let card: TheGrandLunaCapitalGroup;
   let moonData: IMoonData;
 
   beforeEach(() => {
-    player = TestPlayers.BLUE.newPlayer();
-    otherPlayer = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    otherPlayer = TestPlayer.RED.newPlayer();
     const game = Game.newInstance('gameid', [player, otherPlayer], player, MOON_OPTIONS);
     card = new TheGrandLunaCapitalGroup();
     moonData = MoonExpansion.moonData(game);
@@ -35,7 +34,7 @@ describe('TheGrandLunaCapitalGroup', () => {
 
     // Test 1: place non-colony
     player.megaCredits = 0;
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
     // Trigger the effect.
     MoonExpansion.addMineTile(player, centerSpace.id);
     expect(player.megaCredits).eq(0);
@@ -44,7 +43,6 @@ describe('TheGrandLunaCapitalGroup', () => {
     centerSpace.tile = undefined;
     centerSpace.player = undefined;
     player.megaCredits = 0;
-    player.corporationCard = card;
     // Trigger the effect.
     MoonExpansion.addColonyTile(player, centerSpace.id);
     expect(player.megaCredits).eq(4);

@@ -2,16 +2,17 @@ import {expect} from 'chai';
 import {MorningStarInc} from '../../../src/cards/venusNext/MorningStarInc';
 import {SpinInducingAsteroid} from '../../../src/cards/venusNext/SpinInducingAsteroid';
 import {Game} from '../../../src/Game';
-import {Player} from '../../../src/Player';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 
 describe('SpinInducingAsteroid', function() {
-  let card : SpinInducingAsteroid; let player : Player; let game : Game;
+  let card: SpinInducingAsteroid;
+  let player: TestPlayer;
+  let game: Game;
 
   beforeEach(function() {
     card = new SpinInducingAsteroid();
-    player = TestPlayers.BLUE.newPlayer();
-    const redPlayer = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    const redPlayer = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, redPlayer], player);
   });
 
@@ -27,7 +28,7 @@ describe('SpinInducingAsteroid', function() {
   });
 
   it('Should play with Morning Star', function() {
-    player.corporationCard = new MorningStarInc();
+    player.setCorporationForTest(new MorningStarInc());
     (game as any).venusScaleLevel = 12;
     expect(player.canPlayIgnoringCost(card)).is.true;
 

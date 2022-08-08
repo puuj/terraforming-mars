@@ -8,7 +8,6 @@ import {CardType} from './common/cards/CardType';
 import {ClaimedMilestone, serializeClaimedMilestones, deserializeClaimedMilestones} from './milestones/ClaimedMilestone';
 import {ColonyDealer} from './colonies/ColonyDealer';
 import {IColony} from './colonies/IColony';
-import {ColonyName} from './common/colonies/ColonyName';
 import {Color} from './common/Color';
 import {ICorporationCard} from './cards/corporation/ICorporationCard';
 import {Database} from './database/Database';
@@ -18,7 +17,7 @@ import {IAward} from './awards/IAward';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
 import {ISpace} from './boards/ISpace';
-import {ITile} from './ITile';
+import {Tile} from './Tile';
 import {LogBuilder} from './LogBuilder';
 import {LogHelper} from './LogHelper';
 import {LogMessage} from './common/logs/LogMessage';
@@ -44,13 +43,11 @@ import {SerializedPlayer} from './SerializedPlayer';
 import {SpaceBonus} from './common/boards/SpaceBonus';
 import {SpaceName} from './SpaceName';
 import {SpaceType} from './common/boards/SpaceType';
-import {Tags} from './common/cards/Tags';
 import {TileType} from './common/TileType';
 import {Turmoil} from './turmoil/Turmoil';
 import {RandomMAOptionType} from './common/ma/RandomMAOptionType';
 import {AresHandler} from './ares/AresHandler';
-import {IAresData} from './common/ares/IAresData';
-import {AgendaStyle} from './common/turmoil/Types';
+import {AresData} from './common/ares/AresData';
 import {GameSetup} from './GameSetup';
 import {GameCards} from './GameCards';
 import {GlobalParameter} from './common/GlobalParameter';
@@ -69,100 +66,14 @@ import {AddResourcesToCard} from './deferredActions/AddResourcesToCard';
 import {isProduction} from './utils/server';
 import {ColonyDeserializer} from './colonies/ColonyDeserializer';
 import {GameLoader} from './database/GameLoader';
+import {DEFAULT_GAME_OPTIONS, GameOptions} from './GameOptions';
+import {ColoniesHandler} from './colonies/ColoniesHandler';
+import {TheNewSpaceRace} from './cards/pathfinders/TheNewSpaceRace';
 
 export interface Score {
   corporation: String;
   playerScore: number;
 }
-
-export interface GameOptions {
-  boardName: BoardName;
-  clonedGamedId: GameId | undefined;
-
-  // Configuration
-  undoOption: boolean;
-  showTimers: boolean;
-  fastModeOption: boolean;
-  showOtherPlayersVP: boolean;
-
-  // Extensions
-  corporateEra: boolean;
-  venusNextExtension: boolean;
-  coloniesExtension: boolean;
-  preludeExtension: boolean;
-  turmoilExtension: boolean;
-  promoCardsOption: boolean;
-  communityCardsOption: boolean;
-  aresExtension: boolean;
-  aresHazards: boolean;
-  politicalAgendasExtension: AgendaStyle;
-  solarPhaseOption: boolean;
-  removeNegativeGlobalEventsOption: boolean;
-  includeVenusMA: boolean;
-  moonExpansion: boolean;
-  pathfindersExpansion: boolean;
-
-  // Variants
-  draftVariant: boolean;
-  initialDraftVariant: boolean;
-  startingCorporations: number;
-  shuffleMapOption: boolean;
-  randomMA: RandomMAOptionType;
-  soloTR: boolean; // Solo victory by getting TR 63 by game end
-  customCorporationsList: Array<CardName>;
-  cardsBlackList: Array<CardName>;
-  customColoniesList: Array<ColonyName>;
-  requiresMoonTrackCompletion: boolean; // Moon must be completed to end the game
-  requiresVenusTrackCompletion: boolean; // Venus must be completed to end the game
-  moonStandardProjectVariant: boolean;
-  altVenusBoard: boolean;
-  escapeVelocityMode: boolean;
-  escapeVelocityThreshold?: number;
-  escapeVelocityPeriod?: number;
-  escapeVelocityPenalty?: number;
-}
-
-export const DEFAULT_GAME_OPTIONS: GameOptions = {
-  altVenusBoard: false,
-  aresExtension: false,
-  aresHazards: true,
-  boardName: BoardName.ORIGINAL,
-  cardsBlackList: [],
-  clonedGamedId: undefined,
-  coloniesExtension: false,
-  communityCardsOption: false,
-  corporateEra: true,
-  customColoniesList: [],
-  customCorporationsList: [],
-  draftVariant: false,
-  escapeVelocityMode: false, // When true, escape velocity is enabled.
-  escapeVelocityThreshold: constants.DEFAULT_ESCAPE_VELOCITY_THRESHOLD, // Time in minutes a player has to complete a game.
-  escapeVelocityPeriod: constants.DEFAULT_ESCAPE_VELOCITY_PERIOD, // VP a player loses for every `escapeVelocityPenalty` minutes after `escapeVelocityThreshold`.
-  escapeVelocityPenalty: constants.DEFAULT_ESCAPE_VELOCITY_PENALTY,
-  fastModeOption: false,
-  includeVenusMA: true,
-  initialDraftVariant: false,
-  moonExpansion: false,
-  moonStandardProjectVariant: false,
-  pathfindersExpansion: false,
-  politicalAgendasExtension: AgendaStyle.STANDARD,
-  preludeExtension: false,
-  promoCardsOption: false,
-  randomMA: RandomMAOptionType.NONE,
-  requiresMoonTrackCompletion: false,
-  removeNegativeGlobalEventsOption: false,
-  requiresVenusTrackCompletion: false,
-  showOtherPlayersVP: false,
-  showTimers: true,
-  shuffleMapOption: false,
-  solarPhaseOption: false,
-  soloTR: false,
-  startingCorporations: 2,
-  turmoilExtension: false,
-  undoOption: false,
-  venusNextExtension: false,
-};
-
 export class Game {
   // Game-level data
   public lastSaveId: number = 0;
@@ -190,12 +101,17 @@ export class Game {
   private passedPlayers = new Set<PlayerId>();
   private researchedPlayers = new Set<PlayerId>();
   private draftedPlayers = new Set<PlayerId>();
+  // The first player of this generation.
+  private first: Player;
 
   // Drafting
   private draftRound: number = 1;
   // Used when drafting the first 10 project cards.
   private initialDraftIteration: number = 1;
   private unDraftedCards: Map<PlayerId, Array<IProjectCard>> = new Map();
+  // Used for corporation global draft: do we draft to next player or to player before
+  private corporationsDraftDirection: 'before' | 'after' = 'before';
+  public corporationsToDraft: Array<ICorporationCard> = [];
 
   // Milestones and awards
   public claimedMilestones: Array<ClaimedMilestone> = [];
@@ -207,13 +123,13 @@ export class Game {
   public colonies: Array<IColony> = [];
   public discardedColonies: Array<IColony> = []; // Not serialized
   public turmoil: Turmoil | undefined;
-  public aresData: IAresData | undefined;
+  public aresData: AresData | undefined;
   public moonData: IMoonData | undefined;
   public pathfindersData: IPathfindersData | undefined;
 
   // Card-specific data
   // Mons Insurance promo corp
-  public monsInsuranceOwner?: PlayerId;
+  public monsInsuranceOwner?: PlayerId; // Not serialized
   // Crash Site promo project
   public someoneHasRemovedOtherPlayersPlants: boolean = false;
   // Syndicate Pirate Raids
@@ -222,7 +138,7 @@ export class Game {
   private constructor(
     public id: GameId,
     private players: Array<Player>,
-    private first: Player,
+    first: Player,
     activePlayer: PlayerId,
     public gameOptions: GameOptions,
     rng: SeededRandom,
@@ -244,12 +160,14 @@ export class Game {
     }
 
     this.activePlayer = activePlayer;
+    this.first = first;
     this.rng = rng;
     this.dealer = dealer;
     this.board = board;
 
     this.players.forEach((player) => {
       player.game = this;
+      if (player.isCorporation(CardName.MONS_INSURANCE)) this.monsInsuranceOwner = player.id;
     });
   }
 
@@ -275,6 +193,7 @@ export class Game {
     if (players.length === 1) {
       gameOptions.draftVariant = false;
       gameOptions.initialDraftVariant = false;
+      gameOptions.corporationsDraft = false;
       gameOptions.randomMA = RandomMAOptionType.NONE;
 
       players[0].setTerraformRating(14);
@@ -285,7 +204,7 @@ export class Game {
     game.spectatorId = spectatorId;
     // Initialize Ares data
     if (gameOptions.aresExtension) {
-      game.aresData = AresSetup.initialData(gameOptions.aresExtension, gameOptions.aresHazards, players);
+      game.aresData = AresSetup.initialData(gameOptions.aresHazards, players);
     }
 
     const milestonesAwards = MilestoneAwardSelector.chooseMilestonesAndAwards(gameOptions);
@@ -394,19 +313,43 @@ export class Game {
 
     game.log('Generation ${0}', (b) => b.forNewGeneration().number(game.generation));
 
-    // Initial Draft
-    if (gameOptions.initialDraftVariant) {
-      game.phase = Phase.INITIALDRAFTING;
-      game.runDraftRound(true);
+    // Do we draft corporations or do we start the game?
+    if (gameOptions.corporationsDraft) {
+      game.phase = Phase.CORPORATIONDRAFTING;
+      for (let i = 0; i < gameOptions.startingCorporations * players.length; i++) {
+        const card = corporationCards.pop();
+        if (card === undefined) throw new Error('No more corporation cards for game ' + id);
+        game.corporationsToDraft.push(card);
+      }
+      // First player should be the last player
+      const playerStartingCorporationsDraft = game.getPlayerBefore(firstPlayer);
+      if (playerStartingCorporationsDraft !== undefined) {
+        playerStartingCorporationsDraft.runDraftCorporationPhase(playerStartingCorporationsDraft.name, game.corporationsToDraft);
+      } else {
+        // If for any reason, we don't have player before the first one.
+        firstPlayer.runDraftCorporationPhase(firstPlayer.name, game.corporationsToDraft);
+      }
     } else {
-      game.gotoInitialResearchPhase();
+      game.gotoInitialPhase();
     }
 
     return game;
   }
 
+
   public makeTurnNotification(player: Player) : NodeJS.Timeout {
     return Notifier.getInstance().makeTurnNotification(player, 60*1000);
+  }
+    
+  // Function use to properly start the game: with project draft or with research phase
+  public gotoInitialPhase(): void {
+    // Initial Draft
+    if (this.gameOptions.initialDraftVariant) {
+      this.phase = Phase.INITIALDRAFTING;
+      this.runDraftRound(true, false);
+    } else {
+      this.gotoInitialResearchPhase();
+    }
   }
 
   public save(): void {
@@ -441,7 +384,6 @@ export class Game {
       initialDraftIteration: this.initialDraftIteration,
       lastSaveId: this.lastSaveId,
       milestones: this.milestones.map((m) => m.name),
-      monsInsuranceOwner: this.monsInsuranceOwner,
       moonData: IMoonData.serialize(this.moonData),
       oxygenLevel: this.oxygenLevel,
       passedPlayers: Array.from(this.passedPlayers),
@@ -462,6 +404,8 @@ export class Game {
         ];
       }),
       venusScaleLevel: this.venusScaleLevel,
+      corporationsDraftDirection: this.corporationsDraftDirection,
+      corporationsToDraft: this.corporationsToDraft.map((c) => c.name),
     };
     if (this.aresData !== undefined) {
       result.aresData = this.aresData;
@@ -620,10 +564,14 @@ export class Game {
     }
   }
 
-  private playCorporationCard(
-    player: Player, corporationCard: ICorporationCard,
-  ): void {
-    player.corporationCard = corporationCard;
+  // public for testing
+  public playCorporationCard(player: Player, corporationCard: ICorporationCard): void {
+    if (player.corporations.length === 0) {
+      player.corporations.push(corporationCard);
+    } else {
+      throw new Error('Do not use playCorporationCard for more than one corporation card.');
+    }
+
     player.megaCredits = corporationCard.startingMegaCredits;
     if (corporationCard.cardCost !== undefined) {
       player.cardCost = corporationCard.cardCost;
@@ -634,42 +582,26 @@ export class Game {
       player.deductResource(Resources.MEGACREDITS, diff);
     }
     corporationCard.play(player);
+    if (corporationCard.initialAction !== undefined) player.pendingInitialActions.push(corporationCard);
     this.log('${0} played ${1}', (b) => b.player(player).card(corporationCard));
     player.game.log('${0} kept ${1} project cards', (b) => b.player(player).number(player.cardsInHand.length));
 
-    // trigger other corp's effect, e.g. SaturnSystems,PharmacyUnion,Splice
-    for (const somePlayer of this.getPlayersInGenerationOrder()) {
-      if (somePlayer !== player && somePlayer.corporationCard !== undefined && somePlayer.corporationCard.onCorpCardPlayed !== undefined) {
-        this.defer(new SimpleDeferredAction(
-          player,
-          () => {
-            if (somePlayer.corporationCard !== undefined && somePlayer.corporationCard.onCorpCardPlayed !== undefined) {
-              return somePlayer.corporationCard.onCorpCardPlayed(player, corporationCard) || undefined;
-            }
-            return undefined;
-          },
-        ));
-      }
-    }
-
-    // Activate some colonies
-    if (this.gameOptions.coloniesExtension && corporationCard.resourceType !== undefined) {
-      this.colonies.forEach((colony) => {
-        if (colony.metadata.resourceType !== undefined && colony.metadata.resourceType === corporationCard.resourceType) {
-          colony.isActive = true;
-        }
-      });
-
-      // Check for Venus colony
-      if (corporationCard.tags.includes(Tags.VENUS)) {
-        const venusColony = this.colonies.find((colony) => colony.name === ColonyName.VENUS);
-        if (venusColony) venusColony.isActive = true;
-      }
-    }
-
+    this.triggerOtherCorpEffects(player, corporationCard);
+    ColoniesHandler.onCardPlayed(this, corporationCard);
     PathfindersExpansion.onCardPlayed(player, corporationCard);
 
     this.playerIsFinishedWithResearchPhase(player);
+  }
+
+  public triggerOtherCorpEffects(player: Player, playedCorporationCard: ICorporationCard) {
+    // trigger other corp's effects, e.g. SaturnSystems, PharmacyUnion, Splice
+    for (const somePlayer of player.game.getPlayers()) {
+      for (const corporation of somePlayer.corporations) {
+        if (somePlayer === player && corporation.name === playedCorporationCard.name) continue;
+        if (corporation.onCorpCardPlayed === undefined) continue;
+        this.defer(new SimpleDeferredAction(player, () => corporation.onCorpCardPlayed?.(player, playedCorporationCard)));
+      }
+    }
   }
 
   private pickCorporationCard(player: Player): PlayerInput {
@@ -696,19 +628,22 @@ export class Game {
     return this.passedPlayers.has(player.id);
   }
 
-  private incrementFirstPlayer(): void {
-    let firstIndex: number = this.players.map(function(x) {
-      return x.id;
-    }).indexOf(this.first.id);
+  // Public for testing.
+  public incrementFirstPlayer(): void {
+    let firstIndex: number = this.players.map((x) => x.id).indexOf(this.first.id);
     if (firstIndex === -1) {
       throw new Error('Didn\'t even find player');
     }
-    if (firstIndex === this.players.length - 1) {
-      firstIndex = 0;
-    } else {
-      firstIndex++;
-    }
+    firstIndex = (firstIndex + 1) % this.players.length;
     this.first = this.players[firstIndex];
+  }
+
+  // Only used in the prelude The New Space Race.
+  public overrideFirstPlayer(newFirstPlayer: Player): void {
+    if (newFirstPlayer.game.id !== this.id) {
+      throw new Error(`player ${newFirstPlayer.id} is not part of this game`);
+    }
+    this.first = newFirstPlayer;
   }
 
   private runDraftRound(initialDraft: boolean = false, preludeDraft: boolean = false): void {
@@ -901,6 +836,7 @@ export class Game {
       if (this.allPlayersHaveFinishedResearch()) {
         this.phase = Phase.ACTION;
         this.passedPlayers.clear();
+        TheNewSpaceRace.potentiallyChangeFirstPlayer(this);
         this.startActionsForPlayer(this.first);
       }
     });
@@ -957,6 +893,44 @@ export class Game {
     } else {
       this.gotoInitialResearchPhase();
     }
+  }
+
+  // Function use to manage corporation draft way
+  public playerIsFinishedWithDraftingCorporationPhase(player: Player, cards : Array<ICorporationCard>): void {
+    const nextPlayer = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(player) : this.getPlayerBefore(player);
+    if (nextPlayer === undefined) {
+      throw new Error(`Cannot find player to pass for player ${player.id} in game ${this.id}`);
+    }
+
+    const passTo = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(nextPlayer) : this.getPlayerBefore(nextPlayer);
+    if (passTo === undefined) {
+      throw new Error(`Cannot find player to pass for player ${nextPlayer.id} in game ${this.id}`);
+    }
+
+    // If more than 1 card are to be passed to the next player, that means we're still drafting
+    if (cards.length > 1) {
+      if ((this.draftRound + 1) % this.players.length === 0) {
+        nextPlayer.runDraftCorporationPhase(nextPlayer.name, cards);
+      } else if (this.draftRound % this.players.length === 0) {
+        player.runDraftCorporationPhase(nextPlayer.name, cards);
+        this.corporationsDraftDirection = this.corporationsDraftDirection === 'after' ? 'before' : 'after';
+      } else {
+        nextPlayer.runDraftCorporationPhase(passTo.name, cards);
+      }
+      this.draftRound++;
+      return;
+    }
+
+    // Push last card to next player
+    nextPlayer.draftedCorporations.push(...cards);
+
+    this.players.forEach((player) => {
+      player.dealtCorporationCards = player.draftedCorporations;
+    });
+    // Reset value to guarantee no impact on eventual futur drafts (projects or preludes)
+    this.initialDraftIteration = 1;
+    this.draftRound = 1;
+    this.gotoInitialPhase();
   }
 
   private getDraftCardsFrom(player: Player): PlayerId {
@@ -1057,8 +1031,9 @@ export class Game {
     const scores: Array<Score> = [];
     let score_msg: string = '';
     this.players.forEach((player) => {
-      let corponame: string = '';
+      const corpname = player.corporations.length > 0 ? player.corporations[0].name : '';
       const vpb = player.getVictoryPoints();
+<<<<<<< HEAD
       if (player.corporationCard !== undefined) {
         corponame = player.corporationCard.name;
       }
@@ -1069,6 +1044,9 @@ export class Game {
 
     this.players.forEach((player) => {
       Notifier.getInstance().sendEndMessage(player, score_msg);
+=======
+      scores.push({corporation: corpname, playerScore: vpb.total});
+>>>>>>> upstream/main
     });
 
     this.phase = Phase.END;
@@ -1308,7 +1286,7 @@ export class Game {
   // a tile on The Moon.
   public addTile(
     player: Player, spaceType: SpaceType,
-    space: ISpace, tile: ITile): void {
+    space: ISpace, tile: Tile): void {
     // Part 1, basic validation checks.
 
     if (space.tile !== undefined && !(this.gameOptions.aresExtension || this.gameOptions.pathfindersExpansion)) {
@@ -1392,8 +1370,7 @@ export class Game {
     }
 
     this.players.forEach((p) => {
-      p.corporationCard?.onTilePlaced?.(p, player, space, BoardType.MARS);
-      p.playedCards.forEach((playedCard) => {
+      p.tableau.forEach((playedCard) => {
         playedCard.onTilePlaced?.(p, player, space, BoardType.MARS);
       });
     });
@@ -1403,7 +1380,7 @@ export class Game {
     });
   }
 
-  public simpleAddTile(player: Player, space: ISpace, tile: ITile) {
+  public simpleAddTile(player: Player, space: ISpace, tile: Tile) {
     space.tile = tile;
     space.player = player;
     if (tile.tileType === TileType.OCEAN || tile.tileType === TileType.MARTIAN_NATURE_WONDERS) {
@@ -1489,7 +1466,7 @@ export class Game {
 
   public addCityTile(
     player: Player, spaceId: SpaceId, spaceType: SpaceType = SpaceType.LAND,
-    cardName: string | undefined = undefined): void {
+    cardName: CardName | undefined = undefined): void {
     const space = this.board.getSpace(spaceId);
     this.addTile(player, spaceType, space, {
       tileType: TileType.CITY,
@@ -1535,7 +1512,6 @@ export class Game {
 
   // Players returned in play order starting with first player this generation.
   public getPlayersInGenerationOrder(): Array<Player> {
-    // We always return them in turn order
     const ret: Array<Player> = [];
     let insertIdx: number = 0;
     for (const p of this.players) {
@@ -1552,17 +1528,26 @@ export class Game {
   public getCardPlayer(name: CardName): Player {
     for (const player of this.players) {
       // Check cards player has played
-      for (const card of player.playedCards) {
+      for (const card of player.tableau) {
         if (card.name === name) {
           return player;
         }
       }
-      // Check player corporation
-      if (player.isCorporation(name)) {
-        return player;
-      }
     }
     throw new Error(`No player has played ${name}`);
+  }
+
+  // Returns the player holding a card in hand. Return undefined when nobody has that card in hand.
+  public getCardHolder(name: CardName): [Player | undefined, IProjectCard | undefined] {
+    for (const player of this.players) {
+      // Check cards player has in hand
+      for (const card of [...player.preludeCardsInHand, ...player.cardsInHand]) {
+        if (card.name === name) {
+          return [player, card];
+        }
+      }
+    }
+    return [undefined, undefined];
   }
 
   public getCardsInHandByResource(player: Player, resourceType: CardResource) {
@@ -1704,6 +1689,10 @@ export class Game {
       game.unDraftedCards.set(unDraftedCard[0], cardFinder.cardsFromJSON(unDraftedCard[1]));
     });
 
+    // TODO(kberg): remove `?? []` by 2022-09-01
+    game.corporationsToDraft = cardFinder.corporationCardsFromJSON(d.corporationsToDraft ?? []);
+    game.corporationsDraftDirection = d.corporationsDraftDirection ?? false;
+
     game.lastSaveId = d.lastSaveId;
     game.clonedGamedId = d.clonedGamedId;
     game.gameAge = d.gameAge;
@@ -1717,12 +1706,11 @@ export class Game {
     game.activePlayer = d.activePlayer;
     game.draftRound = d.draftRound;
     game.initialDraftIteration = d.initialDraftIteration;
-    game.monsInsuranceOwner = d.monsInsuranceOwner;
     game.someoneHasRemovedOtherPlayersPlants = d.someoneHasRemovedOtherPlayersPlants;
     game.syndicatePirateRaider = d.syndicatePirateRaider;
 
     // Still in Draft or Research of generation 1
-    if (game.generation === 1 && players.some((p) => p.corporationCard === undefined)) {
+    if (game.generation === 1 && players.some((p) => p.corporations.length === 0)) {
       if (game.phase === Phase.INITIALDRAFTING) {
         if (game.initialDraftIteration === 3) {
           game.runDraftRound(true, true);

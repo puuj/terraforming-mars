@@ -1,4 +1,5 @@
-import {Game, GameOptions, Score} from '../Game';
+import {Game, Score} from '../Game';
+import {GameOptions} from '../GameOptions';
 import {GameId, PlayerId, SpectatorId} from '../common/Types';
 import {SerializedGame} from '../SerializedGame';
 
@@ -10,24 +11,6 @@ export type GameIdLedger = {gameId: GameId, participantIds: Array<PlayerId | Spe
  * Each game has a unique ID represented belowe as `game_id`. As games proceed,
  * the game is saved at later states. Inidividual saves of a game's state have a
  * unique and growing `save_id`. A game's initial _save point_ is always 0.
- *
- * This API has an asynchronous callback mechanism, so do not expect something
- * like this to work:
- *
- * ```
- * let count = 0;
- * database.getGames((err, allGames) => {
- *  count++;
- * });
- * expect(count).eq(1);
- * ```
- * More at https://blog.risingstack.com/node-hero-async-programming-in-node-js/
- *
- * Every method's success or failure is derived by the callback. Each callback
- * has an `err` parameter, which, when `undefined`, implies success. An `err`
- * with a defined value represents failure.
- *
- * If a method doesn't have a callback, it's assumed to succeed.
  *
  * Game state is stored as a single JSON string, which is why the `game` parameter is
  * often JSON.
@@ -119,7 +102,7 @@ export interface IDatabase {
      *
      * Accessible by the administrative API to roll back a broken game.
      */
-    deleteGameNbrSaves(game_id: GameId, rollbackCount: number): void;
+    deleteGameNbrSaves(game_id: GameId, rollbackCount: number): Promise<void>;
 
     /**
      * A maintenance task on a single game to close it out upon its completion.

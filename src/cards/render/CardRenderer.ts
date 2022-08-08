@@ -299,6 +299,18 @@ abstract class Builder<T> {
     return this._appendToRow(new CardRenderItem(CardRenderItemType.AWARD));
   }
 
+  public corporation() {
+    return this._appendToRow(new CardRenderItem(CardRenderItemType.CORPORATION));
+  }
+
+  public firstPlayer() {
+    return this._appendToRow(new CardRenderItem(CardRenderItemType.FIRST_PLAYER));
+  }
+
+  public rulingParty() {
+    return this._appendToRow(new CardRenderItem(CardRenderItemType.RULING_PARTY));
+  }
+
   public vpIcon() {
     return this._appendToRow(new CardRenderItem(CardRenderItemType.VP));
   }

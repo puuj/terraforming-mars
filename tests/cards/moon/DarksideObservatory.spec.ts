@@ -1,7 +1,6 @@
 import {Game} from '../../../src/Game';
-import {Player} from '../../../src/Player';
 import {setCustomGameOptions} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 import {DarksideObservatory} from '../../../src/cards/moon/DarksideObservatory';
 import {expect} from 'chai';
 import {PhysicsComplex} from '../../../src/cards/base/PhysicsComplex';
@@ -14,7 +13,7 @@ import {NanotechIndustries} from '../../../src/cards/moon/NanotechIndustries';
 const MOON_OPTIONS = setCustomGameOptions({moonExpansion: true});
 
 describe('DarksideObservatory', () => {
-  let player: Player;
+  let player: TestPlayer;
   let card: DarksideObservatory;
 
   // Physics Complex: 2 points per resource.
@@ -31,7 +30,7 @@ describe('DarksideObservatory', () => {
   const nanotechIndustries = new NanotechIndustries();
 
   beforeEach(() => {
-    player = TestPlayers.BLUE.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
     Game.newInstance('gameid', [player], player, MOON_OPTIONS);
     card = new DarksideObservatory();
   });
@@ -56,13 +55,13 @@ describe('DarksideObservatory', () => {
     expect(card.canAct(player)).is.true;
 
     player.playedCards = [];
-    player.corporationCard = nanotechIndustries;
+    player.setCorporationForTest(nanotechIndustries);
     expect(card.canAct(player)).is.true;
   });
 
   it('act', () => {
     player.playedCards = [physicsComplex, searchForLife, olympusConference, prideoftheEarthArkship, processorFactory];
-    player.corporationCard = nanotechIndustries;
+    player.setCorporationForTest(nanotechIndustries);
     const input = card.action(player);
 
     expect(input.cards).has.members([olympusConference, prideoftheEarthArkship, processorFactory, nanotechIndustries]);

@@ -8,8 +8,8 @@ import {SerializedPlayer} from './SerializedPlayer';
 import {SerializedDealer} from './SerializedDealer';
 import {SerializedTurmoil} from './turmoil/SerializedTurmoil';
 import {PlayerId, GameId, SpectatorId} from './common/Types';
-import {GameOptions} from './Game';
-import {IAresData} from './common/ares/IAresData';
+import {GameOptions} from './GameOptions';
+import {AresData} from './common/ares/AresData';
 import {LogMessage} from './common/logs/LogMessage';
 import {SerializedBoard} from './boards/SerializedBoard';
 import {SerializedMoonData} from './moon/SerializedMoonData';
@@ -17,7 +17,7 @@ import {SerializedPathfindersData} from './pathfinders/SerializedPathfindersData
 
 export interface SerializedGame {
     activePlayer: PlayerId;
-    aresData?: IAresData;
+    aresData?: AresData;
     awards: Array<string>;
     board: SerializedBoard;
     // game.rng changes over the course of a game but isn't saved and serialized
@@ -26,6 +26,8 @@ export interface SerializedGame {
     claimedMilestones: Array<SerializedClaimedMilestone>;
     clonedGamedId?: string;
     colonies: Array<SerializedColony>;
+    corporationsDraftDirection: 'before' | 'after';
+    corporationsToDraft: Array<CardName>;
     dealer: SerializedDealer;
     deferredActions: Array<DeferredAction>;
     donePlayers: Array<PlayerId>;
@@ -41,7 +43,6 @@ export interface SerializedGame {
     initialDraftIteration: number;
     lastSaveId: number;
     milestones: Array<string>;
-    monsInsuranceOwner: PlayerId | undefined;
     moonData: SerializedMoonData | undefined;
     pathfindersData: SerializedPathfindersData | undefined;
     oxygenLevel: number;

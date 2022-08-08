@@ -1,23 +1,25 @@
 import {expect} from 'chai';
 import {TharsisRepublic} from '../../../src/cards/corporation/TharsisRepublic';
 import {Game} from '../../../src/Game';
-import {Player} from '../../../src/Player';
 import {Resources} from '../../../src/common/Resources';
 import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {TileType} from '../../../src/common/TileType';
 import {runAllActions} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 
 describe('TharsisRepublic', function() {
-  let card : TharsisRepublic; let player : Player; let player2 : Player; let game : Game;
+  let card: TharsisRepublic;
+  let player: TestPlayer;
+  let player2: TestPlayer;
+  let game: Game;
 
   beforeEach(function() {
     card = new TharsisRepublic();
-    player = TestPlayers.BLUE.newPlayer();
-    player2 = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    player2 = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, player2], player);
 
-    player.corporationCard = card;
+    player.setCorporationForTest(card);
   });
 
   it('Should take initial action', function() {
@@ -56,7 +58,7 @@ describe('TharsisRepublic', function() {
   });
 
   it('Gives 2 M€ production in solo mode', function() {
-    const player = TestPlayers.BLUE.newPlayer();
+    const player = TestPlayer.BLUE.newPlayer();
     const game = Game.newInstance('gameid', [player], player);
     card.play(player);
     runAllActions(game);

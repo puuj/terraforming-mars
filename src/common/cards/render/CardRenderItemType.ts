@@ -49,6 +49,7 @@ export enum CardRenderItemType {
   PROJECT_REQUIREMENTS = 'project_requirements',
   PRELUDE = 'prelude',
   AWARD = 'award',
+  CORPORATION = 'corporation',
   VP = 'vp',
   COMMUNITY = 'community',
   DISEASE = 'disease',
@@ -70,4 +71,6 @@ export enum CardRenderItemType {
   SEED = 'seed',
   ORBITAL = 'orbital',
   GLOBAL_EVENT = 'global-event',
+  FIRST_PLAYER = '1p',
+  RULING_PARTY = 'ruling-party',
 }

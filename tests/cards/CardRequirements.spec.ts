@@ -1,7 +1,6 @@
 import {expect} from 'chai';
 import {CardRequirements} from '../../src/cards/CardRequirements';
 import {setCustomGameOptions, runAllActions, cast, addGreenery} from '../TestingUtils';
-import {TestPlayers} from '../TestPlayers';
 import {Game} from '../../src/Game';
 import {AdaptationTechnology} from '../../src/cards/base/AdaptationTechnology';
 import {TileType} from '../../src/common/TileType';
@@ -17,12 +16,13 @@ import {OrOptions} from '../../src/inputs/OrOptions';
 import {TestPlayer} from '../TestPlayer';
 
 describe('CardRequirements', function() {
-  let player: TestPlayer; let player2: TestPlayer;
+  let player: TestPlayer;
+  let player2: TestPlayer;
   const adaptationTechnology = new AdaptationTechnology();
 
   beforeEach(function() {
-    player = TestPlayers.BLUE.newPlayer();
-    player2 = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    player2 = TestPlayer.RED.newPlayer();
     const gameOptions = setCustomGameOptions();
 
     Game.newInstance('gameid', [player, player2], player, gameOptions);
@@ -142,7 +142,7 @@ describe('CardRequirements', function() {
   it('satisfies properly for floaters', function() {
     const requirements = CardRequirements.builder((b) => b.floaters(2));
     const corp = new Celestic();
-    player.corporationCard = corp;
+    player.setCorporationForTest(corp);
     corp.action(player);
     expect(requirements.satisfies(player)).eq(false);
     corp.action(player);

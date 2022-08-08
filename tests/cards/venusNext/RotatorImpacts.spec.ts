@@ -5,16 +5,17 @@ import {RotatorImpacts} from '../../../src/cards/venusNext/RotatorImpacts';
 import {MAX_VENUS_SCALE} from '../../../src/common/constants';
 import {Game} from '../../../src/Game';
 import {OrOptions} from '../../../src/inputs/OrOptions';
-import {Player} from '../../../src/Player';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 
 describe('RotatorImpacts', () => {
-  let card : RotatorImpacts; let player : Player; let game : Game;
+  let card: RotatorImpacts;
+  let player: TestPlayer;
+  let game: Game;
 
   beforeEach(() => {
     card = new RotatorImpacts();
-    player = TestPlayers.BLUE.newPlayer();
-    const redPlayer = TestPlayers.RED.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
+    const redPlayer = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, redPlayer], player);
   });
 
@@ -37,7 +38,7 @@ describe('RotatorImpacts', () => {
   it('Works with MSI corporation', () => {
     const corp = new MorningStarInc();
     corp.play();
-    player.corporationCard = corp;
+    player.setCorporationForTest(corp);
 
     (game as any).venusScaleLevel = 18;
     expect(player.canPlayIgnoringCost(card)).is.true;

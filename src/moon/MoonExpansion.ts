@@ -1,5 +1,5 @@
 import {Game} from '../Game';
-import {ITile} from '../ITile';
+import {Tile} from '../Tile';
 import {MoonBoard} from './MoonBoard';
 import {Player} from '../Player';
 import {TileType} from '../common/TileType';
@@ -98,7 +98,7 @@ export class MoonExpansion {
   // isn't.
 
   // Update: I think this is going to have to merge with addTile. It won't be bad.
-  public static addTile(player: Player, spaceId: string, tile: ITile): void {
+  public static addTile(player: Player, spaceId: string, tile: Tile): void {
     const game = player.game;
     MoonExpansion.ifMoon(game, (moonData) => {
       const space = moonData.moon.getSpace(spaceId);
@@ -131,9 +131,7 @@ export class MoonExpansion {
       // Ideally, this should be part of game.addTile, but since it isn't it's convenient enough to
       // hard-code onTilePlaced here. I wouldn't be surprised if this introduces a problem, but for now
       // it's not a problem until it is.
-      if (player.corporationCard !== undefined && player.corporationCard.onTilePlaced !== undefined) {
-        player.corporationCard.onTilePlaced(player, player, space, BoardType.MOON);
-      }
+      player.corporations.forEach((card) => card.onTilePlaced?.(player, player, space, BoardType.MOON));
     });
   }
 

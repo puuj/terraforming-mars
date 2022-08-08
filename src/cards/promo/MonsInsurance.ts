@@ -74,10 +74,17 @@ export class MonsInsurance extends Card implements ICorporationCard {
    * @param {Player} claimant: the attacked player.
    */
   public static resolveInsurance(claimant: Player) {
+    // game.monsInsuranceOwner could be eliminated entirely if there
+    // was a fast version of getCardPlayer().
+    // I mean, it could be eliminated now, but getCardPlayer is expensive, and
+    // checking for who is Mons Insurance is called often even when the card
+    // is out of play.
     const game = claimant.game;
     if (game.monsInsuranceOwner !== undefined && game.monsInsuranceOwner !== claimant.id) {
       const monsInsuranceOwner = game.getPlayerById(game.monsInsuranceOwner);
-      (monsInsuranceOwner.corporationCard as MonsInsurance).payDebt(monsInsuranceOwner, claimant);
+      // TODO(kberg): replace with "getCorporationOrThrow"?
+      const monsInsurance = <MonsInsurance> monsInsuranceOwner.getCorporation(CardName.MONS_INSURANCE);
+      monsInsurance?.payDebt(monsInsuranceOwner, claimant);
     }
   }
 
@@ -91,8 +98,7 @@ export class MonsInsurance extends Card implements ICorporationCard {
    * disappears.
    */
   public static resolveInsuranceInSoloGame(potentialInsurer: Player) {
-    if (potentialInsurer.game.monsInsuranceOwner === potentialInsurer.id) {
-      (potentialInsurer.corporationCard as MonsInsurance).payDebt(potentialInsurer, undefined);
-    }
+    const monsInsurance = <MonsInsurance> potentialInsurer.getCorporation(CardName.MONS_INSURANCE);
+    monsInsurance?.payDebt(potentialInsurer, undefined);
   }
 }

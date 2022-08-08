@@ -4,14 +4,15 @@ import {Game} from '../../../src/Game';
 import {Player} from '../../../src/Player';
 import {Resources} from '../../../src/common/Resources';
 import {maxOutOceans} from '../../TestingUtils';
-import {TestPlayers} from '../../TestPlayers';
+import {TestPlayer} from '../../TestPlayer';
 
 describe('SnowAlgae', function() {
-  let card : SnowAlgae; let player : Player;
+  let card: SnowAlgae;
+  let player: Player;
 
   beforeEach(function() {
     card = new SnowAlgae();
-    player = TestPlayers.BLUE.newPlayer();
+    player = TestPlayer.BLUE.newPlayer();
     Game.newInstance('gameid', [player], player);
   });
 
