@@ -1466,8 +1466,9 @@ export class Game {
     default:
       // TODO(kberg): Remove the isProduction condition after 2022-01-01.
       // I tried this once and broke the server, so I'm wrapping it in isProduction for now.
-      if (!isProduction()) {
-        throw new Error('Unhandled space bonus ' + spaceBonus);
+        if (!isProduction()) {
+          console.warn('Unhandled space bonus');
+        //throw new Error('Unhandled space bonus ' + spaceBonus);
       }
     }
   }
