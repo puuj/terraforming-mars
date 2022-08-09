@@ -1033,22 +1033,16 @@ export class Game {
     this.players.forEach((player) => {
       const corpname = player.corporations.length > 0 ? player.corporations[0].name : '';
       const vpb = player.getVictoryPoints();
-<<<<<<< HEAD
-      if (player.corporationCard !== undefined) {
-        corponame = player.corporationCard.name;
-      }
-      scores.push({corporation: corponame, playerScore: vpb.total});
+
+      scores.push({corporation: corpname, playerScore: vpb.total});
       score_msg += `${player.name}: ${vpb.total} points`;
       score_msg += '\n';
     });
 
     this.players.forEach((player) => {
       Notifier.getInstance().sendEndMessage(player, score_msg);
-=======
-      scores.push({corporation: corpname, playerScore: vpb.total});
->>>>>>> upstream/main
     });
-
+    
     this.phase = Phase.END;
 
     Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
