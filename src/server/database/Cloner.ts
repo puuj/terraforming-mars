@@ -69,6 +69,7 @@ export class Cloner {
     to.terraformRating = newTerraformRating;
     // Also update the handicap to reflect appropriately.
     to.handicap = Number(from.handicap);
+    to.email = from.email;
   }
 }
 

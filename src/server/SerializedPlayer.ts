@@ -1,7 +1,7 @@
 import {PlayerId} from '../common/Types';
 import {CardName} from '../common/cards/CardName';
 import {Color} from '../common/Color';
-import {SerializedCard} from './SerializedCard';
+import {SerializedCard} from '../SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
 
 interface DeprecatedFields {
@@ -26,6 +26,7 @@ export interface SerializedPlayer extends DeprecatedFields{
     dealtPreludeCards: Array<CardName>;
     dealtProjectCards: Array<CardName>;
     draftedCards: Array<CardName>;
+    email: string | undefined;
     energy: number;
     energyProduction: number;
     fleetSize: number;
@@ -41,6 +42,7 @@ export interface SerializedPlayer extends DeprecatedFields{
     name: string;
     needsToDraft: boolean | undefined;
     oceanBonus: number;
+    passingTo: string | undefined,
     pendingInitialActions: Array<CardName> | undefined;
     pickedCorporationCard: CardName | undefined;
     plantProduction: number;

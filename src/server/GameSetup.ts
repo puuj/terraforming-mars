@@ -54,7 +54,7 @@ export class GameSetup {
 
   public static neutralPlayerFor(gameId: GameId): Player {
     const playerId = 'p-' + gameId + '-neutral' as PlayerId;
-    return new Player('neutral', Color.NEUTRAL, true, 0, playerId);
+    return new Player('neutral', Color.NEUTRAL, true, 0, playerId, undefined);
   }
 
   public static setupNeutralPlayer(game: Game) {

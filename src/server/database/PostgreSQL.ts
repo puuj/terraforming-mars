@@ -46,8 +46,7 @@ export class PostgreSQL implements IDatabase {
   public async initialize(): Promise<void> {
     await this.client.query('CREATE TABLE IF NOT EXISTS games(game_id varchar, players integer, save_id integer, game text, status text default \'running\', created_time timestamp default now(), PRIMARY KEY (game_id, save_id))');
     await this.client.query('CREATE TABLE IF NOT EXISTS participants(game_id varchar, participants varchar[], PRIMARY KEY (game_id))');
-    await this.client.query('CREATE TABLE IF NOT EXISTS game_results(game_id varchar not null, seed_game_id varchar, players integer, generations integer, game_options text, scores text, PRIMARY KEY (game_id))');
-
+    await this.client.query('CREATE TABLE IF NOT EXISTS game_results(game_id varchar not null, seed_game_id varchar, players integer, generations integer, game_options text, scores text, game text, PRIMARY KEY (game_id))');
     await this.client.query('CREATE INDEX IF NOT EXISTS games_i1 on games(save_id)');
     await this.client.query('CREATE INDEX IF NOT EXISTS games_i2 on games(created_time)');
     await this.client.query('CREATE INDEX IF NOT EXISTS participants_idx_ids on participants USING GIN (participants)');
@@ -123,8 +122,9 @@ export class PostgreSQL implements IDatabase {
     return JSON.parse(res.rows[0].game);
   }
 
-  saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>): void {
-    this.client.query('INSERT INTO game_results (game_id, seed_game_id, players, generations, game_options, scores) VALUES($1, $2, $3, $4, $5, $6)', [game_id, gameOptions.clonedGamedId, players, generations, gameOptions, JSON.stringify(scores)], (err) => {
+  saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: Game): void {
+    const gameJSON = game.toJSON();
+    this.client.query('INSERT INTO game_results (game_id, seed_game_id, players, generations, game_options, scores, game) VALUES($1, $2, $3, $4, $5, $6)', [game_id, gameOptions.clonedGamedId, players, generations, gameOptions, JSON.stringify(scores), gameJSON], (err) => {
       if (err) {
         console.error('PostgreSQL:saveGameResults', err);
         throw err;

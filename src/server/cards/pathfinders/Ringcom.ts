@@ -27,7 +27,7 @@ export class Ringcom extends Card implements ICorporationCard {
           b.megacredits(39).production((pb) => pb.megacredits(3));
           b.cards(2, {secondaryTag: Tags.JOVIAN});
           b.corpBox('effect', (ce) => {
-            ce.effect('When any player plays a card with a jovian tag (including this) gain 1 titanium.', (eb) => {
+            ce.effect('When any player plays a card with a Jovian tag (including this) gain 1 titanium.', (eb) => {
               eb.jovian({all, played}).startEffect.titanium(1);
             });
           });

@@ -23,6 +23,7 @@ import {LogHelper} from './LogHelper';
 import {LogMessage} from '../common/logs/LogMessage';
 import {ALL_MILESTONES} from './milestones/Milestones';
 import {ALL_AWARDS} from './awards/Awards';
+import {Notifier} from './Notifier';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {Phase} from '../common/Phase';
 import {Player} from './Player';
@@ -335,6 +336,11 @@ export class Game {
     return game;
   }
 
+
+  public makeTurnNotification(player: Player) : NodeJS.Timeout {
+    return Notifier.getInstance().makeTurnNotification(player, 60*1000);
+  }
+    
   // Function use to properly start the game: with project draft or with research phase
   public gotoInitialPhase(): void {
     // Initial Draft
@@ -349,6 +355,7 @@ export class Game {
   public save(): void {
     Database.getInstance().saveGame(this);
   }
+
 
   public toJSON(): string {
     return JSON.stringify(this.serialize());
@@ -1022,20 +1029,31 @@ export class Game {
     }
 
     const scores: Array<Score> = [];
+    let score_msg: string = '';
     this.players.forEach((player) => {
       const corpname = player.corporations.length > 0 ? player.corporations[0].name : '';
       const vpb = player.getVictoryPoints();
+
       scores.push({corporation: corpname, playerScore: vpb.total});
+      score_msg += `${player.name}: ${vpb.total} points`;
+      score_msg += '\n';
     });
 
-    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores);
+    this.players.forEach((player) => {
+      Notifier.getInstance().sendEndMessage(player, score_msg);
+    });
+    
     this.phase = Phase.END;
+
+    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
+    
     Database.getInstance().saveGame(this).then(() => {
       GameLoader.getInstance().mark(this.id);
       return Database.getInstance().cleanGame(this.id);
     }).catch((err) => {
       console.error(err);
     });
+
   }
 
   // Part of final greenery placement.
@@ -1085,8 +1103,9 @@ export class Game {
     player.takeAction();
   }
 
+
   public increaseOxygenLevel(player: Player, increments: -2 | -1 | 1 | 2): undefined {
-    if (this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL) {
+    if (this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL && increments > 0) {
       return undefined;
     }
 
@@ -1171,7 +1190,7 @@ export class Game {
   }
 
   public increaseTemperature(player: Player, increments: -2 | -1 | 1 | 2 | 3): undefined {
-    if (this.temperature >= constants.MAX_TEMPERATURE) {
+    if (this.temperature >= constants.MAX_TEMPERATURE && increments > 0) {
       return undefined;
     }
 
@@ -1418,8 +1437,9 @@ export class Game {
     default:
       // TODO(kberg): Remove the isProduction condition after 2022-01-01.
       // I tried this once and broke the server, so I'm wrapping it in isProduction for now.
-      if (!isProduction()) {
-        throw new Error('Unhandled space bonus ' + spaceBonus);
+        if (!isProduction()) {
+          console.warn('Unhandled space bonus');
+        //throw new Error('Unhandled space bonus ' + spaceBonus);
       }
     }
   }

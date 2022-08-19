@@ -4,6 +4,7 @@ import {Context} from './IHandler';
 import {LogMessage} from '../../common/logs/LogMessage';
 import {LogMessageType} from '../../common/logs/LogMessageType';
 import {isPlayerId} from '../../common/Types';
+import {isSpectatorId} from '../../common/Types';
 
 export class GameLogs {
   private getLogsForGeneration(messages: Array<LogMessage>, generation: number): Array<LogMessage> {
@@ -31,7 +32,7 @@ export class GameLogs {
       ctx.route.badRequest(req, res, 'missing id parameter');
       return;
     }
-    if (!isPlayerId(playerId)) {
+    if (!isPlayerId(playerId) && !isSpectatorId(playerId)) {
       ctx.route.badRequest(req, res, 'invalid player id');
       return;
     }
@@ -48,7 +49,7 @@ export class GameLogs {
 
     // for most recent generation pull last 50 log messages
     if (generation === null || Number(generation) === game.generation) {
-      logs = game.gameLog.filter(messagesForPlayer).slice(-50);
+      logs = game.gameLog.filter(messagesForPlayer).slice(-250);
     } else { // pull all logs for generation
       logs = this.getLogsForGeneration(game.gameLog, Number(generation)).filter(messagesForPlayer);
     }

@@ -82,7 +82,7 @@ export interface IDatabase {
      * @param gameOptions the options used for this game.
      * @param scores an array of scores correlated to the player's corporation.
      */
-    saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>): void;
+    saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: Game): void;
 
     /**
      * The meat behind player undo. Loads the game at the given save point,

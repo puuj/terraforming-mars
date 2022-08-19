@@ -126,8 +126,10 @@ export class Player {
   public draftedCorporations: Array<ICorporationCard> = [];
   public cardCost: number = constants.CARD_COST;
   public needsToDraft?: boolean;
+  public passingTo: string = '';
 
   public timer: Timer = Timer.newInstance();
+  public notification: any = undefined;
 
   // Colonies
   private fleetSize: number = 1;
@@ -167,7 +169,8 @@ export class Player {
     public color: Color,
     public beginner: boolean,
     public handicap: number = 0,
-    id: PlayerId) {
+    id: PlayerId,
+    public email: string | undefined) {
     this.id = id;
     // This seems pretty bad. The game will be set before the Player is actually
     // used, and if that doesn't happen, well, it's a worthy error.
@@ -183,8 +186,9 @@ export class Player {
     color: Color,
     beginner: boolean,
     handicap: number = 0,
-    id: PlayerId): Player {
-    const player = new Player(name, color, beginner, handicap, id);
+    id: PlayerId,
+    email: string | undefined): Player {
+    const player = new Player(name, color, beginner, handicap, id, email);
     return player;
   }
 
@@ -414,6 +418,7 @@ export class Player {
     if (options?.log === true) {
       this.logUnitDelta(resource, delta, 'amount', options.from, options.stealing);
     }
+
 
     if (options?.from instanceof Player) {
       LawSuit.resourceHook(this, resource, delta, options.from);
@@ -1155,6 +1160,7 @@ export class Player {
    *   step in the draft, and cards have to be dealt.
    */
   public runDraftPhase(initialDraft: boolean, playerName: string, passedCards?: Array<IProjectCard>): void {
+    this.passingTo = playerName;
     let cardsToKeep = 1;
 
     let cards: Array<IProjectCard> = [];
@@ -1415,7 +1421,7 @@ export class Player {
     if (howToPay.data > 0) {
       const aurorai = this.getCorporation(CardName.AURORAI);
       if (aurorai === undefined) throw new Error('Cannot pay with data without ' + CardName.AURORAI);
-      this.removeResourceFrom(aurorai, howToPay.data);
+      this.removeResourceFrom(aurorai, howToPay.seeds);
     }
   }
 
@@ -1761,7 +1767,7 @@ export class Player {
       0 <= howToPay[key] && howToPay[key] <= maxPayable[key]);
   }
 
-  public payingAmount(howToPay: HowToPay, options?: Partial<HowToPay.Options>): number {
+  private payingAmount(howToPay: HowToPay, options?: Partial<HowToPay.Options>): number {
     const mult: {[key in keyof HowToPay]: number} = {
       megaCredits: 1,
       steel: this.getSteelValue(),
@@ -2102,6 +2108,7 @@ export class Player {
     this.waitingForCb = undefined;
     try {
       this.timer.stop();
+      if (this.notification) clearTimeout(this.notification);
       this.runInput(input, waitingFor);
       waitingForCb();
     } catch (err) {
@@ -2115,6 +2122,7 @@ export class Player {
   }
   public setWaitingFor(input: PlayerInput, cb: () => void = () => {}): void {
     this.timer.start();
+    this.notification = this.game.makeTurnNotification(this);
     this.waitingFor = input;
     this.waitingForCb = cb;
   }
@@ -2170,6 +2178,7 @@ export class Player {
       cardCost: this.cardCost,
       needsToDraft: this.needsToDraft,
       cardDiscount: this.cardDiscount,
+      passingTo: this.passingTo,
       // Colonies
       fleetSize: this.fleetSize,
       tradesThisTurn: this.tradesThisGeneration,
@@ -2194,6 +2203,7 @@ export class Player {
       color: this.color,
       beginner: this.beginner,
       handicap: this.handicap,
+      email: this.email,
       timer: this.timer.serialize(),
       // Stats
       actionsTakenThisGame: this.actionsTakenThisGame,
@@ -2208,7 +2218,8 @@ export class Player {
   }
 
   public static deserialize(d: SerializedPlayer, game: SerializedGame): Player {
-    const player = new Player(d.name, d.color, d.beginner, Number(d.handicap), d.id);
+    const player = new Player(d.name, d.color, d.beginner, Number(d.handicap), d.id, d.email);
+
     const cardFinder = new CardFinder();
 
     player.actionsTakenThisGame = d.actionsTakenThisGame;
@@ -2235,6 +2246,7 @@ export class Player {
     player.megaCredits = d.megaCredits;
     player.needsToDraft = d.needsToDraft;
     player.oceanBonus = d.oceanBonus;
+    player.passingTo = (d.passingTo ? d.passingTo : '');
     player.plantProduction = d.plantProduction;
     player.plants = d.plants;
     player.plantsNeededForGreenery = d.plantsNeededForGreenery;

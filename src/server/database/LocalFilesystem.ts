@@ -128,7 +128,7 @@ export class LocalFilesystem implements IDatabase {
     throw new Error('Does not work');
   }
 
-  saveGameResults(_gameId: GameId, _players: number, _generations: number, _gameOptions: GameOptions, _scores: Array<Score>): void {
+  saveGameResults(_gameId: GameId, _players: number, _generations: number, _gameOptions: GameOptions, _scores: Array<Score>, _game: Game): void {
     // Not implemented
   }
 

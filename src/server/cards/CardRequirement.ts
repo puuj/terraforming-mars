@@ -34,6 +34,12 @@ export class CardRequirement implements ICardRequirement {
     case RequirementType.CHAIRMAN:
       return Turmoil.getTurmoil(player.game).chairman === player.id;
 
+    case RequirementType.CARDS_IN_HAND:
+      return this.satisfiesInequality(player.cardsInHand.length);
+
+    case RequirementType.CARDS_PLAYED:
+      return this.satisfiesInequality(player.playedCards.length);
+
     case RequirementType.CITIES:
       return this.satisfiesInequality(player.game.getCitiesCount(this.isAny ? undefined : player));
 

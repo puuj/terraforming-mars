@@ -28,7 +28,7 @@ export class EnergyMarket extends Card implements IProjectCard {
           }).br;
           b.or().br;
           b.action('Decrease energy production 1 step to gain 8 M€.', (eb) => {
-            eb.production((pb) => pb.energy(1)).startAction.megacredits(8);
+            eb.production((pb) => pb.minus().energy(1)).startAction.megacredits(8);
           });
         }),
       },

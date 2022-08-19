@@ -22,6 +22,7 @@ export class CardRequirements implements ICardRequirements {
     f(builder);
     return builder.build();
   }
+
   public satisfies(player: Player): boolean {
     // Process tags separately, though max & any tag criteria will be processed later.
     // This pre-computation takes the wild tag into account.
@@ -104,6 +105,17 @@ class Builder {
 
   public greeneries(amount: number = 1, options?: Options): Builder {
     this.reqs.push(new CardRequirement(RequirementType.GREENERIES, amount, options));
+    return this;
+  }
+
+
+  public cardsInHand(amount?: number, options?: Options): Builder {
+    this.reqs.push(new CardRequirement(RequirementType.CARDS_IN_HAND, amount, options));
+    return this;
+  }
+
+  public cardsPlayed(amount?: number, options?: Options): Builder {
+    this.reqs.push(new CardRequirement(RequirementType.CARDS_PLAYED, amount, options));
     return this;
   }
 

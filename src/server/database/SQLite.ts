@@ -30,7 +30,7 @@ export class SQLite implements IDatabase {
   public async initialize(): Promise<void> {
     await this.asyncRun('CREATE TABLE IF NOT EXISTS games(game_id varchar, players integer, save_id integer, game text, status text default \'running\', created_time timestamp default (strftime(\'%s\', \'now\')), PRIMARY KEY (game_id, save_id))');
     await this.asyncRun('CREATE TABLE IF NOT EXISTS participants(game_id varchar, participant varchar, PRIMARY KEY (game_id, participant))');
-    await this.asyncRun('CREATE TABLE IF NOT EXISTS game_results(game_id varchar not null, seed_game_id varchar, players integer, generations integer, game_options text, scores text, PRIMARY KEY (game_id))');
+    await this.asyncRun('CREATE TABLE IF NOT EXISTS game_results(game_id varchar not null, seed_game_id varchar, players integer, generations integer, game_options text, scores text, game text, PRIMARY KEY (game_id))');
     await this.asyncRun(
       `CREATE TABLE IF NOT EXISTS purges(
         game_id varchar not null,
@@ -68,10 +68,11 @@ export class SQLite implements IDatabase {
     return json;
   }
 
-  saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>): void {
+  saveGameResults(game_id: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: Game): void {
+    const gameJSON = game.toJSON();
     this.db.run(
-      'INSERT INTO game_results (game_id, seed_game_id, players, generations, game_options, scores) VALUES($1, $2, $3, $4, $5, $6)',
-      [game_id, gameOptions.clonedGamedId, players, generations, JSON.stringify(gameOptions), JSON.stringify(scores)], (err) => {
+      'INSERT INTO game_results (game_id, seed_game_id, players, generations, game_options, scores, game) VALUES($1, $2, $3, $4, $5, $6, $7)',
+      [game_id, gameOptions.clonedGamedId, players, generations, JSON.stringify(gameOptions), JSON.stringify(scores), gameJSON], (err) => {
         if (err) {
           console.error('SQLite:saveGameResults', err);
           throw err;

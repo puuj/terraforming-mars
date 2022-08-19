@@ -114,6 +114,7 @@ export class Server {
       draftedCards: this.getCards(player, player.draftedCards, {showCalculatedCost: true}),
       game: this.getGameModel(player.game),
       id: player.id,
+      passingTo: player.passingTo,
       pickedCorporationCard: player.pickedCorporationCard ? this.getCards(player, [player.pickedCorporationCard]) : [],
       preludeCardsInHand: this.getCards(player, player.preludeCardsInHand),
       thisPlayer: thisPlayer,

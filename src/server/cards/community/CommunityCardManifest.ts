@@ -13,11 +13,32 @@ import {PoliticalUprising} from './PoliticalUprising';
 import {ByElection} from './ByElection';
 import {Midas} from './Midas';
 import {CuriosityII} from './CuriosityII';
+import {DarkHorse} from './DarkHorse';
+import {Drought} from './Drought';
+import {Fires} from './Fires';
+import {ForcedPartnership} from './ForcedPartnership';
+import {HorizontalIntegration} from './HorizontalIntegration';
+import {IceAge} from './IceAge';
+import {PatentPortfolio} from './PatentPortfolio';
+import {Spies} from './Spies';
+import {Uno} from './Uno';
+import {Windfall} from './Windfall';
 import {ExecutiveOrder} from './ExecutiveOrder';
 
 export const COMMUNITY_CARD_MANIFEST = new CardManifest({
   module: 'community',
-  projectCards: [],
+  projectCards: [
+    {cardName: CardName.DARK_HORSE, Factory: DarkHorse},
+    {cardName: CardName.DROUGHT, Factory: Drought},
+    {cardName: CardName.FIRES, Factory: Fires},
+    {cardName: CardName.FORCED_PARTNERSHIP, Factory: ForcedPartnership},
+    {cardName: CardName.HORIZONTAL_INTEGRATION, Factory: HorizontalIntegration},
+    {cardName: CardName.ICE_AGE, Factory: IceAge},
+    {cardName: CardName.PATENT_PORTFOLIO, Factory: PatentPortfolio},
+    {cardName: CardName.SPIES, Factory: Spies},
+    {cardName: CardName.UNO, Factory: Uno},
+    {cardName: CardName.WINDFALL, Factory: Windfall},
+  ],
   corporationCards: [
     {cardName: CardName.AGRICOLA_INC, Factory: AgricolaInc},
     {cardName: CardName.PROJECT_WORKSHOP, Factory: ProjectWorkshop},
