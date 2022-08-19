@@ -1,7 +1,7 @@
 import {PlayerId} from '../common/Types';
 import {CardName} from '../common/cards/CardName';
 import {Color} from '../common/Color';
-import {SerializedCard} from '../SerializedCard';
+import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
 
 interface DeprecatedFields {
