@@ -6,6 +6,7 @@ import {CardName} from '../../../common/cards/CardName';
 import {BuildColony} from '../../deferredActions/BuildColony';
 import {Card} from '../Card';
 import {CardRenderer} from '../render/CardRenderer';
+import {ColoniesHandler} from '../../colonies/ColoniesHandler';
 
 export class InterplanetaryColonyShip extends Card implements IProjectCard {
   constructor() {
@@ -24,11 +25,11 @@ export class InterplanetaryColonyShip extends Card implements IProjectCard {
   }
 
   public override canPlay(player: Player): boolean {
-    return player.hasAvailableColonyTileToBuildOn();
+    return ColoniesHandler.getPlayableColonies(player).length > 0;
   }
 
   public play(player: Player) {
-    player.game.defer(new BuildColony(player, false, 'Select colony for Interplanetary Colony Ship'));
+    player.game.defer(new BuildColony(player, {title: 'Select colony for Interplanetary Colony Ship'}));
     return undefined;
   }
 }

@@ -7,6 +7,7 @@ import {Resources} from '../../../common/Resources';
 import {BuildColony} from '../../deferredActions/BuildColony';
 import {Card} from '../Card';
 import {CardRenderer} from '../render/CardRenderer';
+import {ColoniesHandler} from '../../colonies/ColoniesHandler';
 
 export class MiningColony extends Card implements IProjectCard {
   constructor() {
@@ -27,11 +28,11 @@ export class MiningColony extends Card implements IProjectCard {
   }
 
   public override canPlay(player: Player): boolean {
-    return player.hasAvailableColonyTileToBuildOn();
+    return ColoniesHandler.getPlayableColonies(player).length > 0;
   }
 
   public play(player: Player) {
-    player.game.defer(new BuildColony(player, false, 'Select colony for Mining Colony'));
+    player.game.defer(new BuildColony(player, {title: 'Select colony for Mining Colony'}));
     player.addProduction(Resources.TITANIUM, 1);
     return undefined;
   }
