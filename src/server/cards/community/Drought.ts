@@ -4,7 +4,7 @@ import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {RemoveOceanTile} from '../../deferredActions/RemoveOceanTile';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -12,7 +12,7 @@ export class Drought extends Card implements IProjectCard {
   constructor() {
     super({
       cardType: CardType.EVENT,
-      tags: [Tags.CITY],
+      tags: [Tag.CITY],
       name: CardName.DROUGHT,
       cost: 7,
       requirements: CardRequirements.builder((b) => b.oceans(1)),

@@ -2,7 +2,7 @@ import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
@@ -13,9 +13,9 @@ export class Windfall extends Card implements IProjectCard {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.WINDFALL,
-      tags: [Tags.JOVIAN],
+      tags: [Tag.JOVIAN],
       cost: 0,
-      requirements: CardRequirements.builder((b) => b.tr(30).tag(Tags.BUILDING).tag(Tags.SPACE).tag(Tags.SCIENCE).tag(Tags.ENERGY).tag(Tags.EARTH).tag(Tags.JOVIAN).tag(Tags.PLANT).tag(Tags.MICROBE).tag(Tags.ANIMAL).tag(Tags.CITY).production(Resources.MEGACREDITS).production(Resources.STEEL).production(Resources.TITANIUM).production(Resources.PLANTS).production(Resources.ENERGY).production(Resources.HEAT)),
+      requirements: CardRequirements.builder((b) => b.tr(30).tag(Tag.BUILDING).tag(Tag.SPACE).tag(Tag.SCIENCE).tag(Tag.ENERGY).tag(Tag.EARTH).tag(Tag.JOVIAN).tag(Tag.PLANT).tag(Tag.MICROBE).tag(Tag.ANIMAL).tag(Tag.CITY).production(Resources.MEGACREDITS).production(Resources.STEEL).production(Resources.TITANIUM).production(Resources.PLANTS).production(Resources.ENERGY).production(Resources.HEAT)),
       metadata: {
         cardNumber: 'J010',
         renderData: CardRenderer.builder((b) => {

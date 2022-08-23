@@ -3,7 +3,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardRequirements} from '../CardRequirements';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -12,7 +12,7 @@ export class Fires extends Card implements IProjectCard {
     super({
       cardType: CardType.EVENT,
       name: CardName.FIRES,
-      tags: [Tags.ENERGY],
+      tags: [Tag.ENERGY],
       cost: 10,
       requirements: CardRequirements.builder((b) => b.oxygen(1)),
       metadata: {

@@ -3,7 +3,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {Resources} from '../../../common/Resources';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {all} from '../Options';
@@ -13,7 +13,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.FORCED_PARTNERSHIP,
-      tags: [Tags.BUILDING],
+      tags: [Tag.BUILDING],
       cost: 10,
       tr: {tr: 2},
 

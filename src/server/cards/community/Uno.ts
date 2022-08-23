@@ -2,7 +2,7 @@ import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {max} from '../Options';
@@ -12,7 +12,7 @@ export class Uno extends Card implements IProjectCard {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.UNO,
-      tags: [Tags.MICROBE],
+      tags: [Tag.MICROBE],
       cost: 8,
       victoryPoints: 4,
       

@@ -4,7 +4,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {OrOptions} from '../../inputs/OrOptions';
 import {Resources} from '../../../common/Resources';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {SelectOption} from '../../inputs/SelectOption';
 import {CardRenderer} from '../render/CardRenderer';
@@ -14,7 +14,7 @@ export class Spies extends Card implements IProjectCard {
   constructor() {
     super({
       cardType: CardType.ACTIVE,
-      tags: [Tags.PLANT],
+      tags: [Tag.PLANT],
       name: CardName.SPIES,
       cost: 9,
 

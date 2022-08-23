@@ -3,7 +3,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {max} from '../Options';
@@ -13,7 +13,7 @@ export class DarkHorse extends Card implements IProjectCard {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.DARK_HORSE,
-      tags: [Tags.SPACE],
+      tags: [Tag.SPACE],
       cost: 16,
       victoryPoints: 5,
       
