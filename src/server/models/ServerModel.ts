@@ -17,8 +17,8 @@ import {PlayerInputTypes} from '../../common/input/PlayerInputTypes';
 import {PlayerViewModel, PublicPlayerModel} from '../../common/models/PlayerModel';
 import {SelectAmount} from '../inputs/SelectAmount';
 import {SelectCard} from '../inputs/SelectCard';
-import {SelectHowToPay} from '../inputs/SelectHowToPay';
-import {SelectHowToPayForProjectCard} from '../inputs/SelectHowToPayForProjectCard';
+import {SelectPayment} from '../inputs/SelectPayment';
+import {SelectProjectCardToPlay} from '../inputs/SelectProjectCardToPlay';
 import {SelectPlayer} from '../inputs/SelectPlayer';
 import {SelectSpace} from '../inputs/SelectSpace';
 import {SpaceHighlight, SpaceModel} from '../../common/models/SpaceModel';
@@ -46,7 +46,7 @@ import {MoonExpansion} from '../moon/MoonExpansion';
 import {MoonModel} from '../../common/models/MoonModel';
 import {IColony} from '../colonies/IColony';
 import {CardName} from '../../common/cards/CardName';
-import {Tags} from '../../common/cards/Tags';
+import {Tag} from '../../common/cards/Tag';
 import {isICorporationCard} from '../cards/corporation/ICorporationCard';
 
 export class Server {
@@ -260,14 +260,14 @@ export class Server {
         throw new Error('required options not defined');
       }
       break;
-    case PlayerInputTypes.SELECT_HOW_TO_PAY_FOR_PROJECT_CARD:
-      const shtpfpc: SelectHowToPayForProjectCard = waitingFor as SelectHowToPayForProjectCard;
-      playerInputModel.cards = this.getCards(player, shtpfpc.cards, {showCalculatedCost: true, reserveUnits: shtpfpc.reserveUnits});
-      playerInputModel.microbes = shtpfpc.microbes;
-      playerInputModel.floaters = shtpfpc.floaters;
-      playerInputModel.canUseHeat = shtpfpc.canUseHeat;
-      playerInputModel.science = shtpfpc.scienceResources;
-      playerInputModel.seeds = shtpfpc.seedResources;
+    case PlayerInputTypes.SELECT_PROJECT_CARD_TO_PLAY:
+      const spctp: SelectProjectCardToPlay = waitingFor as SelectProjectCardToPlay;
+      playerInputModel.cards = this.getCards(player, spctp.cards, {showCalculatedCost: true, reserveUnits: spctp.reserveUnits});
+      playerInputModel.microbes = spctp.microbes;
+      playerInputModel.floaters = spctp.floaters;
+      playerInputModel.canUseHeat = spctp.canUseHeat;
+      playerInputModel.science = spctp.scienceResources;
+      playerInputModel.seeds = spctp.seedResources;
       break;
     case PlayerInputTypes.SELECT_CARD:
       const selectCard = waitingFor as SelectCard<ICard>;
@@ -285,14 +285,14 @@ export class Server {
     case PlayerInputTypes.SELECT_COLONY:
       playerInputModel.coloniesModel = this.getColonyModel(player.game, (waitingFor as SelectColony).colonies);
       break;
-    case PlayerInputTypes.SELECT_HOW_TO_PAY:
-      playerInputModel.amount = (waitingFor as SelectHowToPay).amount;
-      playerInputModel.canUseSteel = (waitingFor as SelectHowToPay).canUseSteel;
-      playerInputModel.canUseTitanium = (waitingFor as SelectHowToPay).canUseTitanium;
-      playerInputModel.canUseHeat = (waitingFor as SelectHowToPay).canUseHeat;
-      playerInputModel.canUseSeeds = (waitingFor as SelectHowToPay).canUseSeeds;
+    case PlayerInputTypes.SELECT_PAYMENT:
+      playerInputModel.amount = (waitingFor as SelectPayment).amount;
+      playerInputModel.canUseSteel = (waitingFor as SelectPayment).canUseSteel;
+      playerInputModel.canUseTitanium = (waitingFor as SelectPayment).canUseTitanium;
+      playerInputModel.canUseHeat = (waitingFor as SelectPayment).canUseHeat;
+      playerInputModel.canUseSeeds = (waitingFor as SelectPayment).canUseSeeds;
       playerInputModel.seeds = player.getSpendableSeedResources();
-      playerInputModel.canUseData = (waitingFor as SelectHowToPay).canUseData;
+      playerInputModel.canUseData = (waitingFor as SelectPayment).canUseData;
       playerInputModel.data = player.getSpendableData();
       break;
     case PlayerInputTypes.SELECT_PLAYER:
@@ -363,10 +363,10 @@ export class Server {
 
       // Too bad this is hard-coded
       if (card.name === CardName.CRESCENT_RESEARCH_ASSOCIATION) {
-        discount = [{tag: Tags.MOON, amount: player.getTagCount(Tags.MOON)}];
+        discount = [{tag: Tag.MOON, amount: player.tags.count(Tag.MOON)}];
       }
       if (card.name === CardName.MARS_DIRECT) {
-        discount = [{tag: Tags.MARS, amount: player.getTagCount(Tags.MARS)}];
+        discount = [{tag: Tag.MARS, amount: player.tags.count(Tag.MARS)}];
       }
 
       const isDisabled = isICorporationCard(card) ? (card.isDisabled || false) : (options.enabled?.[index] === false);
@@ -424,7 +424,7 @@ export class Server {
       steel: player.steel,
       steelProduction: player.getProduction(Resources.STEEL),
       steelValue: player.getSteelValue(),
-      tags: player.getAllTags(),
+      tags: player.tags.getAllTags(),
       terraformRating: player.getTerraformRating(),
       timer: player.timer.serialize(),
       titanium: player.titanium,

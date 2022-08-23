@@ -2,7 +2,7 @@ import {IParty} from './IParty';
 import {Party} from './Party';
 import {PartyName} from '../../../common/turmoil/PartyName';
 import {Game} from '../../Game';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {Resources} from '../../../common/Resources';
 import {Bonus} from '../Bonus';
 import {Policy} from '../Policy';
@@ -14,7 +14,7 @@ import {SelectCard} from '../../inputs/SelectCard';
 import {SelectOption} from '../../inputs/SelectOption';
 import {CardResource} from '../../../common/CardResource';
 import {Phase} from '../../../common/Phase';
-import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
 import {POLITICAL_AGENDAS_MAX_ACTION_USES} from '../../../common/constants';
 import {Board} from '../../boards/Board';
@@ -32,9 +32,9 @@ class GreensBonus01 implements Bonus {
   description: string = 'Gain 1 M€ for each Plant, Microbe and Animal tag you have';
 
   getScore(player: Player) {
-    return player.getTagCount(Tags.PLANT, 'raw') +
-      player.getTagCount(Tags.MICROBE, 'raw') +
-      player.getTagCount(Tags.ANIMAL, 'raw');
+    return player.tags.count(Tag.PLANT, 'raw') +
+      player.tags.count(Tag.MICROBE, 'raw') +
+      player.tags.count(Tag.ANIMAL, 'raw');
   }
 
   grant(game: Game) {
@@ -90,7 +90,7 @@ class GreensPolicy03 implements Policy {
   isDefault = false;
 
   onCardPlayed(player: Player, card: IProjectCard) {
-    const tags = [Tags.ANIMAL, Tags.PLANT, Tags.MICROBE];
+    const tags = [Tag.ANIMAL, Tag.PLANT, Tag.MICROBE];
     const tagCount = card.tags.filter((tag) => tags.includes(tag)).length;
 
     player.addResource(Resources.MEGACREDITS, tagCount * 2);
@@ -111,7 +111,7 @@ class GreensPolicy04 implements Policy {
     game.log('${0} used Turmoil Greens action', (b) => b.player(player));
     player.politicalAgendasActionUsedCount += 1;
 
-    game.defer(new SelectHowToPayDeferred(
+    game.defer(new SelectPaymentDeferred(
       player,
       5,
       {

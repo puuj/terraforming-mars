@@ -1,6 +1,6 @@
 import {IActionCard} from '../ICard';
 import {IProjectCard} from '../IProjectCard';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
@@ -10,7 +10,7 @@ import {ISpace} from '../../boards/ISpace';
 import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {Board} from '../../boards/Board';
-import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {AdjacencyBonus} from '../../ares/AdjacencyBonus';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -31,7 +31,7 @@ export class IndustrialCenter extends Card implements IActionCard, IProjectCard 
     super({
       cardType: CardType.ACTIVE,
       name,
-      tags: [Tags.BUILDING],
+      tags: [Tag.BUILDING],
       cost: 4,
       adjacencyBonus,
 
@@ -57,7 +57,7 @@ export class IndustrialCenter extends Card implements IActionCard, IProjectCard 
     return player.canAfford(7);
   }
   public action(player: Player) {
-    player.game.defer(new SelectHowToPayDeferred(player, 7, {title: 'Select how to pay for action'}));
+    player.game.defer(new SelectPaymentDeferred(player, 7, {title: 'Select how to pay for action'}));
     player.addProduction(Resources.STEEL, 1);
     return undefined;
   }

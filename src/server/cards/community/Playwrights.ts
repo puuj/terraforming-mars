@@ -1,13 +1,13 @@
 import {ICorporationCard} from '../corporation/ICorporationCard';
 import {Player} from '../../Player';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {IProjectCard} from '../IProjectCard';
 import {SelectCard} from '../../inputs/SelectCard';
 import {Resources} from '../../../common/Resources';
-import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
@@ -18,7 +18,7 @@ export class Playwrights extends Card implements ICorporationCard {
   constructor() {
     super({
       name: CardName.PLAYWRIGHTS,
-      tags: [Tags.ENERGY],
+      tags: [Tag.ENERGY],
       startingMegaCredits: 38,
       cardType: CardType.CORPORATION,
 
@@ -34,7 +34,7 @@ export class Playwrights extends Card implements ICorporationCard {
               // use 1000 as an id to tell Vue to render the '?'
               eb.megacredits(1000).startAction;
               eb.text('replay', Size.SMALL, true);
-              eb.nbsp.cards(1, {all, secondaryTag: Tags.EVENT});
+              eb.nbsp.cards(1, {all, secondaryTag: Tag.EVENT});
             });
           });
         }),
@@ -71,7 +71,7 @@ export class Playwrights extends Card implements ICorporationCard {
         });
 
         const cost = player.getCardCost(selectedCard);
-        player.game.defer(new SelectHowToPayDeferred(
+        player.game.defer(new SelectPaymentDeferred(
           player,
           cost,
           {

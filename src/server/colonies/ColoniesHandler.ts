@@ -3,7 +3,7 @@ import {Game} from '../Game';
 import {Player} from '../Player';
 import {IColony} from './IColony';
 import {ColonyName} from '../../common/colonies/ColonyName';
-import {SelectHowToPayDeferred} from '../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../deferredActions/SelectPaymentDeferred';
 import {Resources} from '../../common/Resources';
 import {TradeWithTitanFloatingLaunchPad} from '../cards/colonies/TitanFloatingLaunchPad';
 import {OrOptions} from '../inputs/OrOptions';
@@ -14,7 +14,7 @@ import {IColonyTrader} from './IColonyTrader';
 import {TradeWithCollegiumCopernicus} from '../cards/pathfinders/CollegiumCopernicus';
 import {CardName} from '../../common/cards/CardName';
 import {ICard} from '../cards/ICard';
-import {Tags} from '../../common/cards/Tags';
+import {Tag} from '../../common/cards/Tag';
 
 export class ColoniesHandler {
   public static getColony(game: Game, colonyName: ColonyName, includeDiscardedColonies: boolean = false): IColony {
@@ -68,7 +68,7 @@ export class ColoniesHandler {
       return true;
     }
 
-    if (colony.name === ColonyName.VENUS && card.tags.includes(Tags.VENUS)) {
+    if (colony.name === ColonyName.VENUS && card.tags.includes(Tag.VENUS)) {
       colony.isActive = true;
       return true;
     }
@@ -198,7 +198,7 @@ export class TradeWithMegacredits implements IColonyTrader {
   }
 
   public trade(colony: IColony) {
-    this.player.game.defer(new SelectHowToPayDeferred(
+    this.player.game.defer(new SelectPaymentDeferred(
       this.player,
       this.tradeCost,
       {

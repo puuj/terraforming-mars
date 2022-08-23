@@ -4,7 +4,7 @@ import {ISpace} from '../boards/ISpace';
 import {Message} from '../../common/logs/Message';
 import {PlayerInput} from '../PlayerInput';
 import {Player} from '../Player';
-import {Tags} from '../../common/cards/Tags';
+import {Tag} from '../../common/cards/Tag';
 import {CardResource} from '../../common/CardResource';
 import {CardName} from '../../common/cards/CardName';
 import {ICardMetadata} from '../../common/cards/ICardMetadata';
@@ -29,27 +29,28 @@ export namespace VictoryPoints {
   export function resource(points: number, per: number): IVictoryPoints {
     return {type: 'resource', points, per};
   }
-  export function tags(tag: Tags, points: number, per: number): IVictoryPoints {
+  export function tags(tag: Tag, points: number, per: number): IVictoryPoints {
     return {type: tag, points, per};
   }
 }
 
 // TRSource represents the ways an action will gain TR. This is used exclusively to compute
 // tax when Reds are in power.
-export interface TRSource {
-    oxygen?: number,
-    temperature?: number,
-    oceans?: number,
-    tr?: number,
-    venus?: number
-    moonColony?: number,
-    moonMining?: number,
-    moonLogistics?: number,
-  }
+export type TRSource = {
+  oxygen?: number,
+  temperature?: number,
+  oceans?: number,
+  tr?: number,
+  venus?: number
+  moonColony?: number,
+  moonMining?: number,
+  moonLogistics?: number,
+}
+export type DynamicTRSource = (player: Player) => TRSource;
 
 export interface ICard extends Partial<IActionCard> {
     name: CardName;
-    tags: Array<Tags>;
+    tags: Array<Tag>;
     play: (player: Player) => PlayerInput | undefined;
     getCardDiscount?: (player: Player, card: IProjectCard) => number;
     cardDiscount?: CardDiscount | Array<CardDiscount>;
@@ -79,7 +80,7 @@ export interface ICard extends Partial<IActionCard> {
     warning?: string | Message;
     productionBox?: Units;
     produce?: (player: Player) => void;
-    tr?: TRSource;
+    tr?: TRSource | DynamicTRSource;
     resourceCount: number;
     resourceType?: CardResource;
 }

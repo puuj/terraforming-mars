@@ -1,11 +1,11 @@
 import {IActionCard} from '../ICard';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {CardResource} from '../../../common/CardResource';
 import {SelectCard} from '../../inputs/SelectCard';
 import {CardName} from '../../../common/cards/CardName';
-import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {Card} from '../Card';
@@ -16,13 +16,13 @@ export class FloatingHabs extends Card implements IActionCard {
     super({
       name: CardName.FLOATING_HABS,
       cardType: CardType.ACTIVE,
-      tags: [Tags.VENUS],
+      tags: [Tag.VENUS],
       cost: 5,
 
       resourceType: CardResource.FLOATER,
       victoryPoints: VictoryPoints.resource(1, 2),
 
-      requirements: CardRequirements.builder((b) => b.tag(Tags.SCIENCE, 2)),
+      requirements: CardRequirements.builder((b) => b.tag(Tag.SCIENCE, 2)),
       metadata: {
         cardNumber: '225',
         renderData: CardRenderer.builder((b) => {
@@ -49,7 +49,7 @@ export class FloatingHabs extends Card implements IActionCard {
 
     // add to itself if no other available target
     if (floaterCards.length === 1) {
-      player.game.defer(new SelectHowToPayDeferred(player, 2, {title: 'Select how to pay for Floating Habs action'}));
+      player.game.defer(new SelectPaymentDeferred(player, 2, {title: 'Select how to pay for Floating Habs action'}));
       player.addResourceTo(floaterCards[0], {log: true});
       return undefined;
     }
@@ -59,7 +59,7 @@ export class FloatingHabs extends Card implements IActionCard {
       'Add floater',
       floaterCards,
       ([card]) => {
-        player.game.defer(new SelectHowToPayDeferred(player, 2, {title: 'Select how to pay for Floating Habs action'}));
+        player.game.defer(new SelectPaymentDeferred(player, 2, {title: 'Select how to pay for Floating Habs action'}));
         player.addResourceTo(card, {log: true});
         return undefined;
       },

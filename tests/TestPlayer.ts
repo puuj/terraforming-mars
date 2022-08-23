@@ -2,9 +2,10 @@ import {Player} from '../src/server/Player';
 import {PlayerInput} from '../src/server/PlayerInput';
 import {Color} from '../src/common/Color';
 import {Units} from '../src/common/Units';
-import {Tags} from '../src/common/cards/Tags';
+import {Tag} from '../src/common/cards/Tag';
 import {InputResponse} from '../src/common/inputs/InputResponse';
 import {ICorporationCard} from '../src/server/cards/corporation/ICorporationCard';
+import {Tags} from '../src/server/player/Tags';
 
 class TestPlayerFactory {
   constructor(private color: Color) {}
@@ -13,6 +14,19 @@ class TestPlayerFactory {
   }
 }
 
+class TestTags extends Tags {
+  private testPlayer: TestPlayer;
+  constructor(player: TestPlayer) {
+    super(player);
+    this.testPlayer = player;
+  }
+
+  public override rawCount(tag: Tag, includeEventsTags:boolean = false): number {
+    return this.testPlayer.tagsForTest !== undefined ?
+      this.testPlayer.tagsForTest[tag] ?? 0 :
+      super.rawCount(tag, includeEventsTags);
+  }
+}
 export class TestPlayer extends Player {
   // Prefer these players when testing, as their IDs are easy to recognize in output. Plus TestPlayer instances have useful support methods.
   public static BLUE: TestPlayerFactory = new TestPlayerFactory(Color.BLUE);
@@ -26,6 +40,7 @@ export class TestPlayer extends Player {
 
   constructor(color: Color, beginner: boolean = false, idSuffix = '') {
     super('player-' + color, color, beginner, 0, `p-${color}-id${idSuffix}`, undefined);
+    this.tags = new TestTags(this);
   }
 
   public setProductionForTest(units: Partial<Units>) {
@@ -72,12 +87,6 @@ export class TestPlayer extends Player {
   }
 
   public tagsForTest: Partial<TagsForTest> | undefined = undefined;
-
-  public override getRawTagCount(tag: Tags, includeEventsTags:boolean = false): number {
-    return this.tagsForTest !== undefined ?
-      this.tagsForTest[tag] ?? 0 :
-      super.getRawTagCount(tag, includeEventsTags);
-  }
 
   public override runInput(input: InputResponse, pi: PlayerInput): void {
     super.runInput(input, pi);

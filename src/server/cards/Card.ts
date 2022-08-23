@@ -4,11 +4,11 @@ import {CardType} from '../../common/cards/CardType';
 import {CardDiscount} from '../../common/cards/Types';
 import {AdjacencyBonus} from '../ares/AdjacencyBonus';
 import {CardResource} from '../../common/CardResource';
-import {Tags} from '../../common/cards/Tags';
+import {Tag} from '../../common/cards/Tag';
 import {Player} from '../Player';
 import {Units} from '../../common/Units';
 import {CardRequirements} from './CardRequirements';
-import {TRSource} from './ICard';
+import {DynamicTRSource, TRSource} from './ICard';
 import {CardRenderDynamicVictoryPoints} from './render/CardRenderDynamicVictoryPoints';
 import {CardRenderItemType} from '../../common/cards/render/CardRenderItemType';
 import {IVictoryPoints} from '../../common/cards/IVictoryPoints';
@@ -25,11 +25,11 @@ export interface StaticCardProperties {
   name: CardName;
   resourceType?: CardResource;
   startingMegaCredits?: number;
-  tags?: Array<Tags>;
+  tags?: Array<Tag>;
   productionBox?: Units;
   cardDiscount?: CardDiscount | Array<CardDiscount>;
   reserveUnits?: Units,
-  tr?: TRSource,
+  tr?: TRSource | DynamicTRSource,
   victoryPoints?: number | 'special' | IVictoryPoints,
 }
 
@@ -99,7 +99,7 @@ export abstract class Card {
   public get reserveUnits(): Units {
     return this.properties.reserveUnits || Units.EMPTY;
   }
-  public get tr(): TRSource {
+  public get tr(): TRSource | DynamicTRSource {
     return this.properties.tr || {};
   }
   public get victoryPoints(): number | 'special' | IVictoryPoints | undefined {
@@ -123,7 +123,7 @@ export abstract class Card {
         return vp1.points * Math.floor(this.resourceCount / vp1.per);
       } else {
         const tag = vp1.type;
-        const count = player?.getTagCount(tag, 'vps') ?? 0;
+        const count = player?.tags.count(tag, 'vps') ?? 0;
         return vp1.points * Math.floor(count / vp1.per);
       }
     }
@@ -156,10 +156,10 @@ export abstract class Card {
       break;
 
     case CardRenderItemType.JOVIAN:
-      units = player?.getTagCount(Tags.JOVIAN, 'vps');
+      units = player?.tags.count(Tag.JOVIAN, 'vps');
       break;
     case CardRenderItemType.MOON:
-      units = player?.getTagCount(Tags.MOON, 'vps');
+      units = player?.tags.count(Tag.MOON, 'vps');
       break;
     }
 

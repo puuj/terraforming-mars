@@ -4,15 +4,15 @@ import {Game} from '../../../src/server/Game';
 import {TestPlayer} from '../../TestPlayer';
 import {getTestPlayer, newTestGame} from '../../TestGame';
 import {cast, fakeCard, runAllActions} from '../../TestingUtils';
-import {Tags} from '../../../src/common/cards/Tags';
+import {Tag} from '../../../src/common/cards/Tag';
 import {CardType} from '../../../src/common/cards/CardType';
 import {ImportOfAdvancedGHG} from '../../../src/server/cards/base/ImportOfAdvancedGHG';
 import {InventionContest} from '../../../src/server/cards/base/InventionContest';
-import {SelectHowToPayForProjectCard} from '../../../src/server/inputs/SelectHowToPayForProjectCard';
+import {SelectProjectCardToPlay} from '../../../src/server/inputs/SelectProjectCardToPlay';
 import {Resources} from '../../../src/common/Resources';
 import {MediaGroup} from '../../../src/server/cards/base/MediaGroup';
 import {IceCapMelting} from '../../../src/server/cards/base/IceCapMelting';
-import {HowToPay} from '../../../src/common/inputs/HowToPay';
+import {Payment} from '../../../src/common/inputs/Payment';
 
 describe('Odyssey', () => {
   let card: Odyssey;
@@ -27,11 +27,11 @@ describe('Odyssey', () => {
   });
 
   it('events count for tags', () => {
-    const event = fakeCard({cardType: CardType.EVENT, tags: [Tags.JOVIAN]});
+    const event = fakeCard({cardType: CardType.EVENT, tags: [Tag.JOVIAN]});
     player.playedCards.push(event);
-    expect(player.getTagCount(Tags.JOVIAN)).eq(1);
+    expect(player.tags.count(Tag.JOVIAN)).eq(1);
     player.setCorporationForTest(undefined);
-    expect(player.getTagCount(Tags.JOVIAN)).eq(0);
+    expect(player.tags.count(Tag.JOVIAN)).eq(0);
   });
 
   it('cannot act - cannot afford', () => {
@@ -74,22 +74,22 @@ describe('Odyssey', () => {
     const inventionContest = new InventionContest();
     player.playedCards = [importOfAdvancedGHG, inventionContest];
 
-    let selectCard = cast(card.action(player), SelectHowToPayForProjectCard);
+    let selectCard = cast(card.action(player), SelectProjectCardToPlay);
 
     expect(selectCard.cards).is.empty;
 
     player.megaCredits = 4;
-    selectCard = cast(card.action(player), SelectHowToPayForProjectCard);
+    selectCard = cast(card.action(player), SelectProjectCardToPlay);
     expect(selectCard.cards).has.members([inventionContest]);
 
     player.megaCredits = 9;
-    selectCard = cast(card.action(player), SelectHowToPayForProjectCard);
+    selectCard = cast(card.action(player), SelectProjectCardToPlay);
     expect(selectCard.cards).has.members([importOfAdvancedGHG, inventionContest]);
 
     expect(player.playedCards).has.members([importOfAdvancedGHG, inventionContest]);
     expect(player.getProduction(Resources.HEAT)).eq(0);
 
-    selectCard.cb(importOfAdvancedGHG, {...HowToPay.EMPTY, megaCredits: importOfAdvancedGHG.cost});
+    selectCard.cb(importOfAdvancedGHG, {...Payment.EMPTY, megaCredits: importOfAdvancedGHG.cost});
     runAllActions(game);
 
     expect(player.getProduction(Resources.HEAT)).eq(2);
@@ -104,12 +104,12 @@ describe('Odyssey', () => {
     player.megaCredits = 50;
 
     player.playedCards = [importOfAdvancedGHG, mediaGroup];
-    const selectCard = cast(card.action(player), SelectHowToPayForProjectCard);
+    const selectCard = cast(card.action(player), SelectProjectCardToPlay);
 
     expect(player.getProduction(Resources.HEAT)).eq(0);
     expect(player.megaCredits).eq(50);
 
-    selectCard.cb(importOfAdvancedGHG, {...HowToPay.EMPTY, megaCredits: 9});
+    selectCard.cb(importOfAdvancedGHG, {...Payment.EMPTY, megaCredits: 9});
     runAllActions(game);
 
     expect(player.getProduction(Resources.HEAT)).eq(2);

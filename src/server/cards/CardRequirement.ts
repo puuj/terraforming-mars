@@ -1,5 +1,5 @@
 import {RequirementType} from '../../common/cards/RequirementType';
-import {Tags} from '../../common/cards/Tags';
+import {Tag} from '../../common/cards/Tag';
 import {ICardRequirement, IPartyCardRequirement, IProductionCardRequirement, ITagCardRequirement} from '../../common/cards/ICardRequirement';
 import {PartyName} from '../../common/turmoil/PartyName';
 import {Resources} from '../../common/Resources';
@@ -156,24 +156,24 @@ export class CardRequirement implements ICardRequirement {
 }
 
 export class TagCardRequirement extends CardRequirement implements ITagCardRequirement {
-  constructor(public tag: Tags, amount: number, options?: Options) {
+  constructor(public tag: Tag, amount: number, options?: Options) {
     super(RequirementType.TAG, amount, options);
   }
 
   public override satisfies(player: Player): boolean {
     const mode = this.isMax !== true ? 'default' : 'raw';
-    let tagCount = player.getTagCount(this.tag, mode);
+    let tagCount = player.tags.count(this.tag, mode);
 
     if (this.isAny) {
       player.game.getPlayers().forEach((p) => {
         if (p.id !== player.id) {
           // Don't include opponents' wild tags because they are not performing the action.
-          tagCount += p.getTagCount(this.tag, 'raw');
+          tagCount += p.tags.count(this.tag, 'raw');
         }
       });
     }
     // PoliticalAgendas Scientists P4 hook
-    if (this.tag === Tags.SCIENCE && player.hasTurmoilScienceTagBonus) tagCount += 1;
+    if (this.tag === Tag.SCIENCE && player.hasTurmoilScienceTagBonus) tagCount += 1;
 
     return this.satisfiesInequality(tagCount);
   }

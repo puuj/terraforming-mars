@@ -2,10 +2,10 @@ import {IParty} from './IParty';
 import {Party} from './Party';
 import {PartyName} from '../../../common/turmoil/PartyName';
 import {Game} from '../../Game';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {Resources} from '../../../common/Resources';
 import {Bonus} from '../Bonus';
-import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {Player} from '../../Player';
 import {Policy} from '../Policy';
 
@@ -22,7 +22,7 @@ class ScientistsBonus01 implements Bonus {
   description: string = 'Gain 1 M€ for each Science tag you have';
 
   getScore(player: Player) {
-    return player.getTagCount(Tags.SCIENCE, 'raw-pf');
+    return player.tags.count(Tag.SCIENCE, 'raw-pf');
   }
 
   grant(game: Game) {
@@ -60,7 +60,7 @@ class ScientistsPolicy01 implements Policy {
   action(player: Player) {
     const game = player.game;
     game.log('${0} used Turmoil Scientists action', (b) => b.player(player));
-    game.defer(new SelectHowToPayDeferred(
+    game.defer(new SelectPaymentDeferred(
       player,
       10,
       {

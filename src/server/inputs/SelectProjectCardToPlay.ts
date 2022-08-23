@@ -1,14 +1,15 @@
 import {PlayerInput} from '../PlayerInput';
 import {PlayerInputTypes} from '../../common/input/PlayerInputTypes';
-import {HowToPay} from '../../common/inputs/HowToPay';
+import {jsonToPayment, Payment} from '../../common/inputs/Payment';
 import {IProjectCard} from '../cards/IProjectCard';
 import {Units} from '../../common/Units';
 import {MoonExpansion} from '../moon/MoonExpansion';
-import {Player} from '../Player';
+import {CardAction, Player} from '../Player';
 import {InputResponse} from '../../common/inputs/InputResponse';
 
-export class SelectHowToPayForProjectCard implements PlayerInput {
-  public inputType: PlayerInputTypes = PlayerInputTypes.SELECT_HOW_TO_PAY_FOR_PROJECT_CARD;
+// One more rename to SelectAndPlay?
+export class SelectProjectCardToPlay implements PlayerInput {
+  public inputType: PlayerInputTypes = PlayerInputTypes.SELECT_PROJECT_CARD_TO_PLAY;
   public title = 'Play project card';
   public buttonLabel: string = 'Play card';
   public microbes: number;
@@ -20,11 +21,14 @@ export class SelectHowToPayForProjectCard implements PlayerInput {
   public reserveUnits: Array<Units>;
 
   constructor(
-    player: Player,
-    public cards: Array<IProjectCard>,
-    public cb: (cardToPlay: IProjectCard, howToPay: HowToPay) => PlayerInput | undefined) {
-    this.microbes = player.getMicrobesCanSpend();
-    this.floaters = player.getFloatersCanSpend();
+    private player: Player,
+    public cards: Array<IProjectCard> = player.getPlayableCards(),
+    public config?: {
+      action?: CardAction,
+      cb?: (cardToPlay: IProjectCard) => void,
+    }) {
+    this.microbes = player.getSpendableMicrobes();
+    this.floaters = player.getSpendableFloaters();
     this.canUseHeat = player.canUseHeatAsMegaCredits;
     this.scienceResources = player.getSpendableScienceResources();
     this.seedResources = player.getSpendableSeedResources();
@@ -38,17 +42,25 @@ export class SelectHowToPayForProjectCard implements PlayerInput {
     player.checkInputLength(input, 1, 2);
     const cardName = input[0][0];
     const cardData = PlayerInput.getCard(this.cards, cardName);
-    const foundCard: IProjectCard = cardData.card;
-    const howToPay: HowToPay = player.parseHowToPayJSON(input[0][1]);
+    const card: IProjectCard = cardData.card;
+    const payment: Payment = jsonToPayment(input[0][1]);
     const reserveUnits = this.reserveUnits[cardData.idx];
     // These are not used for safety but do help give a better error message
     // to the user
-    if (reserveUnits.steel + howToPay.steel > player.steel) {
+    if (reserveUnits.steel + payment.steel > player.steel) {
       throw new Error(`${reserveUnits.steel} units of steel must be reserved for ${cardName}`);
     }
-    if (reserveUnits.titanium + howToPay.titanium > player.titanium) {
+    if (reserveUnits.titanium + payment.titanium > player.titanium) {
       throw new Error(`${reserveUnits.titanium} units of titanium must be reserved for ${cardName}`);
     }
-    return this.cb(foundCard, howToPay);
+    this.cb(card, payment);
+    return undefined;
+  }
+
+  // To fullfil PlayerInput.
+  public cb(card: IProjectCard, payment: Payment) {
+    this.player.checkPaymentAndPlayCard(card, payment, this.config?.action);
+    this.config?.cb?.(card);
+    return undefined;
   }
 }

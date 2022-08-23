@@ -6,9 +6,9 @@ import {Resources} from '../../../src/common/Resources';
 import {TestPlayer} from '../../TestPlayer';
 import {cast, runAllActions} from '../../TestingUtils';
 import {SelectOption} from '../../../src/server/inputs/SelectOption';
-import {SelectHowToPay} from '../../../src/server/inputs/SelectHowToPay';
-import {HowToPay} from '../../../src/common/inputs/HowToPay';
-import {Tags} from '../../../src/common/cards/Tags';
+import {SelectPayment} from '../../../src/server/inputs/SelectPayment';
+import {Payment} from '../../../src/common/inputs/Payment';
+import {Tag} from '../../../src/common/cards/Tag';
 import {Helion} from '../../../src/server/cards/corporation/Helion';
 
 describe('Factorum', function() {
@@ -54,7 +54,7 @@ describe('Factorum', function() {
     selectOption.cb();
     runAllActions(game);
     expect(player.cardsInHand).has.lengthOf(1);
-    expect(player.cardsInHand[0].tags).includes(Tags.BUILDING);
+    expect(player.cardsInHand[0].tags).includes(Tag.BUILDING);
     expect(player.megaCredits).to.eq(7);
   });
 
@@ -77,8 +77,8 @@ describe('Factorum', function() {
     selectOption.cb();
     runAllActions(game);
 
-    const howToPay = cast(player.popWaitingFor(), SelectHowToPay);
-    howToPay.cb({...HowToPay.EMPTY, megaCredits: 1, heat: 2});
+    const selectPayment = cast(player.popWaitingFor(), SelectPayment);
+    selectPayment.cb({...Payment.EMPTY, megaCredits: 1, heat: 2});
 
     expect(player.cardsInHand).has.lengthOf(1);
     expect(player.megaCredits).to.eq(1);

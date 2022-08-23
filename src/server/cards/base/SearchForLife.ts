@@ -1,12 +1,12 @@
 import {IActionCard} from '../ICard';
 import {IProjectCard} from '../IProjectCard';
-import {Tags} from '../../../common/cards/Tags';
+import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {CardResource} from '../../../common/CardResource';
 import {CardName} from '../../../common/cards/CardName';
-import {SelectHowToPayDeferred} from '../../deferredActions/SelectHowToPayDeferred';
+import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {CardRenderDynamicVictoryPoints} from '../render/CardRenderDynamicVictoryPoints';
@@ -17,7 +17,7 @@ export class SearchForLife extends Card implements IActionCard, IProjectCard {
     super({
       cardType: CardType.ACTIVE,
       name: CardName.SEARCH_FOR_LIFE,
-      tags: [Tags.SCIENCE],
+      tags: [Tag.SCIENCE],
       cost: 3,
 
       resourceType: CardResource.SCIENCE,
@@ -56,13 +56,13 @@ export class SearchForLife extends Card implements IActionCard, IProjectCard {
 
     player.game.log('${0} revealed and discarded ${1}', (b) => b.player(player).card(topCard));
 
-    if (topCard.tags.includes(Tags.MICROBE)) {
+    if (topCard.tags.includes(Tag.MICROBE)) {
       player.addResourceTo(this, 1);
       player.game.log('${0} found life!', (b) => b.player(player));
     }
 
     player.game.dealer.discard(topCard);
-    player.game.defer(new SelectHowToPayDeferred(player, 1, {title: 'Select how to pay for action'}));
+    player.game.defer(new SelectPaymentDeferred(player, 1, {title: 'Select how to pay for action'}));
     return undefined;
   }
 }
