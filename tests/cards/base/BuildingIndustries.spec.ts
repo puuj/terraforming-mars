@@ -13,15 +13,15 @@ describe('BuildingIndustries', function() {
   });
 
   it('Can not play', function() {
-    expect(card.canPlay(player)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Should play', function() {
-    player.addProduction(Resources.ENERGY, 1);
-    expect(card.canPlay(player)).is.true;
+    player.production.add(Resources.ENERGY, 1);
+    expect(player.simpleCanPlay(card)).is.true;
 
-    card.play(player);
-    expect(player.getProduction(Resources.ENERGY)).to.eq(0);
-    expect(player.getProduction(Resources.STEEL)).to.eq(2);
+    player.simplePlay(card);
+    expect(player.production.energy).to.eq(0);
+    expect(player.production.steel).to.eq(2);
   });
 });

@@ -4,7 +4,6 @@ import {Pluto} from '../../src/server/colonies/Pluto';
 import {DustSeals} from '../../src/server/cards/base/DustSeals';
 import {Player} from '../../src/server/Player';
 import {Game} from '../../src/server/Game';
-import {Resources} from '../../src/common/Resources';
 import {OrOptions} from '../../src/server/inputs/OrOptions';
 import {AndOptions} from '../../src/server/inputs/AndOptions';
 import {SelectColony} from '../../src/server/inputs/SelectColony';
@@ -69,22 +68,22 @@ describe('Colony', function() {
 
   it('Should build and give placement bonus', function() {
     expect(luna.colonies).has.lengthOf(0);
-    expect(player.getProduction(Resources.MEGACREDITS)).to.eq(0);
+    expect(player.production.megacredits).to.eq(0);
 
     luna.addColony(player);
     expect(luna.colonies).has.lengthOf(1);
     expect(luna.colonies[0]).to.eq(player.id);
-    expect(player.getProduction(Resources.MEGACREDITS)).to.eq(2);
+    expect(player.production.megacredits).to.eq(2);
 
     luna.addColony(player2);
     expect(luna.colonies).has.lengthOf(2);
     expect(luna.colonies[1]).to.eq(player2.id);
-    expect(player2.getProduction(Resources.MEGACREDITS)).to.eq(2);
+    expect(player2.production.megacredits).to.eq(2);
 
     luna.addColony(player3);
     expect(luna.colonies).has.lengthOf(3);
     expect(luna.colonies[2]).to.eq(player3.id);
-    expect(player3.getProduction(Resources.MEGACREDITS)).to.eq(2);
+    expect(player3.production.megacredits).to.eq(2);
   });
 
   it('Should start with a trackPosition at 1', function() {
@@ -353,18 +352,18 @@ describe('Colony', function() {
   });
 
   it('usesTradeFleet', () => {
-    expect(player.tradesThisGeneration).eq(0);
+    expect(player.colonies.tradesThisGeneration).eq(0);
     luna.trade(player);
-    expect(player.tradesThisGeneration).eq(1);
+    expect(player.colonies.tradesThisGeneration).eq(1);
 
     luna.trade(player, {});
-    expect(player.tradesThisGeneration).eq(2);
+    expect(player.colonies.tradesThisGeneration).eq(2);
 
     luna.trade(player, {usesTradeFleet: false});
-    expect(player.tradesThisGeneration).eq(2);
+    expect(player.colonies.tradesThisGeneration).eq(2);
 
     luna.trade(player, {usesTradeFleet: true});
-    expect(player.tradesThisGeneration).eq(3);
+    expect(player.colonies.tradesThisGeneration).eq(3);
   });
 
   it('serializing and deserializing', () => {

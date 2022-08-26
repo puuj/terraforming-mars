@@ -14,7 +14,7 @@ import {Player} from '../Player';
 import {PlayerInput} from '../PlayerInput';
 import {PlayerInputModel} from '../../common/models/PlayerInputModel';
 import {PlayerInputTypes} from '../../common/input/PlayerInputTypes';
-import {PlayerViewModel, PublicPlayerModel} from '../../common/models/PlayerModel';
+import {PlayerViewModel, Protection, PublicPlayerModel} from '../../common/models/PlayerModel';
 import {SelectAmount} from '../inputs/SelectAmount';
 import {SelectCard} from '../inputs/SelectCard';
 import {SelectPayment} from '../inputs/SelectPayment';
@@ -332,12 +332,12 @@ export class Server {
       playerInputModel.payProduction = {
         cost: (waitingFor as SelectProductionToLose).unitsToLose,
         units: {
-          megacredits: _player.getProduction(Resources.MEGACREDITS),
-          steel: _player.getProduction(Resources.STEEL),
-          titanium: _player.getProduction(Resources.TITANIUM),
-          plants: _player.getProduction(Resources.PLANTS),
-          energy: _player.getProduction(Resources.ENERGY),
-          heat: _player.getProduction(Resources.HEAT),
+          megacredits: _player.production.megacredits,
+          steel: _player.production.steel,
+          titanium: _player.production.titanium,
+          plants: _player.production.plants,
+          energy: _player.production.energy,
+          heat: _player.production.heat,
         },
       };
       break;
@@ -396,44 +396,88 @@ export class Server {
       actionsThisGeneration: Array.from(player.getActionsThisGeneration()),
       availableBlueCardActionCount: player.getPlayableActionCards().length,
       cardCost: player.cardCost,
-      cardDiscount: player.cardDiscount,
+      cardDiscount: player.colonies.cardDiscount,
       cardsInHandNbr: player.cardsInHand.length,
       citiesCount: player.game.getCitiesCount(player),
       coloniesCount: player.getColoniesCount(),
       color: player.color,
       energy: player.energy,
-      energyProduction: player.getProduction(Resources.ENERGY),
-      fleetSize: player.getFleetSize(),
+      energyProduction: player.production.energy,
+      fleetSize: player.colonies.getFleetSize(),
       heat: player.heat,
-      heatProduction: player.getProduction(Resources.HEAT),
+      heatProduction: player.production.heat,
       id: game.phase === Phase.END ? player.id : player.color,
       influence: Turmoil.ifTurmoilElse(game, (turmoil) => turmoil.getPlayerInfluence(player), () => 0),
       isActive: player.id === game.activePlayer,
       lastCardPlayed: player.lastCardPlayed,
       megaCredits: player.megaCredits,
-      megaCreditProduction: player.getProduction(Resources.MEGACREDITS),
+      megaCreditProduction: player.production.megacredits,
       name: player.name,
       needsToDraft: player.needsToDraft,
       needsToResearch: !game.hasResearched(player),
       noTagsCount: player.getNoTagsCount(),
       plants: player.plants,
-      plantProduction: player.getProduction(Resources.PLANTS),
-      plantsAreProtected: player.plantsAreProtected(),
+      plantProduction: player.production.plants,
+      protectedResources: Server.getResourceProtections(player),
+      protectedProduction: Server.getProductionProtections(player),
       tableau: Server.getCards(player, player.tableau, {showResources: true}),
       selfReplicatingRobotsCards: Server.getSelfReplicatingRobotsTargetCards(player),
       steel: player.steel,
-      steelProduction: player.getProduction(Resources.STEEL),
+      steelProduction: player.production.steel,
       steelValue: player.getSteelValue(),
       tags: player.tags.getAllTags(),
       terraformRating: player.getTerraformRating(),
       timer: player.timer.serialize(),
       titanium: player.titanium,
-      titaniumProduction: player.getProduction(Resources.TITANIUM),
+      titaniumProduction: player.production.titanium,
       titaniumValue: player.getTitaniumValue(),
-      tradesThisGeneration: player.tradesThisGeneration,
+      tradesThisGeneration: player.colonies.tradesThisGeneration,
       victoryPointsBreakdown: player.getVictoryPoints(),
       victoryPointsByGeneration: player.victoryPointsByGeneration,
     };
+  }
+
+  private static getResourceProtections(player: Player) {
+    const protection: Record<Resources, Protection> = {
+      megacredits: 'off',
+      steel: 'off',
+      titanium: 'off',
+      plants: 'off',
+      energy: 'off',
+      heat: 'off',
+    };
+
+    if (player.alloysAreProtected()) {
+      protection.steel = 'on';
+      protection.titanium = 'on';
+    }
+
+    if (player.plantsAreProtected()) {
+      protection.plants = 'on';
+    } else if (player.cardIsInEffect(CardName.BOTANICAL_EXPERIENCE)) {
+      protection.plants = 'half';
+    }
+
+    return protection;
+  }
+
+  private static getProductionProtections(player: Player) {
+    const defaultProteection = player.cardIsInEffect(CardName.PRIVATE_SECURITY) ? 'on' : 'off';
+    const protection: Record<Resources, Protection> = {
+      megacredits: defaultProteection,
+      steel: defaultProteection,
+      titanium: defaultProteection,
+      plants: defaultProteection,
+      energy: defaultProteection,
+      heat: defaultProteection,
+    };
+
+    if (player.alloysAreProtected()) {
+      protection.steel = 'on';
+      protection.titanium = 'on';
+    }
+
+    return protection;
   }
 
   public static getColonies(game: Game): Array<ColonyModel> {

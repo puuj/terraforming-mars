@@ -9,7 +9,8 @@ import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {TestPlayer} from '../../TestPlayer';
 import {Capital} from '../../../src/server/cards/base/Capital';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
-import {addOcean} from '../../TestingUtils';
+import {addOcean, cast} from '../../TestingUtils';
+import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
 describe('OceanCity', function() {
   let card: OceanCity;
@@ -25,35 +26,35 @@ describe('OceanCity', function() {
 
   it('Can play', function() {
     addOcean(player);
-    expect(card.canPlay(player)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
     addOcean(player);
-    expect(card.canPlay(player)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
     addOcean(player);
-    expect(card.canPlay(player)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
     addOcean(player);
-    expect(card.canPlay(player)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
     addOcean(player);
-    expect(card.canPlay(player)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
     addOcean(player);
-    expect(card.canPlay(player)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
-    player.addProduction(Resources.ENERGY, 1);
-    expect(card.canPlay(player)).is.true;
+    player.production.add(Resources.ENERGY, 1);
+    expect(player.simpleCanPlay(card)).is.true;
   });
 
   it('play', function() {
     const oceanSpace = addOcean(player);
-    player.addProduction(Resources.ENERGY, 1);
+    player.production.add(Resources.ENERGY, 1);
 
-    const action = card.play(player);
+    const action = cast(player.simplePlay(card), SelectSpace);
 
-    expect(player.getProduction(Resources.ENERGY)).eq(0);
-    expect(player.getProduction(Resources.MEGACREDITS)).eq(3);
+    expect(player.production.energy).eq(0);
+    expect(player.production.megacredits).eq(3);
     expect(game.getCitiesOnMarsCount()).eq(0);
     expect(player.game.getCitiesCount(player)).eq(0);
 
@@ -68,7 +69,7 @@ describe('OceanCity', function() {
 
   it('Cannot place a city next to Ocean City', function() {
     const oceanSpace = addOcean(player);
-    player.addProduction(Resources.ENERGY, 1);
+    player.production.add(Resources.ENERGY, 1);
 
     const action = card.play(player);
 
@@ -86,7 +87,7 @@ describe('OceanCity', function() {
 
   it('Can place Ocean City next to a city', function() {
     const oceanSpace = addOcean(player);
-    player.addProduction(Resources.ENERGY, 1);
+    player.production.add(Resources.ENERGY, 1);
 
     const citySpace = game.board
       .getAdjacentSpaces(oceanSpace)

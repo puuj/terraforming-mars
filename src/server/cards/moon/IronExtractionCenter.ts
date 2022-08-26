@@ -31,11 +31,10 @@ export class IronExtractionCenter extends MoonCard {
   public produce(player: Player) {
     const miningRate = MoonExpansion.moonData(player.game).miningRate;
     const productionIncrease = Math.floor(miningRate / 2);
-    player.addProduction(Resources.STEEL, productionIncrease, {log: true});
+    player.production.add(Resources.STEEL, productionIncrease, {log: true});
   }
 
-  public override play(player: Player) {
-    super.play(player);
+  public play(player: Player) {
     this.produce(player);
     return undefined;
   }

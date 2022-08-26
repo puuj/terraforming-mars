@@ -10,7 +10,6 @@ import {CardRenderer} from '../render/CardRenderer';
 import {CardRequirements} from '../CardRequirements';
 import {Card} from '../Card';
 import {max} from '../Options';
-import {ColoniesHandler} from '../../colonies/ColoniesHandler';
 
 export class PioneerSettlement extends Card implements IProjectCard {
   constructor() {
@@ -36,7 +35,7 @@ export class PioneerSettlement extends Card implements IProjectCard {
   public warning?: string;
 
   public override canPlay(player: Player): boolean {
-    if (ColoniesHandler.getPlayableColonies(player).length === 0) {
+    if (player.colonies.getPlayableColonies().length === 0) {
       return false;
     }
 
@@ -59,7 +58,7 @@ export class PioneerSettlement extends Card implements IProjectCard {
       return false;
     }
 
-    const megaCreditsProduction = player.getProduction(Resources.MEGACREDITS);
+    const megaCreditsProduction = player.production.megacredits;
     if (megaCreditsProduction === -4 && player.isCorporation(CardName.POSEIDON)) {
       return true;
     } else if (megaCreditsProduction <= -4) {
@@ -73,11 +72,11 @@ export class PioneerSettlement extends Card implements IProjectCard {
   }
 
   public play(player: Player) {
-    const openColonies = player.getProduction(Resources.MEGACREDITS) <= -4 ?
+    const openColonies = player.production.megacredits <= -4 ?
       player.game.colonies.filter((colony) => colony.name === ColonyName.LUNA) :
       undefined;
     player.game.defer(new BuildColony(player, {title: 'Select colony for Pioneer Settlement', colonies: openColonies}));
-    player.addProduction(Resources.MEGACREDITS, -2);
+    player.production.add(Resources.MEGACREDITS, -2);
     return undefined;
   }
 }

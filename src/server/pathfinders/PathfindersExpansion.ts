@@ -191,7 +191,7 @@ export class PathfindersExpansion {
       player.addResource(Resources.ENERGY, 1, {log: true});
       break;
     case 'energy_production':
-      player.addProduction(Resources.ENERGY, 1, {log: true});
+      player.production.add(Resources.ENERGY, 1, {log: true});
       break;
     case 'floater':
       game.defer(new AddResourcesToCard(player, CardResource.FLOATER));
@@ -203,7 +203,7 @@ export class PathfindersExpansion {
       player.addResource(Resources.HEAT, 1, {log: true});
       break;
     case 'heat_production':
-      player.addProduction(Resources.HEAT, 1, {log: true});
+      player.production.add(Resources.HEAT, 1, {log: true});
       break;
     case 'moon_mine':
       game.defer(new PlaceMoonMineTile(player));
@@ -218,7 +218,7 @@ export class PathfindersExpansion {
       player.addResource(Resources.PLANTS, 1, {log: true});
       break;
     case 'plant_production':
-      player.addProduction(Resources.PLANTS, 1, {log: true});
+      player.production.add(Resources.PLANTS, 1, {log: true});
       break;
     case 'resource':
       game.defer(new SelectResourcesDeferred(player, 1, 'Gain 1 resource for your Planetary track bonus.'));
@@ -227,13 +227,13 @@ export class PathfindersExpansion {
       player.addResource(Resources.STEEL, 1, {log: true});
       break;
     case 'steel_production':
-      player.addProduction(Resources.STEEL, 1, {log: true});
+      player.production.add(Resources.STEEL, 1, {log: true});
       break;
     case 'titanium':
       player.addResource(Resources.TITANIUM, 1, {log: true});
       break;
     case 'titanium_production':
-      player.addProduction(Resources.TITANIUM, 1, {log: true});
+      player.production.add(Resources.TITANIUM, 1, {log: true});
       break;
     case 'tr':
       player.increaseTerraformRating();
