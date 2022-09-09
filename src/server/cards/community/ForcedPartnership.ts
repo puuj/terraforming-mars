@@ -28,7 +28,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.increaseTerraformRatingSteps(2);
 
     const availablePlayerTargets = player.game.getPlayersInGenerationOrder().filter((p) => p.id !== player.id);

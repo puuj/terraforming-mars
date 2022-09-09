@@ -30,7 +30,7 @@ export class Spies extends Card implements IProjectCard {
     });
   }
 
-  public play() {
+  public override play() {
     return undefined;
   }
 

@@ -24,7 +24,7 @@ export class Drought extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.game.defer(new RemoveOceanTile(player, 'Remove an Ocean tile from the board'));
     return undefined;
   }

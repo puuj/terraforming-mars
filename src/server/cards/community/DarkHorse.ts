@@ -53,7 +53,7 @@ export class DarkHorse extends Card implements IProjectCard {
     return canClaim;
   }
 
-  public play() {
+  public override play() {
     return undefined;
   }
 }

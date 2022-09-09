@@ -21,7 +21,7 @@ export class IceAge extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.game.increaseTemperature(player, -2);
     return undefined;
   }

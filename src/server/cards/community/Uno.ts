@@ -31,7 +31,7 @@ export class Uno extends Card implements IProjectCard {
     return false;
   }
 
-  public play() {
+  public override play() {
     return undefined;
   }
 }

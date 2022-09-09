@@ -27,15 +27,15 @@ export class Windfall extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.drawCard(4);
-    player.megaCredits += player.getProduction(Resources.MEGACREDITS);
+    player.megaCredits += player.production.megacredits;
     // player.megaCredits += player.getTerraformRating();
-    player.heat += player.getProduction(Resources.HEAT);
-    player.energy = player.getProduction(Resources.ENERGY);
-    player.titanium += player.getProduction(Resources.TITANIUM);
-    player.steel += player.getProduction(Resources.STEEL);
-    player.plants += player.getProduction(Resources.PLANTS);
+    player.heat += player.production.heat;
+    player.energy = player.production.energy;
+    player.titanium += player.production.titanium;
+    player.steel += player.production.steel;
+    player.plants += player.production.plants;
     return undefined;
   }
 }

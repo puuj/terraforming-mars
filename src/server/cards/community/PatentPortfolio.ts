@@ -25,7 +25,7 @@ export class PatentPortfolio extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.addResource(Resources.MEGACREDITS, player.cardsInHand.length, {log: true});
     return undefined;
   }

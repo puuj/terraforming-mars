@@ -26,7 +26,7 @@ export class Fires extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.game.increaseOxygenLevel(player, -1);
     player.game.increaseTemperature(player, 1);
     return undefined;

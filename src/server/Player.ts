@@ -1976,11 +1976,7 @@ export class Player {
     player.megaCredits = d.megaCredits;
     player.needsToDraft = d.needsToDraft;
     player.oceanBonus = d.oceanBonus;
-<<<<<<< HEAD
     player.passingTo = (d.passingTo ? d.passingTo : '');
-    player.plantProduction = d.plantProduction;
-=======
->>>>>>> upstream/main
     player.plants = d.plants;
     player.plantsNeededForGreenery = d.plantsNeededForGreenery;
     player.production.override(Units.of({

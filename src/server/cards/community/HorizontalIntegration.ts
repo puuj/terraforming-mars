@@ -36,14 +36,14 @@ export class HorizontalIntegration extends Card implements IProjectCard {
     return false;
   }
 
-  public play(player: Player) {
+  public override play(player: Player) {
     player.megaCredits--;
     player.steel--;
     player.titanium--;
     player.plants--;
     player.energy--;
     player.heat--;
-    player.addProduction(Resources.MEGACREDITS, 4);
+    player.production.add(Resources.MEGACREDITS, 4);
 
     return undefined;
   }
