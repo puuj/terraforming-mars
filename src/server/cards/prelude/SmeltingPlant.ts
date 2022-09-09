@@ -10,6 +10,10 @@ export class SmeltingPlant extends PreludeCard {
       name: CardName.SMELTING_PLANT,
       tags: [Tag.BUILDING],
 
+      behavior: {
+        stock: {steel: 5},
+      },
+
       metadata: {
         cardNumber: 'P30',
         renderData: CardRenderer.builder((b) => {
@@ -20,8 +24,7 @@ export class SmeltingPlant extends PreludeCard {
       },
     });
   }
-  public play(player: Player) {
-    player.steel += 5;
+  public override bespokePlay(player: Player) {
     return player.game.increaseOxygenLevel(player, 2);
   }
 }

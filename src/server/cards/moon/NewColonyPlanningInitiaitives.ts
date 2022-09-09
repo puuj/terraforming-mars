@@ -26,7 +26,7 @@ export class NewColonyPlanningInitiaitives extends Card implements IProjectCard 
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseColonyRate(player);
     return undefined;
   }

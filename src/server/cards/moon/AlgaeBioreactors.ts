@@ -4,17 +4,16 @@ import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 
-export class AlgaeBioreactors extends MoonCard {
+export class AlgaeBioreactors extends Card {
   constructor() {
     super({
       name: CardName.ALGAE_BIOREACTORS,
       cardType: CardType.AUTOMATED,
       tags: [Tag.PLANT],
       cost: 9,
-      productionBox: Units.of({plants: -1}),
+      productionBox: {plants: -1},
       tr: {moonColony: 1, oxygen: 1},
 
       metadata: {
@@ -24,11 +23,10 @@ export class AlgaeBioreactors extends MoonCard {
           b.production((pb) => pb.minus().plants(1)).moonColonyRate().oxygen(1);
         }),
       },
-    }, {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseColonyRate(player);
     player.game.increaseOxygenLevel(player, 1);
     return undefined;

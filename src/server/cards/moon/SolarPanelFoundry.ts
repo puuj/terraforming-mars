@@ -26,10 +26,6 @@ export class SolarPanelFoundry extends Card implements IActionCard, IProjectCard
     });
   }
 
-  public play() {
-    return undefined;
-  }
-
   public canAct(player: Player) {
     return player.steel >= 2;
   }

@@ -1,9 +1,7 @@
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
 import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -14,6 +12,7 @@ export class ImportOfAdvancedGHG extends Card implements IProjectCard {
       name: CardName.IMPORT_OF_ADVANCED_GHG,
       tags: [Tag.EARTH, Tag.SPACE],
       cost: 9,
+      productionBox: {heat: 2},
 
       metadata: {
         cardNumber: '167',
@@ -21,10 +20,5 @@ export class ImportOfAdvancedGHG extends Card implements IProjectCard {
         description: 'Increase your heat production 2 steps.',
       },
     });
-  }
-
-  public play(player: Player) {
-    player.production.add(Resources.HEAT, 2);
-    return undefined;
   }
 }

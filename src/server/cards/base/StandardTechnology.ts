@@ -30,7 +30,4 @@ export class StandardTechnology extends Card implements IProjectCard {
       player.megaCredits += 3;
     }
   }
-  public play() {
-    return undefined;
-  }
 }

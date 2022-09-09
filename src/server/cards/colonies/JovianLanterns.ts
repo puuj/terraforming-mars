@@ -40,7 +40,6 @@ export class JovianLanterns extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   public canAct(player: Player): boolean {
     return player.titanium > 0;
@@ -52,7 +51,7 @@ export class JovianLanterns extends Card implements IProjectCard {
     return undefined;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2}));
     player.increaseTerraformRating();
     return undefined;

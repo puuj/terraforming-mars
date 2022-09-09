@@ -4,20 +4,19 @@ import {CardType} from '../../../common/cards/CardType';
 import {PlaceMoonRoadTile} from '../../moon/PlaceMoonRoadTile';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {TileType} from '../../../common/TileType';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 
-export class TychoRoadNetwork extends MoonCard {
+export class TychoRoadNetwork extends Card {
   constructor() {
     super({
       name: CardName.TYCHO_ROAD_NETWORK,
       cardType: CardType.AUTOMATED,
       tags: [Tag.MOON],
       cost: 15,
-      productionBox: Units.of({megacredits: 1}),
-      reserveUnits: Units.of({steel: 1}),
+      productionBox: {megacredits: 1},
+      reserveUnits: {steel: 1},
       tr: {moonLogistics: 1},
 
       metadata: {
@@ -30,12 +29,11 @@ export class TychoRoadNetwork extends MoonCard {
           b.moonRoad({secondaryTag: AltSecondaryTag.MOON_LOGISTICS_RATE});
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_ROAD],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonRoadTile(player));
     return undefined;
   }

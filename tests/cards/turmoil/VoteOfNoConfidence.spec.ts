@@ -1,18 +1,15 @@
 import {expect} from 'chai';
 import {VoteOfNoConfidence} from '../../../src/server/cards/turmoil/VoteOfNoConfidence';
-import {Game} from '../../../src/server/Game';
 import {PartyName} from '../../../src/common/turmoil/PartyName';
-import {setCustomGameOptions} from '../../TestingUtils';
-import {TestPlayer} from '../../TestPlayer';
+import {runAllActions, setCustomGameOptions} from '../../TestingUtils';
 import {isPlayerId, PlayerId} from '../../../src/common/Types';
+import {getTestPlayer, newTestGame} from '../../TestGame';
 
 describe('VoteOfNoConfidence', function() {
   it('Should play', function() {
     const card = new VoteOfNoConfidence();
-    const player = TestPlayer.BLUE.newPlayer();
-
-    const gameOptions = setCustomGameOptions();
-    const game = Game.newInstance('gameid', [player], player, gameOptions);
+    const game = newTestGame(1, setCustomGameOptions());
+    const player = getTestPlayer(game, 0);
     const turmoil = game.turmoil!;
     expect(player.canPlayIgnoringCost(card)).is.not.true;
 
@@ -26,6 +23,7 @@ describe('VoteOfNoConfidence', function() {
     card.play(player);
     expect(isPlayerId(turmoil.chairman)).is.true;
     expect(game.getPlayerById(turmoil.chairman as PlayerId)).to.eq(player);
+    runAllActions(game);
     expect(player.getTerraformRating()).to.eq(15);
   });
 });

@@ -32,7 +32,7 @@ export class PreliminaryDarkside extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseMiningRate(player);
     return new OrOptions(
       new SelectOption('Gain 3 titanium.', 'Gain titanium', () => {

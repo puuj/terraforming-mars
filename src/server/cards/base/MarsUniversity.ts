@@ -60,7 +60,4 @@ export class MarsUniversity extends Card implements IProjectCard {
     }
     return undefined;
   }
-  public play() {
-    return undefined;
-  }
 }

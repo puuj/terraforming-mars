@@ -28,10 +28,6 @@ export class HE3Refinery extends Card implements IProjectCard {
     });
   }
 
-  public play() {
-    return undefined;
-  }
-
   public canAct() {
     return true;
   }

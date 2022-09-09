@@ -5,20 +5,19 @@ import {Tag} from '../../../common/cards/Tag';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {TileType} from '../../../common/TileType';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {Size} from '../../../common/cards/render/Size';
 import {Resources} from '../../../common/Resources';
 import {all} from '../Options';
 
-export class ColonistShuttles extends MoonCard {
+export class ColonistShuttles extends Card {
   constructor() {
     super({
       name: CardName.COLONIST_SHUTTLES,
       cardType: CardType.AUTOMATED,
       tags: [Tag.SPACE],
       cost: 12,
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
       tr: {moonColony: 1},
 
       metadata: {
@@ -29,12 +28,11 @@ export class ColonistShuttles extends MoonCard {
           b.megacredits(2).slash().moonColony({size: Size.SMALL, all});
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_COLONY],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseColonyRate(player);
     const surfaceColonies = MoonExpansion.spaces(player.game, TileType.MOON_COLONY, {surfaceOnly: true}).length;
     player.addResource(Resources.MEGACREDITS, surfaceColonies * 2, {log: true});

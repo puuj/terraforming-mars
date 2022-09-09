@@ -4,17 +4,16 @@ import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 
-export class MiningRobotsManufCenter extends MoonCard {
+export class MiningRobotsManufCenter extends Card {
   constructor() {
     super({
       name: CardName.MINING_ROBOTS_MANUF_CENTER,
       cardType: CardType.AUTOMATED,
       tags: [Tag.SCIENCE, Tag.BUILDING],
       cost: 12,
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
       tr: {moonMining: 2},
 
       metadata: {
@@ -28,7 +27,7 @@ export class MiningRobotsManufCenter extends MoonCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseMiningRate(player, 2);
     return undefined;
   }

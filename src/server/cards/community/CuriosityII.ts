@@ -3,7 +3,6 @@ import {ICorporationCard} from '../corporation/ICorporationCard';
 import {Tag} from '../../../common/cards/Tag';
 import {Player} from '../../Player';
 import {ISpace} from '../../boards/ISpace';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
@@ -16,7 +15,6 @@ import {DrawCards} from '../../deferredActions/DrawCards';
 import {SpaceType} from '../../../common/boards/SpaceType';
 import {SpaceBonus} from '../../../common/boards/SpaceBonus';
 import {Phase} from '../../../common/Phase';
-import {Units} from '../../../common/Units';
 
 export class CuriosityII extends Card implements ICorporationCard {
   constructor() {
@@ -25,7 +23,7 @@ export class CuriosityII extends Card implements ICorporationCard {
       name: CardName.CURIOSITY_II,
       tags: [Tag.SCIENCE, Tag.BUILDING],
       startingMegaCredits: 40,
-      productionBox: Units.of({steel: 2}),
+      productionBox: {steel: 2},
 
       metadata: {
         cardNumber: '',
@@ -57,11 +55,6 @@ export class CuriosityII extends Card implements ICorporationCard {
     if (space.bonus.some((bonus) => eligibleBonuses.includes(bonus)) || space.tile?.covers !== undefined) {
       cardOwner.game.defer(new SimpleDeferredAction(cardOwner, () => this.corpAction(cardOwner)));
     }
-  }
-
-  public play(player: Player) {
-    player.production.add(Resources.STEEL, 2);
-    return undefined;
   }
 
   private corpAction(player: Player) {

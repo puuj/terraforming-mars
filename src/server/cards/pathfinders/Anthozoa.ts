@@ -33,7 +33,6 @@ export class Anthozoa extends Card implements IProjectCard, IActionCard {
     });
   }
 
-  public override resourceCount = 0;
 
   public canAct(player: Player) {
     return player.plants > 0;
@@ -43,10 +42,6 @@ export class Anthozoa extends Card implements IProjectCard, IActionCard {
     player.deductResource(Resources.PLANTS, 1);
     player.addResourceTo(this);
     player.game.log('${0} spent 1 plant to place an animal on ${1}.', (b) => b.player(player).card(this));
-    return undefined;
-  }
-
-  public play() {
     return undefined;
   }
 }

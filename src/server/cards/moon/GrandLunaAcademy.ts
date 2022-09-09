@@ -25,7 +25,7 @@ export class GrandLunaAcademy extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const tags = player.tags.count(Tag.MOON);
     // Adding 1 so this tag is included in the count.
     const gain = Math.floor((tags + 1) / 2);

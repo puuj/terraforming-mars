@@ -27,7 +27,7 @@ export class LTFHeadquarters extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseColonyRate(player);
     player.game.defer(new BuildColony(player));
     player.colonies.increaseFleetSize();

@@ -9,23 +9,25 @@ import {SelectCard} from '../../../src/server/inputs/SelectCard';
 import {Player} from '../../../src/server/Player';
 import {TileType} from '../../../src/common/TileType';
 import {TestPlayer} from '../../TestPlayer';
+import {cast} from '../../TestingUtils';
 
 describe('UrbanDecomposers', function() {
   let card: UrbanDecomposers;
   let player: Player;
   let game: Game;
+  let luna: Luna;
 
   beforeEach(function() {
     card = new UrbanDecomposers();
     player = TestPlayer.BLUE.newPlayer();
     const redPlayer = TestPlayer.RED.newPlayer();
     game = Game.newInstance('gameid', [player, redPlayer], player);
+    luna = new Luna();
+    game.colonies.push(luna);
   });
 
   it('Can not play if player has no city', function() {
-    const colony = new Luna();
-    colony.colonies.push(player.id);
-    player.game.colonies.push(colony);
+    luna.colonies.push(player.id);
     expect(card.canPlay(player)).is.not.true;
   });
 
@@ -41,9 +43,7 @@ describe('UrbanDecomposers', function() {
     lands[0].player = player;
     lands[0].tile = {tileType: TileType.CITY};
 
-    const colony = new Luna();
-    colony.colonies.push(player.id);
-    player.game.colonies.push(colony);
+    luna.colonies.push(player.id);
 
     expect(card.canPlay(player)).is.true;
     card.play(player);
@@ -72,7 +72,7 @@ describe('UrbanDecomposers', function() {
     expect(game.deferredActions).has.lengthOf(1);
 
     // add two microbes to Ants
-    const selectCard = game.deferredActions.peek()!.execute() as SelectCard<ICard>;
+    const selectCard = cast(game.deferredActions.peek()!.execute(), SelectCard<ICard>);
     selectCard.cb([ants]);
     expect(ants.resourceCount).to.eq(2);
     expect(player.production.plants).to.eq(1);

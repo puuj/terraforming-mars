@@ -4,7 +4,6 @@ import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
-import {Resources} from '../../../common/Resources';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRequirements} from '../CardRequirements';
 import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
@@ -20,6 +19,11 @@ export class SpaceDebrisCleaningOperation extends Card implements IProjectCard {
       tags: [Tag.MARS, Tag.SPACE],
       requirements: CardRequirements.builder((b) => b.tag(Tag.SPACE, 4)),
 
+      behavior: {
+        stock: {titanium: 3},
+        drawCard: 1,
+      },
+
       metadata: {
         cardNumber: 'Pf24',
         renderData: CardRenderer.builder((b) => {
@@ -34,8 +38,7 @@ export class SpaceDebrisCleaningOperation extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
-    player.addResource(Resources.TITANIUM, 3);
+  public override bespokePlay(player: Player) {
     player.game.defer(
       new AddResourcesToCard(
         player,
@@ -48,7 +51,6 @@ export class SpaceDebrisCleaningOperation extends Card implements IProjectCard {
         },
       ));
     player.game.defer(new AddResourcesToCard(player, CardResource.DATA, {count: 1}));
-    player.drawCard();
     return undefined;
   }
 }

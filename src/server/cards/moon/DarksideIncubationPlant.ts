@@ -9,12 +9,11 @@ import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {LogHelper} from '../../LogHelper';
 import {VictoryPoints} from '../ICard';
 
-export class DarksideIncubationPlant extends MoonCard implements IActionCard, IProjectCard {
+export class DarksideIncubationPlant extends Card implements IActionCard, IProjectCard {
   constructor() {
     super({
       name: CardName.DARKSIDE_INCUBATION_PLANT,
@@ -24,7 +23,7 @@ export class DarksideIncubationPlant extends MoonCard implements IActionCard, IP
 
       resourceType: CardResource.MICROBE,
       victoryPoints: VictoryPoints.resource(1, 2),
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
 
       metadata: {
         description: {
@@ -45,11 +44,6 @@ export class DarksideIncubationPlant extends MoonCard implements IActionCard, IP
         }),
       },
     });
-  }
-  public override resourceCount = 0;
-
-  public play() {
-    return undefined;
   }
 
   public canAct() {

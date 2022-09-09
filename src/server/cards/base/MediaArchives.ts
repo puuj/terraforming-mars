@@ -26,8 +26,8 @@ export class MediaArchives extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
-    const allPlayedEvents: number = player.game.getPlayers().map((player) => player.getPlayedEventsCount()).reduce((a, c) => a + c, 0);
+  public override bespokePlay(player: Player) {
+    const allPlayedEvents = player.game.getPlayers().map((player) => player.getPlayedEventsCount()).reduce((a, c) => a + c, 0);
     player.addResource(Resources.MEGACREDITS, allPlayedEvents, {log: true});
     return undefined;
   }

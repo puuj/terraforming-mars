@@ -29,7 +29,7 @@ export class GanymedeColony extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.addCityTile(player, SpaceName.GANYMEDE_COLONY, SpaceType.COLONY);
     return undefined;
   }

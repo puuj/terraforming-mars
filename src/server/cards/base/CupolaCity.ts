@@ -9,18 +9,16 @@ import {ISpace} from '../../boards/ISpace';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {max} from '../Options';
 
 export class CupolaCity extends Card implements IProjectCard {
-  public migrated = true;
   constructor() {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.CUPOLA_CITY,
       tags: [Tag.CITY, Tag.BUILDING],
       cost: 16,
-      productionBox: Units.of({energy: -1, megacredits: 3}),
+      productionBox: {energy: -1, megacredits: 3},
 
       requirements: CardRequirements.builder((b) => b.oxygen(9, {max})),
       metadata: {
@@ -35,10 +33,10 @@ export class CupolaCity extends Card implements IProjectCard {
       },
     });
   }
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.game.board.getAvailableSpacesForCity(player).length > 0;
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectSpace(
       'Select a space for city tile',
       player.game.board.getAvailableSpacesForCity(player),

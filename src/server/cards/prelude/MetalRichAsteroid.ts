@@ -8,6 +8,9 @@ export class MetalRichAsteroid extends PreludeCard implements IProjectCard {
   constructor() {
     super({
       name: CardName.METAL_RICH_ASTEROID,
+      behavior: {
+        stock: {titanium: 4, steel: 4},
+      },
       metadata: {
         cardNumber: 'P19',
         renderData: CardRenderer.builder((b) => {
@@ -18,9 +21,7 @@ export class MetalRichAsteroid extends PreludeCard implements IProjectCard {
       },
     });
   }
-  public play(player: Player) {
-    player.titanium += 4;
-    player.steel += 4;
+  public override bespokePlay(player: Player) {
     return player.game.increaseTemperature(player, 1);
   }
 }

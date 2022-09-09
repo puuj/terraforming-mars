@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {CarbonateProcessing} from '../../../src/server/cards/base/CarbonateProcessing';
 import {Player} from '../../../src/server/Player';
 import {Resources} from '../../../src/common/Resources';
-import {TestPlayer} from '../../TestPlayer';
+import {getTestPlayer, newTestGame} from '../../TestGame';
 
 describe('CarbonateProcessing', function() {
   let card: CarbonateProcessing;
@@ -10,7 +10,8 @@ describe('CarbonateProcessing', function() {
 
   beforeEach(function() {
     card = new CarbonateProcessing();
-    player = TestPlayer.BLUE.newPlayer();
+    const game = newTestGame(1);
+    player = getTestPlayer(game, 0);
   });
 
   it('Can not play', function() {
@@ -21,7 +22,7 @@ describe('CarbonateProcessing', function() {
     player.production.add(Resources.ENERGY, 1);
     expect(player.simpleCanPlay(card)).is.true;
 
-    player.simplePlay(card);
+    card.play(player);
     expect(player.production.energy).to.eq(0);
     expect(player.production.heat).to.eq(3);
   });

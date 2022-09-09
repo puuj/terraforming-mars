@@ -28,16 +28,15 @@ describe('PrivateSecurity', function() {
 
     opponent2.playedCards = [];
     fish.play(player);
-    let action = player.game.deferredActions.pop()?.execute()! as SelectPlayer;
+    const action = cast(player.game.deferredActions.pop()?.execute(), SelectPlayer);
     // Options for both opponents.
     expect(action.players).has.lengthOf(2);
 
     // Opponent 2 has Private Security
     opponent2.playedCards = [card];
     fish.play(player);
-    action = player.game.deferredActions.pop()?.execute()! as SelectPlayer;
     // Options for only one opponent.
-    expect(action).is.undefined;
+    expect(player.game.deferredActions.pop()?.execute()).is.undefined;
     // And it's the one without Private Security.
     expect(opponent1.production.plants).to.eq(1);
   });
@@ -47,6 +46,7 @@ describe('PrivateSecurity', function() {
     opponent2.production.override({plants: 0});
 
     const fish = new Fish();
+    (player.game as any).temperature = 2;
 
     opponent2.playedCards = [];
     expect(fish.canPlay(player)).is.true;
@@ -61,6 +61,7 @@ describe('PrivateSecurity', function() {
     opponent2.production.override({plants: 1});
 
     const fish = new Fish();
+    (player.game as any).temperature = 2;
 
     player.playedCards = [card];
     expect(fish.canPlay(player)).is.true;

@@ -30,7 +30,6 @@ export class LunaArchives extends Card implements IActionCard {
     });
   }
 
-  public override resourceCount = 0;
 
   public canAct() {
     return true;
@@ -39,10 +38,6 @@ export class LunaArchives extends Card implements IActionCard {
   public action(player: Player) {
     const qty = player.tags.count(Tag.MOON);
     player.addResourceTo(this, {qty, log: true});
-    return undefined;
-  }
-
-  public play() {
     return undefined;
   }
 }

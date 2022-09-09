@@ -6,17 +6,16 @@ import {Tag} from '../../../common/cards/Tag';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {CardRenderer} from '../render/CardRenderer';
 import {TileType} from '../../../common/TileType';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 
-export class LunarDustProcessingPlant extends MoonCard implements IProjectCard {
+export class LunarDustProcessingPlant extends Card implements IProjectCard {
   constructor() {
     super({
       name: CardName.LUNAR_DUST_PROCESSING_PLANT,
       cardType: CardType.ACTIVE,
       tags: [Tag.BUILDING],
       cost: 6,
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
       tr: {moonLogistics: 1},
 
       metadata: {
@@ -32,7 +31,7 @@ export class LunarDustProcessingPlant extends MoonCard implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseLogisticRate(player);
     return undefined;
   }

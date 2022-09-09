@@ -25,6 +25,10 @@ export class LargeConvoy extends Card implements IProjectCard {
       tr: {oceans: 1},
       victoryPoints: 2,
 
+      behavior: {
+        drawCard: 2,
+      },
+
       metadata: {
         cardNumber: '143',
         renderData: CardRenderer.builder((b) => {
@@ -36,9 +40,7 @@ export class LargeConvoy extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player): PlayerInput | undefined {
-    player.drawCard(2);
-
+  public override bespokePlay(player: Player): PlayerInput | undefined {
     const animalCards = player.getResourceCards(CardResource.ANIMAL);
 
     const gainPlants = function() {

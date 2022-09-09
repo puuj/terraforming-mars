@@ -30,7 +30,4 @@ export class OptimalAerobraking extends Card implements IProjectCard {
       player.heat += 3;
     }
   }
-  public play() {
-    return undefined;
-  }
 }

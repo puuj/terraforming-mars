@@ -5,7 +5,6 @@ import {Card} from '../Card';
 import {VictoryPoints} from '../ICard';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
-import {Resources} from '../../../common/Resources';
 import {CardResource} from '../../../common/CardResource';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
@@ -22,6 +21,7 @@ export class Livestock extends Card implements IActionCard, IProjectCard {
       resourceType: CardResource.ANIMAL,
       victoryPoints: VictoryPoints.resource(1, 1),
       requirements: CardRequirements.builder((b) => b.oxygen(9)),
+      productionBox: {plants: -1, megacredits: 2},
 
       metadata: {
         cardNumber: '184',
@@ -42,15 +42,6 @@ export class Livestock extends Card implements IActionCard, IProjectCard {
     });
   }
 
-  public override resourceCount = 0;
-  public override canPlay(player: Player): boolean {
-    return player.production.plants >= 1;
-  }
-  public play(player: Player) {
-    player.production.add(Resources.PLANTS, -1);
-    player.production.add(Resources.MEGACREDITS, 2);
-    return undefined;
-  }
   public canAct(): boolean {
     return true;
   }

@@ -31,7 +31,7 @@ export class Virus extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player): PlayerInput | undefined {
+  public override bespokePlay(player: Player): PlayerInput | undefined {
     if (player.game.isSoloMode()) {
       player.game.someoneHasRemovedOtherPlayersPlants = true;
       return undefined;

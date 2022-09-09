@@ -32,14 +32,15 @@ export class SpacePortColony extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new BuildColony(player, {allowDuplicate: true, title: 'Select colony for Space Port Colony'}));
+    // TODO(kberg): shouldn't this have an onDiscard?
     player.colonies.increaseFleetSize();
     return undefined;
   }
 
   public override getVictoryPoints(player: Player) {
-    let coloniesCount: number = 0;
+    let coloniesCount = 0;
     player.game.colonies.forEach((colony) => {
       coloniesCount += colony.colonies.length;
     });

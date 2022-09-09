@@ -3,19 +3,18 @@ import {Player} from '../../Player';
 import {CardType} from '../../../common/cards/CardType';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {CardRequirements} from '../CardRequirements';
 import {all} from '../Options';
 
-export class WaterTreatmentComplex extends MoonCard {
+export class WaterTreatmentComplex extends Card {
   constructor() {
     super({
       name: CardName.WATER_TREATMENT_COMPLEX,
       cardType: CardType.AUTOMATED,
       cost: 12,
       requirements: CardRequirements.builder((b) => b.colonyTiles(1, {all})),
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
       tr: {moonColony: 2},
 
       metadata: {
@@ -26,7 +25,7 @@ export class WaterTreatmentComplex extends MoonCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseColonyRate(player, 2);
     return undefined;
   }

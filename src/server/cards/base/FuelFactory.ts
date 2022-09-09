@@ -4,17 +4,15 @@ import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 
 export class FuelFactory extends Card implements IProjectCard {
-  public migrated = true;
   constructor() {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.FUEL_FACTORY,
       tags: [Tag.BUILDING],
       cost: 6,
-      productionBox: Units.of({energy: -1, megacredits: 1, titanium: 1}),
+      productionBox: {energy: -1, megacredits: 1, titanium: 1},
 
       metadata: {
         cardNumber: '180',
@@ -27,9 +25,5 @@ export class FuelFactory extends Card implements IProjectCard {
         description: 'Decrease your Energy production 1 step and increase your titanium and your M€ production 1 step each.',
       },
     });
-  }
-
-  public play() {
-    return undefined;
   }
 }

@@ -34,7 +34,4 @@ export class Conscription extends Card implements IProjectCard {
     }
     return 0;
   }
-  public play() {
-    return undefined;
-  }
 }

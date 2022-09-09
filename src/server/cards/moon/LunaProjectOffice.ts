@@ -28,7 +28,7 @@ export class LunaProjectOffice extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.moonData(player.game).lunaProjectOfficeLastGeneration = player.game.generation + 2;
     return undefined;
   }

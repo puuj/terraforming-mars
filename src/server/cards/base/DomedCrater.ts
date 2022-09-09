@@ -9,20 +9,21 @@ import {ISpace} from '../../boards/ISpace';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {digit, max} from '../Options';
 
 export class DomedCrater extends Card implements IProjectCard {
-  public migrated = true;
-
   constructor() {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.DOMED_CRATER,
       tags: [Tag.CITY, Tag.BUILDING],
       cost: 24,
-      productionBox: Units.of({energy: -1, megacredits: 3}),
+      productionBox: {energy: -1, megacredits: 3},
       victoryPoints: 1,
+
+      behavior: {
+        stock: {plants: 3},
+      },
 
       requirements: CardRequirements.builder((b) => b.oxygen(7, {max})),
       metadata: {
@@ -41,16 +42,15 @@ export class DomedCrater extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.game.board.getAvailableSpacesForCity(player).length > 0;
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectSpace(
       'Select space for city tile',
       player.game.board.getAvailableSpacesForCity(player),
       (space: ISpace) => {
         player.game.addCityTile(player, space.id);
-        player.plants += 3;
         return undefined;
       },
     );

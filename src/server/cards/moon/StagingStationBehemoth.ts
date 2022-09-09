@@ -26,7 +26,7 @@ export class StagingStationBehemoth extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.colonies.increaseFleetSize();
     player.colonies.increaseFleetSize();
     MoonExpansion.raiseLogisticRate(player);

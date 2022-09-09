@@ -6,21 +6,19 @@ import {Tag} from '../../../common/cards/Tag';
 import {CardRenderer} from '../render/CardRenderer';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {MoonSpaces} from '../../moon/MoonSpaces';
-import {Units} from '../../../common/Units';
 import {TileType} from '../../../common/TileType';
-import {IMoonCard} from './IMoonCard';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 
-export class MareNectarisMine extends MoonCard implements IProjectCard, IMoonCard {
+export class MareNectarisMine extends Card implements IProjectCard {
   constructor() {
     super({
       name: CardName.MARE_NECTARIS_MINE,
       cardType: CardType.AUTOMATED,
       tags: [Tag.MOON, Tag.BUILDING],
       cost: 14,
-      productionBox: Units.of({steel: 1}),
-      reserveUnits: Units.of({titanium: 1}),
+      productionBox: {steel: 1},
+      reserveUnits: {titanium: 1},
       tr: {moonMining: 1},
 
       metadata: {
@@ -32,12 +30,11 @@ export class MareNectarisMine extends MoonCard implements IProjectCard, IMoonCar
           b.moonMine({secondaryTag: AltSecondaryTag.MOON_MINING_RATE}).asterix();
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_MINE],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.addMineTile(player, MoonSpaces.MARE_NECTARIS, this.name);
     MoonExpansion.raiseMiningRate(player);
     return undefined;

@@ -1,11 +1,8 @@
 import {Tag} from '../../../common/cards/Tag';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
-import {Resources} from '../../../common/Resources';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {IProjectCard} from '../IProjectCard';
 
 export class HousePrinting extends Card implements IProjectCard {
@@ -15,7 +12,7 @@ export class HousePrinting extends Card implements IProjectCard {
       name: CardName.HOUSE_PRINTING,
       tags: [Tag.BUILDING],
       cost: 10,
-      productionBox: Units.of({steel: 1}),
+      productionBox: {steel: 1},
       victoryPoints: 1,
 
       metadata: {
@@ -26,9 +23,5 @@ export class HousePrinting extends Card implements IProjectCard {
         description: 'Increase your steel production 1 step.',
       },
     });
-  }
-  public play(player: Player) {
-    player.production.add(Resources.STEEL, 1);
-    return undefined;
   }
 }

@@ -84,7 +84,4 @@ export class Aridor extends Card implements ICorporationCard {
     }
     return undefined;
   }
-  public play() {
-    return undefined;
-  }
 }

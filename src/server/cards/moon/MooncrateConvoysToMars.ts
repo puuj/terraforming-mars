@@ -31,7 +31,7 @@ export class MooncrateConvoysToMars extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseLogisticRate(player, 1);
     const game = player.game;
     game.getPlayers().forEach((player) => {

@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import {cast} from '../../TestingUtils';
 import {Dirigibles} from '../../../src/server/cards/venusNext/Dirigibles';
 import {FloatingHabs} from '../../../src/server/cards/venusNext/FloatingHabs';
 import {Game} from '../../../src/server/Game';
@@ -19,7 +20,7 @@ describe('Dirigibles', function() {
   });
 
   it('Should play', function() {
-    const action = card.play();
+    const action = card.play(player);
     expect(action).is.undefined;
   });
 
@@ -34,10 +35,9 @@ describe('Dirigibles', function() {
 
   it('Should act - multiple targets', function() {
     player.playedCards.push(new FloatingHabs());
-    const action = card.action(player);
-    expect(action).instanceOf(SelectCard);
+    const action = cast(card.action(player), SelectCard);
+    action.cb([card]);
 
-    action!.cb([card]);
     expect(card.resourceCount).to.eq(1);
   });
 });

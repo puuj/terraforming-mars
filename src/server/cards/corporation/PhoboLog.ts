@@ -16,6 +16,10 @@ export class PhoboLog extends Card implements ICorporationCard {
       tags: [Tag.SPACE],
       startingMegaCredits: 23,
 
+      behavior: {
+        stock: {titanium: 10},
+      },
+
       metadata: {
         cardNumber: 'R09',
         description: 'You start with 10 titanium and 23 M€.',
@@ -31,8 +35,7 @@ export class PhoboLog extends Card implements ICorporationCard {
       },
     });
   }
-  public play(player: Player) {
-    player.titanium = 10;
+  public override bespokePlay(player: Player) {
     player.increaseTitaniumValue();
     return undefined;
   }

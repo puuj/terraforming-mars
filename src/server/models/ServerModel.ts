@@ -6,14 +6,14 @@ import {GameOptions} from '../GameOptions';
 import {SimpleGameModel} from '../../common/models/SimpleGameModel';
 import {GameOptionsModel} from '../../common/models/GameOptionsModel';
 import {ICard} from '../cards/ICard';
-import {IProjectCard} from '../cards/IProjectCard';
+import {isIProjectCard} from '../cards/IProjectCard';
 import {isICloneTagCard} from '../cards/pathfinders/ICloneTagCard';
 import {Board} from '../boards/Board';
 import {ISpace} from '../boards/ISpace';
 import {Player} from '../Player';
 import {PlayerInput} from '../PlayerInput';
 import {PlayerInputModel} from '../../common/models/PlayerInputModel';
-import {PlayerInputTypes} from '../../common/input/PlayerInputTypes';
+import {PlayerInputType} from '../../common/input/PlayerInputType';
 import {PlayerViewModel, Protection, PublicPlayerModel} from '../../common/models/PlayerModel';
 import {SelectAmount} from '../inputs/SelectAmount';
 import {SelectCard} from '../inputs/SelectCard';
@@ -72,8 +72,9 @@ export class Server {
     return {
       aresData: game.aresData,
       awards: this.getAwards(game),
-      colonies: this.getColonies(game),
+      colonies: this.getColonies(game, game.colonies),
       deckSize: game.dealer.getDeckSize(),
+      discardedColonies: this.getColonies(game, game.discardedColonies, /* showTrackPosition */ false),
       gameAge: game.gameAge,
       gameOptions: this.getGameOptionsAsModel(game.gameOptions),
       generation: game.getGeneration(),
@@ -102,7 +103,7 @@ export class Server {
     const game = player.game;
 
     const players: Array<PublicPlayerModel> = game.getPlayersInGenerationOrder().map(this.getPlayer);
-    const thisPlayerIndex: number = players.findIndex((p) => p.color === player.color);
+    const thisPlayerIndex = players.findIndex((p) => p.color === player.color);
     const thisPlayer: PublicPlayerModel = players[thisPlayerIndex];
 
     return {
@@ -220,8 +221,8 @@ export class Server {
       amount: undefined,
       options: undefined,
       cards: undefined,
-      maxCardsToSelect: undefined,
-      minCardsToSelect: undefined,
+      max: undefined,
+      min: undefined,
       canUseSteel: undefined,
       canUseTitanium: undefined,
       canUseHeat: undefined,
@@ -229,8 +230,6 @@ export class Server {
       canUseData: undefined,
       players: undefined,
       availableSpaces: undefined,
-      min: undefined,
-      max: undefined,
       maxByDefault: undefined,
       microbes: undefined,
       floaters: undefined,
@@ -245,9 +244,9 @@ export class Server {
       turmoil: undefined,
     };
     switch (waitingFor.inputType) {
-    case PlayerInputTypes.AND_OPTIONS:
-    case PlayerInputTypes.OR_OPTIONS:
-    case PlayerInputTypes.SELECT_INITIAL_CARDS:
+    case PlayerInputType.AND_OPTIONS:
+    case PlayerInputType.OR_OPTIONS:
+    case PlayerInputType.SELECT_INITIAL_CARDS:
       playerInputModel.options = [];
       if (waitingFor.options !== undefined) {
         for (const option of waitingFor.options) {
@@ -260,57 +259,58 @@ export class Server {
         throw new Error('required options not defined');
       }
       break;
-    case PlayerInputTypes.SELECT_PROJECT_CARD_TO_PLAY:
+    case PlayerInputType.SELECT_PROJECT_CARD_TO_PLAY:
       const spctp: SelectProjectCardToPlay = waitingFor as SelectProjectCardToPlay;
       playerInputModel.cards = this.getCards(player, spctp.cards, {showCalculatedCost: true, reserveUnits: spctp.reserveUnits});
-      playerInputModel.microbes = spctp.microbes;
-      playerInputModel.floaters = spctp.floaters;
-      playerInputModel.canUseHeat = spctp.canUseHeat;
-      playerInputModel.science = spctp.scienceResources;
-      playerInputModel.seeds = spctp.seedResources;
+      playerInputModel.microbes = player.getSpendableMicrobes();
+      playerInputModel.floaters = player.getSpendableFloaters();
+      playerInputModel.canUseHeat = player.canUseHeatAsMegaCredits;
+      playerInputModel.science = player.getSpendableScienceResources();
+      playerInputModel.seeds = player.getSpendableSeedResources();
       break;
-    case PlayerInputTypes.SELECT_CARD:
+    case PlayerInputType.SELECT_CARD:
       const selectCard = waitingFor as SelectCard<ICard>;
       playerInputModel.cards = this.getCards(player, selectCard.cards, {
         showCalculatedCost: selectCard.config.played === false || selectCard.config.played === CardName.SELF_REPLICATING_ROBOTS,
         showResources: selectCard.config.played === true || selectCard.config.played === CardName.SELF_REPLICATING_ROBOTS,
         enabled: selectCard.config.enabled,
       });
-      playerInputModel.maxCardsToSelect = selectCard.config.max;
-      playerInputModel.minCardsToSelect = selectCard.config.min;
+      playerInputModel.max = selectCard.config.max;
+      playerInputModel.min = selectCard.config.min;
       playerInputModel.showOnlyInLearnerMode = selectCard.config.enabled?.every((p: boolean) => p === false);
       playerInputModel.selectBlueCardAction = selectCard.config.selectBlueCardAction;
       playerInputModel.showOwner = selectCard.config.showOwner === true;
       break;
-    case PlayerInputTypes.SELECT_COLONY:
+    case PlayerInputType.SELECT_COLONY:
       playerInputModel.coloniesModel = this.getColonyModel(player.game, (waitingFor as SelectColony).colonies);
       break;
-    case PlayerInputTypes.SELECT_PAYMENT:
-      playerInputModel.amount = (waitingFor as SelectPayment).amount;
-      playerInputModel.canUseSteel = (waitingFor as SelectPayment).canUseSteel;
-      playerInputModel.canUseTitanium = (waitingFor as SelectPayment).canUseTitanium;
-      playerInputModel.canUseHeat = (waitingFor as SelectPayment).canUseHeat;
-      playerInputModel.canUseSeeds = (waitingFor as SelectPayment).canUseSeeds;
+    case PlayerInputType.SELECT_PAYMENT:
+      const sp = waitingFor as SelectPayment;
+      playerInputModel.amount = sp.amount;
+      playerInputModel.canUseSteel = sp.canUseSteel;
+      playerInputModel.canUseTitanium = sp.canUseTitanium;
+      playerInputModel.canUseHeat = sp.canUseHeat;
+      playerInputModel.canUseSeeds = sp.canUseSeeds;
       playerInputModel.seeds = player.getSpendableSeedResources();
-      playerInputModel.canUseData = (waitingFor as SelectPayment).canUseData;
+      playerInputModel.canUseData = sp.canUseData;
       playerInputModel.data = player.getSpendableData();
       break;
-    case PlayerInputTypes.SELECT_PLAYER:
+    case PlayerInputType.SELECT_PLAYER:
       playerInputModel.players = (waitingFor as SelectPlayer).players.map(
         (player) => player.color,
       );
       break;
-    case PlayerInputTypes.SELECT_SPACE:
+    case PlayerInputType.SELECT_SPACE:
       playerInputModel.availableSpaces = (waitingFor as SelectSpace).availableSpaces.map(
         (space) => space.id,
       );
       break;
-    case PlayerInputTypes.SELECT_AMOUNT:
+    case PlayerInputType.SELECT_AMOUNT:
       playerInputModel.min = (waitingFor as SelectAmount).min;
       playerInputModel.max = (waitingFor as SelectAmount).max;
       playerInputModel.maxByDefault = (waitingFor as SelectAmount).maxByDefault;
       break;
-    case PlayerInputTypes.SELECT_DELEGATE:
+    case PlayerInputType.SELECT_DELEGATE:
       playerInputModel.players = (waitingFor as SelectDelegate).players.map(
         (player) => {
           if (player === 'NEUTRAL') {
@@ -321,13 +321,13 @@ export class Server {
         },
       );
       break;
-    case PlayerInputTypes.SELECT_PARTY_TO_SEND_DELEGATE:
+    case PlayerInputType.SELECT_PARTY_TO_SEND_DELEGATE:
       playerInputModel.availableParties = (waitingFor as SelectPartyToSendDelegate).availableParties;
       if (player.game !== undefined) {
         playerInputModel.turmoil = getTurmoilModel(player.game);
       }
       break;
-    case PlayerInputTypes.SELECT_PRODUCTION_TO_LOSE:
+    case PlayerInputType.SELECT_PRODUCTION_TO_LOSE:
       const _player = (waitingFor as SelectProductionToLose).player;
       playerInputModel.payProduction = {
         cost: (waitingFor as SelectProductionToLose).unitsToLose,
@@ -341,7 +341,7 @@ export class Server {
         },
       };
       break;
-    case PlayerInputTypes.SHIFT_ARES_GLOBAL_PARAMETERS:
+    case PlayerInputType.SHIFT_ARES_GLOBAL_PARAMETERS:
       playerInputModel.aresData = (waitingFor as ShiftAresGlobalParameters).aresData;
       break;
     }
@@ -375,12 +375,12 @@ export class Server {
         resources: options.showResources ? card.resourceCount : undefined,
         resourceType: card.resourceType,
         name: card.name,
-        calculatedCost: options.showCalculatedCost ? (card.cost === undefined ? undefined : player.getCardCost(card as IProjectCard)) : card.cost,
+        calculatedCost: options.showCalculatedCost ? (isIProjectCard(card) && card.cost !== undefined ? player.getCardCost(card) : undefined) : card.cost,
         cardType: card.cardType,
         isDisabled: isDisabled,
         warning: card.warning,
         reserveUnits: options.reserveUnits ? options.reserveUnits[index] : Units.EMPTY,
-        bonusResource: (card as IProjectCard).bonusResource,
+        bonusResource: isIProjectCard(card) ? card.bonusResource : undefined,
         discount: discount,
         cloneTag: isICloneTagCard(card) ? card.cloneTag : undefined,
       };
@@ -480,13 +480,13 @@ export class Server {
     return protection;
   }
 
-  public static getColonies(game: Game): Array<ColonyModel> {
-    return game.colonies.map(
+  public static getColonies(game: Game, colonies: Array<IColony>, isActive: boolean = true): Array<ColonyModel> {
+    return colonies.map(
       (colony): ColonyModel => ({
         colonies: colony.colonies.map(
           (playerId): Color => game.getPlayerById(playerId).color,
         ),
-        isActive: colony.isActive,
+        isActive: isActive && colony.isActive,
         name: colony.name,
         trackPosition: colony.trackPosition,
         visitor:
@@ -541,7 +541,7 @@ export class Server {
       altVenusBoard: options.altVenusBoard,
       aresExtension: options.aresExtension,
       boardName: options.boardName,
-      cardsBlackList: options.cardsBlackList,
+      bannedCards: options.bannedCards,
       coloniesExtension: options.coloniesExtension,
       communityCardsOption: options.communityCardsOption,
       corporateEra: options.corporateEra,

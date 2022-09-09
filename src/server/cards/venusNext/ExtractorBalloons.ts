@@ -36,9 +36,8 @@ export class ExtractorBalloons extends Card implements IActionCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.addResourceTo(this, 3);
     return undefined;
   }
@@ -56,8 +55,8 @@ export class ExtractorBalloons extends Card implements IActionCard {
       new SelectOption('Remove 2 floaters to raise Venus scale 1 step',
         'Remove floaters', () => {
           player.removeResourceFrom(this, 2);
-          player.game.increaseVenusScaleLevel(player, 1);
-          LogHelper.logVenusIncrease( player, 1);
+          const actual = player.game.increaseVenusScaleLevel(player, 1);
+          LogHelper.logVenusIncrease(player, actual);
           return undefined;
         }),
       new SelectOption('Add 1 floater to this card', 'Add floater', () => {

@@ -78,7 +78,7 @@ export class GameHandler extends Handler {
               email,
             );
           });
-          let firstPlayerIdx: number = 0;
+          let firstPlayerIdx = 0;
           for (let i = 0; i < gameReq.players.length; i++) {
             if (gameReq.players[i].first === true) {
               firstPlayerIdx = i;
@@ -122,8 +122,9 @@ export class GameHandler extends Handler {
             randomMA: gameReq.randomMA,
             soloTR: gameReq.soloTR,
             customCorporationsList: gameReq.customCorporationsList,
-            cardsBlackList: gameReq.cardsBlackList,
+            bannedCards: gameReq.bannedCards,
             customColoniesList: gameReq.customColoniesList,
+            customPreludes: gameReq.customPreludes,
             requiresVenusTrackCompletion: gameReq.requiresVenusTrackCompletion,
             requiresMoonTrackCompletion: gameReq.requiresMoonTrackCompletion,
             moonStandardProjectVariant: gameReq.moonStandardProjectVariant,

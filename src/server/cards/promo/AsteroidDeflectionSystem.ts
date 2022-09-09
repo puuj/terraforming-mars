@@ -7,10 +7,8 @@ import {CardType} from '../../../common/cards/CardType';
 import {CardResource} from '../../../common/CardResource';
 import {Tag} from '../../../common/cards/Tag';
 import {Player} from '../../Player';
-import {Resources} from '../../../common/Resources';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
-import {Units} from '../../../common/Units';
 import {played} from '../Options';
 
 export class AsteroidDeflectionSystem extends Card implements IActionCard, IProjectCard {
@@ -23,7 +21,7 @@ export class AsteroidDeflectionSystem extends Card implements IActionCard, IProj
 
       resourceType: CardResource.ASTEROID,
       victoryPoints: VictoryPoints.resource(1, 1),
-      productionBox: Units.of({energy: -1}),
+      productionBox: {energy: -1},
 
       metadata: {
         cardNumber: 'X14',
@@ -39,16 +37,6 @@ export class AsteroidDeflectionSystem extends Card implements IActionCard, IProj
         },
       },
     });
-  }
-  public override resourceCount = 0;
-
-  public override canPlay(player: Player): boolean {
-    return player.production.energy >= 1;
-  }
-
-  public play(player: Player) {
-    player.production.add(Resources.ENERGY, -1);
-    return undefined;
   }
 
   public canAct(): boolean {

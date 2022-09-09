@@ -45,9 +45,8 @@ export class Herbivores extends Card implements IProjectCard {
       },
     });
   }
-  public override resourceCount: number = 0;
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.canReduceAnyProduction(Resources.PLANTS, 1);
   }
 
@@ -57,7 +56,7 @@ export class Herbivores extends Card implements IProjectCard {
     }
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.addResourceTo(this);
     player.game.defer(
       new DecreaseAnyProduction(player, Resources.PLANTS, {count: 1}));

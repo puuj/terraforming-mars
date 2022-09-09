@@ -28,7 +28,7 @@ export class AIControlledMineNetwork extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseLogisticRate(player);
     return undefined;
   }

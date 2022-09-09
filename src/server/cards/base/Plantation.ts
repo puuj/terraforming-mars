@@ -29,14 +29,11 @@ export class Plantation extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
-    if (player.game.board.getAvailableSpacesOnLand(player).length === 0) {
-      return false;
-    }
-    return true;
+  public override bespokeCanPlay(player: Player): boolean {
+    return player.game.board.getAvailableSpacesOnLand(player).length > 0;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectSpace('Select space for greenery tile', player.game.board.getAvailableSpacesForGreenery(player), (space: ISpace) => {
       return player.game.addGreenery(player, space.id);
     });

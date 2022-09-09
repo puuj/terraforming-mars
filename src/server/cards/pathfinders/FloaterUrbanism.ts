@@ -35,7 +35,6 @@ export class FloaterUrbanism extends Card implements IProjectCard, IActionCard {
     });
   }
 
-  public override resourceCount = 0;
 
   public canAct(player: Player) {
     return player.getResourceCount(CardResource.FLOATER) > 0;
@@ -60,9 +59,5 @@ export class FloaterUrbanism extends Card implements IProjectCard, IActionCard {
       return undefined;
     }
     return input;
-  }
-
-  public play() {
-    return undefined;
   }
 }

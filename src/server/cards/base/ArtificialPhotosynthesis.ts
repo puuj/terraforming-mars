@@ -26,7 +26,7 @@ export class ArtificialPhotosynthesis extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const options = new OrOptions(
       new SelectOption('Increase your energy production 2 steps', 'Increase', () => {
         player.production.add(Resources.ENERGY, 2, {log: true});

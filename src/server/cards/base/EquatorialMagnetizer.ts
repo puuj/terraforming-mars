@@ -26,9 +26,6 @@ export class EquatorialMagnetizer extends Card implements IActionCard, IProjectC
       },
     });
   }
-  public play() {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.production.energy >= 1 && player.canAfford(0, {tr: {tr: 1}});
   }

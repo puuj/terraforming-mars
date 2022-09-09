@@ -13,7 +13,7 @@ interface StaticStandardProjectCardProperties {
   name: CardName,
   cost: number,
   metadata: ICardMetadata,
-  reserveUnits?: Units,
+  reserveUnits?: Partial<Units>,
   tr?: TRSource,
 }
 
@@ -27,10 +27,6 @@ export abstract class StandardProjectCard extends Card implements IActionCard, I
 
   protected discount(_player: Player) {
     return 0;
-  }
-
-  public play() {
-    return undefined;
   }
 
   protected abstract actionEssence(player: Player): void

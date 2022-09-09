@@ -34,13 +34,13 @@ export class PioneerSettlement extends Card implements IProjectCard {
 
   public warning?: string;
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     if (player.colonies.getPlayableColonies().length === 0) {
       return false;
     }
 
     let lunaIsAvailable = false;
-    let coloniesCount: number = 0;
+    let coloniesCount = 0;
     const hasOneColonyMax = player.game.colonies.every((colony) => {
       if (colony.name === ColonyName.LUNA &&
           colony.isColonyFull() === false &&
@@ -71,7 +71,7 @@ export class PioneerSettlement extends Card implements IProjectCard {
     return true;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const openColonies = player.production.megacredits <= -4 ?
       player.game.colonies.filter((colony) => colony.name === ColonyName.LUNA) :
       undefined;

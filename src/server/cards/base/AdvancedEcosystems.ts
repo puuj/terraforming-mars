@@ -21,7 +21,4 @@ export class AdvancedEcosystems extends Card implements IProjectCard {
       },
     });
   }
-  public play() {
-    return undefined;
-  }
 }

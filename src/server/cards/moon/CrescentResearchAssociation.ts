@@ -31,7 +31,7 @@ export class CrescentResearchAssociation extends Card implements ICorporationCar
     });
   }
 
-  public play() {
+  public override bespokePlay() {
     return undefined;
   }
 

@@ -33,11 +33,6 @@ export class RustEatingBacteria extends Card implements IActionCard, IProjectCar
     });
   }
 
-  public override resourceCount = 0;
-
-  public play() {
-    return undefined;
-  }
 
   public canAct(player: Player) {
     return player.steel >= 1;

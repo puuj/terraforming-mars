@@ -27,9 +27,6 @@ export class AquiferPumping extends Card implements IActionCard, IProjectCard {
     });
   }
 
-  public play() {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.canAfford(OCEAN_COST, {steel: true, tr: {oceans: 1}});
   }

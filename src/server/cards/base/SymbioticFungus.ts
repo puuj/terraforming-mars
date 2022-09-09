@@ -30,9 +30,6 @@ export class SymbioticFungus extends Card implements IActionCard, IProjectCard {
       },
     });
   }
-  public play() {
-    return undefined;
-  }
   public canAct(): boolean {
     return true;
   }

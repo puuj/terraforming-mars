@@ -38,7 +38,6 @@ export class Celestic extends Card implements IActionCard, ICorporationCard {
     });
   }
 
-  public override resourceCount = 0;
 
   // Public for testing
   public static readonly floaterCards: Set<CardName> = new Set([
@@ -69,10 +68,6 @@ export class Celestic extends Card implements IActionCard, ICorporationCard {
     player.drawCard(2, {
       include: (card) => Celestic.floaterCards.has(card.name) || card.resourceType === CardResource.FLOATER,
     });
-    return undefined;
-  }
-
-  public play() {
     return undefined;
   }
 

@@ -31,7 +31,7 @@ export class HeatTrappers extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.canReduceAnyProduction(Resources.HEAT, 2);
   }
 
@@ -41,7 +41,7 @@ export class HeatTrappers extends Card implements IProjectCard {
     player.production.add(Resources.ENERGY, 1);
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     this.produce(player);
     return undefined;
   }

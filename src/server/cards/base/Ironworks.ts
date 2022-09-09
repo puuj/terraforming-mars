@@ -26,10 +26,6 @@ export class Ironworks extends Card implements IActionCard, IProjectCard {
       },
     });
   }
-
-  public play(_player: Player) {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.energy >= 4 && player.canAfford(0, {tr: {oxygen: 1}});
   }

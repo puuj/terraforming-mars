@@ -26,7 +26,7 @@ export class MartianEmbassy extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     // The +1 is "including this".
     const tags = player.tags.count(Tag.MOON) + 1;
     const rate = Math.floor(tags / 3);

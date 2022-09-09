@@ -39,7 +39,6 @@ export class MartianZoo extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   public onCardPlayed(player: Player, card: IProjectCard) {
     if (card.tags.includes(Tag.EARTH)) {
@@ -53,10 +52,6 @@ export class MartianZoo extends Card implements IProjectCard {
 
   public action(player: Player) {
     player.addResource(Resources.MEGACREDITS, this.resourceCount, {log: true});
-    return undefined;
-  }
-
-  public play() {
     return undefined;
   }
 }

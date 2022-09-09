@@ -4,7 +4,6 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {IActionCard} from '../ICard';
 import {IProjectCard} from '../IProjectCard';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
@@ -16,6 +15,7 @@ export class BusinessNetwork extends Card implements IActionCard, IProjectCard {
       name: CardName.BUSINESS_NETWORK,
       tags: [Tag.EARTH],
       cost: 4,
+      productionBox: {megacredits: -1},
 
       metadata: {
         cardNumber: '110',
@@ -28,16 +28,10 @@ export class BusinessNetwork extends Card implements IActionCard, IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
-    return player.production.megacredits >= -4;
-  }
-  public play(player: Player) {
-    player.production.add(Resources.MEGACREDITS, -1);
-    return undefined;
-  }
   public canAct(): boolean {
     return true;
   }
+
   public action(player: Player) {
     return player.drawCardKeepSome(1, {paying: true});
   }

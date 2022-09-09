@@ -29,7 +29,7 @@ export class UndermoonDrugLordsNetwork extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const gain = Math.floor(MoonExpansion.moonData(player.game).colonyRate / 2);
     player.production.add(Resources.MEGACREDITS, gain, {log: true});
     return undefined;

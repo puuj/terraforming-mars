@@ -30,11 +30,6 @@ export class ProcessorFactory extends Card implements IProjectCard {
       },
     });
   }
-  public override resourceCount = 0;
-
-  public play() {
-    return undefined;
-  }
 
   public canAct(player: Player) {
     return player.steel > 0;

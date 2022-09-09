@@ -33,7 +33,7 @@ export class MarketManipulation extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     const increasableColonies = this.getIncreasableColonies(player.game);
     const decreasableColonies = this.getDecreasableColonies(player.game);
 
@@ -63,7 +63,7 @@ export class MarketManipulation extends Card implements IProjectCard {
     );
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     let increasableColonies = this.getIncreasableColonies(player.game);
     const decreasableColonies = this.getDecreasableColonies(player.game);
     // if there is only one decreaseable colony and it is an increaseable colony, don't allow increase of that colony.

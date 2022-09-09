@@ -24,7 +24,7 @@ export class BribedCommittee extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.increaseTerraformRatingSteps(2);
     return undefined;
   }

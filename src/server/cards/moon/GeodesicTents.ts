@@ -4,20 +4,19 @@ import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {PlaceMoonColonyTile} from '../../moon/PlaceMoonColonyTile';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {TileType} from '../../../common/TileType';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 
-export class GeodesicTents extends MoonCard {
+export class GeodesicTents extends Card {
   constructor() {
     super({
       name: CardName.GEODESIC_TENTS,
       cardType: CardType.AUTOMATED,
       tags: [Tag.PLANT, Tag.CITY, Tag.MOON],
       cost: 13,
-      productionBox: Units.of({energy: -1, plants: 1}),
-      reserveUnits: Units.of({titanium: 1}),
+      productionBox: {energy: -1, plants: 1},
+      reserveUnits: {titanium: 1},
       tr: {moonColony: 1},
 
       metadata: {
@@ -32,12 +31,11 @@ export class GeodesicTents extends MoonCard {
           b.moonColony({secondaryTag: AltSecondaryTag.MOON_COLONY_RATE});
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_COLONY],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonColonyTile(player));
     return undefined;
   }

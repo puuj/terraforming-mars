@@ -31,14 +31,13 @@ export class SoylentSeedlingSystems extends Card implements ICorporationCard {
             eb.plants(1, {played}).slash().greenery(Size.MEDIUM).startEffect.seed().equals().megacredits(5);
           }).br;
         }),
-        description: 'You starrt with 38M€ and 2 seeds on this card.',
+        description: 'You start with 38M€ and 2 seeds on this card.',
       },
     });
   }
 
-  public override resourceCount = 0;
 
-  public play() {
+  public override bespokePlay() {
     this.resourceCount += 2;
     return undefined;
   }

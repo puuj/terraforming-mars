@@ -24,8 +24,4 @@ export class LTFPrivileges extends Card implements IProjectCard {
       },
     });
   }
-
-  public play() {
-    return undefined;
-  }
 }

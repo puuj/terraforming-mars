@@ -24,7 +24,7 @@ export class SyndicatePirateRaids extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const game = player.game;
     game.syndicatePirateRaider = player.id;
 

@@ -9,7 +9,6 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 
 export class NewVenice extends Card implements IProjectCard {
   constructor() {
@@ -18,7 +17,7 @@ export class NewVenice extends Card implements IProjectCard {
       name: CardName.NEW_VENICE,
       tags: [Tag.MARS, Tag.ENERGY, Tag.BUILDING, Tag.CITY],
       cost: 21,
-      productionBox: Units.of({energy: 1, megacredits: 2}),
+      productionBox: {energy: 1, megacredits: 2},
 
       requirements: CardRequirements.builder((b) => b.oceans(3)),
       metadata: {
@@ -35,12 +34,12 @@ export class NewVenice extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
-    return super.canPlay(player) && (player.plants >= 2);
+  // TODO(kberg): use reserveUnits for plants.
+  public override bespokeCanPlay(player: Player): boolean {
+    return player.plants >= 2;
   }
 
-  public play(player: Player) {
-    player.production.adjust(this.productionBox);
+  public override bespokePlay(player: Player) {
     player.plants -= 2;
 
     return new SelectSpace(

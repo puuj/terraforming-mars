@@ -22,6 +22,10 @@ export class PharmacyUnion extends Card implements ICorporationCard {
       startingMegaCredits: 46, // 54 minus 8 for the 2 deseases
       resourceType: CardResource.DISEASE,
 
+      behavior: {
+        drawCard: {count: 1, tag: Tag.SCIENCE},
+      },
+
       metadata: {
         cardNumber: 'R39',
         renderData: CardRenderer.builder((b) => {
@@ -44,7 +48,6 @@ export class PharmacyUnion extends Card implements ICorporationCard {
     });
   }
 
-  public override resourceCount = 0;
   public isDisabled = false;
 
   public override get tags() {
@@ -54,9 +57,8 @@ export class PharmacyUnion extends Card implements ICorporationCard {
     return [Tag.MICROBE, Tag.MICROBE];
   }
 
-  public play(player: Player) {
+  public override bespokePlay() {
     this.resourceCount = 2;
-    player.drawCard(1, {tag: Tag.SCIENCE});
     return undefined;
   }
 

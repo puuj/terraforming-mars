@@ -2,18 +2,17 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {IProjectCard} from '../IProjectCard';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {Player} from '../../Player';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 
-export class SubterraneanHabitats extends MoonCard implements IProjectCard {
+export class SubterraneanHabitats extends Card implements IProjectCard {
   constructor() {
     super({
       name: CardName.SUBTERRANEAN_HABITATS,
       cardType: CardType.ACTIVE,
       cost: 12,
-      reserveUnits: Units.of({steel: 2}),
+      reserveUnits: {steel: 2},
       tr: {moonColony: 1},
 
       metadata: {
@@ -30,7 +29,7 @@ export class SubterraneanHabitats extends MoonCard implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.raiseColonyRate(player);
     return undefined;
   }

@@ -37,11 +37,6 @@ export class AerialMappers extends Card implements IActionCard {
       },
     });
   }
-  public override resourceCount: number = 0;
-
-  public play() {
-    return undefined;
-  }
   public canAct(): boolean {
     return true;
   }

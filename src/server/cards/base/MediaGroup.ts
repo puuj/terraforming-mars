@@ -33,7 +33,4 @@ export class MediaGroup extends Card implements IProjectCard {
       player.game.defer(new GainResources(player, Resources.MEGACREDITS, {count: 3}));
     }
   }
-  public play() {
-    return undefined;
-  }
 }

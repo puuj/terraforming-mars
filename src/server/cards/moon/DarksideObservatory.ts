@@ -65,8 +65,4 @@ export class DarksideObservatory extends Card implements IProjectCard, IActionCa
         return undefined;
       });
   }
-
-  public play() {
-    return undefined;
-  }
 }

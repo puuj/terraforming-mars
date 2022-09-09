@@ -40,7 +40,6 @@ export class Pets extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   public onTilePlaced(cardOwner: Player, activePlayer: Player, space: ISpace) {
     if (Board.isCitySpace(space)) {
@@ -51,7 +50,7 @@ export class Pets extends Card implements IProjectCard {
     }
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.addResourceTo(this);
     return undefined;
   }

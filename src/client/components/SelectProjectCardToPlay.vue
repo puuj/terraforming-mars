@@ -7,7 +7,7 @@ import Card from '@/client/components/card/Card.vue';
 import {getCardOrThrow} from '@/client/cards/ClientCardManifest';
 import {CardModel} from '@/common/models/CardModel';
 import {CardOrderStorage} from '@/client/utils/CardOrderStorage';
-import {PaymentWidgetMixin, SelectHowToPayForProjectCardModel, unit} from '@/client/mixins/PaymentWidgetMixin';
+import {PaymentWidgetMixin, SelectProjectCardToPlayModel, unit} from '@/client/mixins/PaymentWidgetMixin';
 import {PlayerInputModel} from '@/common/models/PlayerInputModel';
 import {PlayerViewModel, PublicPlayerModel} from '@/common/models/PlayerModel';
 import {getPreferences} from '@/client/utils/PreferencesManager';
@@ -17,7 +17,7 @@ import {CardName} from '@/common/cards/CardName';
 import {InputResponse} from '@/common/inputs/InputResponse';
 
 export default Vue.extend({
-  name: 'SelectHowToPayForProjectCard',
+  name: 'SelectProjectCardToPlay',
   props: {
     playerView: {
       type: Object as () => PlayerViewModel,
@@ -36,11 +36,11 @@ export default Vue.extend({
     },
   },
   computed: {
-    thisPlayer: function(): PublicPlayerModel {
+    thisPlayer(): PublicPlayerModel {
       return this.playerView.thisPlayer;
     },
   },
-  data(): SelectHowToPayForProjectCardModel {
+  data(): SelectProjectCardToPlayModel {
     let card: CardModel | undefined;
     let cards: Array<CardModel> = [];
     if (this.playerinput !== undefined &&
@@ -174,7 +174,7 @@ export default Vue.extend({
         this.titanium = deductUnits(this.available.titanium, this.thisPlayer.titaniumValue, true);
       }
 
-      this.available.heat = Math.max(this.thisPlayer.heat - this.card.reserveUnits.heat, 0);
+      this.available.heat = Math.max(this.availableHeat() - this.card.reserveUnits.heat, 0);
       if (megacreditBalance > 0 && this.canUseHeat()) {
         this.heat = deductUnits(this.available.heat, 1);
       }
@@ -194,7 +194,7 @@ export default Vue.extend({
       }
     },
     canUseHeat(): boolean {
-      return this.playerinput.canUseHeat === true && this.thisPlayer.heat > 0;
+      return this.playerinput.canUseHeat === true && this.availableHeat() > 0;
     },
     canUseSteel() {
       if (this.card !== undefined && this.available.steel > 0) {

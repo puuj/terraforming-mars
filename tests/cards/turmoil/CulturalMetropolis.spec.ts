@@ -30,13 +30,13 @@ describe('Cultural Metropolis', function() {
   it('Can not play without energy production', function() {
     turmoil.sendDelegateToParty(player.id, PartyName.UNITY, game, 'lobby');
     turmoil.sendDelegateToParty(player.id, PartyName.UNITY, game, 'reserve');
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(card.canPlay(player)).is.not.true;
   });
 
 
   it('Can not play without two delegate in unity or unity ruling', function() {
     player.production.add(Resources.ENERGY, 1);
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(card.canPlay(player)).is.not.true;
   });
 
   it('Can not play without 2 delegates available', function() {
@@ -47,9 +47,9 @@ describe('Cultural Metropolis', function() {
       turmoil.sendDelegateToParty(player.id, PartyName.REDS, game, 'reserve');
     }
     expect(turmoil.getAvailableDelegateCount(player.id, 'reserve')).to.equal(2);
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(card.canPlay(player)).is.true;
     turmoil.sendDelegateToParty(player.id, PartyName.REDS, game, 'reserve');
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(card.canPlay(player)).is.not.true;
   });
 
   it('Should play', function() {
@@ -62,7 +62,7 @@ describe('Cultural Metropolis', function() {
 
     expect(unity.delegates).has.lengthOf(startingUnityDelegateCount + 2);
     expect(turmoil.getAvailableDelegateCount(player.id, 'reserve')).to.equal(5);
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(card.canPlay(player)).is.true;
 
     card.play(player);
     expect(game.deferredActions).has.lengthOf(2);

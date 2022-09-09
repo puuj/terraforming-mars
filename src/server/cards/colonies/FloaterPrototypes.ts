@@ -16,7 +16,6 @@ export class FloaterPrototypes extends Card implements IProjectCard {
       name: CardName.FLOATER_PROTOTYPES,
       cardType: CardType.EVENT,
 
-
       metadata: {
         cardNumber: 'C11',
         renderData: CardRenderer.builder((b) => b.floaters(2).asterix()),
@@ -25,9 +24,8 @@ export class FloaterPrototypes extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2}));
     return undefined;
   }
 }
-

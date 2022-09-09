@@ -40,8 +40,4 @@ export class Poseidon extends Card implements ICorporationCard {
       return undefined;
     }
   }
-
-  public play() {
-    return undefined;
-  }
 }

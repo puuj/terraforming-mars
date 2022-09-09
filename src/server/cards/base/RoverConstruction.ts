@@ -41,8 +41,4 @@ export class RoverConstruction extends Card implements IProjectCard {
       );
     }
   }
-
-  public play() {
-    return undefined;
-  }
 }

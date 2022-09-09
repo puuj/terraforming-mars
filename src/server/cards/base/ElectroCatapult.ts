@@ -10,18 +10,16 @@ import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {max} from '../Options';
 
 export class ElectroCatapult extends Card implements IActionCard, IProjectCard {
-  public migrated = true;
   constructor() {
     super({
       cardType: CardType.ACTIVE,
       name: CardName.ELECTRO_CATAPULT,
       tags: [Tag.BUILDING],
       cost: 17,
-      productionBox: Units.of({energy: -1}),
+      productionBox: {energy: -1},
       victoryPoints: 1,
 
       requirements: CardRequirements.builder((b) => b.oxygen(8, {max})),
@@ -68,9 +66,6 @@ export class ElectroCatapult extends Card implements IActionCard, IProjectCard {
       this.log(player, Resources.STEEL);
       player.megaCredits += 7;
     }
-    return undefined;
-  }
-  public play() {
     return undefined;
   }
 

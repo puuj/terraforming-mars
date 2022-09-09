@@ -23,7 +23,7 @@ export class IceCapMelting extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceOceanTile(player));
     return undefined;
   }

@@ -34,7 +34,7 @@ export class AsteroidMiningConsortium extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new DecreaseAnyProduction(
       player,
       Resources.TITANIUM,

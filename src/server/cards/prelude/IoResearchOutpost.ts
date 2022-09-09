@@ -1,7 +1,5 @@
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
 import {PreludeCard} from './PreludeCard';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -10,6 +8,11 @@ export class IoResearchOutpost extends PreludeCard {
     super({
       name: CardName.IO_RESEARCH_OUTPOST,
       tags: [Tag.JOVIAN, Tag.SCIENCE],
+      productionBox: {titanium: 1},
+
+      behavior: {
+        drawCard: 1,
+      },
 
       metadata: {
         cardNumber: 'P16',
@@ -20,10 +23,5 @@ export class IoResearchOutpost extends PreludeCard {
         description: 'Increase your titanium production 1 step. Draw a card.',
       },
     });
-  }
-  public play(player: Player) {
-    player.production.add(Resources.TITANIUM, 1);
-    player.drawCard();
-    return undefined;
   }
 }

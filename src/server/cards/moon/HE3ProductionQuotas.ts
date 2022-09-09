@@ -35,7 +35,7 @@ export class HE3ProductionQuotas extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     const moonTiles = MoonExpansion.spaces(player.game, TileType.MOON_MINE, {surfaceOnly: true});
     if (player.steel < moonTiles.length) {
       return false;
@@ -43,7 +43,7 @@ export class HE3ProductionQuotas extends Card implements IProjectCard {
     return true;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const moonTiles = MoonExpansion.spaces(player.game, TileType.MOON_MINE, {surfaceOnly: true});
     player.steel -= moonTiles.length;
     player.heat += (4 * moonTiles.length);

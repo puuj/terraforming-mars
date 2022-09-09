@@ -27,7 +27,4 @@ export class AdaptationTechnology extends Card implements IProjectCard {
   public getRequirementBonus(): number {
     return 2;
   }
-  public play() {
-    return undefined;
-  }
 }

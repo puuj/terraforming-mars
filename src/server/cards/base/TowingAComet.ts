@@ -16,6 +16,10 @@ export class TowingAComet extends Card implements IProjectCard {
       cost: 23,
       tr: {oxygen: 1, oceans: 1},
 
+      behavior: {
+        stock: {plants: 2},
+      },
+
       metadata: {
         cardNumber: '075',
         renderData: CardRenderer.builder((b) => {
@@ -26,9 +30,8 @@ export class TowingAComet extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceOceanTile(player));
-    player.plants += 2;
     return player.game.increaseOxygenLevel(player, 1);
   }
 }

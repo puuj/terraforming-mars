@@ -64,8 +64,9 @@ export interface NewGameConfig {
   randomMA: RandomMAOptionType;
   soloTR: boolean; // Solo victory by getting TR 63 by game end
   customCorporationsList: Array<CardName>;
-  cardsBlackList: Array<CardName>;
+  bannedCards: Array<CardName>;
   customColoniesList: Array<ColonyName>;
+  customPreludes: Array<CardName>;
   requiresMoonTrackCompletion: boolean; // Moon must be completed to end the game
   requiresVenusTrackCompletion: boolean; // Venus must be completed to end the game
   moonStandardProjectVariant: boolean;

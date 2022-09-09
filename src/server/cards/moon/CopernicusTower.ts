@@ -39,11 +39,6 @@ export class CopernicusTower extends Card implements IActionCard, IProjectCard {
       },
     });
   }
-  public override resourceCount = 0;
-
-  public play() {
-    return undefined;
-  }
 
   private canRaiseTR(player: Player) {
     return this.resourceCount > 0 && player.canAfford(0, {tr: {tr: 1}});

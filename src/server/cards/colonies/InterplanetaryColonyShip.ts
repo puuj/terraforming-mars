@@ -23,11 +23,11 @@ export class InterplanetaryColonyShip extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.colonies.getPlayableColonies().length > 0;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new BuildColony(player, {title: 'Select colony for Interplanetary Colony Ship'}));
     return undefined;
   }

@@ -22,7 +22,7 @@ export class BusinessContacts extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player): SelectCard<IProjectCard> | undefined {
+  public override bespokePlay(player: Player): SelectCard<IProjectCard> | undefined {
     return player.drawCardKeepSome(4, {keepMax: 2});
   }
 }

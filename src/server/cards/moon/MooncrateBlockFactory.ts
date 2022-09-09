@@ -27,7 +27,7 @@ export class MooncrateBlockFactory extends Card implements IProjectCard {
     });
   }
 
-  public play() {
+  public override bespokePlay() {
     // Behavior is in MoonColonyStandardProject, MoonMineStandardProject and MoonRoadStandardProject.
     return undefined;
   }

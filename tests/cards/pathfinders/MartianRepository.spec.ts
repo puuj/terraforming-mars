@@ -17,9 +17,9 @@ describe('MartianRepository', function() {
   });
 
   it('can play', function() {
-    expect(player.canPlayIgnoringCost(card)).is.false;
+    expect(card.canPlay(player)).is.false;
     player.production.override({energy: 1});
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(card.canPlay(player)).is.true;
   });
 
   it('play', function() {

@@ -27,7 +27,7 @@ export abstract class MiningCard extends Card implements IProjectCard {
     });
   }
   public bonusResource?: Array<Resources>;
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return this.getAvailableSpaces(player).length > 0;
   }
   private isAres(): boolean {
@@ -70,7 +70,7 @@ export abstract class MiningCard extends Card implements IProjectCard {
     }
   }
 
-  public play(player: Player): SelectSpace {
+  public override bespokePlay(player: Player): SelectSpace {
     return new SelectSpace(this.getSelectTitle(), this.getAvailableSpaces(player), (space: ISpace) => {
       const bonusResources = [];
       if (space.bonus.includes(SpaceBonus.STEEL)) {

@@ -30,7 +30,7 @@ export class HE3FusionPlant extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const count = MoonExpansion.spaces(player.game, TileType.MOON_MINE, {surfaceOnly: true}).length;
     player.production.add(Resources.ENERGY, count, {log: true});
     return undefined;

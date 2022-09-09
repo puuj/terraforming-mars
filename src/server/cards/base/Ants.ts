@@ -38,12 +38,6 @@ export class Ants extends Card implements IActionCard, IProjectCard {
     });
   }
 
-  public override resourceCount = 0;
-
-  public play() {
-    return undefined;
-  }
-
   public canAct(player: Player): boolean {
     if (player.game.isSoloMode()) return true;
     return RemoveResourcesFromCard.getAvailableTargetCards(player, this.resourceType).length > 0;

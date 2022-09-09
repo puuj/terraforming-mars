@@ -37,16 +37,12 @@ export class SearchForLife extends Card implements IActionCard, IProjectCard {
       },
     });
   }
-  public override resourceCount = 0;
 
   public override getVictoryPoints() {
     if (this.resourceCount > 0) {
       return 3;
     }
     return 0;
-  }
-  public play() {
-    return undefined;
   }
   public canAct(player: Player): boolean {
     return player.canAfford(1);

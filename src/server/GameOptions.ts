@@ -42,8 +42,9 @@ export type GameOptions = {
   randomMA: RandomMAOptionType;
   soloTR: boolean; // Solo victory by getting TR 63 by game end
   customCorporationsList: Array<CardName>;
-  cardsBlackList: Array<CardName>;
+  bannedCards: Array<CardName>;
   customColoniesList: Array<ColonyName>;
+  customPreludes: Array<CardName>;
   requiresMoonTrackCompletion: boolean; // Moon must be completed to end the game
   requiresVenusTrackCompletion: boolean; // Venus must be completed to end the game
   moonStandardProjectVariant: boolean;
@@ -59,7 +60,7 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   aresExtension: false,
   aresHazards: true,
   boardName: BoardName.ORIGINAL,
-  cardsBlackList: [],
+  bannedCards: [],
   clonedGamedId: undefined,
   coloniesExtension: false,
   communityCardsOption: false,
@@ -67,6 +68,7 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   corporationsDraft: false,
   customColoniesList: [],
   customCorporationsList: [],
+  customPreludes: [],
   draftVariant: false,
   escapeVelocityMode: false, // When true, escape velocity is enabled.
   escapeVelocityThreshold: constants.DEFAULT_ESCAPE_VELOCITY_THRESHOLD, // Time in minutes a player has to complete a game.

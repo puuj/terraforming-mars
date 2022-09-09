@@ -2,8 +2,6 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
@@ -16,6 +14,11 @@ export class Heather extends Card implements IProjectCard {
       tags: [Tag.PLANT],
       cost: 6,
 
+      behavior: {
+        production: {plants: 1},
+        stock: {plants: 1},
+      },
+
       requirements: CardRequirements.builder((b) => b.temperature(-14)),
       metadata: {
         cardNumber: '178',
@@ -25,10 +28,5 @@ export class Heather extends Card implements IProjectCard {
         description: 'Requires -14 C° or warmer. Increase your plant production 1 step. Gain 1 plant.',
       },
     });
-  }
-  public play(player: Player) {
-    player.production.add(Resources.PLANTS, 1);
-    player.plants++;
-    return undefined;
   }
 }

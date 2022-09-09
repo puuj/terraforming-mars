@@ -39,10 +39,10 @@ export class LunaFirstIncorporated extends Card implements ICorporationCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.moonData(player.game).lunaFirstPlayer = player;
-    player.steel = 2;
-    player.titanium = 2;
+    player.steel += 2;
+    player.titanium += 2;
     return undefined;
   }
 }

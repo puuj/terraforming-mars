@@ -9,17 +9,15 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 
 export class OceanCity extends Card implements IProjectCard {
-  public migrated = true;
   constructor() {
     super({
       cardType: CardType.AUTOMATED,
       name: CardName.OCEAN_CITY,
       tags: [Tag.CITY, Tag.BUILDING],
       cost: 18,
-      productionBox: Units.of({energy: -1, megacredits: 3}),
+      productionBox: {energy: -1, megacredits: 3},
 
       requirements: CardRequirements.builder((b) => b.oceans(6)),
       metadata: {
@@ -36,7 +34,7 @@ export class OceanCity extends Card implements IProjectCard {
   }
 
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectSpace(
       'Select space for Ocean City',
       player.game.board.getOceanSpaces({upgradedOceans: false}),

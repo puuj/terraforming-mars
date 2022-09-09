@@ -4,19 +4,18 @@ import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {PlaceMoonColonyTile} from '../../moon/PlaceMoonColonyTile';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {TileType} from '../../../common/TileType';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 
-export class SphereHabitats extends MoonCard {
+export class SphereHabitats extends Card {
   constructor() {
     super({
       name: CardName.SPHERE_HABITATS,
       cardType: CardType.AUTOMATED,
       tags: [Tag.CITY, Tag.MOON],
       cost: 14,
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
       tr: {moonColony: 1},
 
       metadata: {
@@ -27,12 +26,11 @@ export class SphereHabitats extends MoonCard {
           b.moonColony({secondaryTag: AltSecondaryTag.MOON_COLONY_RATE});
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_COLONY],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonColonyTile(player));
     return undefined;
   }

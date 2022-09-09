@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import {Payment} from '@/common/inputs/Payment';
-import {PaymentWidgetMixin, SelectHowToPayModel, Unit} from '@/client/mixins/PaymentWidgetMixin';
+import {PaymentWidgetMixin, SelectPaymentModel, Unit} from '@/client/mixins/PaymentWidgetMixin';
 import {PlayerInputModel} from '@/common/models/PlayerInputModel';
 import {PlayerViewModel, PublicPlayerModel} from '@/common/models/PlayerModel';
 import {getPreferences} from '@/client/utils/PreferencesManager';
@@ -9,7 +9,7 @@ import Button from '@/client/components/common/Button.vue';
 import {InputResponse} from '@/common/inputs/InputResponse';
 
 export default Vue.extend({
-  name: 'SelectHowToPay',
+  name: 'SelectPayment',
   props: {
     playerView: {
       type: Object as () => PlayerViewModel,
@@ -36,7 +36,7 @@ export default Vue.extend({
     Button,
   },
   data() {
-    const model: SelectHowToPayModel = {
+    const model: SelectPaymentModel = {
       cost: 0,
       heat: 0,
       megaCredits: 0,
@@ -123,7 +123,7 @@ export default Vue.extend({
       return this.thisPlayer.megaCredits >= this.$data.cost;
     },
     canUseHeat() {
-      return this.playerinput.canUseHeat && this.thisPlayer.heat > 0;
+      return this.playerinput.canUseHeat && this.availableHeat() > 0;
     },
     canUseSteel() {
       return this.playerinput.canUseSteel && this.thisPlayer.steel > 0;
@@ -193,15 +193,12 @@ export default Vue.extend({
       if (requiredAmt > 0 && totalSpent > requiredAmt && showAlert) {
         const diff = totalSpent - requiredAmt;
 
-        if (confirm('Warning: You are overpaying by ' + diff + ' M€')) {
-          this.onsave([[JSON.stringify(payment)]]);
-        } else {
+        if (!confirm('Warning: You are overpaying by ' + diff + ' M€')) {
           this.$data.warning = 'Please adjust payment amount';
           return;
         }
-      } else {
-        this.onsave([[JSON.stringify(payment)]]);
       }
+      this.onsave([[JSON.stringify(payment)]]);
     },
   },
 });

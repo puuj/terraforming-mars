@@ -3,7 +3,6 @@ import {IProjectCard} from '../IProjectCard';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -14,6 +13,7 @@ export class InvestmentLoan extends Card implements IProjectCard {
       name: CardName.INVESTMENT_LOAN,
       tags: [Tag.EARTH],
       cost: 3,
+      productionBox: {megacredits: -1},
 
       metadata: {
         cardNumber: '151',
@@ -25,11 +25,7 @@ export class InvestmentLoan extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
-    return player.production.megacredits >= -4;
-  }
-  public play(player: Player) {
-    player.production.add(Resources.MEGACREDITS, -1);
+  public override bespokePlay(player: Player) {
     player.megaCredits += 10;
     return undefined;
   }

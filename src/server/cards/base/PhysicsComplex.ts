@@ -33,11 +33,7 @@ export class PhysicsComplex extends Card implements IActionCard, IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
-  public play() {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.energy >= 6;
   }

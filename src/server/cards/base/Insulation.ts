@@ -27,11 +27,11 @@ export class Insulation extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player) {
+  public override bespokeCanPlay(player: Player) {
     return player.production.heat >= 1;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectAmount(
       'Select amount of heat production to decrease',
       'Decrease',

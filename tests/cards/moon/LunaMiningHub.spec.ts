@@ -56,7 +56,7 @@ describe('LunaMiningHub', () => {
     expect(player.getTerraformRating()).eq(14);
     expect(moonData.miningRate).eq(0);
 
-    player.simplePlay(card);
+    card.play(player);
 
     expect(player.titanium).eq(2);
     expect(player.production.steel).eq(1);
@@ -66,7 +66,7 @@ describe('LunaMiningHub', () => {
 
     const placeTileAction = game.deferredActions.pop() as PlaceSpecialMoonTile;
     const space = moonData.moon.spaces[10];
-    placeTileAction!.execute()!.cb(space);
+    placeTileAction.execute()!.cb(space);
 
     expect(moonData.miningRate).eq(1);
     expect(player.getTerraformRating()).eq(15);

@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import {cast} from '../../TestingUtils';
 import {Research} from '../../../src/server/cards/base/Research';
 import {Tardigrades} from '../../../src/server/cards/base/Tardigrades';
 import {Extremophiles} from '../../../src/server/cards/venusNext/Extremophiles';
@@ -25,7 +26,7 @@ describe('Extremophiles', function() {
   it('Should play', function() {
     player.playedCards.push(new Research());
     expect(player.canPlayIgnoringCost(card)).is.true;
-    const action = card.play();
+    const action = card.play(player);
     expect(action).is.undefined;
   });
 
@@ -37,11 +38,10 @@ describe('Extremophiles', function() {
 
   it('Should act - multiple targets', function() {
     player.playedCards.push(card, new Tardigrades());
-    const action = card.action(player);
-    expect(action).instanceOf(SelectCard);
+    const action = cast(card.action(player), SelectCard);
+    action.cb([card]);
 
-        action!.cb([card]);
-        expect(card.resourceCount).to.eq(1);
+    expect(card.resourceCount).to.eq(1);
   });
 
   it('Gives victory points', function() {

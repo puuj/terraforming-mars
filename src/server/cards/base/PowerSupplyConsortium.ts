@@ -33,7 +33,7 @@ export class PowerSupplyConsortium extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(
       new DecreaseAnyProduction(player, Resources.ENERGY, {count: 1, stealing: true}));
     player.game.defer(new GainProduction(player, Resources.ENERGY, {count: 1}));

@@ -34,10 +34,6 @@ export class TempestConsultancy extends Card implements ICorporationCard {
     });
   }
 
-  public play() {
-    return undefined;
-  }
-
   public initialAction(player: Player) {
     const title = 'Tempest Consultancy first action - Select where to send two delegates';
     player.game.defer(new SendDelegateToArea(player, title, {count: 2, source: 'reserve'}));

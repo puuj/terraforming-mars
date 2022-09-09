@@ -376,7 +376,6 @@ export default Vue.extend({
     showGlobalEvent(name: GlobalEventName): boolean {
       if (!this.filterByName(name)) return false;
       const globalEvent = getGlobalEvent(name);
-      console.log(globalEvent?.module);
       return globalEvent !== undefined && this.expansions[globalEvent.module] === true;
     },
     showColony(name: ColonyName): boolean {
@@ -391,9 +390,9 @@ export default Vue.extend({
     colonyModel(colonyName: ColonyName): ColonyModel {
       return {
         colonies: [],
-        isActive: true,
+        isActive: false,
         name: colonyName,
-        trackPosition: 5,
+        trackPosition: 0,
         visitor: undefined,
       };
     },

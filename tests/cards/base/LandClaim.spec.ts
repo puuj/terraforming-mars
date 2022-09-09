@@ -5,7 +5,7 @@ import * as constants from '../../../src/common/constants';
 import {Game} from '../../../src/server/Game';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {SpaceName} from '../../../src/server/SpaceName';
-import {setCustomGameOptions} from '../../TestingUtils';
+import {cast, setCustomGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 
 describe('LandClaim', function() {
@@ -14,8 +14,7 @@ describe('LandClaim', function() {
     const player = TestPlayer.BLUE.newPlayer();
     const redPlayer = TestPlayer.RED.newPlayer();
     Game.newInstance('gameid', [player, redPlayer], player);
-    const action = card.play(player);
-    expect(action).is.not.undefined;
+    const action = cast(card.play(player), SelectSpace);
     const landSpace = player.game.board.getAvailableSpacesOnLand(player)[0];
     action.cb(landSpace);
     expect(landSpace.player).to.eq(player);
@@ -28,8 +27,7 @@ describe('LandClaim', function() {
     Game.newInstance('gameid', [player, player2], player, setCustomGameOptions({
       boardName: BoardName.HELLAS,
     }));
-    const action = card.play(player) as SelectSpace;
-    expect(action).is.not.undefined;
+    const action = cast(card.play(player), SelectSpace);
     expect(player.canAfford(constants.HELLAS_BONUS_OCEAN_COST)).to.be.false;
     expect(action.availableSpaces.some((space) => space.id === SpaceName.HELLAS_OCEAN_TILE)).to.be.true;
   });

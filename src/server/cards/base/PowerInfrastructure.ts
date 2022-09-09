@@ -28,10 +28,6 @@ export class PowerInfrastructure extends Card implements IActionCard, IProjectCa
       },
     });
   }
-
-  public play(_player: Player) {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.energy > 0;
   }

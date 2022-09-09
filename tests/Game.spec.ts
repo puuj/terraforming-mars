@@ -8,7 +8,7 @@ import * as constants from '../src/common/constants';
 import {Birds} from '../src/server/cards/base/Birds';
 import {WaterImportFromEuropa} from '../src/server/cards/base/WaterImportFromEuropa';
 import {Phase} from '../src/common/Phase';
-import {cast, maxOutOceans, setCustomGameOptions} from './TestingUtils';
+import {cast, forceGenerationEnd, maxOutOceans, runAllActions, setCustomGameOptions} from './TestingUtils';
 import {TestPlayer} from './TestPlayer';
 import {SaturnSystems} from '../src/server/cards/corporation/SaturnSystems';
 import {Resources} from '../src/common/Resources';
@@ -28,6 +28,7 @@ import {RandomMAOptionType} from '../src/common/ma/RandomMAOptionType';
 import {SpaceBonus} from '../src/common/boards/SpaceBonus';
 import {TileType} from '../src/common/TileType';
 import {IColony} from '../src/server/colonies/IColony';
+import {IAward} from '../src/server/awards/IAward';
 
 describe('Game', () => {
   it('should initialize with right defaults', () => {
@@ -70,7 +71,7 @@ describe('Game', () => {
     });
 
     // Fund awards
-    let award = new Banker();
+    let award: IAward = new Banker();
     game.fundAward(player, award);
 
     // Set second player to win Banker award
@@ -225,8 +226,8 @@ describe('Game', () => {
     // Must remove waitingFor or playerIsFinishedTakingActions
     // will pre-emptively exit -- you can't end the game
     // if the game is waiting for a player to do something!
-    (player as any).waitingFor = undefined;
-    (player2 as any).waitingFor = undefined;
+    player.popWaitingFor();
+    player2.popWaitingFor();
     game.playerIsFinishedTakingActions();
     // Now game should be in end state
     expect(game.phase).to.eq(Phase.END);
@@ -284,6 +285,80 @@ describe('Game', () => {
     expect(game.phase).to.eq(Phase.RESEARCH);
   });
 
+  it('Solo player should place final greeneries if victory condition met', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('game-solo2', [player], player);
+
+    // Set up end-game conditions
+    game.generation = 14;
+    (game as any).temperature = constants.MAX_TEMPERATURE;
+    (game as any).oxygenLevel = constants.MAX_OXYGEN_LEVEL;
+    maxOutOceans(player);
+    player.plants = 9;
+
+    // Pass last turn
+    forceGenerationEnd(game);
+
+    // Final greenery placement is considered part of the production phase.
+    expect(game.phase).to.eq(Phase.PRODUCTION);
+    runAllActions(game);
+    const options = cast(player.popWaitingFor(), OrOptions);
+    expect(options.title).eq('Place any final greenery from plants');
+  });
+
+  it('Solo player should not place final greeneries if victory condition not met', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('game-solo2', [player], player);
+
+    // Set up near end-game conditions
+    game.generation = 14;
+    (game as any).temperature = constants.MAX_TEMPERATURE - 2;
+    (game as any).oxygenLevel = constants.MAX_OXYGEN_LEVEL;
+    maxOutOceans(player);
+    player.plants = 9;
+
+    // Pass last turn
+    forceGenerationEnd(game);
+
+    // Now game should be over
+    expect(game.phase).to.eq(Phase.END);
+  });
+
+  it('Solo player should place final greeneries in TR 63 mode if victory condition is met', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('game-solo2', [player], player, setCustomGameOptions({soloTR: true}));
+
+    // Set up end-game conditions
+    game.generation = 14;
+    player.setTerraformRating(63);
+    player.plants = 9;
+
+    // Pass last turn
+    forceGenerationEnd(game);
+
+    // Final greenery placement is considered part of the production phase.
+    expect(game.phase).to.eq(Phase.PRODUCTION);
+    runAllActions(game);
+    const options = cast(player.popWaitingFor(), OrOptions);
+    expect(options.title).eq('Place any final greenery from plants');
+  });
+
+  it('Solo player should not place final greeneries in TR63 mode if victory condition not met', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('game-solo2', [player], player, setCustomGameOptions({soloTR: true}));
+
+    // Set up near end-game conditions
+    game.generation = 14;
+    player.setTerraformRating(62);
+    player.plants = 9;
+
+    // Pass last turn
+    forceGenerationEnd(game);
+
+    // Now game should be over
+    expect(game.phase).to.eq(Phase.END);
+  });
+
   it('Should not give TR or raise oxygen for final greenery placements', () => {
     const player = TestPlayer.BLUE.newPlayer();
     const otherPlayer = TestPlayer.RED.newPlayer();
@@ -299,8 +374,8 @@ describe('Game', () => {
     // Must remove waitingFor or playerIsFinishedTakingActions
     // will pre-emptively exit -- you can't end the game
     // if the game is waiting for a player to do something!
-    (player as any).waitingFor = undefined;
-    (otherPlayer as any).waitingFor = undefined;
+    player.popWaitingFor();
+    otherPlayer.popWaitingFor();
 
     // Trigger end game
     player.setTerraformRating(20);
@@ -330,14 +405,15 @@ describe('Game', () => {
   });
 
   it('Final greenery placement in order of the current generation', () => {
-    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id', undefined);
-    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id', undefined);
-    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id', undefined);
-    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id', undefined);
+    const player1 = new TestPlayer(Color.BLUE);
+    const player2 = new TestPlayer(Color.GREEN);
+    const player3 = new TestPlayer(Color.YELLOW);
+    const player4 = new TestPlayer(Color.RED);
+
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player3);
 
-    game.getPlayersInGenerationOrder().forEach((p) => {
-      (p as any).waitingFor = undefined;
+    [player1, player2, player3, player4].forEach((p) => {
+      p.popWaitingFor();
       p.plants = 8;
     });
 
@@ -382,15 +458,16 @@ describe('Game', () => {
   });
 
   it('Final greenery placement skips players without enough plants', () => {
-    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id', undefined);
-    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id', undefined);
-    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id', undefined);
-    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id', undefined);
+    const player1 = new TestPlayer(Color.BLUE);
+    const player2 = new TestPlayer(Color.GREEN);
+    const player3 = new TestPlayer(Color.YELLOW);
+    const player4 = new TestPlayer(Color.RED);
+
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player2);
     game.incrementFirstPlayer();
 
-    game.getPlayersInGenerationOrder().forEach((p) => {
-      (p as any).waitingFor = undefined;
+    [player1, player2, player3, player4].forEach((p) => {
+      p.popWaitingFor();
     });
 
     player1.plants = 8;
@@ -568,6 +645,28 @@ describe('Game', () => {
             [...player.dealtCorporationCards, ...player2.dealtCorporationCards].map((c) => c.name);
 
     expect(corpsAssignedToPlayers).has.members(corpsFromTurmoil);
+  });
+
+  it('specifically-requested preludes override expansion preludes', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const player2 = TestPlayer.RED.newPlayer();
+    const customPreludes = [
+      CardName.MERGER,
+      CardName.CORPORATE_ARCHIVES,
+      CardName.SURVEY_MISSION,
+      CardName.DESIGN_COMPANY,
+      CardName.PERSONAL_AGENDA,
+      CardName.VITAL_COLONY,
+      CardName.STRATEGIC_BASE_PLANNING,
+      CardName.EXPERIENCED_MARTIANS,
+    ];
+    const gameOptions = setCustomGameOptions({preludeExtension: true, customPreludes, pathfindersExpansion: false, promoCardsOption: false});
+    Game.newInstance('gameid', [player, player2], player, gameOptions);
+
+    const assignedPreludes =
+            [...player.dealtPreludeCards, ...player2.dealtPreludeCards].map((c) => c.name);
+
+    expect(assignedPreludes).has.members(customPreludes);
   });
 
   it('fails when the same id appears in two players', () => {

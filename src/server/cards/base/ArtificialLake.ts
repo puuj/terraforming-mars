@@ -29,12 +29,12 @@ export class ArtificialLake extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player) {
+  public override bespokeCanPlay(player: Player) {
     if (!player.game.canAddOcean()) return true; // Card is playable, it just has no effect.
     return player.game.board.getAvailableSpacesOnLand(player).length > 0;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     if (!player.game.canAddOcean()) return undefined;
 
     return new SelectSpace('Select a land space to place an ocean', player.game.board.getAvailableSpacesOnLand(player), (foundSpace: ISpace) => {

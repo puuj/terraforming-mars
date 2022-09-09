@@ -1,7 +1,5 @@
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
 import {PreludeCard} from './PreludeCard';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -10,6 +8,11 @@ export class Supplier extends PreludeCard {
     super({
       name: CardName.SUPPLIER,
       tags: [Tag.ENERGY],
+
+      behavior: {
+        production: {energy: 2},
+        stock: {steel: 4},
+      },
 
       metadata: {
         cardNumber: 'P32',
@@ -20,11 +23,5 @@ export class Supplier extends PreludeCard {
         description: 'Increase your energy production 2 steps. Gain 4 steel.',
       },
     });
-  }
-
-  public play(player: Player) {
-    player.production.add(Resources.ENERGY, 2);
-    player.steel +=4;
-    return undefined;
   }
 }

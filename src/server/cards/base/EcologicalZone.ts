@@ -19,8 +19,8 @@ import {Board} from '../../boards/Board';
 
 export class EcologicalZone extends Card implements IProjectCard {
   constructor(
-    name: CardName = CardName.ECOLOGICAL_ZONE,
-    cost: number = 12,
+    name = CardName.ECOLOGICAL_ZONE,
+    cost = 12,
     adjacencyBonus: AdjacencyBonus | undefined = undefined,
     metadata: ICardMetadata = {
       description: {
@@ -50,19 +50,18 @@ export class EcologicalZone extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   private getAvailableSpaces(player: Player): Array<ISpace> {
     return player.game.board.getAvailableSpacesOnLand(player)
       .filter((space) => player.game.board.getAdjacentSpaces(space).filter(Board.isGreenerySpace).length > 0);
   }
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return this.getAvailableSpaces(player).length > 0;
   }
   public onCardPlayed(player: Player, card: IProjectCard): void {
     player.addResourceTo(this, card.tags.filter((tag) => tag === Tag.ANIMAL || tag === Tag.PLANT).length);
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     // Get one extra animal from EcoExperts if played during prelude while having just played EcoExperts
     if (player.game.phase === Phase.PRELUDES && player.playedCards.length > 0 && player.playedCards[player.playedCards.length-1].name === CardName.ECOLOGY_EXPERTS) {
       player.addResourceTo(this, 1);

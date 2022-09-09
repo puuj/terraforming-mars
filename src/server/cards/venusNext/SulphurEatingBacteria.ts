@@ -39,11 +39,6 @@ export class SulphurEatingBacteria extends Card implements IActionCard {
       },
     });
   }
-  public override resourceCount: number = 0;
-
-  public play() {
-    return undefined;
-  }
   public canAct(): boolean {
     return true;
   }
@@ -74,7 +69,7 @@ export class SulphurEatingBacteria extends Card implements IActionCard {
     const megaCreditsGained = 3 * amount;
     player.megaCredits += megaCreditsGained;
 
-    const logText: string = 'gain ' + megaCreditsGained + ' M€';
+    const logText = 'gain ' + megaCreditsGained + ' M€';
     LogHelper.logRemoveResource(player, this, amount, logText);
     return undefined;
   }

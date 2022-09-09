@@ -18,11 +18,11 @@ describe('NuclearPower', function() {
 
   it('Can not play', function() {
     player.production.add(Resources.MEGACREDITS, -4);
-    expect(card.canPlay(player)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Should play', function() {
-    expect(card.canPlay(player)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
     card.play(player);
     expect(player.production.megacredits).to.eq(-2);
     expect(player.production.energy).to.eq(3);

@@ -25,8 +25,4 @@ export class EarthOffice extends Card implements IProjectCard {
       },
     });
   }
-
-  public play() {
-    return undefined;
-  }
 }

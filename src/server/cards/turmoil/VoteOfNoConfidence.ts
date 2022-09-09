@@ -32,21 +32,20 @@ export class VoteOfNoConfidence extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     const turmoil = Turmoil.getTurmoil(player.game);
     if (!turmoil.hasDelegatesInReserve(player.id)) return false;
 
     return turmoil.chairman === 'NEUTRAL';
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const turmoil = Turmoil.getTurmoil(player.game);
-    turmoil.chairman = player.id;
     const index = turmoil.delegateReserve.indexOf(player.id);
     if (index > -1) {
       turmoil.delegateReserve.splice(index, 1);
     }
-    player.increaseTerraformRating();
+    turmoil.setNewChairman(player.id, player.game, /* setAgenda */ false);
     return undefined;
   }
 }

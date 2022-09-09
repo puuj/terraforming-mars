@@ -34,7 +34,4 @@ export class Steelworks extends Card implements IProjectCard, IActionCard {
     player.steel += 2;
     return player.game.increaseOxygenLevel(player, 1);
   }
-  public play() {
-    return undefined;
-  }
 }

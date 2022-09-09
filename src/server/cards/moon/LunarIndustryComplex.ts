@@ -5,19 +5,18 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRenderer} from '../render/CardRenderer';
 import {PlaceMoonMineTile} from '../../moon/PlaceMoonMineTile';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {TileType} from '../../../common/TileType';
 
-export class LunarIndustryComplex extends MoonCard implements IProjectCard {
+export class LunarIndustryComplex extends Card implements IProjectCard {
   constructor() {
     super({
       name: CardName.LUNAR_INDUSTRY_COMPLEX,
       cardType: CardType.AUTOMATED,
       tags: [Tag.ENERGY, Tag.BUILDING],
       cost: 28,
-      productionBox: Units.of({steel: 1, titanium: 1, energy: 2, heat: 1}),
-      reserveUnits: Units.of({titanium: 2}),
+      productionBox: {steel: 1, titanium: 1, energy: 2, heat: 1},
+      reserveUnits: {titanium: 2},
       tr: {moonMining: 1},
 
       metadata: {
@@ -29,12 +28,11 @@ export class LunarIndustryComplex extends MoonCard implements IProjectCard {
           b.production((pb) => pb.steel(1).titanium(1).heat(1).energy(2));
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_MINE],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonMineTile(player));
     return undefined;
   }

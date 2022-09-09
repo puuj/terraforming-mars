@@ -6,11 +6,10 @@ import {CardResource} from '../../../common/CardResource';
 import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
 import {IActionCard} from '../ICard';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {VictoryPoints} from '../ICard';
 
-export class LunarObservationPost extends MoonCard implements IActionCard {
+export class LunarObservationPost extends Card implements IActionCard {
   constructor() {
     super({
       name: CardName.LUNAR_OBSERVATION_POST,
@@ -20,7 +19,7 @@ export class LunarObservationPost extends MoonCard implements IActionCard {
 
       resourceType: CardResource.DATA,
       victoryPoints: VictoryPoints.resource(1, 3),
-      reserveUnits: Units.of({titanium: 1}),
+      reserveUnits: {titanium: 1},
 
       metadata: {
         description: 'Spend 1 titanium. 1 VP for every 3 data resources here.',
@@ -36,11 +35,6 @@ export class LunarObservationPost extends MoonCard implements IActionCard {
     });
   }
 
-  public override resourceCount: number = 0;
-
-  public play() {
-    return undefined;
-  }
 
   public canAct() {
     return true;

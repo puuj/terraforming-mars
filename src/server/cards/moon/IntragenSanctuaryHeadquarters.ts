@@ -37,14 +37,13 @@ export class IntragenSanctuaryHeadquarters extends Card implements ICorporationC
     });
   }
 
-  public override resourceCount = 0;
 
   public initialAction(player: Player) {
     player.game.defer(new PlaceMoonColonyTile(player));
     return undefined;
   }
 
-  public play() {
+  public override bespokePlay() {
     // Gains the initial resource from its own tag.
     this.resourceCount = 1;
     return undefined;

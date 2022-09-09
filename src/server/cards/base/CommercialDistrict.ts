@@ -11,12 +11,10 @@ import {Board} from '../../boards/Board';
 import {AdjacencyBonus} from '../../ares/AdjacencyBonus';
 import {CardRenderer} from '../render/CardRenderer';
 import {CardRenderDynamicVictoryPoints} from '../render/CardRenderDynamicVictoryPoints';
-import {Units} from '../../../common/Units';
 
 export class CommercialDistrict extends Card implements IProjectCard {
-  public migrated = true;
   constructor(
-    name: CardName = CardName.COMMERCIAL_DISTRICT,
+    name = CardName.COMMERCIAL_DISTRICT,
     adjacencyBonus: AdjacencyBonus | undefined = undefined,
     metadata = {
       cardNumber: '085',
@@ -37,13 +35,13 @@ export class CommercialDistrict extends Card implements IProjectCard {
       tags: [Tag.BUILDING],
       cost: 16,
       adjacencyBonus,
-      productionBox: Units.of({energy: -1, megacredits: 4}),
+      productionBox: {energy: -1, megacredits: 4},
       victoryPoints: 'special',
       metadata,
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.game.board.getAvailableSpacesOnLand(player).length > 0;
   }
   public override getVictoryPoints(player: Player) {
@@ -55,7 +53,7 @@ export class CommercialDistrict extends Card implements IProjectCard {
     }
     return 0;
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectSpace(
       'Select space for special tile',
       player.game.board.getAvailableSpacesOnLand(player),

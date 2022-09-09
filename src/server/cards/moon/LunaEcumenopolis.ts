@@ -3,23 +3,22 @@ import {Player} from '../../Player';
 import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {TileType} from '../../../common/TileType';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {PlaceMoonColonyTile} from '../../moon/PlaceMoonColonyTile';
 import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
 import {ISpace} from '../../boards/ISpace';
 
-export class LunaEcumenopolis extends MoonCard {
+export class LunaEcumenopolis extends Card {
   constructor() {
     super({
       name: CardName.LUNA_ECUMENOPOLIS,
       cardType: CardType.AUTOMATED,
       tags: [Tag.CITY, Tag.CITY, Tag.MOON],
       cost: 35,
-      reserveUnits: Units.of({titanium: 2}),
+      reserveUnits: {titanium: 2},
 
       metadata: {
         description: 'Spend 2 Titanium. ' +
@@ -32,7 +31,6 @@ export class LunaEcumenopolis extends MoonCard {
           b.tr(1).slash().moonColonyRate().moonColonyRate();
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_COLONY],
     });
   }
@@ -59,7 +57,7 @@ export class LunaEcumenopolis extends MoonCard {
     return player.canAfford(0, {tr: {moonColony: 2, tr: expectedTRBump}});
   }
 
-  public override canPlay(player: Player) {
+  public override bespokeCanPlay(player: Player) {
     if (!this.canAffordTRBump(player)) {
       return false;
     }
@@ -68,7 +66,7 @@ export class LunaEcumenopolis extends MoonCard {
     const spaces = moonData.moon.getAvailableSpacesOnLand(player);
     const len = spaces.length;
 
-    let firstSpaceId: string = '';
+    let firstSpaceId = '';
 
     // This function returns true when this space is next to two colonies. Don't try to understand firstSpaceId yet.
     const nextToTwoColonies = function(space: ISpace): boolean {
@@ -99,7 +97,7 @@ export class LunaEcumenopolis extends MoonCard {
     return false;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     // These all have the same priority: Default.
     player.game.defer(new CustomPlaceMoonTile(player));
     player.game.defer(new CustomPlaceMoonTile(player));

@@ -29,8 +29,8 @@ export class HydrogenToVenus extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
-    const jovianTags: number = player.tags.count(Tag.JOVIAN);
+  public override bespokePlay(player: Player) {
+    const jovianTags = player.tags.count(Tag.JOVIAN);
     const floatersCards = player.getResourceCards(CardResource.FLOATER).filter((card) => card.tags.includes(Tag.VENUS));
     if (jovianTags > 0) {
       if (floatersCards.length === 1) {

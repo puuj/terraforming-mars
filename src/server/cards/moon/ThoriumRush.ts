@@ -33,7 +33,7 @@ export class ThoriumRush extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonColonyTile(player));
     player.game.defer(new PlaceMoonMineTile(player));
     player.game.defer(new PlaceMoonRoadTile(player));

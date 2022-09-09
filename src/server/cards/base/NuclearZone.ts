@@ -12,8 +12,8 @@ import {CardRenderer} from '../render/CardRenderer';
 
 export class NuclearZone extends Card implements IProjectCard {
   constructor(
-    name: CardName = CardName.NUCLEAR_ZONE,
-    cost: number = 10,
+    name = CardName.NUCLEAR_ZONE,
+    cost = 10,
     adjacencyBonus: AdjacencyBonus | undefined = undefined,
     metadata = {
       cardNumber: '097',
@@ -34,11 +34,11 @@ export class NuclearZone extends Card implements IProjectCard {
       tr: {temperature: 2},
     });
   }
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.game.board.getAvailableSpacesOnLand(player).length > 0;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.increaseTemperature(player, 2);
     return new SelectSpace('Select space for special tile', player.game.board.getAvailableSpacesOnLand(player), (foundSpace: ISpace) => {
       player.game.addTile(player, foundSpace.spaceType, foundSpace, {tileType: TileType.NUCLEAR_ZONE});

@@ -43,7 +43,6 @@ export class TitanFloatingLaunchPad extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   public canAct(): boolean {
     return true;
@@ -78,7 +77,7 @@ export class TitanFloatingLaunchPad extends Card implements IProjectCard {
     );
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2, restrictedTag: Tag.JOVIAN}));
     return undefined;
   }

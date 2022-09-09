@@ -38,11 +38,6 @@ export class NanotechIndustries extends Card implements IActionCard, ICorporatio
     });
   }
 
-  public override resourceCount = 0;
-
-  public play() {
-    return undefined;
-  }
 
   public initialAction(player: Player): PlayerInput {
     return player.drawCardKeepSome(3, {keepMax: 2});

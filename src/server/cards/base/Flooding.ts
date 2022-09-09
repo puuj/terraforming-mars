@@ -32,7 +32,7 @@ export class Flooding extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     if (player.game.isSoloMode()) {
       player.game.defer(new PlaceOceanTile(player));
       return undefined;

@@ -17,6 +17,7 @@ export class MiningComplex extends PreludeCard {
       name: CardName.MINING_COMPLEX,
       tags: [Tag.MOON],
       startingMegacredits: -7,
+      tilesBuilt: [TileType.MOON_MINE, TileType.MOON_ROAD],
 
       metadata: {
         description: 'Place a mine tile on the Moon and raise the Mining Rate 1 step. ' +
@@ -30,9 +31,11 @@ export class MiningComplex extends PreludeCard {
     });
   }
 
-  public tilesBuilt = [TileType.MOON_MINE, TileType.MOON_ROAD];
+  public override bespokeCanPlay(player: Player) {
+    return player.canAfford(7);
+  }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonMineTile(player)
       .andThen((space) => {
         const moon = MoonExpansion.moonData(player.game).moon;

@@ -25,16 +25,16 @@ describe('OceanFarm', () => {
 
   it('Can play', () => {
     addOcean(player);
-    expect(player.simpleCanPlay(card)).is.false;
+    expect(card.canPlay(player)).is.false;
 
     addOcean(player);
-    expect(player.simpleCanPlay(card)).is.false;
+    expect(card.canPlay(player)).is.false;
 
     addOcean(player);
-    expect(player.simpleCanPlay(card)).is.false;
+    expect(card.canPlay(player)).is.false;
 
     addOcean(player);
-    expect(player.simpleCanPlay(card)).is.true;
+    expect(card.canPlay(player)).is.true;
   });
 
   it('Play', () => {
@@ -42,7 +42,7 @@ describe('OceanFarm', () => {
     expect(player.production.plants).eq(0);
 
     const oceanSpace = addOcean(player);
-    const action = cast(player.simplePlay(card), SelectSpace);
+    const action = cast(card.play(player), SelectSpace);
 
     expect(player.production.heat).eq(1);
     expect(player.production.plants).eq(1);
@@ -56,7 +56,7 @@ describe('OceanFarm', () => {
 
   it('Ocean Farm counts as ocean for adjacency', () => {
     const oceanSpace = addOcean(player);
-    const action = cast(player.simplePlay(card), SelectSpace);
+    const action = cast(card.play(player), SelectSpace);
     action.cb(oceanSpace);
     const greenery = game.board.getAdjacentSpaces(oceanSpace).filter((space) => space.spaceType === SpaceType.LAND)[0];
 
@@ -76,7 +76,7 @@ describe('OceanFarm', () => {
     game.addOceanTile(player, oceanSpace.id);
     expect(player.plants).eq(1);
 
-    const action = cast(player.simplePlay(card), SelectSpace);
+    const action = cast(card.play(player), SelectSpace);
 
     expect(player.plants).eq(1);
 

@@ -7,7 +7,7 @@ import {Resources} from '../../../src/common/Resources';
 import {SpaceName} from '../../../src/server/SpaceName';
 import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {TileType} from '../../../src/common/TileType';
-import {resetBoard} from '../../TestingUtils';
+import {cast, resetBoard} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 
 describe('LavaTubeSettlement', function() {
@@ -23,7 +23,7 @@ describe('LavaTubeSettlement', function() {
   });
 
   it('Cannot play without energy production', function() {
-    expect(card.canPlay(player)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Cannot play if no volcanic spaces left', function() {
@@ -35,15 +35,15 @@ describe('LavaTubeSettlement', function() {
     const anotherPlayer = TestPlayer.RED.newPlayer();
     game.board.getSpace(SpaceName.ASCRAEUS_MONS).player = anotherPlayer; // land claim
 
-    expect(card.canPlay(player)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Should play', function() {
     player.production.add(Resources.ENERGY, 1);
-    expect(card.canPlay(player)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
 
     card.play(player);
-    const selectSpace = game.deferredActions.peek()!.execute() as SelectSpace;
+    const selectSpace = cast(game.deferredActions.peek()!.execute(), SelectSpace);
     selectSpace.cb(selectSpace.availableSpaces[0]);
 
     expect(selectSpace.availableSpaces[0].tile && selectSpace.availableSpaces[0].tile.tileType).to.eq(TileType.CITY);

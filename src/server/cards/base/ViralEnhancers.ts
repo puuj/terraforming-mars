@@ -61,8 +61,4 @@ export class ViralEnhancers extends Card implements IProjectCard {
     }
     return undefined;
   }
-
-  public play() {
-    return undefined;
-  }
 }

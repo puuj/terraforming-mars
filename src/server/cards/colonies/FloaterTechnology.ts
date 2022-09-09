@@ -39,9 +39,4 @@ export class FloaterTechnology extends Card implements IProjectCard {
 
     return undefined;
   }
-
-  public play() {
-    return undefined;
-  }
 }
-

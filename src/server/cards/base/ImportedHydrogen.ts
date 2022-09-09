@@ -37,7 +37,7 @@ export class ImportedHydrogen extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player): undefined | PlayerInput {
+  public override bespokePlay(player: Player): undefined | PlayerInput {
     const availableMicrobeCards = player.getResourceCards(CardResource.MICROBE);
     const availableAnimalCards = player.getResourceCards(CardResource.ANIMAL);
 

@@ -30,7 +30,7 @@ export class LunarExports extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new OrOptions(
       new SelectOption('Increase your M€ production by 5', 'Increase +MC', () => {
         player.production.add(Resources.MEGACREDITS, 5, {log: true});

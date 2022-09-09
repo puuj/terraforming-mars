@@ -32,7 +32,6 @@ export class MartianCulture extends Card implements IProjectCard, IActionCard {
     });
   }
 
-  public override resourceCount = 0;
 
   public canAct() {
     return true;
@@ -40,10 +39,6 @@ export class MartianCulture extends Card implements IProjectCard, IActionCard {
 
   public action(player: Player) {
     player.game.defer(new AddResourcesToCard(player, CardResource.DATA));
-    return undefined;
-  }
-
-  public play() {
     return undefined;
   }
 }

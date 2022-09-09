@@ -29,7 +29,7 @@ export class AdvancedAlloys extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.increaseTitaniumValue();
     player.increaseSteelValue();
     return undefined;

@@ -2,8 +2,6 @@ import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
-import {Resources} from '../../../common/Resources';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -15,6 +13,11 @@ export class ImportedGHG extends Card implements IProjectCard {
       tags: [Tag.EARTH, Tag.SPACE],
       cost: 7,
 
+      behavior: {
+        production: {heat: 1},
+        stock: {heat: 3},
+      },
+
       metadata: {
         cardNumber: '162',
         renderData: CardRenderer.builder((b) => {
@@ -23,12 +26,6 @@ export class ImportedGHG extends Card implements IProjectCard {
         description: 'Increase your heat production 1 step and gain 3 heat.',
       },
     });
-  }
-
-  public play(player: Player) {
-    player.production.add(Resources.HEAT, 1);
-    player.heat += 3;
-    return undefined;
   }
 }
 

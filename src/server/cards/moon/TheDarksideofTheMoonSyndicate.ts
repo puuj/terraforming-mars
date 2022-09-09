@@ -46,9 +46,8 @@ export class TheDarksideofTheMoonSyndicate extends Card implements ICorporationC
     });
   }
 
-  public override resourceCount = 0;
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.addResourceTo(this, 2);
     return undefined;
   }

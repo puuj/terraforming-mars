@@ -27,9 +27,6 @@ export class WaterSplittingPlant extends Card implements IProjectCard {
       },
     });
   }
-  public play() {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.energy >= 3 && player.canAfford(0, {tr: {oxygen: 1}});
   }

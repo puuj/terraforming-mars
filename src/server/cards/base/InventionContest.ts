@@ -24,7 +24,7 @@ export class InventionContest extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return player.drawCardKeepSome(3, {keepMax: 1});
   }
 }

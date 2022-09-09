@@ -27,7 +27,7 @@ export class GalileanWaystation extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const amount = player.game.getPlayers()
       .map((aplayer) => aplayer.tags.count(Tag.JOVIAN, player.id === aplayer.id ? 'default' : 'raw'))
       .reduce((a, c) => a + c, 0);

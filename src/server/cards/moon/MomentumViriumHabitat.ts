@@ -5,20 +5,19 @@ import {Tag} from '../../../common/cards/Tag';
 import {MoonExpansion} from '../../moon/MoonExpansion';
 import {MoonSpaces} from '../../moon/MoonSpaces';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {TileType} from '../../../common/TileType';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 
-export class MomentumViriumHabitat extends MoonCard {
+export class MomentumViriumHabitat extends Card {
   constructor() {
     super({
       name: CardName.MOMENTUM_VIRUM_HABITAT,
       cardType: CardType.AUTOMATED,
       tags: [Tag.CITY, Tag.SPACE],
       cost: 23,
-      productionBox: Units.of({heat: 2, megacredits: 3}),
-      reserveUnits: Units.of({titanium: 1}),
+      productionBox: {heat: 2, megacredits: 3},
+      reserveUnits: {titanium: 1},
       tr: {moonColony: 1},
 
       metadata: {
@@ -33,12 +32,11 @@ export class MomentumViriumHabitat extends MoonCard {
           b.moonColony({secondaryTag: AltSecondaryTag.MOON_COLONY_RATE}).asterix();
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_COLONY],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.addColonyTile(player, MoonSpaces.MOMENTUM_VIRIUM, this.name);
     MoonExpansion.raiseColonyRate(player);
     return undefined;

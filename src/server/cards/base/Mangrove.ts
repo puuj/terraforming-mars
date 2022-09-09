@@ -30,7 +30,7 @@ export class Mangrove extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     return new SelectSpace('Select ocean space for greenery tile', player.game.board.getAvailableSpacesForOcean(player), (foundSpace: ISpace) => {
       return player.game.addGreenery(player, foundSpace.id, SpaceType.OCEAN);
     });

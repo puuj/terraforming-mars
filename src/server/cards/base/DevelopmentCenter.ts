@@ -25,9 +25,6 @@ export class DevelopmentCenter extends Card implements IActionCard, IProjectCard
       },
     });
   }
-  public play() {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.energy > 0;
   }

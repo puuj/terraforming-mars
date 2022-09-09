@@ -27,7 +27,7 @@ export class TollStation extends Card implements IProjectCard {
       },
     });
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const amount = player.game.getPlayers()
       .filter((aPlayer) => aPlayer !== player)
       .map((opponent) => opponent.tags.count(Tag.SPACE, 'raw'))

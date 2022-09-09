@@ -28,7 +28,7 @@ export class DarksideMeteorBombardment extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.steel += 2;
     player.titanium += 2;
     MoonExpansion.raiseMiningRate(player, 2);

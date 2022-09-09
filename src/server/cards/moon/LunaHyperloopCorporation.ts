@@ -37,7 +37,7 @@ export class LunaHyperloopCorporation extends Card implements IActionCard, ICorp
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.steel += 4;
     return undefined;
   }

@@ -27,9 +27,6 @@ export class SpaceMirrors extends Card implements IActionCard, IProjectCard {
       },
     });
   }
-  public play() {
-    return undefined;
-  }
   public canAct(player: Player): boolean {
     return player.canAfford(7);
   }

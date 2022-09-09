@@ -7,20 +7,19 @@ import {MoonSpaces} from '../../moon/MoonSpaces';
 import {TileType} from '../../../common/TileType';
 import {CardRenderer} from '../render/CardRenderer';
 import {IActionCard} from '../ICard';
-import {Units} from '../../../common/Units';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {Game} from '../../Game';
 import {Resources} from '../../../common/Resources';
 import {all} from '../Options';
 
-export class LunaTradeStation extends MoonCard implements IActionCard {
+export class LunaTradeStation extends Card implements IActionCard {
   constructor() {
     super({
       name: CardName.LUNA_TRADE_STATION,
       cardType: CardType.ACTIVE,
       tags: [Tag.MOON, Tag.MOON, Tag.SPACE],
       cost: 10,
-      reserveUnits: Units.of({titanium: 2}),
+      reserveUnits: {titanium: 2},
 
       metadata: {
         description: 'Spend 2 titanium. Place this tile ON THE RESERVED AREA.',
@@ -34,7 +33,7 @@ export class LunaTradeStation extends MoonCard implements IActionCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     MoonExpansion.addTile(
       player,
       MoonSpaces.LUNA_TRADE_STATION,

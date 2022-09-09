@@ -38,10 +38,9 @@ export class AdhaiHighOrbitConstructions extends Card implements ICorporationCar
     });
   }
 
-  public override resourceCount = 0;
 
   private matchingTags(tags: Array<Tag>): boolean {
-    let spaceTag: boolean = false;
+    let spaceTag = false;
     for (const tag of tags) {
       if (tag === Tag.SPACE) spaceTag = true;
       if (isPlanetaryTag(tag)) return false;
@@ -49,7 +48,7 @@ export class AdhaiHighOrbitConstructions extends Card implements ICorporationCar
     return spaceTag;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.addResourceTo(this, 1);
     return undefined;
   }

@@ -4,7 +4,6 @@ import {PreludeCard} from './PreludeCard';
 import {CardName} from '../../../common/cards/CardName';
 import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 
 export class BusinessEmpire extends PreludeCard {
   constructor() {
@@ -12,7 +11,7 @@ export class BusinessEmpire extends PreludeCard {
       name: CardName.BUSINESS_EMPIRE,
       tags: [Tag.EARTH],
 
-      productionBox: Units.of({megacredits: 6}),
+      productionBox: {megacredits: 6},
       startingMegacredits: -6,
 
       metadata: {
@@ -25,12 +24,11 @@ export class BusinessEmpire extends PreludeCard {
       },
     });
   }
-  public override canPlay(player: Player) {
+  public override bespokeCanPlay(player: Player) {
     if (player.isCorporation(CardName.MANUTECH)) return true;
     return player.canAfford(6);
   }
-  public play(player: Player) {
-    player.production.adjust(this.productionBox);
+  public override bespokePlay(player: Player) {
     player.game.defer(new SelectPaymentDeferred(player, 6));
     return undefined;
   }

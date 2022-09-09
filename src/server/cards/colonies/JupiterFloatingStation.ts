@@ -44,7 +44,6 @@ export class JupiterFloatingStation extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   public canAct(): boolean {
     return true;
@@ -63,9 +62,5 @@ export class JupiterFloatingStation extends Card implements IProjectCard {
         return undefined;
       }),
     );
-  }
-
-  public play() {
-    return undefined;
   }
 }

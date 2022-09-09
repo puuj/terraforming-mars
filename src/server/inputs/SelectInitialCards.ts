@@ -4,11 +4,11 @@ import {ICorporationCard} from '../cards/corporation/ICorporationCard';
 import {IProjectCard} from '../cards/IProjectCard';
 import {Player} from '../Player';
 import {PlayerInput} from '../PlayerInput';
-import {PlayerInputTypes} from '../../common/input/PlayerInputTypes';
+import {PlayerInputType} from '../../common/input/PlayerInputType';
 import {SelectCard} from './SelectCard';
 
 export class SelectInitialCards extends AndOptions implements PlayerInput {
-  public override inputType = PlayerInputTypes.SELECT_INITIAL_CARDS;
+  public override inputType = PlayerInputType.SELECT_INITIAL_CARDS;
   constructor(player: Player, cb: (corporation: ICorporationCard) => undefined) {
     super(() => {
       cb(corporation);
@@ -21,10 +21,13 @@ export class SelectInitialCards extends AndOptions implements PlayerInput {
     this.options.push(
       new SelectCard<ICorporationCard>(
         'Select corporation', undefined, player.dealtCorporationCards,
-        ([card]) => {
-          corporation = card;
+        (cards) => {
+          if (cards.length !== 1) {
+            throw new Error('Only select 1 corporation card');
+          }
+          corporation = cards[0];
           return undefined;
-        },
+        }, {min: 1, max: 1},
       ),
     );
 
@@ -33,6 +36,9 @@ export class SelectInitialCards extends AndOptions implements PlayerInput {
         new SelectCard(
           'Select 2 Prelude cards', undefined, player.dealtPreludeCards,
           (preludeCards: Array<IProjectCard>) => {
+            if (preludeCards.length !== 2) {
+              throw new Error('Only select 2 preludes');
+            }
             player.preludeCardsInHand.push(...preludeCards);
             return undefined;
           }, {min: 2, max: 2},

@@ -18,6 +18,10 @@ export class ImportedNitrogen extends Card implements IProjectCard {
       cost: 23,
       tr: {tr: 1},
 
+      behavior: {
+        stock: {plants: 4},
+      },
+
       metadata: {
         cardNumber: '163',
         renderData: CardRenderer.builder((b) => {
@@ -31,8 +35,7 @@ export class ImportedNitrogen extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
-    player.plants += 4;
+  public override bespokePlay(player: Player) {
     player.increaseTerraformRating();
     player.game.defer(new AddResourcesToCard(player, CardResource.MICROBE, {count: 3}));
     player.game.defer(new AddResourcesToCard(player, CardResource.ANIMAL, {count: 2}));

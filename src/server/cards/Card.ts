@@ -13,30 +13,66 @@ import {CardRenderDynamicVictoryPoints} from './render/CardRenderDynamicVictoryP
 import {CardRenderItemType} from '../../common/cards/render/CardRenderItemType';
 import {IVictoryPoints} from '../../common/cards/IVictoryPoints';
 import {IProjectCard} from './IProjectCard';
+import {MoonExpansion} from '../moon/MoonExpansion';
+import {PlayerInput} from '../PlayerInput';
+import {isICorporationCard} from './corporation/ICorporationCard';
+import {TileType} from '../../common/TileType';
+import {Behavior, InternalBehavior, internalize} from '../behavior/Behavior';
+import {Behaviors} from '../behavior/Behaviors';
 
+/* External representation of card properties. */
 export interface StaticCardProperties {
   adjacencyBonus?: AdjacencyBonus;
+  behavior?: Behavior;
   cardCost?: number;
+  cardDiscount?: CardDiscount | Array<CardDiscount>;
   cardType: CardType;
   cost?: number;
   initialActionText?: string;
   metadata: ICardMetadata;
+  productionBox?: Partial<Units>;
   requirements?: CardRequirements;
   name: CardName;
+  reserveUnits?: Partial<Units>,
   resourceType?: CardResource;
   startingMegaCredits?: number;
   tags?: Array<Tag>;
-  productionBox?: Units;
-  cardDiscount?: CardDiscount | Array<CardDiscount>;
-  reserveUnits?: Units,
+  tilesBuilt?: Array<TileType.MOON_COLONY | TileType.MOON_MINE | TileType.MOON_ROAD>,
   tr?: TRSource | DynamicTRSource,
   victoryPoints?: number | 'special' | IVictoryPoints,
 }
 
-export const staticCardProperties = new Map<CardName, StaticCardProperties>();
+/*
+ * Internal representation of card properties.
+ */
+type Properties = Omit<StaticCardProperties, 'productionBox|reserveUnits|behavior'> & {
+  productionBox?: Units,
+  reserveUnits?: Units,
+  behavior: InternalBehavior | undefined};
 
+export const staticCardProperties = new Map<CardName, Properties>();
+
+/**
+ * Card is an implementation for most cards in the game, which provides one key features:
+ *
+ * 1. It stores key card properties into a static cache, which means that each instance of a card
+ *    consumes very little memory.
+ *
+ * 2. It's key behavior is to provide a lot of the `canPlay` and `play` behavior currently
+ * in player.simpleCanPlay and player.simplePlay. These will eventually be removed and
+ * put right in here.
+ *
+ * In order to implement this default behavior, Card subclasses should ideally not
+ * override `play` and `canPlay`. Instead, they should override `bespokeCanPlay` and
+ * `bespokePlay`, which provide bespoke, or custom hand-crafted play and canPlay
+ * behavior.
+ *
+ * If this seems counterintuitive, think about it this way: very little behavior should
+ * be custom-written for each card, _no_ common behavior should be custom-written for
+ * each card, either.
+ */
 export abstract class Card {
-  private readonly properties: StaticCardProperties;
+  private readonly properties: Properties;
   constructor(properties: StaticCardProperties) {
     let staticInstance = staticCardProperties.get(properties.name);
     if (staticInstance === undefined) {
@@ -51,14 +87,23 @@ export abstract class Card {
       // TODO(kberg): apply these changes in CardVictoryPoints.vue and remove this conditional altogether.
       Card.autopopulateMetadataVictoryPoints(properties);
 
-      staticCardProperties.set(properties.name, properties);
-      staticInstance = properties;
+      const p: Properties = {
+        ...properties,
+        productionBox: properties.productionBox === undefined ? undefined : Units.of(properties.productionBox),
+        reserveUnits: properties.reserveUnits === undefined ? undefined : Units.of(properties.reserveUnits),
+        behavior: properties.behavior === undefined ? undefined : internalize(properties.behavior),
+      };
+      staticCardProperties.set(properties.name, p);
+      staticInstance = p;
     }
     this.properties = staticInstance;
   }
   public resourceCount = 0;
   public get adjacencyBonus() {
     return this.properties.adjacencyBonus;
+  }
+  public get behavior() {
+    return this.properties.behavior;
   }
   public get cardCost() {
     return this.properties.cardCost;
@@ -105,8 +150,42 @@ export abstract class Card {
   public get victoryPoints(): number | 'special' | IVictoryPoints | undefined {
     return this.properties.victoryPoints;
   }
-  public canPlay(_player: Player) {
+  public get tilesBuilt(): Array<TileType> {
+    return this.properties.tilesBuilt || [];
+  }
+  public canPlay(player: Player) {
+    if (this.requirements?.satisfies(player) === false) {
+      return false;
+    }
+    if (this.productionBox && !player.production.canAdjust(this.productionBox)) {
+      return false;
+    }
+    if (this.behavior !== undefined && !Behaviors.canExecute(player, this, this.behavior)) {
+      return false;
+    }
+    return this.bespokeCanPlay(player);
+  }
+
+  public bespokeCanPlay(_player: Player): boolean {
     return true;
+  }
+
+  public play(player: Player) {
+    if (this.productionBox !== undefined) {
+      player.production.adjust(this.productionBox);
+    }
+    if (!isICorporationCard(this)) {
+      const adjustedReserveUnits = MoonExpansion.adjustedReserveCosts(player, this);
+      player.deductUnits(adjustedReserveUnits);
+    }
+    if (this.behavior !== undefined) {
+      Behaviors.execute(player, this, this.behavior);
+    }
+    return this.bespokePlay(player);
+  }
+
+  public bespokePlay(_player: Player): PlayerInput | undefined {
+    return undefined;
   }
 
   // player is optional to support historical tests.

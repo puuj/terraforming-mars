@@ -35,7 +35,7 @@ export class MedicalLab extends Card implements IProjectCard {
     const tagCount = player.tags.count(Tag.BUILDING) + (includeThis ? 1 : 0);
     player.production.add(Resources.MEGACREDITS, Math.floor(tagCount / 2), {log: true});
   }
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     this.produce(player);
     return undefined;
   }

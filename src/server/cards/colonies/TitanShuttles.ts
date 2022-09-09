@@ -36,7 +36,6 @@ export class TitanShuttles extends Card implements IProjectCard {
     });
   }
 
-  public override resourceCount: number = 0;
 
   public canAct(): boolean {
     return true;
@@ -67,9 +66,5 @@ export class TitanShuttles extends Card implements IProjectCard {
         true,
       ),
     );
-  }
-
-  public play() {
-    return undefined;
   }
 }

@@ -35,7 +35,4 @@ export class UndergroundDetonations extends Card implements IActionCard, IProjec
     player.production.add(Resources.HEAT, 2);
     return undefined;
   }
-  public play() {
-    return undefined;
-  }
 }

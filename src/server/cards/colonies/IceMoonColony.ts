@@ -25,11 +25,11 @@ export class IceMoonColony extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override bespokeCanPlay(player: Player): boolean {
     return player.colonies.getPlayableColonies().length > 0;
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new BuildColony(player, {title: 'Select colony for Ice Moon Colony'}));
     player.game.defer(new PlaceOceanTile(player, 'Select ocean for Ice Moon Colony'));
     return undefined;

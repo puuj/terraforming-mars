@@ -30,7 +30,7 @@ export class RevoltingColonists extends Card implements IProjectCard {
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     const colonies = MoonExpansion.spaces(player.game, TileType.MOON_COLONY);
     player.game.getPlayers().forEach((colonyTileOwner) => {
       const owned = colonies.filter((colony) => colony.player?.id === colonyTileOwner.id).length;

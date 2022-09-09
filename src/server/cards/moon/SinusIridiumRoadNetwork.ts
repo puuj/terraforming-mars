@@ -4,20 +4,19 @@ import {CardType} from '../../../common/cards/CardType';
 import {PlaceMoonRoadTile} from '../../moon/PlaceMoonRoadTile';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRenderer} from '../render/CardRenderer';
-import {Units} from '../../../common/Units';
 import {TileType} from '../../../common/TileType';
-import {MoonCard} from './MoonCard';
+import {Card} from '../Card';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 
-export class SinusIridiumRoadNetwork extends MoonCard {
+export class SinusIridiumRoadNetwork extends Card {
   constructor() {
     super({
       name: CardName.SINUS_IRIDIUM_ROAD_NETWORK,
       cardType: CardType.AUTOMATED,
       tags: [Tag.MOON],
       cost: 15,
-      productionBox: Units.of({energy: -1, megacredits: 3}),
-      reserveUnits: Units.of({steel: 1}),
+      productionBox: {energy: -1, megacredits: 3},
+      reserveUnits: {steel: 1},
       tr: {moonLogistics: 1},
 
       metadata: {
@@ -33,12 +32,11 @@ export class SinusIridiumRoadNetwork extends MoonCard {
           b.moonRoad({secondaryTag: AltSecondaryTag.MOON_LOGISTICS_RATE});
         }),
       },
-    }, {
       tilesBuilt: [TileType.MOON_ROAD],
     });
   }
 
-  public play(player: Player) {
+  public override bespokePlay(player: Player) {
     player.game.defer(new PlaceMoonRoadTile(player));
     return undefined;
   }

@@ -29,7 +29,4 @@ export class SpecialDesign extends Card implements IProjectCard {
     }
     return 0;
   }
-  public play() {
-    return undefined;
-  }
 }
