@@ -4,7 +4,6 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {CardName} from '../../../common/cards/CardName';
 import {CardResource} from '../../../common/CardResource';
-import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
 import {CardRequirements} from '../CardRequirements';
 import {Card} from '../Card';
 import {VictoryPoints} from '../ICard';
@@ -22,6 +21,11 @@ export class JovianLanterns extends Card implements IProjectCard {
       victoryPoints: VictoryPoints.resource(1, 2),
       tr: {tr: 1},
       requirements: CardRequirements.builder((b) => b.tag(Tag.JOVIAN)),
+
+      behavior: {
+        tr: 1,
+        addResourcesToAnyCard: {type: CardResource.FLOATER, count: 2},
+      },
 
       metadata: {
         cardNumber: 'C18',
@@ -48,12 +52,6 @@ export class JovianLanterns extends Card implements IProjectCard {
   public action(player: Player) {
     player.titanium--;
     player.addResourceTo(this, 2);
-    return undefined;
-  }
-
-  public override bespokePlay(player: Player) {
-    player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2}));
-    player.increaseTerraformRating();
     return undefined;
   }
 }

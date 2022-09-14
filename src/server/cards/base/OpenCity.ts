@@ -2,9 +2,6 @@ import {IProjectCard} from '../IProjectCard';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
-import {SelectSpace} from '../../inputs/SelectSpace';
-import {ISpace} from '../../boards/ISpace';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
@@ -16,12 +13,13 @@ export class OpenCity extends Card implements IProjectCard {
       name: CardName.OPEN_CITY,
       tags: [Tag.CITY, Tag.BUILDING],
       cost: 23,
-      productionBox: {energy: -1, megacredits: 4},
       requirements: CardRequirements.builder((b) => b.oxygen(12)),
       victoryPoints: 1,
 
       behavior: {
+        production: {energy: -1, megacredits: 4},
         stock: {plants: 2},
+        city: {},
       },
 
       metadata: {
@@ -37,16 +35,6 @@ export class OpenCity extends Card implements IProjectCard {
           align: 'left',
         },
       },
-    });
-  }
-
-  public override bespokeCanPlay(player: Player): boolean {
-    return player.game.board.getAvailableSpacesForCity(player).length > 0;
-  }
-  public override bespokePlay(player: Player) {
-    return new SelectSpace('Select space for city tile', player.game.board.getAvailableSpacesForCity(player), (space: ISpace) => {
-      player.game.addCityTile(player, space.id);
-      return undefined;
     });
   }
 }

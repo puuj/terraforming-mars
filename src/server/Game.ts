@@ -18,7 +18,7 @@ import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
 import {ISpace} from './boards/ISpace';
 import {Tile} from './Tile';
-import {LogBuilder} from './LogBuilder';
+import {LogBuilder} from './logs/LogBuilder';
 import {LogHelper} from './LogHelper';
 import {LogMessage} from '../common/logs/LogMessage';
 import {ALL_MILESTONES} from './milestones/Milestones';
@@ -68,12 +68,13 @@ import {ColonyDeserializer} from './colonies/ColonyDeserializer';
 import {GameLoader} from './database/GameLoader';
 import {DEFAULT_GAME_OPTIONS, GameOptions} from './GameOptions';
 import {TheNewSpaceRace} from './cards/pathfinders/TheNewSpaceRace';
+import {Logger} from './logs/Logger';
 
 export interface Score {
   corporation: String;
   playerScore: number;
 }
-export class Game {
+export class Game implements Logger {
   // Game-level data
   public lastSaveId: number = 0;
   private clonedGamedId: string | undefined;
@@ -1097,8 +1098,7 @@ export class Game {
     player.takeAction();
   }
 
-
-  public increaseOxygenLevel(player: Player, increments: -2 | -1 | 1 | 2): undefined {
+  public increaseOxygenLevel(player: Player, increments: -2 | -1 | 1 | 2): void {
     if (this.oxygenLevel >= constants.MAX_OXYGEN_LEVEL && increments > 0) {
       return undefined;
     }
@@ -1125,8 +1125,6 @@ export class Game {
     AresHandler.ifAres(this, (aresData) => {
       AresHandler.onOxygenChange(this, aresData);
     });
-
-    return undefined;
   }
 
   public getOxygenLevel(): number {
@@ -1452,7 +1450,7 @@ export class Game {
     // Turmoil Greens ruling policy
     PartyHooks.applyGreensRulingPolicy(player, this.board.getSpace(spaceId));
 
-    if (shouldRaiseOxygen) return this.increaseOxygenLevel(player, 1);
+    if (shouldRaiseOxygen) this.increaseOxygenLevel(player, 1);
     return undefined;
   }
 

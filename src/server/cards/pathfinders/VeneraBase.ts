@@ -10,7 +10,6 @@ import {CardResource} from '../../../common/CardResource';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRequirements} from '../CardRequirements';
 import {PartyName} from '../../../common/turmoil/PartyName';
-import {Resources} from '../../../common/Resources';
 import {SpaceName} from '../../SpaceName';
 import {SpaceType} from '../../../common/boards/SpaceType';
 
@@ -24,6 +23,11 @@ export class VeneraBase extends Card implements IProjectCard, IActionCard {
 
       requirements: CardRequirements.builder((b) => b.party(PartyName.UNITY)),
       victoryPoints: VictoryPoints.tags(Tag.VENUS, 1, 2),
+
+      behavior: {
+        production: {megacredits: 3},
+        city: {space: SpaceName.VENERA_BASE, type: SpaceType.COLONY},
+      },
 
       metadata: {
         cardNumber: 'Pf67',
@@ -45,12 +49,6 @@ export class VeneraBase extends Card implements IProjectCard, IActionCard {
 
   public action(player: Player) {
     player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {restrictedTag: Tag.VENUS}));
-    return undefined;
-  }
-
-  public override bespokePlay(player: Player) {
-    player.production.add(Resources.MEGACREDITS, 3);
-    player.game.addCityTile(player, SpaceName.VENERA_BASE, SpaceType.COLONY);
     return undefined;
   }
 }

@@ -1,5 +1,4 @@
 import {IProjectCard} from '../IProjectCard';
-import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
@@ -16,8 +15,12 @@ export class MuseumofEarlyColonisation extends Card implements IProjectCard {
       cost: 20,
       tags: [Tag.BUILDING, Tag.MARS],
       requirements: CardRequirements.builder((b) => b.oceans(1).cities(1, {all}).greeneries(1, {all})),
-      productionBox: {energy: -1, steel: 1, titanium: 1, plants: 1},
       tr: {tr: 1},
+
+      behavior: {
+        production: {energy: -1, steel: 1, titanium: 1, plants: 1},
+        tr: 1,
+      },
 
       metadata: {
         cardNumber: 'Pf11',
@@ -30,10 +33,5 @@ export class MuseumofEarlyColonisation extends Card implements IProjectCard {
          'Gain 1 TR.',
       },
     });
-  }
-
-  public override bespokePlay(player: Player) {
-    player.increaseTerraformRating();
-    return undefined;
   }
 }

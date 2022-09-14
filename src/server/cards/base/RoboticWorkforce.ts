@@ -46,9 +46,8 @@ export class RoboticWorkforce extends Card implements IProjectCard {
 
     if (card.produce !== undefined) return true;
 
-    if (card.productionBox === undefined || card.productionBox === Units.EMPTY) return false;
-
-    return player.production.canAdjust(card.productionBox);
+    if (card.behavior?.production === undefined || Units.isEmpty(card.behavior.production)) return false;
+    return player.production.canAdjust(Units.of(card.behavior.production));
   }
 
   private getAvailableCards(player: Player): Array<ICard> {
@@ -72,8 +71,8 @@ export class RoboticWorkforce extends Card implements IProjectCard {
 
       if (card.produce) {
         card.produce(player);
-      } else if (card.productionBox) {
-        player.production.adjust(card.productionBox);
+      } else if (card.behavior?.production) {
+        player.production.adjust(Units.of(card.behavior.production));
       } else {
         throw new Error(`Card ${card.name} is not a valid Robotic Workforce card.`);
       }

@@ -20,7 +20,11 @@ export class Recyclon extends Card implements ICorporationCard {
       tags: [Tag.MICROBE, Tag.BUILDING],
       startingMegaCredits: 38,
       resourceType: CardResource.MICROBE,
-      productionBox: {steel: 1},
+
+      behavior: {
+        production: {steel: 1},
+        addResources: 1,
+      },
 
       metadata: {
         cardNumber: 'R26',
@@ -39,10 +43,6 @@ export class Recyclon extends Card implements ICorporationCard {
     });
   }
 
-  public override bespokePlay(player: Player) {
-    player.addResourceTo(this);
-    return undefined;
-  }
   public onCardPlayed(player: Player, card: IProjectCard) {
     if (card.tags.includes(Tag.BUILDING) === false || !player.isCorporation(this.name)) {
       return undefined;

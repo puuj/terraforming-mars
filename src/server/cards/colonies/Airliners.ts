@@ -1,9 +1,7 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
 import {CardName} from '../../../common/cards/CardName';
 import {CardResource} from '../../../common/CardResource';
-import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
 import {CardRequirements} from '../CardRequirements';
 import {Card} from '../Card';
 import {CardRenderer} from '../render/CardRenderer';
@@ -16,7 +14,11 @@ export class Airliners extends Card implements IProjectCard {
       cardType: CardType.AUTOMATED,
       requirements: CardRequirements.builder((b) => b.floaters(3)),
       victoryPoints: 1,
-      productionBox: {megacredits: 2},
+
+      behavior: {
+        production: {megacredits: 2},
+        addResourcesToAnyCard: {count: 2, type: CardResource.FLOATER},
+      },
 
       metadata: {
         cardNumber: 'C01',
@@ -27,10 +29,5 @@ export class Airliners extends Card implements IProjectCard {
         }),
       },
     });
-  }
-
-  public override bespokePlay(player: Player) {
-    player.game.defer(new AddResourcesToCard(player, CardResource.FLOATER, {count: 2}));
-    return undefined;
   }
 }

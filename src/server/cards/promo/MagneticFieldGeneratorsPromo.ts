@@ -17,8 +17,12 @@ export class MagneticFieldGeneratorsPromo extends Card implements IProjectCard {
       name: CardName.MAGNETIC_FIELD_GENERATORS_PROMO,
       tags: [Tag.BUILDING],
       cost: 22,
-      productionBox: {energy: -4, plants: 2},
       tr: {tr: 3},
+
+      behavior: {
+        production: {energy: -4, plants: 2},
+        tr: 3,
+      },
 
       metadata: {
         cardNumber: 'X33',
@@ -37,8 +41,6 @@ export class MagneticFieldGeneratorsPromo extends Card implements IProjectCard {
     return player.game.board.getAvailableSpacesOnLand(player).length > 0;
   }
   public override bespokePlay(player: Player) {
-    player.increaseTerraformRatingSteps(3);
-
     const availableSpaces = player.game.board.getAvailableSpacesOnLand(player);
     if (availableSpaces.length < 1) return undefined;
 

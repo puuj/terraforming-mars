@@ -5,7 +5,6 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {PartyName} from '../../../common/turmoil/PartyName';
-import {PlaceCityTile} from '../../deferredActions/PlaceCityTile';
 import {SendDelegateToArea} from '../../deferredActions/SendDelegateToArea';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
@@ -18,7 +17,11 @@ export class CulturalMetropolis extends Card implements IProjectCard {
       name: CardName.CULTURAL_METROPOLIS,
       tags: [Tag.CITY, Tag.BUILDING],
       cost: 20,
-      productionBox: {energy: -1, megacredits: 3},
+
+      behavior: {
+        production: {energy: -1, megacredits: 3},
+        city: {},
+      },
 
       requirements: CardRequirements.builder((b) => b.party(PartyName.UNITY)),
       metadata: {
@@ -37,12 +40,10 @@ export class CulturalMetropolis extends Card implements IProjectCard {
   public override bespokeCanPlay(player: Player): boolean {
     // This card requires player has 2 delegates available
     const turmoil = Turmoil.getTurmoil(player.game);
-    const hasEnoughDelegates = turmoil.getAvailableDelegateCount(player.id, 'both') >= 2;
-    return hasEnoughDelegates;
+    return turmoil.getAvailableDelegateCount(player.id, 'both') >= 2 && player.game.board.getAvailableSpacesForCity(player).length > 0;
   }
 
   public override bespokePlay(player: Player) {
-    player.game.defer(new PlaceCityTile(player));
     const title = 'Select where to send two delegates';
 
     const turmoil = Turmoil.getTurmoil(player.game);

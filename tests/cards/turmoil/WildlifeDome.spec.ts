@@ -2,25 +2,23 @@ import {expect} from 'chai';
 import {WildlifeDome} from '../../../src/server/cards/turmoil/WildlifeDome';
 import {Game} from '../../../src/server/Game';
 import {Phase} from '../../../src/common/Phase';
-import {Player} from '../../../src/server/Player';
 import {PartyName} from '../../../src/common/turmoil/PartyName';
 import {PoliticalAgendas} from '../../../src/server/turmoil/PoliticalAgendas';
-import {cast, setCustomGameOptions} from '../../TestingUtils';
+import {cast, runAllActions, testGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
 describe('WildlifeDome', function() {
   let card: WildlifeDome;
-  let player: Player;
-  let redPlayer: Player;
+  let player: TestPlayer;
+  let redPlayer: TestPlayer;
   let game: Game;
 
   beforeEach(() => {
     card = new WildlifeDome();
     player = TestPlayer.BLUE.newPlayer();
     redPlayer = TestPlayer.RED.newPlayer();
-    const gameOptions = setCustomGameOptions();
-    game = Game.newInstance('gameid', [player, redPlayer], player, gameOptions);
+    game = Game.newInstance('gameid', [player, redPlayer], player, testGameOptions({turmoilExtension: true}));
   });
 
   it('Should play: reds', function() {
@@ -41,7 +39,10 @@ describe('WildlifeDome', function() {
     player.megaCredits = 18;
     expect(player.canPlay(card)).is.true;
 
-    const action = cast(card.play(player), SelectSpace);
+    expect(card.play(player)).is.undefined;
+    runAllActions(player.game);
+    const action = cast(player.popWaitingFor(), SelectSpace);
+
     action.cb(action.availableSpaces[0]);
     expect(game.getOxygenLevel()).to.eq(1);
   });

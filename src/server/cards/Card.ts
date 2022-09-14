@@ -17,20 +17,19 @@ import {MoonExpansion} from '../moon/MoonExpansion';
 import {PlayerInput} from '../PlayerInput';
 import {isICorporationCard} from './corporation/ICorporationCard';
 import {TileType} from '../../common/TileType';
-import {Behavior, InternalBehavior, internalize} from '../behavior/Behavior';
+import {Behavior} from '../behavior/Behavior';
 import {Behaviors} from '../behavior/Behaviors';
 
 /* External representation of card properties. */
 export interface StaticCardProperties {
   adjacencyBonus?: AdjacencyBonus;
-  behavior?: Behavior;
+  behavior?: Behavior | undefined;
   cardCost?: number;
   cardDiscount?: CardDiscount | Array<CardDiscount>;
   cardType: CardType;
   cost?: number;
   initialActionText?: string;
   metadata: ICardMetadata;
-  productionBox?: Partial<Units>;
   requirements?: CardRequirements;
   name: CardName;
   reserveUnits?: Partial<Units>,
@@ -45,10 +44,10 @@ export interface StaticCardProperties {
 /*
  * Internal representation of card properties.
  */
-type Properties = Omit<StaticCardProperties, 'productionBox|reserveUnits|behavior'> & {
-  productionBox?: Units,
+type Properties = Omit<StaticCardProperties, 'reserveUnits|behavior'> & {
   reserveUnits?: Units,
-  behavior: InternalBehavior | undefined};
+  behavior: Behavior,
+};
 
 export const staticCardProperties = new Map<CardName, Properties>();
 
@@ -89,9 +88,8 @@ export abstract class Card {
 
       const p: Properties = {
         ...properties,
-        productionBox: properties.productionBox === undefined ? undefined : Units.of(properties.productionBox),
         reserveUnits: properties.reserveUnits === undefined ? undefined : Units.of(properties.reserveUnits),
-        behavior: properties.behavior === undefined ? undefined : internalize(properties.behavior),
+        behavior: properties.behavior || {},
       };
       staticCardProperties.set(properties.name, p);
       staticInstance = p;
@@ -135,9 +133,6 @@ export abstract class Card {
   public get tags() {
     return this.properties.tags === undefined ? [] : this.properties.tags;
   }
-  public get productionBox(): Units {
-    return this.properties.productionBox || Units.EMPTY;
-  }
   public get cardDiscount() {
     return this.properties.cardDiscount;
   }
@@ -157,9 +152,6 @@ export abstract class Card {
     if (this.requirements?.satisfies(player) === false) {
       return false;
     }
-    if (this.productionBox && !player.production.canAdjust(this.productionBox)) {
-      return false;
-    }
     if (this.behavior !== undefined && !Behaviors.canExecute(player, this, this.behavior)) {
       return false;
     }
@@ -171,9 +163,6 @@ export abstract class Card {
   }
 
   public play(player: Player) {
-    if (this.productionBox !== undefined) {
-      player.production.adjust(this.productionBox);
-    }
     if (!isICorporationCard(this)) {
       const adjustedReserveUnits = MoonExpansion.adjustedReserveCosts(player, this);
       player.deductUnits(adjustedReserveUnits);
@@ -186,6 +175,16 @@ export abstract class Card {
 
   public bespokePlay(_player: Player): PlayerInput | undefined {
     return undefined;
+  }
+
+  public onDiscard(player: Player): void {
+    if (this.behavior !== undefined) {
+      Behaviors.onDiscard(player, this.behavior);
+    }
+    this.bespokeOnDiscard(player);
+  }
+
+  public bespokeOnDiscard(_player: Player): void {
   }
 
   // player is optional to support historical tests.

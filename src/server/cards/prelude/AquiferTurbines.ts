@@ -2,7 +2,6 @@ import {Tag} from '../../../common/cards/Tag';
 import {Player} from '../../Player';
 import {PreludeCard} from './PreludeCard';
 import {CardName} from '../../../common/cards/CardName';
-import {PlaceOceanTile} from '../../deferredActions/PlaceOceanTile';
 import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {CardRenderer} from '../render/CardRenderer';
 
@@ -12,7 +11,11 @@ export class AquiferTurbines extends PreludeCard {
       name: CardName.AQUIFER_TURBINES,
       tags: [Tag.ENERGY],
 
-      productionBox: {energy: 2},
+      behavior: {
+        production: {energy: 2},
+        ocean: {},
+      },
+
       startingMegacredits: -3,
 
       metadata: {
@@ -29,7 +32,6 @@ export class AquiferTurbines extends PreludeCard {
     return player.canAfford(3);
   }
   public override bespokePlay(player: Player) {
-    player.game.defer(new PlaceOceanTile(player));
     player.game.defer(new SelectPaymentDeferred(player, 3));
     return undefined;
   }

@@ -4,7 +4,6 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {CardName} from '../../../common/cards/CardName';
 import {CardResource} from '../../../common/CardResource';
-import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {Card} from '../Card';
@@ -16,7 +15,11 @@ export class UrbanDecomposers extends Card implements IProjectCard {
       tags: [Tag.MICROBE],
       name: CardName.URBAN_DECOMPOSERS,
       cardType: CardType.AUTOMATED,
-      productionBox: {plants: 1},
+
+      behavior: {
+        production: {plants: 1},
+        addResourcesToAnyCard: {count: 2, type: CardResource.MICROBE},
+      },
 
       requirements: CardRequirements.builder((b) => b.colonies().cities()),
       metadata: {
@@ -35,14 +38,5 @@ export class UrbanDecomposers extends Card implements IProjectCard {
       coloniesCount += colony.colonies.filter((owner) => owner === player.id).length;
     });
     return coloniesCount > 0 && player.game.getCitiesCount(player) > 0;
-  }
-
-  public override bespokePlay(player: Player) {
-    const microbeCards = player.getResourceCards(CardResource.MICROBE);
-    if (microbeCards.length) {
-      player.game.defer(new AddResourcesToCard(player, CardResource.MICROBE, {count: 2}));
-    }
-
-    return undefined;
   }
 }

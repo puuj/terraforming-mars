@@ -8,8 +8,12 @@ export class HydrogenBombardment extends PreludeCard {
   constructor() {
     super({
       name: CardName.HYDROGEN_BOMBARDMENT,
-      productionBox: {titanium: 1},
       startingMegacredits: 6,
+
+      behavior: {
+        production: {titanium: 1},
+        global: {venus: 1},
+      },
 
       metadata: {
         cardNumber: 'P04',
@@ -24,7 +28,6 @@ export class HydrogenBombardment extends PreludeCard {
   }
   public override bespokePlay(player: Player) {
     player.addResource(Resources.MEGACREDITS, this.startingMegaCredits);
-    player.game.increaseVenusScaleLevel(player, 1);
     return undefined;
   }
 }

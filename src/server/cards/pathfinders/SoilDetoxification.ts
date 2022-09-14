@@ -7,7 +7,6 @@ import {CardRenderer} from '../render/CardRenderer';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRequirements} from '../CardRequirements';
 import {PartyName} from '../../../common/turmoil/PartyName';
-import {Resources} from '../../../common/Resources';
 
 export class SoilDetoxification extends Card implements IProjectCard {
   constructor() {
@@ -18,6 +17,10 @@ export class SoilDetoxification extends Card implements IProjectCard {
       tags: [Tag.PLANT, Tag.SCIENCE],
 
       requirements: CardRequirements.builder((b) => b.party(PartyName.GREENS)),
+
+      behavior: {
+        production: {plants: 1},
+      },
 
       metadata: {
         cardNumber: 'PfTmp',
@@ -31,12 +34,11 @@ export class SoilDetoxification extends Card implements IProjectCard {
   }
 
   public override bespokePlay(player: Player) {
-    player.production.add(Resources.PLANTS, 1);
     player.plantsNeededForGreenery--;
     return undefined;
   }
 
-  public onDiscard(player: Player) {
+  public override bespokeOnDiscard(player: Player) {
     player.plantsNeededForGreenery++;
   }
 }

@@ -5,7 +5,7 @@ import {Game} from '../../../src/server/Game';
 import {OrOptions} from '../../../src/server/inputs/OrOptions';
 import {Phase} from '../../../src/common/Phase';
 import {TileType} from '../../../src/common/TileType';
-import {setCustomGameOptions, runAllActions, cast} from '../../TestingUtils';
+import {testGameOptions, runAllActions, cast} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
@@ -19,7 +19,7 @@ describe('CuriosityII', function() {
     card = new CuriosityII();
     player = TestPlayer.BLUE.newPlayer();
     player2 = TestPlayer.RED.newPlayer();
-    game = Game.newInstance('gameid', [player, player2], player, setCustomGameOptions({aresExtension: true, aresHazards: false}));
+    game = Game.newInstance('gameid', [player, player2], player, testGameOptions({aresExtension: true, aresHazards: false}));
     game.phase = Phase.ACTION;
 
     player.setCorporationForTest(card);
@@ -71,8 +71,11 @@ describe('CuriosityII', function() {
     const action = cast(oceanCity.play(player), SelectSpace);
     action.cb(oceanSpace);
 
-    const orOptions = cast(game.deferredActions.pop()!.execute(), OrOptions);
+    runAllActions(game);
+
+    const orOptions = cast(player.popWaitingFor(), OrOptions);
     orOptions.options[0].cb(); // Pay 2 M€ to draw a card
+
     runAllActions(game);
 
     expect(player.cardsInHand).has.lengthOf(1);

@@ -1,5 +1,4 @@
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
 import {PreludeCard} from './PreludeCard';
 import {IProjectCard} from '../IProjectCard';
 import {CardName} from '../../../common/cards/CardName';
@@ -10,7 +9,11 @@ export class Mohole extends PreludeCard implements IProjectCard {
     super({
       name: CardName.MOHOLE,
       tags: [Tag.BUILDING],
-      productionBox: {heat: 3},
+
+      behavior: {
+        production: {heat: 3},
+        stock: {heat: 3},
+      },
 
       metadata: {
         cardNumber: 'P22',
@@ -21,9 +24,5 @@ export class Mohole extends PreludeCard implements IProjectCard {
         description: 'Increase your heat production 3 steps. Gain 3 heat.',
       },
     });
-  }
-  public override bespokePlay(player: Player) {
-    player.heat += 3;
-    return undefined;
   }
 }

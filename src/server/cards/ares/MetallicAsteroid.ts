@@ -9,7 +9,6 @@ import {TileType} from '../../../common/TileType';
 import {CardType} from '../../../common/cards/CardType';
 import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
-import {RemoveAnyPlants} from '../../deferredActions/RemoveAnyPlants';
 import {CardRenderer} from '../render/CardRenderer';
 import {all, digit} from '../Options';
 
@@ -20,6 +19,12 @@ export class MetallicAsteroid extends Card implements IProjectCard {
       name: CardName.METALLIC_ASTEROID,
       tags: [Tag.SPACE],
       cost: 13,
+
+      behavior: {
+        stock: {titanium: 1},
+        global: {temperature: 1},
+        removeAnyPlants: 4,
+      },
 
       metadata: {
         cardNumber: 'A13',
@@ -33,10 +38,6 @@ export class MetallicAsteroid extends Card implements IProjectCard {
     });
   }
   public override bespokePlay(player: Player) {
-    player.titanium++;
-    player.game.increaseTemperature(player, 1);
-    player.game.defer(new RemoveAnyPlants(player, 4));
-
     return new SelectSpace('Select space for Metallic Asteroid tile', player.game.board.getAvailableSpacesOnLand(player), (space: ISpace) => {
       player.game.addTile(player, SpaceType.LAND, space, {
         tileType: TileType.METALLIC_ASTEROID,

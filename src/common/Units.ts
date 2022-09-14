@@ -67,4 +67,14 @@ export namespace Units {
       heat: -units.heat,
     };
   }
+
+  export function isEmpty(u: Partial<Units> | undefined): boolean {
+    if (u === undefined) return true;
+    return (u.megacredits ?? 0) === 0 &&
+      (u.steel ?? 0) === 0 &&
+      (u.titanium ?? 0) === 0 &&
+      (u.plants ?? 0) === 0 &&
+      (u.energy ?? 0) === 0 &&
+      (u.heat ?? 0) === 0;
+  }
 }

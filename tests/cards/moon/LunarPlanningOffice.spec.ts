@@ -1,6 +1,5 @@
 import {Game} from '../../../src/server/Game';
-import {Player} from '../../../src/server/Player';
-import {setCustomGameOptions} from '../../TestingUtils';
+import {runAllActions, testGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {LunarPlanningOffice} from '../../../src/server/cards/moon/LunarPlanningOffice';
 import {expect} from 'chai';
@@ -10,17 +9,16 @@ import {MicroMills} from '../../../src/server/cards/base/MicroMills';
 import {RoboticWorkforce} from '../../../src/server/cards/base/RoboticWorkforce';
 import {CardName} from '../../../src/common/cards/CardName';
 
-const MOON_OPTIONS = setCustomGameOptions({moonExpansion: true});
-
 describe('LunarPlanningOffice', () => {
   let game: Game;
-  let player: Player;
+  let player: TestPlayer;
   let card: LunarPlanningOffice;
 
   beforeEach(() => {
     player = TestPlayer.BLUE.newPlayer();
-    game = Game.newInstance('gameid', [player], player, MOON_OPTIONS);
+    game = Game.newInstance('gameid', [player], player, testGameOptions({moonExpansion: true}));
     card = new LunarPlanningOffice();
+    player.popWaitingFor(); // Removing SelectInitialCards.
   });
 
   it('play', () => {
@@ -35,10 +33,12 @@ describe('LunarPlanningOffice', () => {
     game.dealer.deck.push(new MareImbriumMine());
     game.dealer.discarded = [];
 
-    card.play(player);
-    game.deferredActions.peek()!.execute();
-    player.steel = 6;
+    expect(card.play(player)).is.undefined;
+    runAllActions(game);
 
+    expect(player.steel).eq(6);
+
+    expect(player.popWaitingFor()).is.undefined;
     expect(player.cardsInHand.map((c) => c.name)).has.members([CardName.MARE_NECTARIS_MINE, CardName.MARE_IMBRIUM_MINE]);
     expect(game.dealer.discarded.map((c) => c.name)).has.members([CardName.MICRO_MILLS]);
 
