@@ -25,7 +25,7 @@
     "Set the ruling party to one of your choice. Gain 1 influence.": "Bestimme die regierende Partei. Erhalte 1 Einfluss.",
 
     "Political Uprising": "Politischer Aufstand",
-    "Place 4 delegates. Draw a Turmoil card.": "Platziere 4 Delegierte. Ziehe eine Aufruhr-Karte.",
+    "Place 4 delegates in any parties. Draw a Turmoil card.": "Platziere 4 Delegierte. Ziehe eine Aufruhr-Karte.",
 
     "Research Grant": "Forschungszuschuss",
     "Gain 8 M€.": "Erhalte 8 M€.",
@@ -595,7 +595,7 @@
     "(Increase your M€ production 2 steps. Place a greenery tile ON AN AREA RESERVED FOR OCEAN, disregarding normal placement restrictions, and increase oxygen 1 step.)": "(Erhöhe deine M€-Produktion um 2. Platziere ein Grünflächenplättchen auf einem für Ozeane reserviertem Gebiet (ignoriere die normalen Platzierungsregeln) und erhöhe den Sauerstoffgehalt um 1%.)",
 
     "Satellites": "Satelliten",
-    "Increase your M€ production 1 step for each space tag your have, including this one.": "Erhöhe deine M€-Produktion um 1 je eigenes Weltraumsymbol (einschließlich dieses).",
+    "Increase your M€ production 1 step for each space tag you have, including this one.": "Erhöhe deine M€-Produktion um 1 je eigenes Weltraumsymbol (einschließlich dieses).",
 
     "Noctis Farming": "Noctis-Landwirtschaft",
     "Requires -20 C or warmer. Increase your M€ production 1 step and gain 2 Plants.": "Benötigt eine Temperatur von -20 °C oder wärmer. Erhöhe deine M€-Produktion um 1. Erhalte 2 Pflanzen.",

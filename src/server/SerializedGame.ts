@@ -14,21 +14,25 @@ import {LogMessage} from '../common/logs/LogMessage';
 import {SerializedBoard} from './boards/SerializedBoard';
 import {SerializedMoonData} from './moon/SerializedMoonData';
 import {SerializedPathfindersData} from './pathfinders/SerializedPathfindersData';
+import {SerializedDeck} from './cards/SerializedDeck';
 
 export type SerializedGame = {
     activePlayer: PlayerId;
     aresData?: AresData;
     awards: Array<string>;
     board: SerializedBoard;
-    // game.rng changes over the course of a game but isn't saved and serialized
-    // for instance, in the face of a redeal.
-    currentSeed: number | undefined; // TODO(kberg): Remove '|undefined' by 2022-06-01
+    currentSeed: number;
     claimedMilestones: Array<SerializedClaimedMilestone>;
     clonedGamedId?: string;
     colonies: Array<SerializedColony>;
     corporationsDraftDirection: 'before' | 'after';
     corporationsToDraft: Array<CardName>;
-    dealer: SerializedDealer;
+    // TODO(kberg): Remove dealer, and make the 3 decks non-optional by 2022-12-01.
+    // Also, move (project,corporation,prelude)Deck to their lexicographical position once `dealer is gone.
+    dealer?: SerializedDealer;
+    projectDeck?: SerializedDeck,
+    corporationDeck?: SerializedDeck,
+    preludeDeck?: SerializedDeck,
     deferredActions: Array<DeferredAction>;
     donePlayers: Array<PlayerId>;
     draftedPlayers: Array<PlayerId>;

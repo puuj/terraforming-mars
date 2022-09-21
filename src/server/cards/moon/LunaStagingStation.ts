@@ -13,10 +13,9 @@ export class LunaStagingStation extends Card {
       tags: [Tag.MOON, Tag.BUILDING],
       cost: 12,
       reserveUnits: {titanium: 1},
-      tr: {moonLogistics: 2},
 
       behavior: {
-        global: {moonLogistics: 2},
+        moon: {logisticsRate: 2},
       },
 
       requirements: CardRequirements.builder((b) => b.logisticRate(2)),

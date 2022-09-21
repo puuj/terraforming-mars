@@ -6,6 +6,7 @@ import {TURMOIL_CARD_MANIFEST} from '../turmoil/TurmoilCardManifest';
 import {SendDelegateToArea} from '../../deferredActions/SendDelegateToArea';
 import {CardRenderer} from '../render/CardRenderer';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
+import {CardManifest} from '../ModuleManifest';
 
 export class PoliticalUprising extends PreludeCard implements IProjectCard {
   constructor() {
@@ -18,7 +19,7 @@ export class PoliticalUprising extends PreludeCard implements IProjectCard {
           b.delegates(4).br.br;
           b.cards(1, {secondaryTag: AltSecondaryTag.TURMOIL});
         }),
-        description: 'Place 4 delegates. Draw a Turmoil card.',
+        description: 'Place 4 delegates in any parties. Draw a Turmoil card.',
       },
     });
   }
@@ -33,14 +34,22 @@ export class PoliticalUprising extends PreludeCard implements IProjectCard {
     return undefined;
   }
 
+  // TODO(kberg): it is possible, though unlikely, that the draw deck won't have another Turmoil card, but this
+  // app ought to check the discard pile, or something.
   private drawTurmoilCard(player: Player) {
-    const turmoilCards: Array<CardName> = [];
-    TURMOIL_CARD_MANIFEST.projectCards.factories.forEach((cf) => turmoilCards.push(cf.cardName));
-    const drawnCard = player.game.dealer.deck.find((card) => turmoilCards.includes(card.name));
+    // Rather than draw and discard potentially dozens of cards, find one card in the deck that's a Turmoil card.
 
-    if (drawnCard) {
-      const cardIndex = player.game.dealer.deck.findIndex((c) => c.name === drawnCard.name);
-      player.game.dealer.deck.splice(cardIndex, 1);
+    // First get all the card names for Turmoil Project cards by indexing the manifest.
+    const turmoilCardNames = CardManifest.keys(TURMOIL_CARD_MANIFEST.projectCards);
+
+    // Then find the first card in the deck that matches one of those names.
+    const drawnCard = player.game.projectDeck.drawPile.find((card) => turmoilCardNames.includes(card.name));
+
+    if (drawnCard === undefined) {
+      player.game.log('${0} played ${1} to find a Turmoil card but none were in the draw deck.', (b) => b.player(player).card(this));
+    } else {
+      const cardIndex = player.game.projectDeck.drawPile.findIndex((c) => c.name === drawnCard.name);
+      player.game.projectDeck.drawPile.splice(cardIndex, 1);
 
       player.cardsInHand.push(drawnCard);
       player.game.log('${0} drew ${1}', (b) => b.player(player).card(drawnCard));

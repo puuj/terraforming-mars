@@ -9,56 +9,61 @@ import {Tag} from '../../common/cards/Tag';
 import {Units} from '../../common/Units';
 import {SpaceId} from '../../common/Types';
 import {SpaceType} from '../../common/boards/SpaceType';
+import {MoonSpaces} from '../../common/moon/MoonSpaces';
+import {TileType} from '../../common/TileType';
 
 /** A set of steps that an action can perform in any specific order. */
 
+interface NoAttributes {
+  _unused?: undefined,
+}
+
 export interface Behavior {
-  // Gain or lose production
+  /** Gain or lose production */
   production?: Partial<Units>;
-  // Gain or lose stock
+  /** Gain or lose stock */
   stock?: Partial<Units>;
 
-  // Add resources to this card itself
+  /** Add resources to this card itself */
   addResources?: number;
 
-  // Add resources to any cards
+  /** Add resources to any cards */
   addResourcesToAnyCard?: AddResource | Array<AddResource>;
 
-  // Decrease any production
+  /** Decrease any production */
   decreaseAnyProduction?: DecreaseAnyProduction;
   removeAnyPlants?: number,
 
-  // Gain units of TR
+  /** Gain units of TR */
   tr?: number;
 
-  // Raise certain global parameters.
-  // Not sure how to deal with Oceans, yet.
+  /** Raise certain global parameters. */
   global?: {
     temperature?: -2 | -1 | 1 | 2 | 3;
     oxygen?: 2 | 1 | -1 | -2;
-  //   ocean?: number;
     venus?: 3 | 2 | 1 | -1;
-    moonColony?: number,
-    moonMining?: number,
-    moonLogistics?: number,
   },
 
   city?: {space?: SpaceId, type?: SpaceType},
-  greenery?: {},
-  ocean?: {},
+  /** Places a greenery tile and also raises the oxygen. */
+  greenery?: NoAttributes,
+  ocean?: NoAttributes,
 
-  // // Remove plants from any player. Typical for asteroid cards.
+  /** Remove plants from any player. Typical for asteroid cards. */
   // removePlants: number,
 
-  // // Remove resources from any player.
+  /** Remove resources from any player.
   // removeAnyResource: {type: CardResource, count: number},
 
-  // Raise the titanium and steel value. On discard, reduce them.
+  /** Raise the titanium and steel value. On discard, reduce them. */
   titanumValue?: 1;
   steelValue?: 1;
 
-  // Draw this many cards from the deck.
+  /** Draw this many cards from the deck. */
   drawCard?: number | DrawCard,
+
+  /** Greeneries cost one plant less. */
+  greeneryDiscount?: 1,
 
   // spendResourcesHere: number,
   // spendResource: {type: CardResource, count: number},
@@ -68,29 +73,47 @@ export interface Behavior {
       allowDuplicates?: boolean,
     },
 
-    // Add this many trade fleets to your armada.
+    /** Add this many trade fleets to your armada. */
     addTradeFleet?: number,
 
-    // When trading increase the colony track this many steps.
+    /** When trading increase the colony track this many steps. */
     tradeDiscount?: number,
 
-    // When trading increase the colony track this many steps.
+    /** When trading increase the colony track this many steps. */
     tradeOffset?: number,
   }
+
+  moon?: {
+    /** Places a colony tile and also raises the colony rate */
+    colonyTile?: PlaceMoonTile,
+    /** Places a mine tile and also raises the mining rate */
+    mineTile?: PlaceMoonTile,
+    /** Places a road tile and also raises the logistics rate */
+    roadTile?: PlaceMoonTile,
+    /** Places a special tile on the Moon. */
+    tile?: PlaceMoonTile & {type: TileType, title?: string},
+    colonyRate?: number,
+    miningRate?: number,
+    logisticsRate?: number,
+  },
+}
+
+export interface PlaceMoonTile {
+  space?: MoonSpaces;
 }
 
 export interface DrawCard {
   count: number,
-  // The number of cards to keep, should be between [1..count-1]
+  /** The number of cards to keep, should be between [1..count-1] */
   keep?: number,
-  // When true, player has to pay to keep the card. (e.g. 3MC)
+  /** When true, player has to pay to keep the card. (e.g. 3MC) */
   pay?: boolean,
 
-  // Discard cards without this tag
+  /** Discard cards without this tag */
   tag?: Tag,
-  // Discard cards not of this type
+  /** Discard cards not of this type */
   type?: CardType,
-  // Discard cards without this type of resource.
+  /** Discard cards without this type of resource. */
   resource?: CardResource,
 }
 

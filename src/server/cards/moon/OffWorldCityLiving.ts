@@ -16,11 +16,10 @@ export class OffWorldCityLiving extends Card implements IProjectCard {
       cardType: CardType.AUTOMATED,
       tags: [Tag.CITY, Tag.SPACE],
       cost: 35,
-      tr: {moonColony: 1},
       victoryPoints: 'special',
 
       behavior: {
-        global: {moonColony: 1},
+        moon: {colonyRate: 1},
       },
 
       metadata: {
@@ -30,7 +29,7 @@ export class OffWorldCityLiving extends Card implements IProjectCard {
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => pb.megacredits(1)).slash().city({all, secondaryTag: Tag.SPACE}).br;
           b.moonColonyRate().br;
-          b.vpText('1 VP for each 3 city tiles in play.');
+          b.vpText('1 VP for every 3rd City in play.');
         }),
         victoryPoints: CardRenderDynamicVictoryPoints.cities(1, 3, true),
       },

@@ -14,11 +14,10 @@ export class LunarTradeFleet extends Card implements IProjectCard {
       cardType: CardType.AUTOMATED,
       tags: [Tag.MOON, Tag.SPACE],
       cost: 8,
-      tr: {moonLogistics: 1},
 
       behavior: {
         production: {megacredits: 1},
-        global: {moonLogistics: 1},
+        moon: {logisticsRate: 1},
       },
 
       requirements: CardRequirements.builder((b) => b.production(Resources.TITANIUM, 2)),

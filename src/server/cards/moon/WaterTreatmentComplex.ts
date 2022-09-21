@@ -13,14 +13,13 @@ export class WaterTreatmentComplex extends Card {
       cost: 12,
       requirements: CardRequirements.builder((b) => b.colonyTiles(1, {all})),
       reserveUnits: {titanium: 1},
-      tr: {moonColony: 2},
 
       behavior: {
-        global: {moonColony: 2},
+        moon: {colonyRate: 2},
       },
 
       metadata: {
-        description: 'Requires 1 colony tile on the Moon. Spend 1 titanium. Raise the Colony Rate 2 steps.',
+        description: 'Requires 1 colony tile on The Moon. Spend 1 titanium. Raise the Colony Rate 2 steps.',
         cardNumber: 'M46',
         renderData: CardRenderer.builder((b) => b.minus().titanium(1).br.moonColonyRate({amount: 2})),
       },

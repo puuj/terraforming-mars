@@ -1,5 +1,6 @@
 import {Units} from '../../common/Units';
 import {ICard} from '../cards/ICard';
+import {TRSource} from '../../common/cards/TRSource';
 import {AddResourcesToCard} from '../deferredActions/AddResourcesToCard';
 import {BuildColony} from '../deferredActions/BuildColony';
 import {DecreaseAnyProduction} from '../deferredActions/DecreaseAnyProduction';
@@ -9,11 +10,15 @@ import {PlaceGreeneryTile} from '../deferredActions/PlaceGreeneryTile';
 import {PlaceOceanTile} from '../deferredActions/PlaceOceanTile';
 import {RemoveAnyPlants} from '../deferredActions/RemoveAnyPlants';
 import {MoonExpansion} from '../moon/MoonExpansion';
+import {PlaceMoonColonyTile} from '../moon/PlaceMoonColonyTile';
+import {PlaceMoonMineTile} from '../moon/PlaceMoonMineTile';
+import {PlaceMoonRoadTile} from '../moon/PlaceMoonRoadTile';
+import {PlaceSpecialMoonTile} from '../moon/PlaceSpecialMoonTile';
 import {Player} from '../Player';
 import {Behavior} from './Behavior';
 
 export class Behaviors {
-  public static canExecute(player: Player, _card: ICard, behavior: Behavior) {
+  public static canExecute(behavior: Behavior, player: Player, _card?: ICard) {
     if (behavior.production && !player.production.canAdjust(Units.of(behavior.production))) {
       return false;
     }
@@ -52,7 +57,7 @@ export class Behaviors {
     return true;
   }
 
-  public static execute(player: Player, card: ICard, behavior: Behavior) {
+  public static execute(behavior: Behavior, player: Player, card?: ICard) {
     if (behavior.production !== undefined) {
       player.production.adjust(Units.of(behavior.production));
     }
@@ -66,6 +71,9 @@ export class Behaviors {
       player.increaseTitaniumValue();
     }
 
+    if (behavior?.greeneryDiscount) {
+      player.plantsNeededForGreenery -= behavior.greeneryDiscount;
+    }
     if (behavior.drawCard !== undefined) {
       const drawCard = behavior.drawCard;
       if (typeof(drawCard) === 'number') {
@@ -94,15 +102,15 @@ export class Behaviors {
       if (g.temperature !== undefined) player.game.increaseTemperature(player, g.temperature);
       if (g.oxygen !== undefined) player.game.increaseOxygenLevel(player, g.oxygen);
       if (g.venus !== undefined) player.game.increaseVenusScaleLevel(player, g.venus);
-      if (g.moonColony !== undefined) MoonExpansion.raiseColonyRate(player, g.moonColony);
-      if (g.moonMining !== undefined) MoonExpansion.raiseMiningRate(player, g.moonMining);
-      if (g.moonLogistics !== undefined) MoonExpansion.raiseLogisticRate(player, g.moonLogistics);
     }
 
     if (behavior.tr !== undefined) {
       player.increaseTerraformRatingSteps(behavior.tr);
     }
     if (behavior.addResources !== undefined) {
+      if (card === undefined) {
+        throw new Error('card is required for addResources behavior.');
+      }
       player.game.defer(new SimpleDeferredAction(player, () => {
         player.addResourceTo(card, behavior.addResources);
         return undefined;
@@ -152,14 +160,59 @@ export class Behaviors {
     if (behavior.greenery !== undefined) {
       player.game.defer(new PlaceGreeneryTile(player));
     }
+
+    // TODO(kberg): Add canPlay for these behaviors.
+    if (behavior.moon !== undefined) {
+      const moon = behavior.moon;
+      if (moon.colonyTile !== undefined) {
+        if (moon.colonyTile.space === undefined) {
+          player.game.defer(new PlaceMoonColonyTile(player));
+        } else {
+          MoonExpansion.addColonyTile(player, moon.colonyTile.space, card?.name);
+          MoonExpansion.raiseColonyRate(player);
+        }
+      }
+      if (moon.mineTile !== undefined) {
+        if (moon.mineTile.space === undefined) {
+          player.game.defer(new PlaceMoonMineTile(player));
+        } else {
+          MoonExpansion.addMineTile(player, moon.mineTile.space, card?.name);
+          MoonExpansion.raiseMiningRate(player);
+        }
+      }
+      if (moon.roadTile !== undefined) {
+        if (moon.roadTile.space === undefined) {
+          player.game.defer(new PlaceMoonRoadTile(player));
+        } else {
+          MoonExpansion.addRoadTile(player, moon.roadTile.space, card?.name);
+          MoonExpansion.raiseLogisticRate(player);
+        }
+      }
+      if (moon.tile !== undefined) {
+        if (moon.tile.space !== undefined) {
+          MoonExpansion.addTile(player, moon.tile.space, {tileType: moon.tile.type, card: card?.name});
+        } else {
+          player.game.defer(new PlaceSpecialMoonTile(
+            player, {tileType: moon.tile.type, card: card?.name},
+            moon.tile.title));
+        }
+      }
+      if (moon.colonyRate !== undefined) MoonExpansion.raiseColonyRate(player, moon.colonyRate);
+      if (moon.miningRate !== undefined) MoonExpansion.raiseMiningRate(player, moon.miningRate);
+      if (moon.logisticsRate !== undefined) MoonExpansion.raiseLogisticRate(player, moon.logisticsRate);
+    }
   }
 
-  public static onDiscard(player: Player, behavior: Behavior) {
+  public static onDiscard(behavior: Behavior, player: Player, _card?: ICard) {
     if (behavior.steelValue === 1) {
       player.decreaseSteelValue();
     }
     if (behavior.titanumValue === 1) {
       player.decreaseTitaniumValue();
+    }
+
+    if (behavior?.greeneryDiscount) {
+      player.plantsNeededForGreenery += behavior.greeneryDiscount;
     }
 
     if (behavior.colonies !== undefined) {
@@ -176,5 +229,21 @@ export class Behaviors {
         player.colonies.tradeOffset -= colonies.tradeOffset;
       }
     }
+  }
+
+  public static toTRSource(behavior: Behavior): TRSource {
+    const trSource: TRSource = {
+      tr: behavior.tr,
+
+      temperature: behavior.global?.temperature,
+      oxygen: (behavior.global?.oxygen ?? 0) + (behavior.greenery !== undefined ? 1 : 0),
+      venus: behavior.global?.venus,
+      oceans: behavior.ocean !== undefined ? 1 : undefined,
+
+      moonColony: (behavior.moon?.colonyRate ?? 0) + (behavior.moon?.colonyTile !== undefined ? 1 : 0),
+      moonMining: (behavior.moon?.miningRate ?? 0) + (behavior.moon?.mineTile !== undefined ? 1 : 0),
+      moonLogistics: (behavior.moon?.logisticsRate ?? 0) + (behavior.moon?.roadTile !== undefined ? 1 : 0),
+    };
+    return trSource;
   }
 }

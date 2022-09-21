@@ -2,11 +2,11 @@ import {Game} from '../../../src/server/Game';
 import {IMoonData} from '../../../src/server/moon/IMoonData';
 import {MoonExpansion} from '../../../src/server/moon/MoonExpansion';
 import {Player} from '../../../src/server/Player';
-import {testGameOptions} from '../../TestingUtils';
+import {runAllActions, testGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {MareImbriumMine} from '../../../src/server/cards/moon/MareImbriumMine';
 import {expect} from 'chai';
-import {MoonSpaces} from '../../../src/server/moon/MoonSpaces';
+import {MoonSpaces} from '../../../src/common/moon/MoonSpaces';
 import {TileType} from '../../../src/common/TileType';
 
 describe('MareImbriumMine', () => {
@@ -33,6 +33,7 @@ describe('MareImbriumMine', () => {
     expect(moonData.miningRate).eq(0);
 
     card.play(player);
+    runAllActions(game);
 
     expect(player.titanium).eq(2);
     expect(player.production.steel).eq(1);

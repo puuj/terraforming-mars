@@ -9,7 +9,6 @@ import {SelectOption} from '../src/server/inputs/SelectOption';
 import {Resources} from '../src/common/Resources';
 import {SerializedPlayer} from '../src/server/SerializedPlayer';
 import {SerializedTimer} from '../src/common/SerializedTimer';
-import {SerializedGame} from '../src/server/SerializedGame';
 import {Player} from '../src/server/Player';
 import {Color} from '../src/common/Color';
 import {CardName} from '../src/common/cards/CardName';
@@ -268,7 +267,7 @@ describe('Player', function() {
       victoryPointsByGeneration: [],
     };
 
-    const newPlayer = Player.deserialize(json, {generation: 1} as SerializedGame);
+    const newPlayer = Player.deserialize(json);
 
     expect(newPlayer.color).eq(Color.PURPLE);
     expect(newPlayer.colonies.tradesThisGeneration).eq(100);
@@ -598,6 +597,7 @@ describe('Player', function() {
     const game = Game.newInstance('gameid', [player], player);
 
     const log = game.gameLog;
+
     log.length = 0; // Empty it out.
 
     const card = new Pets();

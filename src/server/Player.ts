@@ -12,7 +12,8 @@ import {ICorporationCard} from './cards/corporation/ICorporationCard';
 import {Game} from './Game';
 import {Payment, PaymentKey, PAYMENT_KEYS} from '../common/inputs/Payment';
 import {IAward} from './awards/IAward';
-import {ICard, isIActionCard, TRSource, IActionCard, DynamicTRSource} from './cards/ICard';
+import {ICard, isIActionCard, IActionCard, DynamicTRSource} from './cards/ICard';
+import {TRSource} from '../common/cards/TRSource';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
 import {LogMessageDataType} from '../common/logs/LogMessageDataType';
@@ -60,18 +61,21 @@ import {Turmoil} from './turmoil/Turmoil';
 import {PathfindersExpansion} from './pathfinders/PathfindersExpansion';
 import {deserializeProjectCard, serializeProjectCard} from './cards/CardSerialization';
 import {ColoniesHandler} from './colonies/ColoniesHandler';
-import {SerializedGame} from './SerializedGame';
 import {MonsInsurance} from './cards/promo/MonsInsurance';
 import {InputResponse} from '../common/inputs/InputResponse';
 import {Tags} from './player/Tags';
 import {Colonies} from './player/Colonies';
 import {Production} from './player/Production';
 import {Merger} from './cards/promo/Merger';
+import {Behaviors} from './behavior/Behaviors';
 
-// Behavior when playing a card.
-// add it to the tableau
-// discard it from the tableau
-// do nothing.
+/**
+ * Behavior when playing a card:
+ *   add it to the tableau
+ *   discard it from the tableau
+ *   or do nothing.
+ */
+
 export type CardAction ='add' | 'discard' | 'nothing';
 export class Player {
   public readonly id: PlayerId;
@@ -869,9 +873,9 @@ export class Player {
     });
   }
 
-  public dealCards(quantity: number, cards: Array<IProjectCard>): void {
+  public dealForDraft(quantity: number, cards: Array<IProjectCard>): void {
     for (let i = 0; i < quantity; i++) {
-      cards.push(this.game.dealer.dealCard(this.game, true));
+      cards.push(this.game.projectDeck.draw(this.game, 'bottom'));
     }
   }
 
@@ -894,9 +898,9 @@ export class Player {
           cardsToKeep = 2;
         }
 
-        this.dealCards(cardsToDraw, cards);
+        this.dealForDraft(cardsToDraw, cards);
       } else {
-        this.dealCards(5, cards);
+        this.dealForDraft(5, cards);
       }
     } else {
       cards = passedCards;
@@ -969,7 +973,7 @@ export class Player {
   public runResearchPhase(draftVariant: boolean): void {
     let dealtCards: Array<IProjectCard> = [];
     if (!draftVariant) {
-      this.dealCards(LunaProjectOffice.isActive(this) ? 5 : 4, dealtCards);
+      this.dealForDraft(LunaProjectOffice.isActive(this) ? 5 : 4, dealtCards);
     } else {
       dealtCards = this.draftedCards;
       this.draftedCards = [];
@@ -1308,7 +1312,7 @@ export class Player {
       return;
     }
     this.playedCards.splice(cardIndex, 1);
-    this.game.dealer.discard(card);
+    this.game.projectDeck.discard(card);
     card.onDiscard?.(this);
     this.game.log('${0} discarded ${1}', (b) => b.player(this).card(card));
   }
@@ -1480,12 +1484,13 @@ export class Player {
   // TODO(kberg): After migration, see if this can become private again.
   // Or perhaps moved into card?
   public canAffordCard(card: IProjectCard): boolean {
+    const trSource: TRSource | DynamicTRSource | undefined = card.tr || (card.behavior !== undefined ? Behaviors.toTRSource(card.behavior) : undefined);
     return this.canAfford(
       this.getCardCost(card),
       {
         ...this.paymentOptionsForCard(card),
         reserveUnits: MoonExpansion.adjustedReserveCosts(this, card),
-        tr: card.tr,
+        tr: trSource,
       });
   }
 
@@ -1502,7 +1507,6 @@ export class Player {
   /**
    * Verify if requirements for the card can be met, ignoring the project cost.
    * Only made public for tests.
-   * @deprecated use Card2.
    */
   public simpleCanPlay(card: IProjectCard): boolean {
     if (card.requirements !== undefined && !card.requirements.satisfies(this)) {
@@ -1532,6 +1536,16 @@ export class Player {
       0 <= payment[key] && payment[key] <= maxPayable[key]);
   }
 
+  /**
+   * Returns the value of the suppled payment given the payment options.
+   *
+   * For example, if the payment is 3MC and 2 steel, given that steel by default is
+   * worth 2M€, this will return 7.
+   *
+   * @param {Payment} payment the resources being paid.
+   * @param {Payment.Options} options any configuration defining the accepted forma of payment.
+   * @return {number} a number representing the value of payment in M€.
+   */
   public payingAmount(payment: Payment, options?: Partial<Payment.Options>): number {
     const multiplier: {[key in PaymentKey]: number} = {
       megaCredits: 1,
@@ -1986,7 +2000,7 @@ export class Player {
     return result;
   }
 
-  public static deserialize(d: SerializedPlayer, game: SerializedGame): Player {
+  public static deserialize(d: SerializedPlayer): Player {
     const player = new Player(d.name, d.color, d.beginner, Number(d.handicap), d.id, d.email);
 
     const cardFinder = new CardFinder();
@@ -2000,10 +2014,6 @@ export class Player {
     player.colonies.tradeOffset = d.colonyTradeOffset;
     player.colonies.victoryPoints = d.colonyVictoryPoints;
     player.victoryPointsByGeneration = d.victoryPointsByGeneration;
-    // TODO(kberg): delete this conditional by 2022-06-01
-    if (!player.victoryPointsByGeneration) {
-      player.victoryPointsByGeneration = new Array(game.generation).fill(0);
-    }
     player.energy = d.energy;
     player.colonies.setFleetSize(d.fleetSize);
     player.hasIncreasedTerraformRatingThisGeneration = d.hasIncreasedTerraformRatingThisGeneration;

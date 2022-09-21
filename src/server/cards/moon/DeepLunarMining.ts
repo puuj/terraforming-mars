@@ -12,11 +12,10 @@ export class DeepLunarMining extends Card {
       tags: [Tag.MOON],
       cost: 18,
       reserveUnits: {titanium: 1},
-      tr: {moonMining: 1},
 
       behavior: {
         production: {titanium: 2},
-        global: {moonMining: 1},
+        moon: {miningRate: 1},
       },
 
       metadata: {

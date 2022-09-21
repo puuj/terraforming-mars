@@ -16,10 +16,9 @@ export class MooncrateConvoysToMars extends Card implements IProjectCard {
       cardType: CardType.EVENT,
       cost: 13,
       requirements: CardRequirements.builder((b) => b.party(PartyName.MARS)),
-      tr: {moonLogistics: 1},
 
       behavior: {
-        global: {moonLogistics: 1},
+        moon: {logisticsRate: 1},
       },
 
       metadata: {

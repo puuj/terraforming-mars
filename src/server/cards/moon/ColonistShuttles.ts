@@ -18,14 +18,13 @@ export class ColonistShuttles extends Card {
       tags: [Tag.SPACE],
       cost: 12,
       reserveUnits: {titanium: 1},
-      tr: {moonColony: 1},
 
       behavior: {
-        global: {moonColony: 1},
+        moon: {colonyRate: 1},
       },
 
       metadata: {
-        description: 'Spend 1 titanium. Raise the Colony Rate 1 step. Gain 2M€ for each colony tile on the Moon.',
+        description: 'Spend 1 titanium. Raise the Colony Rate 1 step. Gain 2M€ for each colony tile on The Moon.',
         cardNumber: 'M16',
         renderData: CardRenderer.builder((b) => {
           b.minus().titanium(1).moonColonyRate().br;

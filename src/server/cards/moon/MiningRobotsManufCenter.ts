@@ -12,10 +12,9 @@ export class MiningRobotsManufCenter extends Card {
       tags: [Tag.SCIENCE, Tag.BUILDING],
       cost: 12,
       reserveUnits: {titanium: 1},
-      tr: {moonMining: 2},
 
       behavior: {
-        global: {moonMining: 2},
+        moon: {miningRate: 2},
       },
 
       metadata: {

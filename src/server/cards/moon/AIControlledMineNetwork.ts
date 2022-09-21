@@ -13,10 +13,9 @@ export class AIControlledMineNetwork extends Card implements IProjectCard {
       cardType: CardType.AUTOMATED,
       tags: [Tag.SCIENCE],
       cost: 6,
-      tr: {moonLogistics: 1},
 
       behavior: {
-        global: {moonLogistics: 1},
+        moon: {logisticsRate: 1},
       },
 
       requirements: CardRequirements.builder((b) => b.logisticRate(2)),

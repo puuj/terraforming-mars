@@ -19,14 +19,13 @@ export class SmallDutyRovers extends Card implements IProjectCard {
       tags: [Tag.MOON, Tag.SPACE],
       cost: 9,
       reserveUnits: {titanium: 1},
-      tr: {moonLogistics: 1},
 
       behavior: {
-        global: {moonLogistics: 1},
+        moon: {logisticsRate: 1},
       },
 
       metadata: {
-        description: 'Spend 1 titanium. Raise the Logistic Rate 1 step. Gain 1 M€ per colony tile, mine tile and road tile on the Moon.',
+        description: 'Spend 1 titanium. Raise the Logistic Rate 1 step. Gain 1 M€ per colony tile, mine tile and road tile on The Moon.',
         cardNumber: 'M73',
         renderData: CardRenderer.builder((b) => {
           b.minus().titanium(1).moonLogisticsRate().br;

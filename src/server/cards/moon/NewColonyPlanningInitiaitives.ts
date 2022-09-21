@@ -11,10 +11,9 @@ export class NewColonyPlanningInitiaitives extends Card implements IProjectCard 
       name: CardName.NEW_COLONY_PLANNING_INITIAITIVES,
       cardType: CardType.AUTOMATED,
       cost: 6,
-      tr: {moonColony: 1},
 
       behavior: {
-        global: {moonColony: 1},
+        moon: {colonyRate: 1},
       },
 
       requirements: CardRequirements.builder((b) => b.colonyRate(2)),

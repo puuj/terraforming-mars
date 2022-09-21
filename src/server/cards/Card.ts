@@ -6,9 +6,10 @@ import {AdjacencyBonus} from '../ares/AdjacencyBonus';
 import {CardResource} from '../../common/CardResource';
 import {Tag} from '../../common/cards/Tag';
 import {Player} from '../Player';
+import {TRSource} from '../../common/cards/TRSource';
 import {Units} from '../../common/Units';
 import {CardRequirements} from './CardRequirements';
-import {DynamicTRSource, TRSource} from './ICard';
+import {DynamicTRSource} from './ICard';
 import {CardRenderDynamicVictoryPoints} from './render/CardRenderDynamicVictoryPoints';
 import {CardRenderItemType} from '../../common/cards/render/CardRenderItemType';
 import {IVictoryPoints} from '../../common/cards/IVictoryPoints';
@@ -20,6 +21,7 @@ import {TileType} from '../../common/TileType';
 import {Behavior} from '../behavior/Behavior';
 import {Behaviors} from '../behavior/Behaviors';
 
+type ReserveUnits = Units & {deduct: boolean};
 /* External representation of card properties. */
 export interface StaticCardProperties {
   adjacencyBonus?: AdjacencyBonus;
@@ -32,7 +34,7 @@ export interface StaticCardProperties {
   metadata: ICardMetadata;
   requirements?: CardRequirements;
   name: CardName;
-  reserveUnits?: Partial<Units>,
+  reserveUnits?: Partial<ReserveUnits>,
   resourceType?: CardResource;
   startingMegaCredits?: number;
   tags?: Array<Tag>;
@@ -45,7 +47,7 @@ export interface StaticCardProperties {
  * Internal representation of card properties.
  */
 type Properties = Omit<StaticCardProperties, 'reserveUnits|behavior'> & {
-  reserveUnits?: Units,
+  reserveUnits?: ReserveUnits,
   behavior: Behavior,
 };
 
@@ -88,7 +90,7 @@ export abstract class Card {
 
       const p: Properties = {
         ...properties,
-        reserveUnits: properties.reserveUnits === undefined ? undefined : Units.of(properties.reserveUnits),
+        reserveUnits: properties.reserveUnits === undefined ? undefined : {...Units.of(properties.reserveUnits), deduct: properties.reserveUnits.deduct ?? true},
         behavior: properties.behavior || {},
       };
       staticCardProperties.set(properties.name, p);
@@ -136,11 +138,11 @@ export abstract class Card {
   public get cardDiscount() {
     return this.properties.cardDiscount;
   }
-  public get reserveUnits(): Units {
-    return this.properties.reserveUnits || Units.EMPTY;
+  public get reserveUnits(): ReserveUnits {
+    return this.properties.reserveUnits || {...Units.EMPTY, deduct: true};
   }
-  public get tr(): TRSource | DynamicTRSource {
-    return this.properties.tr || {};
+  public get tr(): TRSource | DynamicTRSource | undefined {
+    return this.properties.tr;
   }
   public get victoryPoints(): number | 'special' | IVictoryPoints | undefined {
     return this.properties.victoryPoints;
@@ -152,7 +154,7 @@ export abstract class Card {
     if (this.requirements?.satisfies(player) === false) {
       return false;
     }
-    if (this.behavior !== undefined && !Behaviors.canExecute(player, this, this.behavior)) {
+    if (this.behavior !== undefined && !Behaviors.canExecute(this.behavior, player, this)) {
       return false;
     }
     return this.bespokeCanPlay(player);
@@ -163,12 +165,12 @@ export abstract class Card {
   }
 
   public play(player: Player) {
-    if (!isICorporationCard(this)) {
+    if (!isICorporationCard(this) && this.reserveUnits.deduct === true) {
       const adjustedReserveUnits = MoonExpansion.adjustedReserveCosts(player, this);
       player.deductUnits(adjustedReserveUnits);
     }
     if (this.behavior !== undefined) {
-      Behaviors.execute(player, this, this.behavior);
+      Behaviors.execute(this.behavior, player, this);
     }
     return this.bespokePlay(player);
   }
@@ -179,7 +181,7 @@ export abstract class Card {
 
   public onDiscard(player: Player): void {
     if (this.behavior !== undefined) {
-      Behaviors.onDiscard(player, this.behavior);
+      Behaviors.onDiscard(this.behavior, player, this);
     }
     this.bespokeOnDiscard(player);
   }

@@ -10,11 +10,10 @@ export class UndergroundDetonators extends Card implements IProjectCard {
       name: CardName.UNDERGROUND_DETONATORS,
       cardType: CardType.EVENT,
       cost: 9,
-      tr: {moonMining: 1},
 
       behavior: {
         stock: {steel: 1, titanium: 1},
-        global: {moonMining: 1},
+        moon: {miningRate: 1},
       },
 
       metadata: {
