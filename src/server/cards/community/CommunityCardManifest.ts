@@ -27,18 +27,18 @@ import {ExecutiveOrder} from './ExecutiveOrder';
 
 export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
   module: 'community',
-  projectCards: [
-    {cardName: CardName.DARK_HORSE, Factory: DarkHorse},
-    {cardName: CardName.DROUGHT, Factory: Drought},
-    {cardName: CardName.FIRES, Factory: Fires},
-    {cardName: CardName.FORCED_PARTNERSHIP, Factory: ForcedPartnership},
-    {cardName: CardName.HORIZONTAL_INTEGRATION, Factory: HorizontalIntegration},
-    {cardName: CardName.ICE_AGE, Factory: IceAge},
-    {cardName: CardName.PATENT_PORTFOLIO, Factory: PatentPortfolio},
-    {cardName: CardName.SPIES, Factory: Spies},
-    {cardName: CardName.UNO, Factory: Uno},
-    {cardName: CardName.WINDFALL, Factory: Windfall},
-  ],
+  projectCards: {
+    [CardName.DARK_HORSE]: {Factory: DarkHorse},
+    [CardName.DROUGHT]: {Factory: Drought},
+    [CardName.FIRES]: {Factory: Fires},
+    [CardName.FORCED_PARTNERSHIP]: {Factory: ForcedPartnership},
+    [CardName.HORIZONTAL_INTEGRATION]: {Factory: HorizontalIntegration},
+    [CardName.ICE_AGE]: {Factory: IceAge},
+    [CardName.PATENT_PORTFOLIO]: {Factory: PatentPortfolio},
+    [CardName.SPIES]: {Factory: Spies},
+    [CardName.UNO]: {Factory: Uno},
+    [CardName.WINDFALL]: {Factory: Windfall},
+  },
   corporationCards: {
     [CardName.AGRICOLA_INC]: {Factory: AgricolaInc},
     [CardName.PROJECT_WORKSHOP]: {Factory: ProjectWorkshop},
