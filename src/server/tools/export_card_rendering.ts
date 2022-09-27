@@ -10,7 +10,7 @@ import {ALL_EVENTS, getGlobalEventModule} from '../turmoil/globalEvents/GlobalEv
 import {IClientGlobalEvent} from '../../common/turmoil/IClientGlobalEvent';
 import {ClientCard} from '../../common/cards/ClientCard';
 import {isICorporationCard} from '../cards/corporation/ICorporationCard';
-import {isPreludeCard} from '../cards/prelude/PreludeCard';
+import {isPreludeCard} from '../cards/prelude/IPreludeCard';
 import {IColonyMetadata} from '../../common/colonies/IColonyMetadata';
 import {Units} from '../../common/Units';
 import {ALL_COLONIES_TILES, getColonyModule} from '../colonies/ColonyManifest';
@@ -43,6 +43,8 @@ class ProjectCardProcessor {
       startingMegaCredits = card.startingMegaCredits;
       cardCost = card.cardCost;
     }
+
+    const production = card.behavior?.production;
     const clientCard: ClientCard = {
       module: module,
       name: card.name,
@@ -54,7 +56,7 @@ class ProjectCardProcessor {
       requirements: card.requirements,
       metadata: card.metadata,
       warning: card.warning,
-      productionBox: Units.of(card.behavior?.production ?? Units.EMPTY),
+      productionBox: Units.isUnits(production) ? Units.of(production) : Units.EMPTY, // Dynamic units aren't used on on the client side.
       resourceType: card.resourceType,
       startingMegaCredits: startingMegaCredits,
       cardCost: cardCost,

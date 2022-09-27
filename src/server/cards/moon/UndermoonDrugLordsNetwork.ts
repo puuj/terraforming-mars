@@ -1,11 +1,8 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
 import {CardType} from '../../../common/cards/CardType';
 import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardRenderer} from '../render/CardRenderer';
-import {MoonExpansion} from '../../moon/MoonExpansion';
-import {Resources} from '../../../common/Resources';
 import {Card} from '../Card';
 
 export class UndermoonDrugLordsNetwork extends Card implements IProjectCard {
@@ -17,8 +14,12 @@ export class UndermoonDrugLordsNetwork extends Card implements IProjectCard {
       cost: 2,
       victoryPoints: -1,
 
+      behavior: {
+        production: {megacredits: {moon: {colonyRate: {}}, per: 2}},
+      },
+
       metadata: {
-        description: 'Increase your M€ production 1 step per 2 steps of Colony Rate.',
+        description: 'Increase your M€ production 1 step per 2 steps of Habitat Rate.',
         cardNumber: 'M81',
         renderData: CardRenderer.builder((b) => {
           b.production((pb) => {
@@ -27,11 +28,5 @@ export class UndermoonDrugLordsNetwork extends Card implements IProjectCard {
         }),
       },
     });
-  }
-
-  public override bespokePlay(player: Player) {
-    const gain = Math.floor(MoonExpansion.moonData(player.game).colonyRate / 2);
-    player.production.add(Resources.MEGACREDITS, gain, {log: true});
-    return undefined;
   }
 }

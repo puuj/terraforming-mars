@@ -286,8 +286,10 @@ export class Game implements Logger {
         gameOptions.coloniesExtension ||
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant) {
-        for (let i = 0; i < gameOptions.startingCorporations; i++) {
-          player.dealtCorporationCards.push(corporationDeck.draw(game));
+        if (gameOptions.corporationsDraft === false) {
+          for (let i = 0; i < gameOptions.startingCorporations; i++) {
+            player.dealtCorporationCards.push(corporationDeck.draw(game));
+          }
         }
         if (gameOptions.initialDraftVariant === false) {
           for (let i = 0; i < 10; i++) {
@@ -986,9 +988,11 @@ export class Game implements Logger {
   private gotoEndGame(): void {
     // Log id or cloned game id
     if (this.clonedGamedId !== undefined && this.clonedGamedId.startsWith('#')) {
-      this.log('This game was a clone from game ' + this.clonedGamedId);
+      const clonedGamedId = this.clonedGamedId;
+      this.log('This game was a clone from game ${0}', (b) => b.rawString(clonedGamedId));
     } else {
-      this.log('This game id was ' + this.id);
+      const id = this.id;
+      this.log('This game id was ${0}', (b) => b.rawString(id));
     }
 
     const scores: Array<Score> = [];
@@ -1219,14 +1223,18 @@ export class Game implements Logger {
     return player;
   }
 
-  public getCitiesOnMarsCount(): number {
-    return this.board.spaces.filter(
-      (space) => Board.isCitySpace(space) && space.spaceType !== SpaceType.COLONY).length;
+  public getCitiesOffMarsCount(player?: Player): number {
+    return this.getCitiesCount(player, (space) => space.spaceType === SpaceType.COLONY);
   }
 
-  public getCitiesCount(player?: Player): number {
+  public getCitiesOnMarsCount(player?: Player): number {
+    return this.getCitiesCount(player, (space) => space.spaceType !== SpaceType.COLONY);
+  }
+
+  public getCitiesCount(player?: Player, filter?: (space: ISpace) => boolean): number {
     let cities = this.board.spaces.filter(Board.isCitySpace);
     if (player !== undefined) cities = cities.filter(Board.ownedBy(player));
+    if (filter) cities = cities.filter(filter);
     return cities.length;
   }
 
