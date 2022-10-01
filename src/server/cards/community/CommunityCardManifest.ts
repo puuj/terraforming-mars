@@ -24,6 +24,8 @@ import {Spies} from './Spies';
 import {Uno} from './Uno';
 import {Windfall} from './Windfall';
 import {ExecutiveOrder} from './ExecutiveOrder';
+import {UnitedNationsMissionOne} from './UnitedNationsMissionOne';
+import {JunkVentures} from './JunkVentures';
 
 export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
   module: 'community',
@@ -46,6 +48,8 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
     [CardName.PLAYWRIGHTS]: {Factory: Playwrights},
     [CardName.CURIOSITY_II]: {Factory: CuriosityII},
     [CardName.MIDAS]: {Factory: Midas},
+    [CardName.UNITED_NATIONS_MISSION_ONE]: {Factory: UnitedNationsMissionOne},
+    [CardName.JUNK_VENTURES]: {Factory: JunkVentures},
   },
   preludeCards: {
     [CardName.RESEARCH_GRANT]: {Factory: ResearchGrant},

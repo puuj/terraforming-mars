@@ -2,7 +2,6 @@ import * as constants from '../common/constants';
 import {PlayerId} from '../common/Types';
 import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, MILESTONE_COST, REDS_RULING_POLICY_COST} from '../common/constants';
 import {Aridor} from './cards/colonies/Aridor';
-import {Aurorai} from './cards/pathfinders/Aurorai';
 import {Board} from './boards/Board';
 import {CardFinder} from './CardFinder';
 import {CardName} from '../common/cards/CardName';
@@ -268,9 +267,11 @@ export class Player {
       if (opts.log === true) {
         this.game.log('${0} gained ${1} TR', (b) => b.player(this).number(steps));
       }
-      // Aurori hook
-      const aurorai = <Aurorai> this.getCorporation(CardName.AURORAI);
-      aurorai?.onIncreaseTerraformRating(this, steps);
+      this.game.getPlayersInGenerationOrder().forEach((player) => {
+        player.corporations.forEach((corp) => {
+          corp.onIncreaseTerraformRating?.(this, player, steps);
+        });
+      });
     };
 
     if (PartyHooks.shouldApplyPolicy(this, PartyName.REDS)) {
@@ -840,10 +841,10 @@ export class Player {
     }
 
     MoonExpansion.ifMoon(game, (moonData) => {
-      if (moonData.colonyRate < constants.MAXIMUM_COLONY_RATE) {
+      if (moonData.colonyRate < constants.MAXIMUM_HABITAT_RATE) {
         action.options.push(
           new SelectOption('Increase the Moon habitat rate', 'Increase', () => {
-            MoonExpansion.raiseColonyRate(this, 1);
+            MoonExpansion.raiseHabitatRate(this, 1);
             return undefined;
           }),
         );
@@ -1615,7 +1616,7 @@ export class Player {
           return gameOptions.altVenusBoard === false;
         case CardName.AIR_SCRAPPING_STANDARD_PROJECT_VARIANT:
           return gameOptions.altVenusBoard === true;
-        case CardName.MOON_COLONY_STANDARD_PROJECT_V2:
+        case CardName.MOON_HABITAT_STANDARD_PROJECT_V2:
         case CardName.MOON_MINE_STANDARD_PROJECT_V2:
         case CardName.MOON_ROAD_STANDARD_PROJECT_V2:
           return gameOptions.moonStandardProjectVariant === true;

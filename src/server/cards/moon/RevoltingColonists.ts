@@ -18,20 +18,20 @@ export class RevoltingColonists extends Card implements IProjectCard {
       cardType: CardType.EVENT,
       tags: [Tag.MOON],
       cost: 3,
-      requirements: CardRequirements.builder((b) => b.colonyRate(4)),
+      requirements: CardRequirements.builder((b) => b.habitatRate(4)),
 
       metadata: {
         description: 'Requires 4 Habitat Rate. All players pay 3M€ for each habitat tile they own.',
         cardNumber: 'M51',
         renderData: CardRenderer.builder((b) => {
-          b.megacredits(3, {all}).slash().moonColony({size: Size.SMALL, all});
+          b.megacredits(3, {all}).slash().moonHabitat({size: Size.SMALL, all});
         }),
       },
     });
   }
 
   public override bespokePlay(player: Player) {
-    const colonies = MoonExpansion.spaces(player.game, TileType.MOON_COLONY);
+    const colonies = MoonExpansion.spaces(player.game, TileType.MOON_HABITAT);
     player.game.getPlayers().forEach((colonyTileOwner) => {
       const owned = colonies.filter((colony) => colony.player?.id === colonyTileOwner.id).length;
       if (owned > 0) {

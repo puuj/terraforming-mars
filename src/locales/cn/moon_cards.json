@@ -45,7 +45,7 @@
 
   "Copernicus Tower":"哥白尼塔",
   "Requires you have 2 titanium production.":"要求您有2个钛产。",
-  "Action: Add 1 Science resource here, or spend 1 Science resource here to raise your TR 1 step.":"行动：在这里增加1个科学资源，或在这里花费1个科学资源来提高你的TR 1级。",
+  "Action: Add 1 science resource here, or spend 1 science resource here to raise your TR 1 step.":"行动：在这里增加1个科学资源，或在这里花费1个科学资源来提高你的TR 1级。",
   "1 VP PER MOON TAG YOU HAVE.":"每个月球标签得1 VP。",
 
   "Cosmic Radiation":"宇宙辐射",
@@ -64,7 +64,7 @@
   "Increase your titanium production 2 steps, or 1 step if the Mining Rate is at least 2. And then raise the Mining Rate 1 step.":"增加您的钛产量2级，如果采矿率至少为2，则增加1级。然后提高采矿效率1",
 
   "Darkside Observatory":"黑暗矿业集团",
-  "Action: Add 1 Science to ANY card [EXCEPT those giving 2 VP or more per science resource.]":"行动：在任意卡片上添加1门科学资源(每个科学资源给予2个VP或更多的卡片除外)",
+  "Action: Add 1 science to ANY card [EXCEPT those giving 2 VP or more per science resource.]":"行动：在任意卡片上添加1门科学资源(每个科学资源给予2个VP或更多的卡片除外)",
   "Action: Add 2 Data to ANY card.":"行动：增加2个数据资源到任意卡",
 
   "Deep Lunar Mining":"深层月球采矿",
@@ -165,7 +165,7 @@
  "Spend 1 titanium. Raise the Logistic Rate 1 step.": "花费1钛。提高物流效率1级。",
 
   "Lunar Industry Complex" :"月球工业园区",
-  "Spend 2 Titanium. Place a mine tile on The Moon and raise the Mining Rate 1 step. Increase your Steel, Titanium, and Heat production 1 step each. Increase your Energy production 2 steps.": "花费2钛。在月球上放置一个挖矿板块，并提高采矿速率1级。将钢、钛和热的产量分别增加1级。电产增加2级。",
+  "Spend 2 Titanium. Place a mine tile on The Moon and raise the Mining Rate 1 step. Increase your steel, titanium, and heat production 1 step each. Increase your energy production 2 steps.": "花费2钛。在月球上放置一个挖矿板块，并提高采矿速率1级。将钢、钛和热的产量分别增加1级。电产增加2级。",
 
   "Lunar Mine Urbanization" :"月球矿脉城市化",
   "Requires you have 1 mine tile. Increase your M€ production 1 step. Replace one of your mine tiles with this special tile. Raise the Habitat Rate 1 step. This tile counts both as a habitat and a mine tile.": "要求你有1个矿板块。增加你的M€生产1级。用这种特殊的改造板块替换你的一个采矿板块。提高殖民效率1级。这个特殊板块既可以算作殖民地板块也可以算作采矿板块。",

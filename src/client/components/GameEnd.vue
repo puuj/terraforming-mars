@@ -29,8 +29,8 @@
                       <ul class="game_end_list" v-i18n>
                           <li>Concentrate more on Global parameters, not on Victory Points</li>
                           <li>Don't be greedy with card selection</li>
-                          <li>Try to increase Heat production, not Megacredits</li>
-                          <li>Try to start with Beginner corporation</li>
+                          <li>Try to increase heat production, not Megacredits</li>
+                          <li>Try starting with the Beginner corporation</li>
                       </ul>
                   </div>
               </div>
@@ -78,7 +78,7 @@
                           <td>{{ p.victoryPointsBreakdown.greenery }}</td>
                           <td>{{ p.victoryPointsBreakdown.city }}</td>
                           <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonRoads }}</td>
-                          <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonColonies }}</td>
+                          <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonHabitats }}</td>
                           <td v-if="game.moon !== undefined">{{ p.victoryPointsBreakdown.moonMines }}</td>
                           <td>{{ p.victoryPointsBreakdown.victoryPoints }}</td>
                           <td v-if="game.gameOptions.escapeVelocityMode">{{ p.victoryPointsBreakdown.escapeVelocity }}</td>

@@ -11,17 +11,17 @@ export class WaterTreatmentComplex extends Card {
       name: CardName.WATER_TREATMENT_COMPLEX,
       cardType: CardType.AUTOMATED,
       cost: 12,
-      requirements: CardRequirements.builder((b) => b.colonyTiles(1, {all})),
+      requirements: CardRequirements.builder((b) => b.habitatTiles(1, {all})),
       reserveUnits: {titanium: 1},
 
       behavior: {
-        moon: {colonyRate: 2},
+        moon: {habitatRate: 2},
       },
 
       metadata: {
         description: 'Requires 1 habitat tile on The Moon. Spend 1 titanium. Raise the Habitat Rate 2 steps.',
         cardNumber: 'M46',
-        renderData: CardRenderer.builder((b) => b.minus().titanium(1).br.moonColonyRate({amount: 2})),
+        renderData: CardRenderer.builder((b) => b.minus().titanium(1).br.moonHabitatRate({amount: 2})),
       },
     });
   }

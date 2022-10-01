@@ -83,8 +83,8 @@ export class CardRequirement implements ICardRequirement {
       const nonStandardResources = new Set(player.getCardsWithResources().map((card) => card.resourceType)).size;
       return this.satisfiesInequality(standardResources + nonStandardResources);
 
-    case RequirementType.COLONY_RATE:
-      return this.checkGlobalRequirement(player, GlobalParameter.MOON_COLONY_RATE, this.amount, this.isMax);
+    case RequirementType.HABITAT_RATE:
+      return this.checkGlobalRequirement(player, GlobalParameter.MOON_HABITAT_RATE, this.amount, this.isMax);
 
     case RequirementType.MINING_RATE:
       return this.checkGlobalRequirement(player, GlobalParameter.MOON_MINING_RATE, this.amount, this.isMax);
@@ -92,9 +92,9 @@ export class CardRequirement implements ICardRequirement {
     case RequirementType.LOGISTIC_RATE:
       return this.checkGlobalRequirement(player, GlobalParameter.MOON_LOGISTICS_RATE, this.amount, this.isMax);
 
-    case RequirementType.COLONY_TILES:
+    case RequirementType.HABITAT_TILES:
       return this.satisfiesInequality(
-        MoonExpansion.spaces(player.game, TileType.MOON_COLONY, {surfaceOnly: true, ownedBy: this.isAny ? undefined : player}).length);
+        MoonExpansion.spaces(player.game, TileType.MOON_HABITAT, {surfaceOnly: true, ownedBy: this.isAny ? undefined : player}).length);
 
     case RequirementType.MINING_TILES:
       return this.satisfiesInequality(
@@ -132,7 +132,7 @@ export class CardRequirement implements ICardRequirement {
       playerRequirementsBonus *= 2;
       break;
 
-    case GlobalParameter.MOON_COLONY_RATE:
+    case GlobalParameter.MOON_HABITAT_RATE:
       currentLevel = MoonExpansion.moonData(player.game).colonyRate;
       break;
     case GlobalParameter.MOON_MINING_RATE:
