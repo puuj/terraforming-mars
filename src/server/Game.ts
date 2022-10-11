@@ -872,8 +872,11 @@ export class Game implements Logger {
       throw new Error(`Cannot find player to pass for player ${nextPlayer.id} in game ${this.id}`);
     }
 
+    //leftover cards
+    const leftover_corps = (this.gameOptions.startingCorporations - constants.CORPORATIONS_TO_DRAFT) * this.players.length;
+    
     // If more than 1 card are to be passed to the next player, that means we're still drafting
-    if (cards.length > 1) {
+    if (cards.length > leftover_corps+1) {
       if ((this.draftRound + 1) % this.players.length === 0) {
         nextPlayer.runDraftCorporationPhase(nextPlayer.name, cards);
       } else if (this.draftRound % this.players.length === 0) {

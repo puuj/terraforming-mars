@@ -9,6 +9,7 @@ export const DEFAULT_TITANIUM_VALUE = 3;
 export const DEFAULT_FLOATERS_VALUE = 3;
 export const DEFAULT_MICROBES_VALUE = 2;
 export const OCEAN_BONUS = 2;
+export const CORPORATIONS_TO_DRAFT = 2;
 
 // Global parameters
 export const HEAT_FOR_TEMPERATURE = 8;
