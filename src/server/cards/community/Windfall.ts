@@ -15,7 +15,7 @@ export class Windfall extends Card implements IProjectCard {
       name: CardName.WINDFALL,
       tags: [Tag.JOVIAN],
       cost: 0,
-      requirements: CardRequirements.builder((b) => b.tr(30).tag(Tag.BUILDING).tag(Tag.SPACE).tag(Tag.SCIENCE).tag(Tag.ENERGY).tag(Tag.EARTH).tag(Tag.JOVIAN).tag(Tag.PLANT).tag(Tag.MICROBE).tag(Tag.ANIMAL).tag(Tag.CITY).production(Resources.MEGACREDITS).production(Resources.STEEL).production(Resources.TITANIUM).production(Resources.PLANTS).production(Resources.ENERGY).production(Resources.HEAT)),
+      requirements: CardRequirements.builder((b) => b.tr(30).tag(Tag.BUILDING).tag(Tag.SPACE).tag(Tag.SCIENCE).tag(Tag.POWER).tag(Tag.EARTH).tag(Tag.JOVIAN).tag(Tag.PLANT).tag(Tag.MICROBE).tag(Tag.ANIMAL).tag(Tag.CITY).production(Resources.MEGACREDITS).production(Resources.STEEL).production(Resources.TITANIUM).production(Resources.PLANTS).production(Resources.ENERGY).production(Resources.HEAT)),
       metadata: {
         cardNumber: 'J010',
         renderData: CardRenderer.builder((b) => {

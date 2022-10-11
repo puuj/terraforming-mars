@@ -12,7 +12,7 @@ export class Fires extends Card implements IProjectCard {
     super({
       cardType: CardType.EVENT,
       name: CardName.FIRES,
-      tags: [Tag.ENERGY],
+      tags: [Tag.POWER],
       cost: 10,
       requirements: CardRequirements.builder((b) => b.oxygen(1)),
       metadata: {
