@@ -26,26 +26,20 @@ describe('LobbyHalls', function() {
     turmoil = game.turmoil!;
   });
 
+  it('cannot play, not enough delegates', () => {
+    turmoil.delegateReserve.clear();
+    expect(card.tags).deep.eq([Tag.CLONE, Tag.BUILDING]);
+
+    expect(card.canPlay(player)).is.false;
+  });
+
   it('play', function() {
     card.play(player);
     expect(player.production.asUnits()).deep.eq(Units.of({megacredits: 2}));
   });
 
-  it('play, not enough delegates', () => {
-    turmoil.delegateReserve = [];
-    expect(card.tags).deep.eq([Tag.CLONE, Tag.BUILDING]);
-
-    card.play(player);
-
-    // Only one available action
-    expect(game.deferredActions.length).eq(1);
-
-    // First action is define a clone tag
-    assertCloneTagAction(game.deferredActions.pop()!);
-  });
-
   it('play, has a delegate', () => {
-    expect(turmoil.getAvailableDelegateCount(player.id, 'reserve')).eq(6);
+    expect(turmoil.getAvailableDelegateCount(player.id)).eq(7);
     expect(card.tags).deep.eq([Tag.CLONE, Tag.BUILDING]);
 
     card.play(player);
@@ -56,7 +50,6 @@ describe('LobbyHalls', function() {
     assertCloneTagAction(game.deferredActions.pop()!);
 
     // Next test adds a delegate.
-    // This test is brittle - it assumes mars first will be orOptions[0]. But OK.
     assertAddDelegateAction(cast(game.deferredActions.pop(), SendDelegateToArea));
   });
 
@@ -69,13 +62,13 @@ describe('LobbyHalls', function() {
   function assertAddDelegateAction(action: SendDelegateToArea) {
     const marsFirst = turmoil.getPartyByName(PartyName.MARS);
 
-    expect(turmoil.getAvailableDelegateCount(player.id, 'reserve')).eq(6);
-    expect(marsFirst.getDelegates(player.id)).eq(0);
+    expect(turmoil.getAvailableDelegateCount(player.id)).eq(7);
+    expect(marsFirst.delegates.get(player.id)).eq(0);
 
     const options = cast(action.execute(), SelectPartyToSendDelegate);
     options.cb(marsFirst.name);
 
-    expect(turmoil.getAvailableDelegateCount(player.id, 'reserve')).eq(5);
-    expect(marsFirst.getDelegates(player.id)).eq(1);
+    expect(turmoil.getAvailableDelegateCount(player.id)).eq(6);
+    expect(marsFirst.delegates.get(player.id)).eq(1);
   }
 });

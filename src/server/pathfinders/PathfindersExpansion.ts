@@ -179,9 +179,7 @@ export class PathfindersExpansion {
       break;
     case 'delegate':
       Turmoil.ifTurmoilElse(game,
-        () => {
-          game.defer(new SendDelegateToArea(player, 'Select where to send a delegate', {source: 'reserve'}));
-        },
+        () => game.defer(new SendDelegateToArea(player)),
         () => {
           player.game.log('Awarding megacredits since Turmoil is inactive.');
           player.addResource(Resources.MEGACREDITS, 3, {log: true});

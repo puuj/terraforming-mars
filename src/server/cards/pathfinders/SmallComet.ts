@@ -6,9 +6,6 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Resources} from '../../../common/Resources';
 import {Tag} from '../../../common/cards/Tag';
-import {SelectSpace} from '../../inputs/SelectSpace';
-import {SpaceType} from '../../../common/boards/SpaceType';
-import {ISpace} from '../../boards/ISpace';
 import {all} from '../Options';
 
 export class SmallComet extends Card implements IProjectCard {
@@ -23,6 +20,7 @@ export class SmallComet extends Card implements IProjectCard {
       behavior: {
         stock: {titanium: 1},
         global: {temperature: 1, oxygen: 1},
+        ocean: {on: 'land'},
       },
 
       metadata: {
@@ -41,17 +39,12 @@ export class SmallComet extends Card implements IProjectCard {
   }
 
   public override bespokePlay(player: Player) {
-    player.game.getPlayers().forEach((p) => {
+    const game = player.game;
+    game.getPlayers().forEach((p) => {
       if (!p.plantsAreProtected()) {
         p.deductResource(Resources.PLANTS, 2, {log: true, from: player});
       }
     });
-    if (player.game.canAddOcean()) {
-      return new SelectSpace('Select a land space to place an ocean', player.game.board.getAvailableSpacesOnLand(player), (space: ISpace) => {
-        player.game.addOceanTile(player, space.id, SpaceType.LAND);
-        return undefined;
-      });
-    }
     return undefined;
   }
 }

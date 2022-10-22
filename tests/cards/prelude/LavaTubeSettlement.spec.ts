@@ -2,17 +2,15 @@ import {expect} from 'chai';
 import {LavaTubeSettlement} from '../../../src/server/cards/prelude/LavaTubeSettlement';
 import {Game} from '../../../src/server/Game';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
-import {Player} from '../../../src/server/Player';
 import {Resources} from '../../../src/common/Resources';
 import {SpaceName} from '../../../src/server/SpaceName';
-import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {TileType} from '../../../src/common/TileType';
 import {cast, resetBoard} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 
 describe('LavaTubeSettlement', function() {
   let card: LavaTubeSettlement;
-  let player: Player;
+  let player: TestPlayer;
   let game: Game;
 
   beforeEach(function() {
@@ -28,9 +26,9 @@ describe('LavaTubeSettlement', function() {
 
   it('Cannot play if no volcanic spaces left', function() {
     player.production.add(Resources.ENERGY, 1);
-    game.addTile(player, SpaceType.LAND, game.board.getSpace(SpaceName.THARSIS_THOLUS), {tileType: TileType.LAVA_FLOWS});
-    game.addTile(player, SpaceType.LAND, game.board.getSpace(SpaceName.ARSIA_MONS), {tileType: TileType.LAVA_FLOWS});
-    game.addTile(player, SpaceType.LAND, game.board.getSpace(SpaceName.PAVONIS_MONS), {tileType: TileType.LAVA_FLOWS});
+    game.addTile(player, game.board.getSpace(SpaceName.THARSIS_THOLUS), {tileType: TileType.LAVA_FLOWS});
+    game.addTile(player, game.board.getSpace(SpaceName.ARSIA_MONS), {tileType: TileType.LAVA_FLOWS});
+    game.addTile(player, game.board.getSpace(SpaceName.PAVONIS_MONS), {tileType: TileType.LAVA_FLOWS});
 
     const anotherPlayer = TestPlayer.RED.newPlayer();
     game.board.getSpace(SpaceName.ASCRAEUS_MONS).player = anotherPlayer; // land claim

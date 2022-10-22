@@ -2,15 +2,14 @@ import {expect} from 'chai';
 import {AerialLenses} from '../../../src/server/cards/turmoil/AerialLenses';
 import {Game} from '../../../src/server/Game';
 import {OrOptions} from '../../../src/server/inputs/OrOptions';
-import {Player} from '../../../src/server/Player';
 import {PartyName} from '../../../src/common/turmoil/PartyName';
 import {cast, testGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 
 describe('AerialLenses', function() {
   let card: AerialLenses;
-  let player: Player;
-  let player2: Player;
+  let player: TestPlayer;
+  let player2: TestPlayer;
   let game: Game;
 
   beforeEach(function() {
@@ -25,7 +24,7 @@ describe('AerialLenses', function() {
     expect(player.canPlayIgnoringCost(card)).is.not.true;
 
     const kelvinists = game.turmoil!.getPartyByName(PartyName.KELVINISTS);
-    kelvinists.delegates.push(player.id, player.id);
+    kelvinists.delegates.add(player.id, 2);
     expect(player.canPlayIgnoringCost(card)).is.true;
   });
 

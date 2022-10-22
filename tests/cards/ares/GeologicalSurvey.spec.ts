@@ -18,7 +18,7 @@ import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
 describe('GeologicalSurvey', () => {
   let card: GeologicalSurvey;
-  let player: Player;
+  let player: TestPlayer;
   let redPlayer : Player;
   let game: Game;
 
@@ -69,7 +69,7 @@ describe('GeologicalSurvey', () => {
       SpaceBonus.ENERGY,
     ],
     };
-    game.addTile(player, SpaceType.LAND, firstSpace, {tileType: TileType.RESTRICTED_AREA});
+    game.addTile(player, firstSpace, {tileType: TileType.RESTRICTED_AREA});
 
     const microbeCard = new Ants();
     const animalCard = new Pets();
@@ -88,7 +88,7 @@ describe('GeologicalSurvey', () => {
     animalCard.resourceCount = 0;
 
     const adjacentSpace = game.board.getAdjacentSpaces(firstSpace)[0];
-    game.addTile(player, adjacentSpace.spaceType, adjacentSpace, {tileType: TileType.GREENERY});
+    game.addTile(player, adjacentSpace, {tileType: TileType.GREENERY});
     runAllActions(game);
 
     expect(player.megaCredits).eq(2);
@@ -122,7 +122,7 @@ describe('GeologicalSurvey', () => {
       SpaceBonus.HEAT,
     ],
     player.playedCards = [card];
-    game.addTile(player, SpaceType.LAND, space, {tileType: TileType.RESTRICTED_AREA});
+    game.addTile(player, space, {tileType: TileType.RESTRICTED_AREA});
 
     runAllActions(game);
 
@@ -144,14 +144,14 @@ describe('GeologicalSurvey', () => {
 
     resetBoard(game);
 
-    game.addGreenery(player, '11');
+    addGreenery(player, '11');
     runAllActions(game);
     expect(player.steel).eq(0);
 
     resetBoard(game);
 
     setRulingPartyAndRulingPolicy(game, turmoil, marsFirst, marsFirst.policies[0].id);
-    game.addGreenery(player, '11');
+    addGreenery(player, '11');
     runAllActions(game);
     expect(player.steel).eq(2);
   });

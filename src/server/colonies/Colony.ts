@@ -8,7 +8,7 @@ import {DrawCards} from '../deferredActions/DrawCards';
 import {GiveColonyBonus} from '../deferredActions/GiveColonyBonus';
 import {IncreaseColonyTrack} from '../deferredActions/IncreaseColonyTrack';
 import {LogHelper} from '../LogHelper';
-import {MAX_COLONY_TRACK_POSITION, PLAYER_DELEGATES_COUNT} from '../../common/constants';
+import {MAX_COLONY_TRACK_POSITION} from '../../common/constants';
 import {PlaceOceanTile} from '../deferredActions/PlaceOceanTile';
 import {Player} from '../Player';
 import {PlayerId} from '../../common/Types';
@@ -233,6 +233,12 @@ export abstract class Colony implements IColony {
         game.log('${0} gained 1 Science tag', (b) => b.player(player));
         break;
 
+      case ColonyBenefit.GAIN_SCIENCE_TAGS_AND_CLONE_TAG:
+        player.scienceTagCount += 2;
+        player.playCard(new ScienceTagCard(), undefined, 'nothing');
+        game.log('${0} gained 2 Science tags', (b) => b.player(player));
+        break;
+
       case ColonyBenefit.GAIN_INFLUENCE:
         Turmoil.ifTurmoil(game, (turmoil) => {
           turmoil.addInfluenceBonus(player);
@@ -242,25 +248,17 @@ export abstract class Colony implements IColony {
 
       case ColonyBenefit.PLACE_DELEGATES:
         Turmoil.ifTurmoil(game, (turmoil) => {
-          const playerHasLobbyDelegate = turmoil.lobby.has(player.id);
-          let availablePlayerDelegates = turmoil.getAvailableDelegateCount(player.id, 'reserve');
-          if (playerHasLobbyDelegate) availablePlayerDelegates += 1;
-
+          const availablePlayerDelegates = turmoil.getAvailableDelegateCount(player.id);
           const qty = Math.min(quantity, availablePlayerDelegates);
-
           for (let i = 0; i < qty; i++) {
-            const fromLobby = (i === qty - 1 && qty === availablePlayerDelegates && playerHasLobbyDelegate);
-            game.defer(new SendDelegateToArea(player, 'Select where to send delegate', {source: fromLobby ? 'lobby' : 'reserve'}));
+            game.defer(new SendDelegateToArea(player));
           }
         });
         break;
 
       case ColonyBenefit.GIVE_MC_PER_DELEGATE:
         Turmoil.ifTurmoil(game, (turmoil) => {
-          let partyDelegateCount = PLAYER_DELEGATES_COUNT - turmoil.getAvailableDelegateCount(player.id, 'reserve');
-          if (turmoil.lobby.has(player.id)) partyDelegateCount--;
-          if (turmoil.chairman === player.id) partyDelegateCount--;
-
+          const partyDelegateCount = turmoil.parties.map((party) => party.delegates.get(player.id)).reduce((a, b) => a + b, 0);
           player.addResource(Resources.MEGACREDITS, partyDelegateCount, {log: true});
         });
         break;
@@ -309,7 +307,7 @@ export abstract class Colony implements IColony {
         break;
 
       case ColonyBenefit.PLACE_OCEAN_TILE:
-        action = new PlaceOceanTile(player, 'Select ocean space for ' + this.name + ' colony');
+        action = new PlaceOceanTile(player);
         break;
 
       case ColonyBenefit.STEAL_RESOURCES:

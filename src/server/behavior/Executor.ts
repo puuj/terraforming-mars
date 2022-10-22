@@ -17,6 +17,8 @@ import {PlaceSpecialMoonTile} from '../moon/PlaceSpecialMoonTile';
 import {Player} from '../Player';
 import {Behavior} from './Behavior';
 import {Counter} from './Counter';
+import {Turmoil} from '../turmoil/Turmoil';
+import {SendDelegateToArea} from '../deferredActions/SendDelegateToArea';
 import {BehaviorExecutor} from './BehaviorExecutor';
 
 export class Executor implements BehaviorExecutor {
@@ -51,12 +53,24 @@ export class Executor implements BehaviorExecutor {
 
     if (behavior.city !== undefined) {
       if (behavior.city.space === undefined) {
-        return player.game.board.getAvailableSpacesForCity(player).length > 0;
+        if (player.game.board.getAvailableSpacesForType(player, behavior.city.on ?? 'city').length === 0) {
+          return false;
+        }
       }
     }
 
     if (behavior.greenery !== undefined) {
-      return player.game.board.getAvailableSpacesForGreenery(player).length > 0;
+      if (player.game.board.getAvailableSpacesForType(player, behavior.greenery.on ?? 'greenery').length === 0) {
+        return false;
+      }
+    }
+
+    if (behavior.turmoil) {
+      if (behavior.turmoil.sendDelegates) {
+        if (Turmoil.getTurmoil(player.game).getAvailableDelegateCount(player.id) < behavior.turmoil.sendDelegates.count) {
+          return false;
+        }
+      }
     }
     return true;
   }
@@ -154,17 +168,41 @@ export class Executor implements BehaviorExecutor {
     }
 
     if (behavior.ocean !== undefined) {
-      player.game.defer(new PlaceOceanTile(player));
+      if (behavior.ocean.count === 2) {
+        player.game.defer(new PlaceOceanTile(player, {title: 'Select space for first ocean'}));
+        player.game.defer(new PlaceOceanTile(player, {title: 'Select space for second ocean'}));
+      } else {
+        player.game.defer(new PlaceOceanTile(player, {on: behavior.ocean.on}));
+      }
     }
     if (behavior.city !== undefined) {
       if (behavior.city.space !== undefined) {
-        player.game.addCityTile(player, behavior.city.space, behavior.city.type);
+        const space = player.game.board.getSpace(behavior.city.space);
+        player.game.addCityTile(player, space);
       } else {
-        player.game.defer(new PlaceCityTile(player));
+        player.game.defer(new PlaceCityTile(player, {on: behavior.city.on}));
       }
     }
     if (behavior.greenery !== undefined) {
-      player.game.defer(new PlaceGreeneryTile(player));
+      player.game.defer(new PlaceGreeneryTile(player, behavior.greenery.on));
+    }
+
+    if (behavior.turmoil) {
+      const turmoil = Turmoil.getTurmoil(player.game);
+      if (behavior.turmoil.influenceBonus === 1) {
+        turmoil.addInfluenceBonus(player);
+      }
+
+      if (behavior.turmoil.sendDelegates) {
+        const sendDelegates = behavior.turmoil.sendDelegates;
+        if (sendDelegates.manyParties) {
+          for (let i = 0; i < sendDelegates.count; i++) {
+            player.game.defer(new SendDelegateToArea(player, 'Select where to send delegate'));
+          }
+        } else {
+          player.game.defer(new SendDelegateToArea(player, `Select where to send ${sendDelegates.count} delegates`, {count: sendDelegates.count}));
+        }
+      }
     }
 
     // TODO(kberg): Add canPlay for these behaviors.

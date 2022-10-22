@@ -1,7 +1,6 @@
 import * as constants from '../common/constants';
 import {PlayerId} from '../common/Types';
 import {DEFAULT_FLOATERS_VALUE, DEFAULT_MICROBES_VALUE, MILESTONE_COST, REDS_RULING_POLICY_COST} from '../common/constants';
-import {Aridor} from './cards/colonies/Aridor';
 import {Board} from './boards/Board';
 import {CardFinder} from './CardFinder';
 import {CardName} from '../common/cards/CardName';
@@ -19,7 +18,6 @@ import {LogMessageDataType} from '../common/logs/LogMessageDataType';
 import {OrOptions} from './inputs/OrOptions';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {PartyName} from '../common/turmoil/PartyName';
-import {PharmacyUnion} from './cards/promo/PharmacyUnion';
 import {Phase} from '../common/Phase';
 import {PlayerInput} from './PlayerInput';
 import {Resources} from '../common/Resources';
@@ -35,7 +33,6 @@ import {SelectSpace} from './inputs/SelectSpace';
 import {RobotCard, SelfReplicatingRobots} from './cards/promo/SelfReplicatingRobots';
 import {SerializedCard} from './SerializedCard';
 import {SerializedPlayer} from './SerializedPlayer';
-import {SpaceType} from '../common/boards/SpaceType';
 import {StormCraftIncorporated} from './cards/colonies/StormCraftIncorporated';
 import {Tag} from '../common/cards/Tag';
 import {VictoryPointsBreakdown} from './VictoryPointsBreakdown';
@@ -141,7 +138,7 @@ export class Player {
   public oceanBonus: number = constants.OCEAN_BONUS;
 
   // Custom cards
-  // Leavitt Station.
+  // Community Leavitt Station and Pathfinders Leavitt Station
   // TODO(kberg): move scienceTagCount to Tags?
   public scienceTagCount: number = 0;
   // PoliticalAgendas Scientists P41
@@ -691,7 +688,7 @@ export class Player {
     }
   }
 
-  public addResourceTo(card: ICard, options: number | {qty?: number, log?: boolean, logZero?: boolean} = 1): void {
+  public addResourceTo(card: ICard, options: number | {qty?: number, log: boolean, logZero?: boolean} = 1): void {
     const count = typeof(options) === 'number' ? options : (options.qty ?? 1);
 
     if (card.resourceCount !== undefined) {
@@ -704,8 +701,10 @@ export class Player {
       }
     }
 
-    for (const playedCard of this.tableau) {
-      playedCard.onResourceAdded?.(this, card, count);
+    if (count > 0) {
+      for (const playedCard of this.tableau) {
+        playedCard.onResourceAdded?.(this, card, count);
+      }
     }
   }
 
@@ -825,7 +824,7 @@ export class Player {
         new SelectSpace(
           'Add an ocean',
           game.board.getAvailableSpacesForOcean(this), (space) => {
-            game.addOceanTile(this, space.id, SpaceType.OCEAN);
+            game.addOceanTile(this, space);
             game.log('${0} acted as World Government and placed an ocean', (b) => b.player(this));
             return undefined;
           },
@@ -1438,10 +1437,10 @@ export class Player {
       action.buttonLabel = 'Confirm';
       action.options.push(
         new SelectSpace(
-          'Select space for greenery',
+          'Select space for greenery tile',
           this.game.board.getAvailableSpacesForGreenery(this), (space) => {
             // Do not raise oxygen or award TR for final greenery placements
-            this.game.addGreenery(this, space.id, SpaceType.LAND, false);
+            this.game.addGreenery(this, space, false);
             this.deductResource(Resources.PLANTS, this.plantsNeededForGreenery);
 
             this.takeActionForFinalGreenery();
@@ -1822,18 +1821,20 @@ export class Player {
 
     // If you can pay to add a delegate to a party.
     Turmoil.ifTurmoil(this.game, (turmoil) => {
-      let sendDelegate;
-      if (turmoil.lobby.has(this.id)) {
-        sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (from lobby)');
-      } else if (this.isCorporation(CardName.INCITE) && this.canAfford(3) && turmoil.hasDelegatesInReserve(this.id)) {
-        sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (3 M€)', {cost: 3});
-      } else if (this.canAfford(5) && turmoil.hasDelegatesInReserve(this.id)) {
-        sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (5 M€)', {cost: 5});
-      }
-      if (sendDelegate) {
-        const input = sendDelegate.execute();
-        if (input !== undefined) {
-          action.options.push(input);
+      if (turmoil.hasDelegatesInReserve(this.id)) {
+        let sendDelegate;
+        if (!turmoil.usedFreeDelegateAction.has(this.id)) {
+          sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (from lobby)', {freeStandardAction: true});
+        } else if (this.isCorporation(CardName.INCITE) && this.canAfford(3)) {
+          sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (3 M€)', {cost: 3});
+        } else if (this.canAfford(5)) {
+          sendDelegate = new SendDelegateToArea(this, 'Send a delegate in an area (5 M€)', {cost: 5});
+        }
+        if (sendDelegate) {
+          const input = sendDelegate.execute();
+          if (input !== undefined) {
+            action.options.push(input);
+          }
         }
       }
     });
@@ -1923,12 +1924,13 @@ export class Player {
     const result: SerializedPlayer = {
       id: this.id,
       corporations: this.corporations.map((corporation) => {
-        return {
+        const serialized = {
           name: corporation.name,
           resourceCount: corporation.resourceCount,
-          allTags: corporation instanceof Aridor ? Array.from(corporation.allTags) : [],
-          isDisabled: corporation instanceof PharmacyUnion && corporation.isDisabled,
+          isDisabled: false,
         };
+        corporation.serialize?.(serialized);
+        return serialized;
       }),
       // Used only during set-up
       pickedCorporationCard: this.pickedCorporationCard?.name,
@@ -2086,16 +2088,7 @@ export class Player {
         if (corporation.resourceCount !== undefined) {
           card.resourceCount = corporation.resourceCount;
         }
-        if (card instanceof Aridor) {
-          if (corporation.allTags !== undefined) {
-            card.allTags = new Set(corporation.allTags);
-          } else {
-            console.warn('did not find allTags for ARIDOR');
-          }
-        }
-        if (card instanceof PharmacyUnion) {
-          card.isDisabled = Boolean(corporation.isDisabled);
-        }
+        card.deserialize?.(corporation);
         player.corporations.push(card);
       }
     }

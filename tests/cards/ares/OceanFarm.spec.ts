@@ -12,7 +12,7 @@ import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
 describe('OceanFarm', () => {
   let card: OceanFarm;
-  let player: Player;
+  let player: TestPlayer;
   let otherPlayer: Player;
   let game: Game;
 
@@ -62,7 +62,7 @@ describe('OceanFarm', () => {
 
     expect(otherPlayer.megaCredits).eq(0);
 
-    game.addGreenery(otherPlayer, greenery.id);
+    game.addGreenery(otherPlayer, greenery);
 
     expect(otherPlayer.megaCredits).eq(2);
   });
@@ -73,7 +73,7 @@ describe('OceanFarm', () => {
     })[0];
 
     player.plants = 0;
-    game.addOceanTile(player, oceanSpace.id);
+    game.addOceanTile(player, oceanSpace);
     expect(player.plants).eq(1);
 
     const action = cast(card.play(player), SelectSpace);

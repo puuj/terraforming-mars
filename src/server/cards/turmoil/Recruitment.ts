@@ -32,13 +32,13 @@ export class Recruitment extends Card implements IProjectCard {
     }
 
     return turmoil.parties.some((party) => {
-      const neutralDelegates = party.getDelegates('NEUTRAL');
+      const neutralDelegates = party.delegates.count('NEUTRAL');
       return neutralDelegates > 1 || (neutralDelegates === 1 && party.partyLeader !== 'NEUTRAL');
     });
   }
 
   public override bespokePlay(player: Player) {
-    player.game.defer(new SendDelegateToArea(player, 'Select which Neutral delegate to remove', {replace: 'NEUTRAL', source: 'reserve'}));
+    player.game.defer(new SendDelegateToArea(player, 'Select which Neutral delegate to remove', {replace: 'NEUTRAL'}));
     return undefined;
   }
 }

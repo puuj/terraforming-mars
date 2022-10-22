@@ -1,5 +1,4 @@
 import {Game} from '../../../src/server/Game';
-import {Player} from '../../../src/server/Player';
 import {cast, fakeCard, testGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {LunaPoliticalInstitute} from '../../../src/server/cards/moon/LunaPoliticalInstitute';
@@ -10,7 +9,7 @@ import {Turmoil} from '../../../src/server/turmoil/Turmoil';
 import {Tag} from '../../../src/common/cards/Tag';
 
 describe('LunaPoliticalInstitute', () => {
-  let player: Player;
+  let player: TestPlayer;
   let game: Game;
   let card: LunaPoliticalInstitute;
   let turmoil: Turmoil;
@@ -36,10 +35,12 @@ describe('LunaPoliticalInstitute', () => {
   });
 
   it('can act', () => {
-    turmoil.delegateReserve = [player.id];
+    turmoil.delegateReserve.clear();
+    turmoil.delegateReserve.add(player.id);
     expect(card.canAct(player)).is.true;
 
-    turmoil.delegateReserve = ['NEUTRAL'];
+    turmoil.delegateReserve.clear();
+    turmoil.delegateReserve.add('NEUTRAL');
     expect(card.canAct(player)).is.false;
   });
 
@@ -49,12 +50,12 @@ describe('LunaPoliticalInstitute', () => {
     card.action(player);
     expect(game.deferredActions).has.lengthOf(1);
 
-    expect(marsFirst.delegates.filter((d) => d === player.id)).has.lengthOf(0);
+    expect(marsFirst.delegates.get(player.id)).eq(0);
 
     const selectParty = cast(game.deferredActions.peek()!.execute(), SelectPartyToSendDelegate);
     selectParty.cb(PartyName.MARS);
 
-    expect(marsFirst.delegates.filter((d) => d === player.id)).has.lengthOf(1);
+    expect(marsFirst.delegates.get(player.id)).eq(1);
   });
 });
 

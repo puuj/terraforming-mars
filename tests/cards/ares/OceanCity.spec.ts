@@ -1,5 +1,4 @@
 import {Game} from '../../../src/server/Game';
-import {Player} from '../../../src/server/Player';
 import {OceanCity} from '../../../src/server/cards/ares/OceanCity';
 import {ARES_OPTIONS_NO_HAZARDS} from '../../ares/AresTestHelper';
 import {expect} from 'chai';
@@ -14,7 +13,7 @@ import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
 describe('OceanCity', function() {
   let card: OceanCity;
-  let player: Player;
+  let player: TestPlayer;
   let game: Game;
 
   beforeEach(function() {
@@ -92,7 +91,7 @@ describe('OceanCity', function() {
     const citySpace = game.board
       .getAdjacentSpaces(oceanSpace)
       .filter((space) => space.spaceType === SpaceType.LAND)[0];
-    game.addCityTile(player, citySpace.id);
+    game.addCityTile(player, citySpace);
 
     const action = cast(card.play(player), SelectSpace);
 
@@ -113,7 +112,7 @@ describe('OceanCity', function() {
 
     expect(player.megaCredits).eq(0);
 
-    game.addGreenery(player, greenery.id);
+    game.addGreenery(player, greenery);
 
     expect(player.megaCredits).eq(2);
   });
@@ -128,7 +127,7 @@ describe('OceanCity', function() {
 
     expect(player.getVictoryPoints().city).eq(0);
 
-    game.addGreenery(player, greenery.id);
+    game.addGreenery(player, greenery);
 
     expect(player.getVictoryPoints().city).eq(1);
   });
@@ -150,7 +149,7 @@ describe('OceanCity', function() {
     expect(player.getVictoryPoints().victoryPoints).to.eq(0);
 
     // And now adds the tile.
-    game.addOceanTile(player, oceanSpace.id);
+    game.addOceanTile(player, oceanSpace);
     const oceanCityAction = cast(card.play(player), SelectSpace);
 
     oceanCityAction.cb(oceanSpace);
@@ -165,7 +164,7 @@ describe('OceanCity', function() {
     })[0];
 
     player.plants = 0;
-    game.addOceanTile(player, oceanSpace.id);
+    game.addOceanTile(player, oceanSpace);
     expect(player.plants).eq(1);
 
     const action = cast(card.play(player), SelectSpace);

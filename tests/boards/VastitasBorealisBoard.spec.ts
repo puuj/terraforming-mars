@@ -2,7 +2,6 @@ import {expect} from 'chai';
 import {Game} from '../../src/server/Game';
 import {DEFAULT_GAME_OPTIONS} from '../../src/server/GameOptions';
 import {VastitasBorealisBoard} from '../../src/server/boards/VastitasBorealisBoard';
-import {Player} from '../../src/server/Player';
 import {TileType} from '../../src/common/TileType';
 import {TestPlayer} from '../TestPlayer';
 import {SeededRandom} from '../../src/server/Random';
@@ -13,8 +12,8 @@ import {SpaceName} from '../../src/server/SpaceName';
 describe('VastitasBorealisBoard', function() {
   let board: VastitasBorealisBoard;
   let game: Game;
-  let player: Player;
-  let player2: Player;
+  let player: TestPlayer;
+  let player2: TestPlayer;
 
   beforeEach(function() {
     board = VastitasBorealisBoard.newInstance(DEFAULT_GAME_OPTIONS, new SeededRandom(0));
@@ -33,7 +32,7 @@ describe('VastitasBorealisBoard', function() {
     expect(board.getAvailableSpacesOnLand(player).map((space) => space.id)).includes(SpaceName.VASTITAS_BOREALIS_NORTH_POLE);
     expect(game.getTemperature()).eq(-30);
 
-    game.addTile(player, space.spaceType, space, {tileType: TileType.CITY});
+    game.addTile(player, space, {tileType: TileType.CITY});
     runAllActions(game);
 
     expect(player.megaCredits).eq(0);

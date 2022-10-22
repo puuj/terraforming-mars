@@ -1,13 +1,13 @@
 import {expect} from 'chai';
 import {getTestPlayer, newTestGame} from '../../TestGame';
 import {OutdoorSports} from '../../../src/server/cards/promo/OutdoorSports';
-import {Player} from '../../../src/server/Player';
+import {TestPlayer} from '../../TestPlayer';
 import {ISpace} from '../../../src/server/boards/ISpace';
 
 describe('OutdoorSports', function() {
   let card: OutdoorSports;
-  let player: Player;
-  let player2: Player;
+  let player: TestPlayer;
+  let player2: TestPlayer;
   let oceanSpace: ISpace;
   let spaceNextToOcean: ISpace;
   let spaceNotNextToOcean: ISpace;
@@ -27,28 +27,28 @@ describe('OutdoorSports', function() {
 
   it('cannotPlay', function() {
     player.megaCredits = card.cost;
-    player.game.addOceanTile(player, oceanSpace.id);
+    player.game.addOceanTile(player, oceanSpace);
     expect(player.canPlay(card)).is.not.true;
 
-    player.game.addCityTile(player, spaceNotNextToOcean.id);
+    player.game.addCityTile(player, spaceNotNextToOcean);
     expect(player.canPlay(card)).is.not.true;
   });
 
   it('canPlay', function() {
     player.megaCredits = card.cost;
-    player.game.addOceanTile(player, oceanSpace.id);
+    player.game.addOceanTile(player, oceanSpace);
     expect(player.canPlay(card)).is.not.true;
 
-    player.game.addCityTile(player, spaceNextToOcean.id);
+    player.game.addCityTile(player, spaceNextToOcean);
     expect(player.canPlay(card)).is.true;
   });
 
   it('canPlay - other player owns the city', function() {
     player.megaCredits = card.cost;
-    player.game.addOceanTile(player, oceanSpace.id);
+    player.game.addOceanTile(player, oceanSpace);
     expect(player.canPlay(card)).is.not.true;
 
-    player.game.addCityTile(player2, spaceNextToOcean.id);
+    player.game.addCityTile(player2, spaceNextToOcean);
     expect(player.canPlay(card)).is.true;
   });
 

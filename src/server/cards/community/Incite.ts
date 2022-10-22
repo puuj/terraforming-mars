@@ -7,7 +7,6 @@ import {CardType} from '../../../common/cards/CardType';
 import {SendDelegateToArea} from '../../deferredActions/SendDelegateToArea';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
-import {Turmoil} from '../../turmoil/Turmoil';
 
 export class Incite extends Card implements ICorporationCard {
   constructor() {
@@ -17,6 +16,10 @@ export class Incite extends Card implements ICorporationCard {
       startingMegaCredits: 32,
       cardType: CardType.CORPORATION,
       initialActionText: 'Place 2 delegates in one party',
+
+      behavior: {
+        turmoil: {influenceBonus: 1},
+      },
 
       metadata: {
         cardNumber: 'R37',
@@ -38,14 +41,10 @@ export class Incite extends Card implements ICorporationCard {
       },
     });
   }
-  public override bespokePlay(player: Player) {
-    Turmoil.getTurmoil(player.game).addInfluenceBonus(player);
-    return undefined;
-  }
 
   public initialAction(player: Player) {
     const title = 'Incite first action - Select where to send two delegates';
-    player.game.defer(new SendDelegateToArea(player, title, {count: 2, source: 'reserve'}));
+    player.game.defer(new SendDelegateToArea(player, title, {count: 2}));
 
     return undefined;
   }

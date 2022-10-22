@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import {Player} from '../../../src/server/Player';
 import {Game} from '../../../src/server/Game';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
@@ -11,7 +10,7 @@ import {cast, runAllActions} from '../../TestingUtils';
 
 describe('MiningAreaAres', function() {
   let card: MiningAreaAres;
-  let player: Player;
+  let player: TestPlayer;
   let game: Game;
 
   beforeEach(function() {
@@ -28,7 +27,7 @@ describe('MiningAreaAres', function() {
         const adjacents = game.board.getAdjacentSpaces(land);
         for (const adjacent of adjacents) {
           if (adjacent.tile === undefined && adjacent.bonus.length === 0) {
-            game.addTile(player, adjacent.spaceType, adjacent, {tileType: TileType.MINING_AREA});
+            game.addTile(player, adjacent, {tileType: TileType.MINING_AREA});
           }
         }
       }

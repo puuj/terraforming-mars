@@ -7,11 +7,10 @@ import {Tag} from '../../common/cards/Tag';
 // import {CardResource} from '../../common/CardResource';
 // import {TileType} from '../../common/TileType';
 import {SpaceId} from '../../common/Types';
-import {SpaceType} from '../../common/boards/SpaceType';
 import {MoonSpaces} from '../../common/moon/MoonSpaces';
 import {TileType} from '../../common/TileType';
-import {NoAttributes} from './NoAttributes';
 import {Countable, CountableUnits} from './Countable';
+import {PlacementType} from '../boards/PlacementType';
 
 /** A set of steps that an action can perform in any specific order. */
 
@@ -32,6 +31,7 @@ export interface Behavior {
   removeAnyPlants?: number,
 
   /** Gain units of TR */
+  // TODO(kberg) permit losing TR for TerralabsResearch
   tr?: number;
 
   /** Raise certain global parameters. */
@@ -41,10 +41,18 @@ export interface Behavior {
     venus?: 3 | 2 | 1 | -1;
   },
 
-  city?: {space?: SpaceId, type?: SpaceType},
+  city?: {
+    space?: SpaceId,
+    on?: PlacementType,
+  },
   /** Places a greenery tile and also raises the oxygen. */
-  greenery?: NoAttributes,
-  ocean?: NoAttributes,
+  greenery?: {
+    on?: PlacementType,
+  },
+  ocean?: {
+    count?: 2,
+    on?: PlacementType,
+  },
 
   /** Remove plants from any player. Typical for asteroid cards. */
   // removePlants: number,
@@ -79,6 +87,14 @@ export interface Behavior {
     /** When trading increase the colony track this many steps. */
     tradeOffset?: number,
   }
+
+  turmoil?: {
+    influenceBonus?: 1,
+    sendDelegates?: {
+      count: number,
+      manyParties?: boolean,
+    },
+  },
 
   moon?: {
     /** Places a habitat tile and also raises the habitat rate */

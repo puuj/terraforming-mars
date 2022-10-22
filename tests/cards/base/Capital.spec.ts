@@ -64,7 +64,7 @@ describe('Capital', () => {
 
   it('Capital special tile counts as a city', () => {
     const space = game.board.getNthAvailableLandSpace(2, 1, player);
-    game.addTile(player, SpaceType.LAND, space, {
+    game.addTile(player, space, {
       tileType: TileType.CAPITAL,
       card: card.name,
     });
@@ -76,7 +76,7 @@ describe('Capital', () => {
 
     // check VP
     const greenerySpace = game.board.getAdjacentSpaces(space).find((space) => space.spaceType === SpaceType.LAND);
-    game.addGreenery(player, greenerySpace!.id);
+    game.addGreenery(player, greenerySpace!);
     expect(player.getVictoryPoints().city).to.eq(1); // 1 VP for Capital city
   });
 });
