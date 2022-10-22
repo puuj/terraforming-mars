@@ -876,7 +876,7 @@ export class Game implements Logger {
     const leftover_corps = (this.gameOptions.startingCorporations - constants.CORPORATIONS_TO_DRAFT) * this.players.length;
     
     // If more than 1 card are to be passed to the next player, that means we're still drafting
-    if (cards.length > leftover_corps+1) {
+    if (cards.length > leftover_corps) {
       if ((this.draftRound + 1) % this.players.length === 0) {
         nextPlayer.runDraftCorporationPhase(nextPlayer.name, cards);
       } else if (this.draftRound % this.players.length === 0) {
@@ -890,7 +890,7 @@ export class Game implements Logger {
     }
 
     // Push last card to next player
-    nextPlayer.draftedCorporations.push(...cards);
+    //nextPlayer.draftedCorporations.push(...cards);
 
     this.players.forEach((player) => {
       player.dealtCorporationCards = player.draftedCorporations;
