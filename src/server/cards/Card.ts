@@ -22,8 +22,11 @@ import {Behavior} from '../behavior/Behavior';
 import {getBehaviorExecutor} from '../behavior/BehaviorExecutor';
 
 type ReserveUnits = Units & {deduct: boolean};
+type FirstActionBehavior = Behavior & {text: string};
+
 /* External representation of card properties. */
 export interface StaticCardProperties {
+  /** @deprecated use behavior */
   adjacencyBonus?: AdjacencyBonus;
   behavior?: Behavior | undefined;
   cardCost?: number;
@@ -31,6 +34,7 @@ export interface StaticCardProperties {
   cardType: CardType;
   cost?: number;
   initialActionText?: string;
+  firstAction?: FirstActionBehavior;
   metadata: ICardMetadata;
   requirements?: CardRequirements;
   name: CardName;
@@ -113,7 +117,10 @@ export abstract class Card {
     return this.properties.cost === undefined ? 0 : this.properties.cost;
   }
   public get initialActionText() {
-    return this.properties.initialActionText;
+    return this.properties.initialActionText || this.properties.firstAction?.text;
+  }
+  public get firstAction() {
+    return this.properties.firstAction;
   }
   public get metadata() {
     return this.properties.metadata;
