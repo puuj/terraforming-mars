@@ -179,6 +179,9 @@ function getRandomMilestonesAndAwards(gameOptions: GameOptions,
       ...TERRA_CIMMERIA_AWARDS.map(toName),
       ...VASTITAS_BOREALIS_AWARDS.map(toName));
 
+    if(!gameOptions.corporateEra){
+      inplaceRemove(candidateMilestones, 'Generalist');
+    }
     if (!gameOptions.pathfindersExpansion) {
       inplaceRemove(candidateMilestones, 'Martian');
     }
