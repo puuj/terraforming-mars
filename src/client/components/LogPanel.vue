@@ -38,6 +38,8 @@
 <script lang="ts">
 
 import Vue from 'vue';
+import * as paths from '@/common/app/paths';
+import * as HTTPResponseCode from '@/client/utils/HTTPResponseCode';
 import {CardType} from '@/common/cards/CardType';
 import {LogMessage} from '@/common/logs/LogMessage';
 import {LogMessageType} from '@/common/logs/LogMessageType';
@@ -162,14 +164,13 @@ export default Vue.extend({
       }
     },
     cardToHtml(cardType: CardType, cardName: string) {
-      const cardNameString = this.$t(cardName);
-      const suffixFreeCardName = cardNameString.split(':')[0];
+      const suffixFreeCardName = cardName.split(':')[0];
       const className = cardTypeToCss[cardType];
 
       if (className === undefined) {
         return suffixFreeCardName;
       }
-      return '<span class="log-card '+ className + '">' + suffixFreeCardName + '</span>';
+      return '<span class="log-card '+ className + '">' + this.$t(suffixFreeCardName) + '</span>';
     },
     messageDataToHTML(data: LogMessageData): string {
       if (data.type === undefined || data.value === undefined) {
@@ -289,12 +290,13 @@ export default Vue.extend({
 
       const xhr = new XMLHttpRequest();
       logRequest = xhr;
-      xhr.open('GET', `/api/game/logs?id=${this.id}&generation=${generation}`);
+
+      xhr.open('GET', `${paths.API_GAME_LOGS}?id=${this.id}&generation=${generation}`);
       xhr.onerror = () => {
         console.error('error updating messages, unable to reach server');
       };
       xhr.onload = () => {
-        if (xhr.status === 200) {
+        if (xhr.status === HTTPResponseCode.OK) {
           messages.splice(0, messages.length);
           messages.push(...xhr.response);
           if (getPreferences().enable_sounds && window.location.search.includes('experimental=1') ) {
