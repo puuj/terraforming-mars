@@ -107,7 +107,7 @@ export class PathfindersExpansion {
     if (distance === 0) return;
 
     if (from instanceof Player) {
-#        b.globalEventName(from).string(PathfindersExpansion.titleCaseWord(tag)).number(distance).string(distance > 1 ? 'steps' : 'step');
+//        b.globalEventName(from).string(PathfindersExpansion.titleCaseWord(tag)).number(distance).string(distance > 1 ? 'steps' : 'step');
       game.log('${0} raised the ${1} planetary track ${2} step(s)', (b) => {
         b.player(from).string(tag).number(distance);
       });
