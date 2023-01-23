@@ -160,6 +160,8 @@ export class ServeAsset extends Handler {
     case 'sw.js':
       return this.toServiceWorkerFile(urlPath);
 
+    case 'apple-touch-icon.png':
+    case 'apple-touch-icon-precomposed.png':        
     case 'favicon.ico':
       return {file: 'assets/favicon.ico'};
 
