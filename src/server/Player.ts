@@ -419,6 +419,14 @@ export class Player {
     }
   }
 
+  public stealResource(resource: Resources, qty: number, from: Player) {
+    const qtyToSteal = Math.min(this.getResource(resource), qty);
+    if (qtyToSteal > 0) {
+      this.deductResource(resource, qtyToSteal, {log: true, from: from, stealing: true});
+      from.addResource(resource, qtyToSteal);
+    }
+  }
+
   // Returns true when the player has the supplied units in its inventory.
   public hasUnits(units: Units): boolean {
     return this.megaCredits - units.megacredits >= 0 &&
@@ -1958,7 +1966,6 @@ export class Player {
       actionsTakenThisRound: this.actionsTakenThisRound,
       actionsThisGeneration: Array.from(this.actionsThisGeneration),
       pendingInitialActions: this.pendingInitialActions.map((c) => c.name),
-      corporationInitialActionDone: undefined,
       // Cards
       dealtCorporationCards: this.dealtCorporationCards.map((c) => c.name),
       dealtProjectCards: this.dealtProjectCards.map((c) => c.name),
@@ -2020,8 +2027,7 @@ export class Player {
     player.actionsTakenThisGame = d.actionsTakenThisGame;
     player.actionsTakenThisRound = d.actionsTakenThisRound;
     player.canUseHeatAsMegaCredits = d.canUseHeatAsMegaCredits;
-    // TODO(kberg): remove ?? false by 2022-12-01
-    player.canUseTitaniumAsMegacredits = d.canUseTitaniumAsMegacredits ?? false;
+    player.canUseTitaniumAsMegacredits = d.canUseTitaniumAsMegacredits;
     player.cardCost = d.cardCost;
     player.colonies.cardDiscount = d.cardDiscount;
     player.colonies.tradeDiscount = d.colonyTradeDiscount;
@@ -2072,8 +2078,7 @@ export class Player {
     }
 
     // Rebuild corporation cards
-    let corporations = d.corporations;
-    if (corporations === undefined && d.corporationCard !== undefined) corporations = [d.corporationCard];
+    const corporations = d.corporations;
 
     // This shouldn't happen
     if (corporations !== undefined) {
@@ -2091,10 +2096,6 @@ export class Player {
     }
 
     player.pendingInitialActions = cardFinder.corporationCardsFromJSON(d.pendingInitialActions ?? []);
-    if (d.corporationInitialActionDone !== undefined) {
-      player.pendingInitialActions = [player.corporations[0]];
-    }
-
     player.dealtCorporationCards = cardFinder.corporationCardsFromJSON(d.dealtCorporationCards);
     player.dealtPreludeCards = cardFinder.cardsFromJSON(d.dealtPreludeCards);
     player.dealtProjectCards = cardFinder.cardsFromJSON(d.dealtProjectCards);

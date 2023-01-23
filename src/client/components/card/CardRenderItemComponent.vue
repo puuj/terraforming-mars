@@ -195,6 +195,8 @@ export default Vue.extend({
       } else if (type === CardRenderItemType.AGENDA) {
         classes.push('card-resource');
         classes.push('card-resource-agenda');
+      } else if (type === CardRenderItemType.ARROW_OPG) {
+        classes.push('card-arrow-opg');
       } else if (this.item.type === CardRenderItemType.MOON_HABITAT) {
         if (this.item.secondaryTag === AltSecondaryTag.MOON_HABITAT_RATE) {
           classes.push(sized('card-tile-lunar-colony-rate', this.item.size));
@@ -338,7 +340,7 @@ export default Vue.extend({
       }
       if (this.item.type === CardRenderItemType.NO_TAGS || this.item.type === CardRenderItemType.MULTIPLIER_WHITE) {
         result = 'X';
-      } else if (this.item.type === CardRenderItemType.PROJECT_REQUIREMENTS || this.item.type === CardRenderItemType.IGNORE_GLOBAL_REQUIREMENTS) {
+      } else if (this.item.type === CardRenderItemType.IGNORE_GLOBAL_REQUIREMENTS) {
         result += '<div class="card-project-requirements">';
         result += '<div class="card-x">x</div>';
         result += '<div class="card-requirements">Global Requirements</div>';
