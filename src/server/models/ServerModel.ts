@@ -49,6 +49,7 @@ import {CardName} from '../../common/cards/CardName';
 import {Tag} from '../../common/cards/Tag';
 import {isICorporationCard} from '../cards/corporation/ICorporationCard';
 import {AresHandler} from '../ares/AresHandler';
+import {AwardScorer} from '../awards/AwardScorer';
 
 export class Server {
   public static getSimpleGameModel(game: Game): SimpleGameModel {
@@ -170,8 +171,8 @@ export class Server {
       }
 
       milestoneModels.push({
-        player_name: claimed === undefined ? '' : claimed.player.name,
-        player_color: claimed === undefined ? '' : claimed.player.color,
+        playerName: claimed === undefined ? '' : claimed.player.name,
+        playerColor: claimed === undefined ? '' : claimed.player.color,
         name: milestone.name,
         scores,
       });
@@ -181,25 +182,23 @@ export class Server {
   }
 
   public static getAwards(game: Game): Array<FundedAwardModel> {
-    const allAwards = game.awards;
     const fundedAwards = game.fundedAwards;
     const awardModels: Array<FundedAwardModel> = [];
 
-    for (const award of allAwards) {
-      const funded = fundedAwards.find(
-        (a) => a.award.name === award.name,
-      );
+    for (const award of game.awards) {
+      const funded = fundedAwards.find((a) => a.award.name === award.name);
+      const scorer = new AwardScorer(game, award);
       let scores: Array<AwardScore> = [];
       if (fundedAwards.length < 3 || funded !== undefined) {
         scores = game.getPlayers().map((player) => ({
           playerColor: player.color,
-          playerScore: award.getScore(player),
+          playerScore: scorer.get(player),
         }));
       }
 
       awardModels.push({
-        player_name: funded === undefined ? '' : funded.player.name,
-        player_color: funded === undefined ? '' : funded.player.color,
+        playerName: funded === undefined ? '' : funded.player.name,
+        playerColor: funded === undefined ? '' : funded.player.color,
         name: award.name,
         scores: scores,
       });
