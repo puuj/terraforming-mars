@@ -40,7 +40,7 @@
       </div>
   </a>
 
-  <language-icon v-if="preferencesManager.values().experimental_ui"></language-icon>
+  <language-icon></language-icon>
 
   <div class="sidebar_item sidebar_item--info" :title="$t('Information panel')">
     <i class="sidebar_icon sidebar_icon--info"
@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <a href="/help" target="_blank">
+  <a href="help" target="_blank">
     <div class="sidebar_item sidebar_item--help">
       <i class="sidebar_icon sidebar_icon--help" :title="$t('player aid')"></i>
     </div>

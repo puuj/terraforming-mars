@@ -64,9 +64,9 @@ import {Colonies} from './player/Colonies';
 import {Production} from './player/Production';
 import {Merger} from './cards/promo/Merger';
 import {getBehaviorExecutor} from './behavior/BehaviorExecutor';
-import {LeadersExtension} from './LeadersExtension';
-import {isLeaderCard} from './cards/leaders/LeaderCard';
-// import {VanAllen} from './cards/leaders/VanAllen';
+import {CeoExtension} from './CeoExtension';
+import {ICeoCard, isCeoCard} from './cards/ceos/ICeoCard';
+// import {VanAllen} from './cards/ceos/VanAllen';
 import {AwardScorer} from './awards/AwardScorer';
 import {FundedAward} from './awards/FundedAward';
 
@@ -123,7 +123,7 @@ export class Player {
   // Cards
   public dealtCorporationCards: Array<ICorporationCard> = [];
   public dealtPreludeCards: Array<IProjectCard> = [];
-  public dealtCeoCards: Array<IProjectCard> = [];
+  public dealtCeoCards: Array<ICeoCard> = [];
   public dealtProjectCards: Array<IProjectCard> = [];
   public cardsInHand: Array<IProjectCard> = [];
   public preludeCardsInHand: Array<IProjectCard> = [];
@@ -211,6 +211,11 @@ export class Player {
     return this.corporations.find((c) => c.name === corporationName);
   }
 
+  public getCeo(ceoName: CardName): ICeoCard | undefined {
+    const card = this.playedCards.find((c) => c.name === ceoName);
+    return (card !== undefined && isCeoCard(card)) ? card : undefined;
+  }
+
   public getCorporationOrThrow(corporationName: CardName): ICorporationCard {
     const corporation = this.getCorporation(corporationName);
     if (corporation === undefined) {
@@ -280,7 +285,7 @@ export class Player {
       });
       // Greta CEO hook
       // if (this.cardIsInEffect(CardName.GRETA)) {
-      //   const greta = this.playedCards.find((card) => card.name === CardName.GRETA) as LeaderCard;
+      //   const greta = this.playedCards.find((card) => card.name === CardName.GRETA) as CeoCard;
       //   greta.onTRIncrease!(this);
       // }
     };
@@ -531,10 +536,9 @@ export class Player {
     });
 
     this.colonies.calculateVictoryPoints(victoryPointsBreakdown);
-    // calculateVictoryPoints for CEO Duncan
-    // LeadersExtension.calculateVictoryPoints(this, victoryPointsBreakdown);
     MoonExpansion.calculateVictoryPoints(this, victoryPointsBreakdown);
     PathfindersExpansion.calculateVictoryPoints(this, victoryPointsBreakdown);
+    CeoExtension.calculateVictoryPoints(this, victoryPointsBreakdown);
 
     // Escape velocity VP penalty
     if (this.game.gameOptions.escapeVelocityMode) {
@@ -781,15 +785,21 @@ export class Player {
   public getPlayableActionCards(): Array<ICard & IActionCard> {
     const result: Array<ICard & IActionCard> = [];
     for (const playedCard of this.tableau) {
-      if (isIActionCard(playedCard) && !this.actionsThisGeneration.has(playedCard.name) && playedCard.canAct(this)) {
+      if (isIActionCard(playedCard) && !this.actionsThisGeneration.has(playedCard.name) && !isCeoCard(playedCard) && playedCard.canAct(this)) {
         result.push(playedCard);
       }
     }
     return result;
   }
 
-  public getUsableOPGCeoCards(): Array<ICard & IActionCard> {
-    return this.getPlayableActionCards().filter((card) => isLeaderCard(card));
+  public getUsableOPGCeoCards(): Array<ICeoCard> {
+    const result: Array<ICeoCard> = [];
+    for (const playedCard of this.tableau) {
+      if (isCeoCard(playedCard) && playedCard.canAct(this) ) {
+        result.push(playedCard);
+      }
+    }
+    return result;
   }
 
   public runProductionPhase(): void {
@@ -807,9 +817,9 @@ export class Player {
     this.plants += this.production.plants;
 
     this.corporations.forEach((card) => card.onProductionPhase?.(this));
-    // Turn off Leader OPG actions that were activated this generation
+    // Turn off CEO OPG actions that were activated this generation
     for (const card of this.playedCards) {
-      if (isLeaderCard(card)) {
+      if (isCeoCard(card)) {
         card.opgActionIsActive = false;
       }
     }
@@ -1277,13 +1287,13 @@ export class Player {
   }
 
   private playCeoOPGAction(): PlayerInput {
-    return new SelectCard<ICard & IActionCard>(
+    return new SelectCard<ICeoCard>(
       'Use CEO once per game action',
       'Take action',
       this.getUsableOPGCeoCards(),
       ([card]) => {
         this.game.log('${0} used ${1} action', (b) => b.player(this).card(card));
-        const action = card.action(this);
+        const action = card.action?.(this);
         this.defer(action);
         this.actionsThisGeneration.add(card.name);
         return undefined;
@@ -1727,8 +1737,6 @@ export class Player {
       return;
     }
 
-    const allOtherPlayersHavePassed = this.allOtherPlayersHavePassed();
-
     if (this.actionsTakenThisRound === 0 || game.gameOptions.undoOption) game.save();
     // if (saveBeforeTakingAction) game.save();
 
@@ -1753,9 +1761,9 @@ export class Player {
       });
       return;
     } else if (this.ceoCardsInHand.length > 0) {
-      // The Leader phase occurs between the Prelude phase and before the Action phase.
-      // All leader cards are played before players take their first normal actions.
-      game.phase = Phase.LEADERS;
+      // The CEO phase occurs between the Prelude phase and before the Action phase.
+      // All CEO cards are played before players take their first normal actions.
+      game.phase = Phase.CEOS;
       const playableCeoCards = this.getPlayableCeoCards();
       for (let i = playableCeoCards.length - 1; i >= 0; i--) {
         // start from the end of the list and work backwards, we're removing items as we go.
@@ -1769,8 +1777,9 @@ export class Player {
       game.phase = Phase.ACTION;
     }
 
-    if (game.hasPassedThisActionPhase(this) || (allOtherPlayersHavePassed === false && this.actionsTakenThisRound >= 2)) {
+    if (game.hasPassedThisActionPhase(this) || (this.allOtherPlayersHavePassed() === false && this.actionsTakenThisRound >= 2)) {
       this.actionsTakenThisRound = 0;
+      game.resettable = true;
       game.playerIsFinishedTakingActions();
       return;
     }
@@ -1824,7 +1833,7 @@ export class Player {
     });
   }
 
-  // TODO(kberg): move to Card
+  // TODO(kberg): perhaps move to Card
   public runInitialAction(corp: ICorporationCard) {
     this.game.defer(new SimpleDeferredAction(this, () => {
       if (corp.initialAction) {
@@ -1879,15 +1888,16 @@ export class Player {
     TurmoilHandler.addPlayerAction(this, action.options);
 
     if (this.getPlayableActionCards().length > 0) {
-      action.options.push(
-        this.playActionCard(),
-      );
+      action.options.push(this.playActionCard());
+    }
+
+    if (CeoExtension.ceoActionIsUsable(this)) {
+      action.options.push(this.playCeoOPGAction());
     }
 
     const playableCards = this.getPlayableCards();
     if (playableCards.length !== 0) {
-      action.options.push(
-        new SelectProjectCardToPlay(this, playableCards));
+      action.options.push(new SelectProjectCardToPlay(this, playableCards));
     }
 
     const coloniesTradeAction = this.colonies.coloniesTradeAction();
@@ -1915,17 +1925,11 @@ export class Player {
       }
     });
 
-    if (LeadersExtension.leaderActionIsUsable(this)) {
-      action.options.push(this.playCeoOPGAction());
-    }
-
     if (this.game.getPlayers().length > 1 &&
       this.actionsTakenThisRound > 0 &&
       !this.game.gameOptions.fastModeOption &&
       this.allOtherPlayersHavePassed() === false) {
-      action.options.push(
-        this.endTurnOption(),
-      );
+      action.options.push(this.endTurnOption());
     }
 
     const fundingCost = this.game.getAwardFundingCost();
@@ -1998,6 +2002,7 @@ export class Player {
     this.notification = this.game.makeTurnNotification(this);
     this.waitingFor = input;
     this.waitingForCb = cb;
+    this.game.inputsThisRound++;
   }
 
   public serialize(): SerializedPlayer {
@@ -2175,11 +2180,11 @@ export class Player {
     player.pendingInitialActions = cardFinder.corporationCardsFromJSON(d.pendingInitialActions ?? []);
     player.dealtCorporationCards = cardFinder.corporationCardsFromJSON(d.dealtCorporationCards);
     player.dealtPreludeCards = cardFinder.cardsFromJSON(d.dealtPreludeCards);
-    player.dealtCeoCards = cardFinder.leadersFromJSON(d.dealtCeoCards);
+    player.dealtCeoCards = cardFinder.ceosFromJSON(d.dealtCeoCards);
     player.dealtProjectCards = cardFinder.cardsFromJSON(d.dealtProjectCards);
     player.cardsInHand = cardFinder.cardsFromJSON(d.cardsInHand);
     player.preludeCardsInHand = cardFinder.cardsFromJSON(d.preludeCardsInHand);
-    player.ceoCardsInHand = cardFinder.leadersFromJSON(d.ceoCardsInHand);
+    player.ceoCardsInHand = cardFinder.ceosFromJSON(d.ceoCardsInHand);
     player.playedCards = d.playedCards.map((element: SerializedCard) => deserializeProjectCard(element, cardFinder));
     player.draftedCards = cardFinder.cardsFromJSON(d.draftedCards);
 

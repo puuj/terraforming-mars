@@ -2,20 +2,20 @@
         <div id="game-setup-detail" class="game-setup-detail-container">
           <ul>
             <li><div class="setup-item" v-i18n>Expansion:</div>
-              <div v-if="gameOptions.communityCardsOption" class="create-game-expansion-icon expansion-icon-community" title="Community"></div>
-              <div v-if="gameOptions.venusNextExtension" class="create-game-expansion-icon expansion-icon-venus" title="Venus Next"></div>
-              <div v-if="gameOptions.preludeExtension" class="create-game-expansion-icon expansion-icon-prelude" title="Prelude"></div>
-              <div v-if="gameOptions.coloniesExtension" class="create-game-expansion-icon expansion-icon-colony" title="Colonies"></div>
-              <div v-if="gameOptions.turmoilExtension" class="create-game-expansion-icon expansion-icon-turmoil" title="Turmoil"></div>
-              <div v-if="gameOptions.promoCardsOption" class="create-game-expansion-icon expansion-icon-promo" title="Promos"></div>
-              <div v-if="gameOptions.aresExtension" class="create-game-expansion-icon expansion-icon-ares" title="Ares"></div>
-              <div v-if="gameOptions.moonExpansion" class="create-game-expansion-icon expansion-icon-themoon" title="The Moon"></div>
-              <div v-if="gameOptions.pathfindersExpansion" class="create-game-expansion-icon expansion-icon-pathfinders" title="Pathfinders"></div>
-              <div v-if="isPoliticalAgendasOn()" class="create-game-expansion-icon expansion-icon-agendas" title="Agendas"></div>
+              <div v-if="gameOptions.venusNextExtension" class="create-game-expansion-icon expansion-icon-venus"></div>
+              <div v-if="gameOptions.preludeExtension" class="create-game-expansion-icon expansion-icon-prelude"></div>
+              <div v-if="gameOptions.coloniesExtension" class="create-game-expansion-icon expansion-icon-colony"></div>
+              <div v-if="gameOptions.turmoilExtension" class="create-game-expansion-icon expansion-icon-turmoil"></div>
+              <div v-if="gameOptions.promoCardsOption" class="create-game-expansion-icon expansion-icon-promo"></div>
+              <div v-if="gameOptions.aresExtension" class="create-game-expansion-icon expansion-icon-ares"></div>
+              <div v-if="gameOptions.moonExpansion" class="create-game-expansion-icon expansion-icon-themoon"></div>
+              <div v-if="gameOptions.pathfindersExpansion" class="create-game-expansion-icon expansion-icon-pathfinders"></div>
+              <div v-if="gameOptions.communityCardsOption" class="create-game-expansion-icon expansion-icon-community"></div>
+              <div v-if="isPoliticalAgendasOn" class="create-game-expansion-icon expansion-icon-agendas"></div>
             </li>
 
             <li><div class="setup-item" v-i18n>Board:</div>
-              <span :class="getBoardColorClass(gameOptions.boardName)" v-i18n>{{ gameOptions.boardName }}</span>
+              <span :class="boardColorClass" v-i18n>{{ gameOptions.boardName }}</span>
               &nbsp;
               <span v-if="gameOptions.shuffleMapOption" class="game-config generic" v-i18n>(randomized tiles)</span>
             </li>
@@ -93,6 +93,16 @@ import {BoardName} from '@/common/boards/BoardName';
 import {RandomMAOptionType} from '@/common/ma/RandomMAOptionType';
 import {AgendaStyle} from '@/common/turmoil/Types';
 
+const boardColorClass: Record<BoardName, string> = {
+  [BoardName.THARSIS]: 'game-config board-tharsis map',
+  [BoardName.HELLAS]: 'game-config board-hellas map',
+  [BoardName.ELYSIUM]: 'game-config board-elysium map',
+  [BoardName.AMAZONIS]: 'game-config board-amazonis map',
+  [BoardName.ARABIA_TERRA]: 'game-config board-arabia_terra map',
+  [BoardName.VASTITAS_BOREALIS]: 'game-config board-vastitas_borealis map',
+  [BoardName.TERRA_CIMMERIA]: 'game-config board-terra_cimmeria map',
+};
+
 export default Vue.extend({
   name: 'game-setup-detail',
   props: {
@@ -106,32 +116,13 @@ export default Vue.extend({
       type: Number,
     },
   },
-  methods: {
+  computed: {
     isPoliticalAgendasOn(): boolean {
       return (this.gameOptions.politicalAgendasExtension !== AgendaStyle.STANDARD);
     },
-    getBoardColorClass(boardName: BoardName): string {
-      switch (boardName) {
-      case BoardName.THARSIS:
-        return 'game-config board-tharsis map';
-      case BoardName.HELLAS:
-        return 'game-config board-hellas map';
-      case BoardName.ELYSIUM:
-        return 'game-config board-elysium map';
-      case BoardName.AMAZONIS:
-        return 'game-config board-amazonis map';
-      case BoardName.ARABIA_TERRA:
-        return 'game-config board-arabia_terra map';
-      case BoardName.VASTITAS_BOREALIS:
-        return 'game-config board-vastitas_borealis map';
-      case BoardName.TERRA_CIMMERIA:
-        return 'game-config board-terra_cimmeria map';
-      default:
-        return 'game-config board-other map';
-      }
+    boardColorClass(): string {
+      return boardColorClass[this.gameOptions.boardName];
     },
-  },
-  computed: {
     RandomMAOptionType(): typeof RandomMAOptionType {
       return RandomMAOptionType;
     },
@@ -139,4 +130,3 @@ export default Vue.extend({
 });
 
 </script>
-
