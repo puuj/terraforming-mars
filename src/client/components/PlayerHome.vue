@@ -78,7 +78,7 @@
       </div>
 
       <div class="player_home_block player_home_block--hand" v-if="playerView.draftedCards.length > 0">
-        <dynamic-title title="Drafted cards" :color="thisPlayer.color" />
+       <dynamic-title :title="'Drafted cards (passing to ' + playerView.passingTo + ')'" :color="thisPlayer.color" />
         <div v-for="card in playerView.draftedCards" :key="card.name" class="cardbox">
           <Card :card="card"/>
         </div>
@@ -86,7 +86,7 @@
 
       <a name="cards" class="player_home_anchor"></a>
       <div class="player_home_block player_home_block--hand" v-if="cardsInHandCount > 0" id="shortkey-hand">
-        <dynamic-title :title="'Drafted cards (passing to ' + playerView.passingTo + ')'" :color="thisPlayer.color" :withAdditional="true" :additional="cardsInHandCount.toString()" />
+        <dynamic-title title="Cards In Hand" :color="thisPlayer.color" :withAdditional="true" :additional="cardsInHandCount.toString()" />
              <sortable-cards :playerId="playerView.id" :cards="playerView.preludeCardsInHand.concat(playerView.ceoCardsInHand).concat(playerView.cardsInHand)" />
       </div>
 
