@@ -1148,7 +1148,6 @@ export class Player {
       const aurorai = this.getCorporation(CardName.AURORAI);
       if (aurorai === undefined) throw new Error('Cannot pay with data without ' + CardName.AURORAI);
       this.removeResourceFrom(aurorai, payment.data);
-
     }
   }
 

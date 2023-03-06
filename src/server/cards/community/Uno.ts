@@ -15,7 +15,7 @@ export class Uno extends Card implements IProjectCard {
       tags: [Tag.MICROBE],
       cost: 8,
       victoryPoints: 4,
-      
+
       requirements: CardRequirements.builder((b) => b.cardsInHand(1, {max}).temperature(2, {max}).oxygen(12, {max}).oceans(7, {max})),
       metadata: {
         cardNumber: 'J006',

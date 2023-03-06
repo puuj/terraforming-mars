@@ -41,6 +41,7 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
     [CardName.SPIES]: {Factory: Spies},
     [CardName.UNO]: {Factory: Uno},
     [CardName.WINDFALL]: {Factory: Windfall},
+    [CardName.SPECIAL_DESIGN_PROXY]: {Factory: SpecialDesignProxy},
   },
   corporationCards: {
     [CardName.AGRICOLA_INC]: {Factory: AgricolaInc},
@@ -61,8 +62,5 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
     [CardName.POLITICAL_UPRISING]: {Factory: PoliticalUprising, compatibility: 'turmoil'},
     [CardName.BY_ELECTION]: {Factory: ByElection, compatibility: 'turmoil'},
     [CardName.EXECUTIVE_ORDER]: {Factory: ExecutiveOrder, compatibility: 'turmoil'},
-  },
-  projectCards: {
-    [CardName.SPECIAL_DESIGN_PROXY]: {Factory: SpecialDesignProxy},
   },
 });

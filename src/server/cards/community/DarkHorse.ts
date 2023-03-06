@@ -16,7 +16,7 @@ export class DarkHorse extends Card implements IProjectCard {
       tags: [Tag.SPACE],
       cost: 16,
       victoryPoints: 5,
-      
+
       requirements: CardRequirements.builder((b) => b.temperature(-16, {max})),
       metadata: {
         cardNumber: 'J008',

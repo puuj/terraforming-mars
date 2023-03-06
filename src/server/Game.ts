@@ -368,7 +368,7 @@ export class Game implements Logger {
   public makeTurnNotification(player: Player) : NodeJS.Timeout {
     return Notifier.getInstance().makeTurnNotification(player, 60*1000);
   }
-    
+
   // Function use to properly start the game: with project draft or with research phase
   public gotoInitialPhase(): void {
     // Initial Draft
@@ -882,9 +882,9 @@ export class Game implements Logger {
     const nextPlayer = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(player) : this.getPlayerBefore(player);
     const passTo = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(nextPlayer) : this.getPlayerBefore(nextPlayer);
 
-    //leftover cards
+    // leftover cards
     const leftover_corps = (this.gameOptions.startingCorporations - constants.CORPORATIONS_TO_DRAFT) * this.players.length;
-    
+
     // If more than 1 card are to be passed to the next player, that means we're still drafting
     if (cards.length > leftover_corps) {
       if ((this.draftRound + 1) % this.players.length === 0) {
@@ -900,7 +900,7 @@ export class Game implements Logger {
     }
 
     // Push last card to next player
-    //nextPlayer.draftedCorporations.push(...cards);
+    // nextPlayer.draftedCorporations.push(...cards);
 
     this.players.forEach((player) => {
       player.dealtCorporationCards = player.draftedCorporations;
@@ -998,18 +998,17 @@ export class Game implements Logger {
     this.players.forEach((player) => {
       Notifier.getInstance().sendEndMessage(player, score_msg);
     });
-    
+
     this.phase = Phase.END;
 
     Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
-    
+
     Database.getInstance().saveGame(this).then(() => {
       GameLoader.getInstance().mark(this.id);
       return Database.getInstance().cleanGame(this.id);
     }).catch((err) => {
       console.error(err);
     });
-
   }
 
   // Part of final greenery placement.
