@@ -108,7 +108,7 @@ export class GameLoader implements IGameLoader {
         console.log(`GameLoader loaded game ${gameId} into memory from database`);
         return game;
       } catch (e) {
-        console.error('GameLoader:loadGame', e);
+        console.error(`GameLoader:loadGame ${gameId}`, e);
         return undefined;
       }
     }
