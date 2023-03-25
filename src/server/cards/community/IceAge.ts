@@ -9,7 +9,7 @@ import {CardRenderer} from '../render/CardRenderer';
 export class IceAge extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.EVENT,
+      type: CardType.EVENT,
       name: CardName.ICE_AGE,
       cost: 10,
       requirements: CardRequirements.builder((b) => b.temperature(-26)),

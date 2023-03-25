@@ -18,6 +18,7 @@ const RESOURCE_TO_ITEM_TYPE = new Map([
   [CardResource.FLOATER, CardRenderItemType.FLOATERS],
   [CardResource.VENUSIAN_HABITAT, CardRenderItemType.VENUSIAN_HABITAT],
   [CardResource.SPECIALIZED_ROBOT, CardRenderItemType.SPECIALIZED_ROBOT],
+  [CardResource.CANDLE, CardRenderItemType.CANDLE],
 ]);
 
 export class CardRenderDynamicVictoryPoints implements ICardRenderDynamicVictoryPoints {

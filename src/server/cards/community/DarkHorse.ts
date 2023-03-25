@@ -11,7 +11,7 @@ import {max} from '../Options';
 export class DarkHorse extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.AUTOMATED,
+      type: CardType.AUTOMATED,
       name: CardName.DARK_HORSE,
       tags: [Tag.SPACE],
       cost: 16,

@@ -70,6 +70,7 @@ export enum CardRenderItemType {
   PLANETARY_TRACK = 'plantary-track',
   SEED = 'seed',
   ORBITAL = 'orbital',
+  CANDLE = 'candle',
   GLOBAL_EVENT = 'global-event',
   FIRST_PLAYER = '1p',
   RULING_PARTY = 'ruling-party',

@@ -13,7 +13,7 @@ import {all} from '../Options';
 export class Spies extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.ACTIVE,
+      type: CardType.ACTIVE,
       tags: [Tag.PLANT],
       name: CardName.SPIES,
       cost: 9,

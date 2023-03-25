@@ -106,6 +106,9 @@ export default Vue.extend({
       } else if (type === CardRenderItemType.CAMPS) {
         classes.push('card-resource');
         classes.push('card-resource-camp');
+      } else if (type === CardRenderItemType.CANDLE) {
+        classes.push('card-resource');
+        classes.push('card-resource-candle');
       } else if (type === CardRenderItemType.DIVERSE_TAG) {
         classes.push('card-resource');
         classes.push('card-resource-diverse');

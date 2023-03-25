@@ -10,7 +10,7 @@ import {CardRenderer} from '../render/CardRenderer';
 export class PatentPortfolio extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.AUTOMATED,
+      type: CardType.AUTOMATED,
       name: CardName.PATENT_PORTFOLIO,
       tags: [Tag.SCIENCE],
       cost: 4,

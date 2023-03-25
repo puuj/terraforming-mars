@@ -10,7 +10,7 @@ import {CardRenderer} from '../render/CardRenderer';
 export class Fires extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.EVENT,
+      type: CardType.EVENT,
       name: CardName.FIRES,
       tags: [Tag.POWER],
       cost: 10,

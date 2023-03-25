@@ -11,7 +11,7 @@ import {CardRenderer} from '../render/CardRenderer';
 export class Drought extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.EVENT,
+      type: CardType.EVENT,
       tags: [Tag.CITY],
       name: CardName.DROUGHT,
       cost: 7,

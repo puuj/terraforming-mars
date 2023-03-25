@@ -1120,6 +1120,10 @@
                 color: #0000 !important;
                 background-image: url(./assets/resources/orbital.png);
             }
+            .card-resource-candle {
+                color: #0000 !important;
+                background-image: url(./assets/resources/candle.png);
+            }
             .card-resource-cube {
                 color: #0000 !important;
                 background-image: url(./assets/cube.png);
@@ -2292,7 +2296,7 @@ each(@parties, {
     // the stuff above wasn't contained inside card-content.
     @resource_types: microbe, animal, science, floater, fighter, camp,
       asteroid, disease, preservation, data, syndicate-fleet, cube,
-      venusian-habitat, specialized-robot, seed, orbital, agenda;
+      venusian-habitat, specialized-robot, seed, orbital, candle, agenda;
     each(@resource_types, {
       .card-resource-@{value} {
         background-image: url("./assets/resources/@{value}.png");

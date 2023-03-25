@@ -28,6 +28,7 @@ const cssClass: Record<CardResource, string> = {
   [CardResource.SEED]: 'card-resource-seed',
   [CardResource.AGENDA]: 'card-resource-agenda',
   [CardResource.ORBITAL]: 'card-resource-orbital',
+  [CardResource.CANDLE]: 'card-resource-candle',
 };
 
 export default Vue.extend({

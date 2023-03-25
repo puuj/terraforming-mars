@@ -17,6 +17,7 @@ import {DarkHorse} from './DarkHorse';
 import {Drought} from './Drought';
 import {Fires} from './Fires';
 import {ForcedPartnership} from './ForcedPartnership';
+import {HappyBirthday} from './HappyBirthday';
 import {HorizontalIntegration} from './HorizontalIntegration';
 import {IceAge} from './IceAge';
 import {PatentPortfolio} from './PatentPortfolio';
@@ -36,6 +37,7 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
     [CardName.FIRES]: {Factory: Fires},
     [CardName.FORCED_PARTNERSHIP]: {Factory: ForcedPartnership},
     [CardName.HORIZONTAL_INTEGRATION]: {Factory: HorizontalIntegration},
+    [CardName.HAPPY_BIRTHDAY]: {Factory: HappyBirthday, instantiate: false},
     [CardName.ICE_AGE]: {Factory: IceAge},
     [CardName.PATENT_PORTFOLIO]: {Factory: PatentPortfolio},
     [CardName.SPIES]: {Factory: Spies},

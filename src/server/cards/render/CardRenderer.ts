@@ -287,6 +287,10 @@ abstract class Builder<T> {
     return this._appendToRow(new CardRenderItem(CardRenderItemType.CAMPS, amount));
   }
 
+  public candle(amount: number = 1) {
+    return this._appendToRow(new CardRenderItem(CardRenderItemType.CANDLE, amount));
+  }
+  
   public selfReplicatingRobots() {
     return this._appendToRow(new CardRenderItem(CardRenderItemType.SELF_REPLICATING));
   }
@@ -406,7 +410,7 @@ abstract class Builder<T> {
     this._appendToRow(new CardRenderItem(CardRenderItemType.ORBITAL, 1));
     return this;
   }
-
+  
   public specialTile(options?: ItemOptions) {
     this._appendToRow(new CardRenderItem(CardRenderItemType.EMPTY_TILE_SPECIAL, 1, options));
     return this;

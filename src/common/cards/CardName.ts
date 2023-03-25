@@ -112,6 +112,7 @@ export enum CardName {
     GREAT_ESCARPMENT_CONSORTIUM = 'Great Escarpment Consortium',
     GREENHOUSES = 'Greenhouses',
     GYROPOLIS = 'Gyropolis',
+    HAPPY_BIRTHDAY = 'Happy Birthday',
     HACKERS = 'Hackers',
     HEATHER = 'Heather',
     HEAT_TRAPPERS = 'Heat Trappers',

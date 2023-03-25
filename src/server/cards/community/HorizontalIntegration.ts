@@ -10,7 +10,7 @@ import {CardRenderer} from '../render/CardRenderer';
 export class HorizontalIntegration extends Card implements IProjectCard {
   constructor() {
     super({
-      cardType: CardType.AUTOMATED,
+      type: CardType.AUTOMATED,
       name: CardName.HORIZONTAL_INTEGRATION,
       tags: [Tag.EARTH],
       cost: 7,
