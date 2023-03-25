@@ -77,9 +77,8 @@ export interface ICard {
      */
     onResourceAdded?: (player: Player, playedCard: ICard, count: number) => void;
 
-    /** Used with IProjectCard only, I think. */
-    cost?: number;
-    cardType: CardType;
+    cost?: number; /** Used with IProjectCard and PreludeCard. */
+    type: CardType;
     requirements?: CardRequirements;
     metadata: ICardMetadata;
     warning?: string | Message;
@@ -93,8 +92,8 @@ export interface ICard {
 }
 
 export interface IActionCard {
-  action: (player: Player) => PlayerInput | undefined;
-  canAct: (player: Player) => boolean;
+  action(player: Player): PlayerInput | undefined;
+  canAct(player: Player): boolean;
 }
 
 export function isIActionCard(object: any): object is IActionCard {

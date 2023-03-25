@@ -203,7 +203,9 @@ export class Game implements Logger {
     if (gameOptions.clonedGamedId !== undefined) {
       throw new Error('Cloning should not come through this execution path.');
     }
-
+    if (gameOptions.corporationsDraft === true) {
+      throw new Error('No new games may be created with corporation draft.');
+    }
     const rng = new SeededRandom(seed);
     const board = GameSetup.newBoard(gameOptions, rng);
     const gameCards = new GameCards(gameOptions);
@@ -1503,7 +1505,7 @@ export class Game implements Logger {
   }
 
   public getCardsInHandByType(player: Player, cardType: CardType) {
-    return player.cardsInHand.filter((card) => card.cardType === cardType);
+    return player.cardsInHand.filter((card) => card.type === cardType);
   }
 
   public log(message: string, f?: (builder: LogBuilder) => void, options?: {reservedFor?: Player}) {
