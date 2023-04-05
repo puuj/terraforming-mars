@@ -1,15 +1,12 @@
-import {Card} from '../Card';
 import {ICorporationCard} from '../corporation/ICorporationCard';
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
 import {CardRenderer} from '../render/CardRenderer';
-import {IActionCard, VictoryPoints} from '../ICard';
 import {CardResource} from '../../../common/CardResource';
-import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
+import {ActionCard} from '../ActionCard';
 
-export class BioSol extends Card implements ICorporationCard, IActionCard {
+export class BioSol extends ActionCard implements ICorporationCard {
   constructor() {
     super({
       type: CardType.CORPORATION,
@@ -17,11 +14,15 @@ export class BioSol extends Card implements ICorporationCard, IActionCard {
       tags: [Tag.MICROBE],
       startingMegaCredits: 42,
       resourceType: CardResource.MICROBE,
-      victoryPoints: VictoryPoints.resource(1, 3),
+      victoryPoints: {type: 'resource', points: 1, per: 3},
 
       firstAction: {
         text: 'Draw 2 cards with a microbe tag',
         drawCard: {count: 2, tag: Tag.MICROBE},
+      },
+
+      action: {
+        addResourcesToAnyCard: {type: CardResource.MICROBE, count: 1},
       },
 
       metadata: {
@@ -35,14 +36,5 @@ export class BioSol extends Card implements ICorporationCard, IActionCard {
         }),
       },
     });
-  }
-
-  public canAct() {
-    return true;
-  }
-
-  public action(player: Player) {
-    player.game.defer(new AddResourcesToCard(player, CardResource.MICROBE));
-    return undefined;
   }
 }

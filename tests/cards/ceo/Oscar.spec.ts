@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {Game} from '../../../src/server/Game';
-import {getTestPlayer, newTestGame} from '../../TestGame';
+import {testGame} from '../../TestGame';
 import {forceGenerationEnd, runAllActions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {Turmoil} from '../../../src/server/turmoil/Turmoil';
@@ -18,9 +18,7 @@ describe('Oscar', function() {
 
   beforeEach(() => {
     card = new Oscar();
-    game = newTestGame(2, {ceoExtension: true, turmoilExtension: true});
-    player = getTestPlayer(game, 0);
-    player2 = getTestPlayer(game, 1);
+    [game, player, player2] = testGame(2, {ceoExtension: true, turmoilExtension: true});
     player.playedCards.push(card);
     turmoil = Turmoil.getTurmoil(player.game);
   });
@@ -32,9 +30,12 @@ describe('Oscar', function() {
 
   it('Takes OPG action', function() {
     turmoil.chairman = 'NEUTRAL';
+    const preActionDelegates = turmoil.delegateReserve.get(player.id);
     card.action(player);
     runAllActions(game);
     expect(turmoil.chairman).eq(player.id);
+    // Delegates in reserve decreases
+    expect(turmoil.delegateReserve.get(player.id)).is.eq(preActionDelegates - 1);
   });
 
   it('Can only act once per game', function() {

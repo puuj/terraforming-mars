@@ -5,6 +5,7 @@ import {SelectPlayer} from '../../../src/server/inputs/SelectPlayer';
 import {Resources} from '../../../src/common/Resources';
 import {cast, maxOutOceans} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
+import {testGame} from '../../TestGame';
 
 describe('CloudSeeding', () => {
   let card: CloudSeeding;
@@ -14,40 +15,38 @@ describe('CloudSeeding', () => {
 
   beforeEach(() => {
     card = new CloudSeeding();
-    player = TestPlayer.BLUE.newPlayer();
-    player2 = TestPlayer.RED.newPlayer();
-    game = Game.newInstance('gameid', [player, player2], player);
+    [game, player, player2] = testGame(2);
   });
 
   it('Cannot play if cannot reduce M€ production', () => {
     maxOutOceans(player, 3);
     player.production.add(Resources.MEGACREDITS, -5);
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Cannot play if ocean requirements not met', () => {
     maxOutOceans(player, 2);
     player.production.add(Resources.HEAT, 1);
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Cannot play if no one has heat production', () => {
     maxOutOceans(player, 3);
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Can play', () => {
     maxOutOceans(player, 3);
     player.production.add(Resources.MEGACREDITS, -4);
     player.production.add(Resources.HEAT, 1);
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
   });
 
   it('Should play - auto select if single target', () => {
     // Meet requirements
     player2.production.add(Resources.HEAT, 1);
     maxOutOceans(player, 3);
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
 
     card.play(player);
     expect(player.production.megacredits).to.eq(-1);

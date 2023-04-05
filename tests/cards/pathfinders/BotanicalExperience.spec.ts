@@ -3,7 +3,7 @@ import {BotanicalExperience} from '../../../src/server/cards/pathfinders/Botanic
 import {Game} from '../../../src/server/Game';
 import {TestPlayer} from '../../TestPlayer';
 import {cast, runAllActions} from '../../TestingUtils';
-import {getTestPlayer, newTestGame} from '../../TestGame';
+import {testGame} from '../../TestGame';
 import {ISpace} from '../../../src/server/boards/ISpace';
 import {TileType} from '../../../src/common/TileType';
 import {Resources} from '../../../src/common/Resources';
@@ -20,18 +20,16 @@ describe('BotanicalExperience', function() {
 
   beforeEach(function() {
     card = new BotanicalExperience();
-    game = newTestGame(2);
-    player = getTestPlayer(game, 0);
-    otherPlayer = getTestPlayer(game, 1);
+    [game, player, otherPlayer] = testGame(2);
     space = game.board.getAvailableSpacesForGreenery(otherPlayer)[0];
     player.playedCards.push(card);
   });
 
   it('canPlay', () => {
-    expect(player.canPlayIgnoringCost(card)).is.false;
+    expect(player.simpleCanPlay(card)).is.false;
 
     game.addGreenery(otherPlayer, space);
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
   });
 
   it('onTilePlaced', () => {

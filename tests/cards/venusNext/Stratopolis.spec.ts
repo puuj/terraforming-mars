@@ -4,7 +4,7 @@ import {AerialMappers} from '../../../src/server/cards/venusNext/AerialMappers';
 import {Stratopolis} from '../../../src/server/cards/venusNext/Stratopolis';
 import {Game} from '../../../src/server/Game';
 import {SelectCard} from '../../../src/server/inputs/SelectCard';
-import {cast, runAllActions, testGameOptions} from '../../TestingUtils';
+import {cast, churnAction, runAllActions, testGameOptions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 
 describe('Stratopolis', function() {
@@ -19,12 +19,12 @@ describe('Stratopolis', function() {
   });
 
   it('Can not play', function() {
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Should play', function() {
     player.playedCards.push(new Research());
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
 
     card.play(player);
     expect(player.production.megacredits).to.eq(2);
@@ -41,10 +41,8 @@ describe('Stratopolis', function() {
     const card2 = new AerialMappers();
     player.playedCards.push(card, card2);
 
-    card.action(player);
-    runAllActions(player.game);
-    const action = cast(player.popWaitingFor(), SelectCard);
-    action.cb([card2]);
+    const selectCard = cast(churnAction(card, player), SelectCard);
+    selectCard.cb([card2]);
 
     expect(card2.resourceCount).to.eq(2);
   });

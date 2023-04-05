@@ -10,7 +10,8 @@ import {TestPlayer} from '../../TestPlayer';
 import {Payment} from '../../../src/common/inputs/Payment';
 import {AerialMappers} from '../../../src/server/cards/venusNext/AerialMappers';
 import {SelectProjectCardToPlay} from '../../../src/server/inputs/SelectProjectCardToPlay';
-import {cast, runAllActions} from '../../TestingUtils';
+import {cast, runAllActions, setVenusScaleLevel} from '../../TestingUtils';
+import {testGame} from '../../TestGame';
 
 describe('StratosphericBirds', () => {
   let card: StratosphericBirds;
@@ -20,9 +21,7 @@ describe('StratosphericBirds', () => {
 
   beforeEach(() => {
     card = new StratosphericBirds();
-    player = TestPlayer.BLUE.newPlayer();
-    const redPlayer = TestPlayer.RED.newPlayer();
-    game = Game.newInstance('gameid', [player, redPlayer], player);
+    [game, player] = testGame(2);
     deuteriumExport = new DeuteriumExport();
     player.popWaitingFor();
   });
@@ -30,27 +29,27 @@ describe('StratosphericBirds', () => {
   it('Cannot play if Venus requirement not met', () => {
     player.playedCards.push(deuteriumExport);
     player.addResourceTo(deuteriumExport, 1);
-    (game as any).venusScaleLevel = 10;
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    setVenusScaleLevel(game, 10);
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Cannot play if no floater', () => {
-    (game as any).venusScaleLevel = 12;
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    setVenusScaleLevel(game, 12);
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Can play', () => {
     player.playedCards.push(deuteriumExport);
     player.addResourceTo(deuteriumExport, 1);
-    (game as any).venusScaleLevel = 12;
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    setVenusScaleLevel(game, 12);
+    expect(player.simpleCanPlay(card)).is.true;
   });
 
   it('Should play', () => {
     player.playedCards.push(deuteriumExport);
     player.addResourceTo(deuteriumExport, 1);
-    (game as any).venusScaleLevel = 12;
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    setVenusScaleLevel(game, 12);
+    expect(player.simpleCanPlay(card)).is.true;
     player.playedCards.push(card);
 
     card.play(player);
@@ -64,7 +63,7 @@ describe('StratosphericBirds', () => {
     expect(card.resourceCount).to.eq(1);
 
     player.addResourceTo(card, 7);
-    expect(card.getVictoryPoints()).to.eq(8);
+    expect(card.getVictoryPoints(player)).to.eq(8);
   });
 
   it('Allows to choose card to remove floater from', () => {
@@ -90,10 +89,10 @@ describe('StratosphericBirds', () => {
     aerialMappers.resourceCount = 1;
     player.playedCards.push(aerialMappers);
 
-    (game as any).venusScaleLevel = 12;
+    setVenusScaleLevel(game, 12);
     player.megaCredits = 12;
 
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
 
     const selectProjectCardToPlay = new SelectProjectCardToPlay(player);
     selectProjectCardToPlay.cb(card, {...Payment.EMPTY, megaCredits: 12});
@@ -108,16 +107,16 @@ describe('StratosphericBirds', () => {
     player.playedCards.push(dirigibles);
     player.addResourceTo(dirigibles, 1);
 
-    (game as any).venusScaleLevel = 12;
+    setVenusScaleLevel(game, 12);
     player.megaCredits = 9;
 
     // 9 M€ + 1 Dirigibles floater: Cannot play
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    expect(player.simpleCanPlay(card)).is.not.true;
 
 
     // 12 M€ + 1 Dirigibles floater: Card is playable
     player.megaCredits = 12;
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
 
     // Try to spend floater to pay for card: Throw an error
     expect(() => {
@@ -138,10 +137,10 @@ describe('StratosphericBirds', () => {
     player.addResourceTo(deuteriumExport, 1);
     player.addResourceTo(dirigibles, 3);
 
-    (game as any).venusScaleLevel = 12;
+    setVenusScaleLevel(game, 12);
     player.megaCredits = 3;
 
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
 
     // Spend all 3 floaters from Dirigibles to pay for the card
     const selectProjectCardToPlay = new SelectProjectCardToPlay(player);
@@ -157,11 +156,11 @@ describe('StratosphericBirds', () => {
     player.playedCards.push(dirigibles);
     player.addResourceTo(dirigibles, 1);
     player.megaCredits = 4;
-    (game as any).venusScaleLevel = 12;
+    setVenusScaleLevel(game, 12);
 
     const indentured = new IndenturedWorkers();
     player.playCard(indentured);
     card.play(player);
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
   });
 });

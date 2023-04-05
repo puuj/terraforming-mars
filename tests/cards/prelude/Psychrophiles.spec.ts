@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {Psychrophiles} from '../../../src/server/cards/prelude/Psychrophiles';
 import {Game} from '../../../src/server/Game';
 import {TestPlayer} from '../../TestPlayer';
-import {runAllActions} from '../../TestingUtils';
+import {runAllActions, setTemperature} from '../../TestingUtils';
 
 describe('Psychrophiles', () => {
   let card: Psychrophiles;
@@ -16,17 +16,17 @@ describe('Psychrophiles', () => {
   });
 
   it('Cannot play', () => {
-    (game as any).temperature = -18;
-    expect(player.canPlayIgnoringCost(card)).is.not.true;
+    setTemperature(game, -18);
+    expect(player.simpleCanPlay(card)).is.not.true;
   });
 
   it('Can play', () => {
-    (game as any).temperature = -20;
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    setTemperature(game, -20);
+    expect(player.simpleCanPlay(card)).is.true;
   });
 
   it('Should play', () => {
-    expect(player.canPlayIgnoringCost(card)).is.true;
+    expect(player.simpleCanPlay(card)).is.true;
     const action = card.play(player);
     expect(action).is.undefined;
   });

@@ -7,7 +7,7 @@ import {ISpace} from '../src/server/boards/ISpace';
 import {Phase} from '../src/common/Phase';
 import {IParty} from '../src/server/turmoil/parties/IParty';
 import {Turmoil} from '../src/server/turmoil/Turmoil';
-import {LogMessage} from '../src/common/logs/LogMessage';
+import {Message} from '../src/common/logs/Message';
 import {PolicyId} from '../src/common/turmoil/Types';
 import {Log} from '../src/common/logs/Log';
 import {Greens} from '../src/server/turmoil/parties/Greens';
@@ -17,8 +17,8 @@ import {IProjectCard} from '../src/server/cards/IProjectCard';
 import {CardName} from '../src/common/cards/CardName';
 import {CardType} from '../src/common/cards/CardType';
 import {SpaceId} from '../src/common/Types';
-import {PlayerInput} from '@/server/PlayerInput';
-import {IActionCard} from '@/server/cards/ICard';
+import {PlayerInput} from '../src/server/PlayerInput';
+import {IActionCard} from '../src/server/cards/ICard';
 import {TestPlayer} from './TestPlayer';
 
 // Returns the oceans created during this operation which may not reflect all oceans.
@@ -32,6 +32,18 @@ export function maxOutOceans(player: Player, toValue: number = 0): Array<ISpace>
     oceans.push(addOcean(player));
   }
   return oceans;
+}
+
+export function setTemperature(game: Game, temperature: number) {
+  (game as any).temperature = temperature;
+}
+
+export function setOxygenLevel(game: Game, oxygenLevel: number) {
+  (game as any).oxygenLevel = oxygenLevel;
+}
+
+export function setVenusScaleLevel(game: Game, venusScaleLevel: number) {
+  (game as any).venusScaleLevel = venusScaleLevel;
 }
 
 export function addGreenery(player: Player, spaceId?: SpaceId): ISpace {
@@ -97,6 +109,7 @@ export function runNextAction(game: Game) {
   return action.execute();
 }
 
+// Use churnAction instead.
 export function cardAction(card: IActionCard, player: TestPlayer): PlayerInput | undefined {
   const input = card.action(player);
   if (input !== undefined) {
@@ -113,7 +126,15 @@ export function forceGenerationEnd(game: Game) {
 }
 
 // Provides a readable version of a log message for easier testing.
-export function formatLogMessage(message: LogMessage): string {
+export function formatLogMessage(message: Message): string {
+  return Log.applyData(message, (datum) => datum.value);
+}
+
+// Provides a readable version of a message for easier testing.
+export function formatMessage(message: Message | string): string {
+  if (typeof message === 'string') {
+    return message;
+  }
   return Log.applyData(message, (datum) => datum.value);
 }
 
@@ -179,3 +200,36 @@ export function getSendADelegateOption(player: Player) {
     (option) => option.title.toString().startsWith('Send a delegate'));
 }
 
+/**
+ * Simulate the behavior of a playing a project card run through the deferred action queue, returning the
+ * next input the player must supply.
+ *
+ * ../srcsee churn.
+ */
+export function churnPlay(card: IProjectCard, player: TestPlayer) {
+  return churn(() => card.play(player), player);
+}
+
+/**
+ * Simulate the behavior of a card action run through the deferred action queue, returning the
+ * next input the player must supply.
+ *
+ * ../srcsee churn.
+ */
+export function churnAction(card: IActionCard, player: TestPlayer) {
+  return churn(() => card.action(player), player);
+}
+
+/**
+ * Simulate the behavior of a block run through the deferred action queue, returning the next input
+ * the player must supply.
+ *
+ * Card actions can return input through deferred actions, and also through the return value.
+ * Rather than have to know which is correct, this function supports both cases, returning a
+ * PlayerInput if necessary.
+ */
+export function churn(f: () => PlayerInput | undefined, player: TestPlayer): PlayerInput | undefined {
+  player.defer(f());
+  runAllActions(player.game);
+  return player.popWaitingFor();
+}

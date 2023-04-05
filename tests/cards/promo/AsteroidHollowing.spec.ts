@@ -1,8 +1,8 @@
 import {expect} from 'chai';
-import {runAllActions} from '../../TestingUtils';
+import {churnAction} from '../../TestingUtils';
 import {AsteroidHollowing} from '../../../src/server/cards/promo/AsteroidHollowing';
-import {Game} from '../../../src/server/Game';
 import {TestPlayer} from '../../TestPlayer';
+import {testGame} from '../../TestGame';
 
 describe('AsteroidHollowing', function() {
   let card: AsteroidHollowing;
@@ -10,10 +10,7 @@ describe('AsteroidHollowing', function() {
 
   beforeEach(function() {
     card = new AsteroidHollowing();
-    player = TestPlayer.BLUE.newPlayer();
-    const redPlayer = TestPlayer.RED.newPlayer();
-    Game.newInstance('gameid', [player, redPlayer], player);
-    player.popSelectInitialCards();
+    [/* skipped */, player] = testGame(2);
   });
 
   it('Should play', function() {
@@ -29,9 +26,7 @@ describe('AsteroidHollowing', function() {
     player.titanium = 1;
 
     expect(card.canAct(player)).is.true;
-    expect(card.action(player)).is.undefined;
-
-    runAllActions(player.game);
+    expect(churnAction(card, player)).is.undefined;
 
     expect(player.titanium).to.eq(0);
     expect(card.resourceCount).to.eq(1);
@@ -42,17 +37,11 @@ describe('AsteroidHollowing', function() {
     player.playedCards.push(card);
     player.titanium = 2;
 
-    expect(card.action(player)).is.undefined;
-    runAllActions(player.game);
-    expect(player.popWaitingFor()).is.undefined;
+    expect(churnAction(card, player)).is.undefined;
+    expect(card.getVictoryPoints(player)).to.eq(0);
 
-    expect(card.getVictoryPoints()).to.eq(0);
+    expect(churnAction(card, player)).eq(undefined);
 
-    expect(card.action(player)).is.undefined;
-
-    runAllActions(player.game);
-
-    expect(player.popWaitingFor()).is.undefined;
-    expect(card.getVictoryPoints()).to.eq(1);
+    expect(card.getVictoryPoints(player)).to.eq(1);
   });
 });
