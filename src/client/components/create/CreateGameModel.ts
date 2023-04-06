@@ -14,6 +14,7 @@ export interface CreateGameModel {
   prelude: boolean;
   draftVariant: boolean;
   initialDraft: boolean;
+  corporationsDraft: boolean;  
   randomMA: RandomMAOptionType;
   randomFirstPlayer: boolean;
   showOtherPlayersVP: boolean;

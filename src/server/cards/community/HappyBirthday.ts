@@ -5,7 +5,6 @@ import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {CardResource} from '../../../common/CardResource';
-import {VictoryPoints} from '../ICard';
 
 export class HappyBirthday extends Card implements IProjectCard {
   constructor() {
@@ -16,7 +15,7 @@ export class HappyBirthday extends Card implements IProjectCard {
       cost: 0,
 
       resourceType: CardResource.CANDLE,
-      victoryPoints: VictoryPoints.resource(1, 1),
+      victoryPoints: {type: 'resource', points: 1, per: 1},
       
       behavior: {
         addResources: 37,
