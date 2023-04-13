@@ -15,7 +15,7 @@ export class HappyBirthday extends Card implements IProjectCard {
       cost: 0,
 
       resourceType: CardResource.CANDLE,
-      victoryPoints: {type: 'resource', points: 1, per: 1},
+      victoryPoints: {resourcesHere: {}},
       
       behavior: {
         addResources: 37,
