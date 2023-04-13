@@ -1010,7 +1010,6 @@ export class Player {
 
   public runResearchPhase(draftVariant: boolean): void {
     let dealtCards: Array<IProjectCard> = [];
-    let cardsToKeep = 4;
     if (draftVariant) {
       dealtCards = this.draftedCards;
       this.draftedCards = [];
@@ -1020,10 +1019,15 @@ export class Player {
         cardsToDraw = 5;
       }
       if (LunaProjectOffice.isActive(this)) {
-        cardsToKeep = 5;
         cardsToDraw = 5;
       }
       this.dealForDraft(cardsToDraw, dealtCards);
+    }
+
+    let cardsToKeep = 4;
+    if (LunaProjectOffice.isActive(this)) {
+      // If Luna Project is active, they get to keep the 5 cards they drafted
+      cardsToKeep = 5;
     }
 
     const action = DrawCards.choose(this, dealtCards, {paying: true, keepMax: cardsToKeep});
@@ -1393,18 +1397,21 @@ export class Player {
 
   private claimMilestone(milestone: IMilestone): SelectOption {
     return new SelectOption(milestone.name, 'Claim - ' + '('+ milestone.name + ')', () => {
+      if (this.game.milestoneClaimed(milestone)) {
+        throw new Error(milestone.name + ' is already claimed');
+      }
       this.game.claimedMilestones.push({
         player: this,
         milestone: milestone,
       });
-      /* VanAllen CEO Hook for Milestones
-      const vanAllen = this.game.getCardPlayer(CardName.VANALLEN);
+      // VanAllen CEO Hook for Milestones
+      const vanAllen = this.game.getCardPlayerOrUndefined(CardName.VANALLEN);
       if (vanAllen !== undefined) {
         vanAllen.addResource(Resources.MEGACREDITS, 3, {log: true});
       }
       if (!this.cardIsInEffect(CardName.VANALLEN)) {
-      } */
-      this.game.defer(new SelectPaymentDeferred(this, MILESTONE_COST, {title: 'Select how to pay for milestone'}));
+        this.game.defer(new SelectPaymentDeferred(this, MILESTONE_COST, {title: 'Select how to pay for milestone'}));
+      }
       this.game.log('${0} claimed ${1} milestone', (b) => b.player(this).milestone(milestone));
       return undefined;
     });

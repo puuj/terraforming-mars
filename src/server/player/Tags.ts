@@ -13,7 +13,6 @@ import {Player} from '../Player';
 export type CountingMode =
   'raw' | // Count face-up tags literally, including Leavitt Station.
   'default' | // Like raw, but include the wild tags. Typical when performing an action.
-  'vps' | // Should remove, replace with `raw`.
   'milestone' | // Like raw with special conditions for milestones (Chimera)
   'award' | // Like raw with special conditions for awards (Chimera)
   'raw-pf'; // Like raw, but includes Mars Tags when tag is Science (Habitat Marte)
@@ -175,7 +174,7 @@ export class Tags {
    * Counts the number of distinct tags the player has.
    *
    * `extraTag` (optional) represents a tag from a card that is in the middle of being played. If the card had multiple tags,
-   * this API could change, but right now it's only used once.
+   * this API could change, but right the additional argument is only used once.
    */
   public distinctCount(mode: DistinctCountMode, extraTag?: Tag): number {
     const uniqueTags = new Set<Tag>();
@@ -197,6 +196,13 @@ export class Tags {
     for (const card of this.player.playedCards) {
       if (card.type !== CardType.EVENT) {
         card.tags.forEach(addTag);
+      }
+    }
+    if (this.player.isCorporation(CardName.ODYSSEY)) {
+      for (const card of this.player.playedCards) {
+        if (card.type === CardType.EVENT) {
+          card.tags.forEach(addTag);
+        }
       }
     }
 
