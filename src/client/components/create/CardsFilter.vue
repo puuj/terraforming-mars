@@ -39,6 +39,7 @@ const allItems: Array<CardName> = [
   ...getCards(byType(CardType.ACTIVE)),
   ...getCards(byType(CardType.EVENT)),
   ...getCards(byType(CardType.PRELUDE)),
+  ...getCards(byType(CardType.CORPORATION)),
   ...getCards(byType(CardType.CEO)),
 ].map(toName)
   .sort((a, b) => a.localeCompare(b));
