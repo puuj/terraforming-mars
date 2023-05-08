@@ -3,7 +3,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {Tag} from '../../../common/cards/Tag';
-import {Resources} from '../../../common/Resources';
+import {Resource} from '../../../common/Resource';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
@@ -15,7 +15,7 @@ export class Windfall extends Card implements IProjectCard {
       name: CardName.WINDFALL,
       tags: [Tag.JOVIAN],
       cost: 0,
-      requirements: CardRequirements.builder((b) => b.tr(30).tag(Tag.BUILDING).tag(Tag.SPACE).tag(Tag.SCIENCE).tag(Tag.POWER).tag(Tag.EARTH).tag(Tag.JOVIAN).tag(Tag.PLANT).tag(Tag.MICROBE).tag(Tag.ANIMAL).tag(Tag.CITY).production(Resources.MEGACREDITS).production(Resources.STEEL).production(Resources.TITANIUM).production(Resources.PLANTS).production(Resources.ENERGY).production(Resources.HEAT)),
+      requirements: CardRequirements.builder((b) => b.tr(30).tag(Tag.BUILDING).tag(Tag.SPACE).tag(Tag.SCIENCE).tag(Tag.POWER).tag(Tag.EARTH).tag(Tag.JOVIAN).tag(Tag.PLANT).tag(Tag.MICROBE).tag(Tag.ANIMAL).tag(Tag.CITY).production(Resource.MEGACREDITS).production(Resource.STEEL).production(Resource.TITANIUM).production(Resource.PLANTS).production(Resource.ENERGY).production(Resource.HEAT)),
       metadata: {
         cardNumber: 'J010',
         renderData: CardRenderer.builder((b) => {

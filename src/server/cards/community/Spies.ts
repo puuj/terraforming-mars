@@ -3,7 +3,7 @@ import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {OrOptions} from '../../inputs/OrOptions';
-import {Resources} from '../../../common/Resources';
+import {Resource} from '../../../common/Resource';
 import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {SelectOption} from '../../inputs/SelectOption';
@@ -51,7 +51,7 @@ export class Spies extends Card implements IProjectCard {
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
           player.megaCredits--;
           player.megaCredits+=amountStolen;
-          target.addResource(Resources.MEGACREDITS, -1, {log: true, from: player});
+          target.addResource(Resource.MEGACREDITS, -1, {log: true, from: player});
           return undefined;
         }));
       }
@@ -63,7 +63,7 @@ export class Spies extends Card implements IProjectCard {
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
           player.megaCredits--;
           player.steel+=amountStolen;
-          target.addResource(Resources.STEEL, -1, {log: true, from: player});
+          target.addResource(Resource.STEEL, -1, {log: true, from: player});
           return undefined;
         }));
       }
@@ -75,7 +75,7 @@ export class Spies extends Card implements IProjectCard {
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
           player.megaCredits--;
           player.titanium+=amountStolen;
-          target.addResource(Resources.TITANIUM, -1, {log: true, from: player});
+          target.addResource(Resource.TITANIUM, -1, {log: true, from: player});
           return undefined;
         }));
       }
@@ -87,7 +87,7 @@ export class Spies extends Card implements IProjectCard {
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
           player.megaCredits--;
           player.plants+=amountStolen;
-          target.addResource(Resources.PLANTS, -1, {log: true, from: player});
+          target.addResource(Resource.PLANTS, -1, {log: true, from: player});
           return undefined;
         }));
       }
@@ -99,7 +99,7 @@ export class Spies extends Card implements IProjectCard {
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
           player.megaCredits--;
           player.energy+=amountStolen;
-          target.addResource(Resources.ENERGY, -1, {log: true, from: player});
+          target.addResource(Resource.ENERGY, -1, {log: true, from: player});
           return undefined;
         }));
       }
@@ -111,7 +111,7 @@ export class Spies extends Card implements IProjectCard {
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
           player.megaCredits--;
           player.heat+=amountStolen;
-          target.addResource(Resources.HEAT, -1, {log: true, from: player});
+          target.addResource(Resource.HEAT, -1, {log: true, from: player});
           return undefined;
         }));
       }
