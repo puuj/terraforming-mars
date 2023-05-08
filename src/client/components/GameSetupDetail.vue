@@ -24,6 +24,8 @@
               <div v-else class="create-game-expansion-icon expansion-icon-community expansion-disabled" title="Community disabled"></div>
               <div v-if="isPoliticalAgendasOn" class="create-game-expansion-icon expansion-icon-agendas" title="Turmoil Agendas"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-agendas expansion-disabled" title="Turmoil Agendas disabled"></div>
+              <div v-if="gameOptions.ceoExtension" class="create-game-expansion-icon expansion-icon-ceo" title="CEOs"></div>
+              <div v-else class="create-game-expansion-icon expansion-icon-ceo expansion-disabled" title="CEOs disabled"></div>
             </li>
 
             <li><div class="setup-item" v-i18n>Board:</div>
