@@ -4,7 +4,7 @@ import {CardType} from '../../../common/cards/CardType';
 import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
-import {Resources} from '../../../common/Resources';
+import {Resource} from '../../../common/Resource';
 import {CardRenderer} from '../render/CardRenderer';
 
 export class PatentPortfolio extends Card implements IProjectCard {
@@ -26,7 +26,7 @@ export class PatentPortfolio extends Card implements IProjectCard {
   }
 
   public override play(player: Player) {
-    player.addResource(Resources.MEGACREDITS, player.cardsInHand.length, {log: true});
+    player.addResource(Resource.MEGACREDITS, player.cardsInHand.length, {log: true});
     return undefined;
   }
 }
