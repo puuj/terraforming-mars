@@ -67,5 +67,4 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
   },
 
 
-
 });

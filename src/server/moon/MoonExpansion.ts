@@ -171,6 +171,9 @@ export class MoonExpansion {
           this.activateLunaFirst(player, player.game, increment);
         }
         moonData.miningRate += increment;
+        if (player.game.gameOptions.requiresMoonTrackCompletion && player.game.marsIsTerraformed()) {
+          player.game.log('Mars is terraformed!');
+        }
       }
     });
   }
@@ -195,6 +198,9 @@ export class MoonExpansion {
           this.activateLunaFirst(player, player.game, count);
         }
         moonData.colonyRate += increment;
+        if (player.game.gameOptions.requiresMoonTrackCompletion && player.game.marsIsTerraformed()) {
+          player.game.log('Mars is terraformed!');
+        }
       }
     });
   }
@@ -219,6 +225,9 @@ export class MoonExpansion {
           this.activateLunaFirst(player, player.game, increment);
         }
         moonData.logisticRate += increment;
+        if (player.game.gameOptions.requiresMoonTrackCompletion && player.game.marsIsTerraformed()) {
+          player.game.log('Mars is terraformed!');
+        }
       }
     });
   }

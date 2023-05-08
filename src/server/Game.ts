@@ -1090,6 +1090,10 @@ export class Game implements Logger {
 
     this.oxygenLevel += steps;
 
+    if (this.marsIsTerraformed()) {
+      this.log('Mars is terraformed!');
+    }
+
     AresHandler.ifAres(this, (aresData) => {
       AresHandler.onOxygenChange(this, aresData);
     });
@@ -1144,6 +1148,10 @@ export class Game implements Logger {
 
     this.venusScaleLevel += steps * 2;
 
+    if (this.gameOptions.venusNextExtension && this.gameOptions.requiresVenusTrackCompletion && this.marsIsTerraformed()) {
+      this.log('Mars is terraformed!');
+    }
+
     return steps;
   }
 
@@ -1183,6 +1191,10 @@ export class Game implements Logger {
     }
 
     this.temperature += steps * 2;
+
+    if (this.marsIsTerraformed()) {
+      this.log('Mars is terraformed!');
+    }
 
     AresHandler.ifAres(this, (aresData) => {
       AresHandler.onTemperatureChange(this, aresData);
@@ -1443,6 +1455,9 @@ export class Game implements Logger {
     if (this.phase !== Phase.SOLAR) {
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.OCEANS);
       player.increaseTerraformRating();
+    }
+    if (this.marsIsTerraformed()) {
+      this.log('Mars is terraformed!');
     }
     AresHandler.ifAres(this, (aresData) => {
       AresHandler.onOceanPlaced(aresData, player);

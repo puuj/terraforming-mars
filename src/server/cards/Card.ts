@@ -248,7 +248,7 @@ export abstract class Card {
     case CardRenderItemType.RESOURCE_CUBE:
     case CardRenderItemType.SCIENCE:
     case CardRenderItemType.CAMPS:
-    case CardRenderItemType.CANDLE:        
+    case CardRenderItemType.CANDLE:
       units = this.resourceCount ?? 0;
       break;
 
