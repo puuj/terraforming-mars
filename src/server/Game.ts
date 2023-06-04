@@ -121,7 +121,7 @@ export class Game implements Logger {
   private unDraftedCards: Map<PlayerId, Array<IProjectCard>> = new Map();
   private corporationsDraftDirection: 'before' | 'after' = 'before';
   public corporationsToDraft: Array<ICorporationCard> = [];
-  
+
   // Milestones and awards
   public claimedMilestones: Array<ClaimedMilestone> = [];
   public milestones: Array<IMilestone> = [];
@@ -1677,10 +1677,10 @@ export class Game implements Logger {
     d.unDraftedCards.forEach((unDraftedCard) => {
       game.unDraftedCards.set(unDraftedCard[0], cardFinder.cardsFromJSON(unDraftedCard[1]));
     });
-    
+
     game.corporationsToDraft = cardFinder.corporationCardsFromJSON(d.corporationsToDraft);
     game.corporationsDraftDirection = d.corporationsDraftDirection ?? false;
-    
+
     game.lastSaveId = d.lastSaveId;
     game.clonedGamedId = d.clonedGamedId;
     game.gameAge = d.gameAge;
