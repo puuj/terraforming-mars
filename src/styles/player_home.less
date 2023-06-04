@@ -3,6 +3,19 @@
     padding-top: 20px;
     background: linear-gradient(transparent, #000), url(./assets/stars.jpg);
     background-attachment: fixed;
+
+    > div:not([class]), > div:not([class]) > div.player_home_block:first-child {
+        > a:after {
+            content: '🔗';
+            border-radius: 32px;
+            margin-left: 5px;
+        }
+        > a:hover, a:focus {
+            background: rgba(180, 180, 180, 0.3);
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    }
 }
 
 // text shadows
@@ -163,6 +176,15 @@
     margin-left: 3px;
     box-sizing: content-box;
     z-index: 2;
+    &::after {
+        text-transform: capitalize;
+    }
+    &.tag-tr::after {
+        text-transform: uppercase;
+    }
+    &.tag-vp::after {
+        text-transform: uppercase;
+    }
 }
 
 .tag-type-main {
@@ -198,7 +220,7 @@
     background: linear-gradient(#cc8b00, #805700, #805700) !important;
     background-position: 0px !important;
 }
-.tag-vp::after {
+.tag-vp::before {
     position: absolute;
     content: "VP";
     font-family: Prototype;
@@ -1082,4 +1104,10 @@
         font-family: Prototype;
         color: #000;
     }
+}
+
+#spectator-link + span {
+    div {
+		    width: calc(100% - 450px);
+		}
 }

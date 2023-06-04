@@ -65,6 +65,9 @@ import {ICeoCard, isCeoCard} from './cards/ceos/ICeoCard';
 import {newMessage} from './logs/MessageBuilder';
 import {calculateVictoryPoints} from './game/calculateVictoryPoints';
 import {IVictoryPointsBreakdown} from '..//common/game/IVictoryPointsBreakdown';
+import {YesAnd} from './cards/requirements/CardRequirement';
+import {PlayableCard} from './cards/IProjectCard';
+import {Supercapacitors} from './cards/promo/Supercapacitors';
 
 
 const THROW_WAITING_FOR = Boolean(process.env.THROW_WAITING_FOR);
@@ -445,14 +448,14 @@ export class Player {
   }
 
   /**
-   * Steal up to `qty` units of `resource` from `from`. Or, at least as
+   * `from` steals up to `qty` units of `resource` from this player. Or, at least as
    * much as possible.
    */
-  public stealResource(resource: Resource, qty: number, from: Player) {
+  public stealResource(resource: Resource, qty: number, thief: Player) {
     const qtyToSteal = Math.min(this.getResource(resource), qty);
     if (qtyToSteal > 0) {
-      this.deductResource(resource, qtyToSteal, {log: true, from: from, stealing: true});
-      from.addResource(resource, qtyToSteal);
+      this.deductResource(resource, qtyToSteal, {log: true, from: thief, stealing: true});
+      thief.addResource(resource, qtyToSteal);
     }
   }
 
@@ -743,13 +746,23 @@ export class Player {
 
     this.turmoilPolicyActionUsed = false;
     this.politicalAgendasActionUsedCount = 0;
+
+    if (this.cardIsInEffect(CardName.SUPERCAPACITORS)) {
+      Supercapacitors.onProduction(this);
+    } else {
+      this.heat += this.energy;
+      this.energy = 0;
+      this.finishProductionPhase();
+    }
+  }
+
+  public finishProductionPhase() {
     this.megaCredits += this.production.megacredits + this.terraformRating;
-    this.heat += this.energy;
-    this.heat += this.production.heat;
-    this.energy = this.production.energy;
-    this.titanium += this.production.titanium;
     this.steel += this.production.steel;
+    this.titanium += this.production.titanium;
     this.plants += this.production.plants;
+    this.energy += this.production.energy;
+    this.heat += this.production.heat;
 
     this.corporations.forEach((card) => card.onProductionPhase?.(this));
     // Turn off CEO OPG actions that were activated this generation
@@ -1004,7 +1017,7 @@ export class Player {
       microbes: card.tags.includes(Tag.PLANT),
       science: card.tags.includes(Tag.MOON),
       // TODO(kberg): add this.corporation.name === CardName.AURORAI
-      data: card.type === CardType.STANDARD_PROJECT,
+      auroraiData: card.type === CardType.STANDARD_PROJECT,
     };
   }
 
@@ -1089,10 +1102,10 @@ export class Player {
       if (soylent === undefined) throw new Error('Cannot pay with seeds without ' + CardName.SOYLENT_SEEDLING_SYSTEMS);
       this.removeResourceFrom(soylent, payment.seeds);
     }
-    if (payment.data > 0) {
+    if (payment.auroraiData > 0) {
       const aurorai = this.getCorporation(CardName.AURORAI);
       if (aurorai === undefined) throw new Error('Cannot pay with data without ' + CardName.AURORAI);
-      this.removeResourceFrom(aurorai, payment.data);
+      this.removeResourceFrom(aurorai, payment.auroraiData);
     }
   }
 
@@ -1432,7 +1445,7 @@ export class Player {
     return this.ceoCardsInHand.filter((card) => card.canPlay?.(this) === true);
   }
 
-  public getPlayableCards(): Array<IProjectCard> {
+  public getPlayableCards(): Array<PlayableCard> {
     const candidateCards: Array<IProjectCard> = [...this.cardsInHand];
     // Self Replicating robots check
     const card = this.playedCards.find((card) => card.name === CardName.SELF_REPLICATING_ROBOTS);
@@ -1442,7 +1455,17 @@ export class Player {
       }
     }
 
-    return candidateCards.filter((card) => this.canPlay(card));
+    const playableCards: Array<PlayableCard> = [];
+    for (const card of candidateCards) {
+      const canPlay = this.canPlay(card);
+      if (canPlay !== false) {
+        playableCards.push({
+          card,
+          details: canPlay,
+        });
+      }
+    }
+    return playableCards;
   }
 
   // TODO(kberg): After migration, see if this can become private again.
@@ -1458,7 +1481,7 @@ export class Player {
       });
   }
 
-  public canPlay(card: IProjectCard): boolean {
+  public canPlay(card: IProjectCard): boolean | YesAnd {
     return this.canAffordCard(card) && this.simpleCanPlay(card);
   }
 
@@ -1466,11 +1489,24 @@ export class Player {
    * Verify if requirements for the card can be met, ignoring the project cost.
    * Only made public for tests.
    */
-  public simpleCanPlay(card: IProjectCard): boolean {
-    if (card.requirements !== undefined && !card.requirements.satisfies(this)) {
+  // TODO(kberg): use CanPlayResponse
+  public simpleCanPlay(card: IProjectCard): boolean | YesAnd {
+    let satisfies: boolean | YesAnd = true;
+    if (card.requirements !== undefined) {
+      satisfies = card.requirements.satisfies(this);
+      if (satisfies === false) {
+        return false;
+      }
+    }
+    const canPlay = card.canPlay(this);
+    if (canPlay === false) {
       return false;
     }
-    return card.canPlay(this);
+    // canPlay is true or a YesAnd. If it's a YesAnd, return
+    // the YesAnd. Otherwise, it's true, so return the YesAnd from `satisfies`.
+    //
+    // This is a hack. Ideally there will be 2 YesAnds, but right now there's just one.
+    return typeof(canPlay) === 'object' ? canPlay : satisfies;
   }
 
   private maxSpendable(reserveUnits: Units = Units.EMPTY): Payment {
@@ -1483,7 +1519,7 @@ export class Player {
       microbes: this.getSpendableMicrobes(),
       science: this.getSpendableScienceResources(),
       seeds: this.getSpendableSeedResources(),
-      data: this.getSpendableData(),
+      auroraiData: this.getSpendableData(),
     };
   }
 
@@ -1514,7 +1550,7 @@ export class Player {
       floaters: DEFAULT_FLOATERS_VALUE,
       science: 1,
       seeds: constants.SEED_VALUE,
-      data: constants.DATA_VALUE,
+      auroraiData: constants.DATA_VALUE,
     };
 
     const usable: {[key in PaymentKey]: boolean} = {
@@ -1526,7 +1562,7 @@ export class Player {
       floaters: options?.floaters ?? false,
       science: options?.science ?? false,
       seeds: options?.seeds ?? false,
-      data: options?.data ?? false,
+      auroraiData: options?.auroraiData ?? false,
     };
 
     // HOOK: Luna Trade Federation

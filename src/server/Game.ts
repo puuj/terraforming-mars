@@ -388,7 +388,7 @@ export class Game implements Logger {
   }
 
   public save(): void {
-    Database.getInstance().saveGame(this);
+    GameLoader.getInstance().saveGame(this);
   }
 
 
@@ -704,7 +704,14 @@ export class Game implements Logger {
       player.colonies.cardDiscount = 0; // Iapetus reset hook
       player.runProductionPhase();
     });
+    this.postProductionPhase();
+  }
 
+  private postProductionPhase(): void {
+    if (this.deferredActions.length > 0) {
+      this.deferredActions.runAll(() => this.postProductionPhase());
+      return;
+    }
     if (this.gameIsOver()) {
       this.log('Final greenery placement', (b) => b.forNewGeneration());
       this.takeNextFinalGreeneryAction();
@@ -1012,11 +1019,14 @@ export class Game implements Logger {
 
     this.phase = Phase.END;
 
+
     await Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
-    await Database.getInstance().saveGame(this);
-    GameLoader.getInstance().mark(this.id);
-    await Database.getInstance().markFinished(this.id);
-    Database.getInstance().maintenance();
+    const gameLoader = GameLoader.getInstance();
+    await gameLoader.saveGame(this);
+    gameLoader.completeGame(this);
+    gameLoader.mark(this.id);
+    gameLoader.maintenance();
+
   }
 
   // Part of final greenery placement.
