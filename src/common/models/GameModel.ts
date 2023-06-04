@@ -1,4 +1,5 @@
 import {GameOptionsModel} from './GameOptionsModel';
+import {CardModel} from './CardModel';
 import {ColonyModel} from './ColonyModel';
 import {Color} from '../Color';
 import {TurmoilModel} from './TurmoilModel';
@@ -17,6 +18,7 @@ export type GameModel = {
   aresData: AresData | undefined;
   awards: Array<FundedAwardModel>;
   colonies: Array<ColonyModel>;
+  corporationsToDraft: Array<CardModel>;
   discardedColonies: Array<ColonyName>;
   deckSize: number;
   expectedPurgeTimeMs: number;

@@ -26,6 +26,8 @@ export type SerializedGame = {
     clonedGamedId?: string;
     colonies: Array<SerializedColony>;
     corporationDeck: SerializedDeck,
+    corporationsDraftDirection: 'before' | 'after';
+    corporationsToDraft: Array<CardName>;
     createdTimeMs: number;
     deferredActions: Array<DeferredAction>;
     donePlayers: Array<PlayerId>;

@@ -119,7 +119,9 @@ export class Game implements Logger {
   // Used when drafting the first 10 project cards.
   private initialDraftIteration: number = 1;
   private unDraftedCards: Map<PlayerId, Array<IProjectCard>> = new Map();
-
+  private corporationsDraftDirection: 'before' | 'after' = 'before';
+  public corporationsToDraft: Array<ICorporationCard> = [];
+  
   // Milestones and awards
   public claimedMilestones: Array<ClaimedMilestone> = [];
   public milestones: Array<IMilestone> = [];
@@ -231,6 +233,7 @@ export class Game implements Logger {
     if (players.length === 1) {
       gameOptions.draftVariant = false;
       gameOptions.initialDraftVariant = false;
+      gameOptions.corporationsDraft = false;
       gameOptions.randomMA = RandomMAOptionType.NONE;
 
       players[0].setTerraformRating(14);
@@ -314,9 +317,12 @@ export class Game implements Logger {
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant ||
         gameOptions.ceoExtension) {
-        for (let i = 0; i < gameOptions.startingCorporations; i++) {
-          player.dealtCorporationCards.push(corporationDeck.draw(game));
+        if (gameOptions.corporationsDraft === false) {
+          for (let i = 0; i < gameOptions.startingCorporations; i++) {
+            player.dealtCorporationCards.push(corporationDeck.draw(game));
+          }
         }
+
         if (gameOptions.initialDraftVariant === false) {
           for (let i = 0; i < 10; i++) {
             player.dealtProjectCards.push(projectDeck.draw(game));
@@ -349,8 +355,18 @@ export class Game implements Logger {
     });
 
     game.log('Generation ${0}', (b) => b.forNewGeneration().number(game.generation));
-
-    game.gotoInitialPhase();
+    // Do we draft corporations or do we start the game?
+    if (gameOptions.corporationsDraft) {
+      game.phase = Phase.CORPORATIONDRAFTING;
+      for (let i = 0; i < gameOptions.startingCorporations * players.length; i++) {
+        game.corporationsToDraft.push(game.corporationDeck.draw(game));
+      }
+      // First player should be the last player
+      const playerStartingCorporationsDraft = game.getPlayerBefore(firstPlayer);
+      playerStartingCorporationsDraft.runDraftCorporationPhase(playerStartingCorporationsDraft.name, game.corporationsToDraft);
+    } else {
+      game.gotoInitialPhase();
+    }
 
     return game;
   }
@@ -427,6 +443,8 @@ export class Game implements Logger {
         ];
       }),
       venusScaleLevel: this.venusScaleLevel,
+      corporationsDraftDirection: this.corporationsDraftDirection,
+      corporationsToDraft: this.corporationsToDraft.map((c) => c.name),
     };
     if (this.aresData !== undefined) {
       result.aresData = this.aresData;
@@ -1659,7 +1677,10 @@ export class Game implements Logger {
     d.unDraftedCards.forEach((unDraftedCard) => {
       game.unDraftedCards.set(unDraftedCard[0], cardFinder.cardsFromJSON(unDraftedCard[1]));
     });
-
+    
+    game.corporationsToDraft = cardFinder.corporationCardsFromJSON(d.corporationsToDraft);
+    game.corporationsDraftDirection = d.corporationsDraftDirection ?? false;
+    
     game.lastSaveId = d.lastSaveId;
     game.clonedGamedId = d.clonedGamedId;
     game.gameAge = d.gameAge;
