@@ -77,8 +77,8 @@ describe('AresHandler', function() {
 
     game.addTile(player, greenerySpace, {tileType: TileType.GREENERY});
 
-    expect(player.getResourcesForTest()).deep.eq(Units.of({titanium: 1, steel: 1}));
-    expect(otherPlayer.getResourcesForTest()).deep.eq(Units.of({megacredits: 2}));
+    expect(player.purse()).deep.eq(Units.of({titanium: 1, steel: 1}));
+    expect(otherPlayer.purse()).deep.eq(Units.of({megacredits: 2}));
   });
 
   describe('setupHazards', function() {
@@ -413,7 +413,7 @@ describe('AresHandler', function() {
     expect(otherPlayer.plants).eq(0);
     expect(player.plants).eq(0);
 
-    game.addOceanTile(otherPlayer, space);
+    game.addOcean(otherPlayer, space);
     // Placing an Ocean City on top of the ocean will not grant player plants.
     game.addTile(player, space, {tileType: TileType.OCEAN_CITY});
 

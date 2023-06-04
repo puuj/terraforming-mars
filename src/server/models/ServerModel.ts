@@ -98,7 +98,6 @@ export class Server {
       undoCount: game.undoCount,
       venusScaleLevel: game.getVenusScaleLevel(),
       step: game.lastSaveId,
-      corporationsToDraft: this.getCards(game.getPlayers()[0], game.corporationsToDraft),
     };
   }
 
@@ -528,16 +527,23 @@ export class Server {
       } else if (noctisCitySpaceIds === space.id) {
         highlight = 'noctis';
       }
-      return {
+      const model: SpaceModel = {
         x: space.x,
         y: space.y,
         id: space.id,
-        bonus: space.bonus,
         spaceType: space.spaceType,
-        tileType: space.tile && space.tile.tileType,
+        bonus: space.bonus,
+        // TODO(kberg): Don't show tileType or color if they're undefined.
+        tileType: space.tile?.tileType,
         color: this.getColor(space),
-        highlight: highlight,
       };
+      if (highlight === undefined) {
+        model.highlight = highlight;
+      }
+      if (space.tile?.rotated === true) {
+        model.rotated = true;
+      }
+      return model;
     });
   }
 
@@ -552,7 +558,6 @@ export class Server {
       communityCardsOption: options.communityCardsOption,
       corporateEra: options.corporateEra,
       draftVariant: options.draftVariant,
-      corporationsDraft: options.corporationsDraft,
       escapeVelocityMode: options.escapeVelocityMode,
       escapeVelocityThreshold: options.escapeVelocityThreshold,
       escapeVelocityPeriod: options.escapeVelocityPeriod,

@@ -6,7 +6,7 @@ import {TileType} from '../../../src/common/TileType';
 import {SpaceType} from '../../../src/common/boards/SpaceType';
 import {Capital} from '../../../src/server/cards/base/Capital';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
-import {addOcean, cast, runAllActions, testGameOptions} from '../../TestingUtils';
+import {addOcean, cast, runAllActions} from '../../TestingUtils';
 import {TestPlayer} from '../../TestPlayer';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 
@@ -20,7 +20,7 @@ describe('NewVenice', function() {
     card = new NewVenice();
     player = TestPlayer.BLUE.newPlayer();
     const redPlayer = TestPlayer.RED.newPlayer();
-    game = Game.newInstance('gameid', [player, redPlayer], player, testGameOptions({pathfindersExpansion: true}));
+    game = Game.newInstance('gameid', [player, redPlayer], player, {pathfindersExpansion: true});
   });
 
   it('Can play', function() {
@@ -88,7 +88,7 @@ describe('NewVenice', function() {
     const citySpace = game.board
       .getAdjacentSpaces(oceanSpace)
       .filter((space) => space.spaceType === SpaceType.LAND)[0];
-    game.addCityTile(player, citySpace);
+    game.addCity(player, citySpace);
 
     expect(card.play(player)).is.undefined;
     runAllActions(game);
@@ -151,7 +151,7 @@ describe('NewVenice', function() {
     expect(player.getVictoryPoints().victoryPoints).to.eq(0);
 
     // And now adds the tile.
-    game.addOceanTile(player, oceanSpace);
+    game.addOcean(player, oceanSpace);
     expect(card.play(player)).is.undefined;
     runAllActions(game);
     const action = cast(player.popWaitingFor(), SelectSpace);
@@ -167,7 +167,7 @@ describe('NewVenice', function() {
     })[0];
 
     player.plants = 3;
-    game.addOceanTile(player, oceanSpace);
+    game.addOcean(player, oceanSpace);
     expect(player.plants).eq(4);
 
     expect(card.play(player)).is.undefined;

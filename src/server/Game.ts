@@ -75,6 +75,10 @@ export interface Score {
   playerScore: number;
 }
 export class Game implements Logger {
+  public readonly id: GameId;
+  public readonly gameOptions: Readonly<GameOptions>;
+  private players: Array<Player>;
+
   // Game-level data
   public lastSaveId: number = 0;
   private clonedGamedId: string | undefined;
@@ -115,9 +119,6 @@ export class Game implements Logger {
   // Used when drafting the first 10 project cards.
   private initialDraftIteration: number = 1;
   private unDraftedCards: Map<PlayerId, Array<IProjectCard>> = new Map();
-  // Used for corporation global draft: do we draft to next player or to player before
-  private corporationsDraftDirection: 'before' | 'after' = 'before';
-  public corporationsToDraft: Array<ICorporationCard> = [];
 
   // Milestones and awards
   public claimedMilestones: Array<ClaimedMilestone> = [];
@@ -141,20 +142,24 @@ export class Game implements Logger {
   // Syndicate Pirate Raids
   public syndicatePirateRaider?: PlayerId;
 
+  // The set of tags available in this game.
   public readonly tags: ReadonlyArray<Tag>;
 
   private constructor(
-    public id: GameId,
-    private players: Array<Player>,
+    id: GameId,
+    players: Array<Player>,
     first: Player,
     activePlayer: PlayerId,
-    public gameOptions: GameOptions,
+    gameOptions: GameOptions,
     rng: SeededRandom,
     board: Board,
     projectDeck: ProjectDeck,
     corporationDeck: CorporationDeck,
     preludeDeck: PreludeDeck,
     ceoDeck: CeoDeck) {
+    this.id = id;
+    this.gameOptions = {...gameOptions};
+    this.players = players;
     const playerIds = players.map((p) => p.id);
     if (playerIds.includes(first.id) === false) {
       throw new Error('Cannot find first player ' + first.id + ' in ' + playerIds);
@@ -196,9 +201,10 @@ export class Game implements Logger {
   public static newInstance(id: GameId,
     players: Array<Player>,
     firstPlayer: Player,
-    gameOptions: GameOptions = {...DEFAULT_GAME_OPTIONS},
+    options: Partial<GameOptions> = {},
     seed = 0,
     spectatorId: SpectatorId | undefined = undefined): Game {
+    const gameOptions = {...DEFAULT_GAME_OPTIONS, ...options};
     if (gameOptions.clonedGamedId !== undefined) {
       throw new Error('Cloning should not come through this execution path.');
     }
@@ -225,7 +231,6 @@ export class Game implements Logger {
     if (players.length === 1) {
       gameOptions.draftVariant = false;
       gameOptions.initialDraftVariant = false;
-      gameOptions.corporationsDraft = false;
       gameOptions.randomMA = RandomMAOptionType.NONE;
 
       players[0].setTerraformRating(14);
@@ -309,10 +314,8 @@ export class Game implements Logger {
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant ||
         gameOptions.ceoExtension) {
-        if (gameOptions.corporationsDraft === false) {
-          for (let i = 0; i < gameOptions.startingCorporations; i++) {
-            player.dealtCorporationCards.push(corporationDeck.draw(game));
-          }
+        for (let i = 0; i < gameOptions.startingCorporations; i++) {
+          player.dealtCorporationCards.push(corporationDeck.draw(game));
         }
         if (gameOptions.initialDraftVariant === false) {
           for (let i = 0; i < 10; i++) {
@@ -347,18 +350,7 @@ export class Game implements Logger {
 
     game.log('Generation ${0}', (b) => b.forNewGeneration().number(game.generation));
 
-    // Do we draft corporations or do we start the game?
-    if (gameOptions.corporationsDraft) {
-      game.phase = Phase.CORPORATIONDRAFTING;
-      for (let i = 0; i < gameOptions.startingCorporations * players.length; i++) {
-        game.corporationsToDraft.push(game.corporationDeck.draw(game));
-      }
-      // First player should be the last player
-      const playerStartingCorporationsDraft = game.getPlayerBefore(firstPlayer);
-      playerStartingCorporationsDraft.runDraftCorporationPhase(playerStartingCorporationsDraft.name, game.corporationsToDraft);
-    } else {
-      game.gotoInitialPhase();
-    }
+    game.gotoInitialPhase();
 
     return game;
   }
@@ -435,8 +427,6 @@ export class Game implements Logger {
         ];
       }),
       venusScaleLevel: this.venusScaleLevel,
-      corporationsDraftDirection: this.corporationsDraftDirection,
-      corporationsToDraft: this.corporationsToDraft.map((c) => c.name),
     };
     if (this.aresData !== undefined) {
       result.aresData = this.aresData;
@@ -879,6 +869,7 @@ export class Game implements Logger {
     }
   }
 
+
   // Function use to manage corporation draft way
   public playerIsFinishedWithDraftingCorporationPhase(player: Player, cards : Array<ICorporationCard>): void {
     const nextPlayer = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(player) : this.getPlayerBefore(player);
@@ -977,7 +968,7 @@ export class Game implements Logger {
     }
   }
 
-  private gotoEndGame(): void {
+  private async gotoEndGame(): Promise<void> {
     // Log id or cloned game id
     if (this.clonedGamedId !== undefined && this.clonedGamedId.startsWith('#')) {
       const clonedGamedId = this.clonedGamedId;
@@ -1003,14 +994,11 @@ export class Game implements Logger {
 
     this.phase = Phase.END;
 
-    Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
-
-    Database.getInstance().saveGame(this).then(() => {
-      GameLoader.getInstance().mark(this.id);
-      return Database.getInstance().cleanGame(this.id);
-    }).catch((err) => {
-      console.error(err);
-    });
+    await Database.getInstance().saveGameResults(this.id, this.players.length, this.generation, this.gameOptions, scores, this);
+    await Database.getInstance().saveGame(this);
+    GameLoader.getInstance().mark(this.id);
+    await Database.getInstance().markFinished(this.id);
+    Database.getInstance().maintenance();
   }
 
   // Part of final greenery placement.
@@ -1420,7 +1408,7 @@ export class Game implements Logger {
     return undefined;
   }
 
-  public addCityTile(
+  public addCity(
     player: Player, space: ISpace,
     cardName: CardName | undefined = undefined): void {
     this.addTile(player, space, {
@@ -1438,7 +1426,7 @@ export class Game implements Logger {
     return count > 0 && count < constants.MAX_OCEAN_TILES;
   }
 
-  public addOceanTile(player: Player, space: ISpace): void {
+  public addOcean(player: Player, space: ISpace): void {
     if (this.canAddOcean() === false) return;
 
     this.addTile(player, space, {
@@ -1671,9 +1659,6 @@ export class Game implements Logger {
     d.unDraftedCards.forEach((unDraftedCard) => {
       game.unDraftedCards.set(unDraftedCard[0], cardFinder.cardsFromJSON(unDraftedCard[1]));
     });
-
-    game.corporationsToDraft = cardFinder.corporationCardsFromJSON(d.corporationsToDraft);
-    game.corporationsDraftDirection = d.corporationsDraftDirection ?? false;
 
     game.lastSaveId = d.lastSaveId;
     game.clonedGamedId = d.clonedGamedId;

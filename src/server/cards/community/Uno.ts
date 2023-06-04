@@ -4,7 +4,7 @@ import {Player} from '../../Player';
 import {Card} from '../Card';
 import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
-import {CardRequirements} from '../CardRequirements';
+import {CardRequirements} from '../requirements/CardRequirements';
 import {max} from '../Options';
 
 export class Uno extends Card implements IProjectCard {
