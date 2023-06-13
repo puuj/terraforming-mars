@@ -41,6 +41,8 @@ export class AgricolaInc extends Card implements ICorporationCard {
     // TODO(kberg): Include  the remaining tags.
     const scorableTags : Array<Tag> = [Tag.CITY, Tag.EARTH, Tag.POWER, Tag.JOVIAN, Tag.MICROBE, Tag.PLANT, Tag.SCIENCE, Tag.SPACE, Tag.BUILDING, Tag.ANIMAL];
     if (player.game.gameOptions.venusNextExtension) scorableTags.push(Tag.VENUS);
+    if (player.game.gameOptions.moonExpansion) scorableTags.push(Tag.MOON);
+    if (player.game.gameOptions.pathfindersExpansion) scorableTags.push(Tag.MARS);
 
     const playerTags : ITagCount[] = player.tags.getAllTags();
     let points = 0;
