@@ -1,6 +1,6 @@
 import {CardName} from '../../../common/cards/CardName';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Tag} from '../../../common/cards/Tag';
 import {ICorporationCard} from '../corporation/ICorporationCard';
 import {CardRenderer} from '../render/CardRenderer';
@@ -52,17 +52,17 @@ export class LunaTradeFederation extends Card implements ICorporationCard {
     });
   }
 
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     player.canUseTitaniumAsMegacredits = true;
     return undefined;
   }
 
-  // public onTilePlaced(cardOwner: Player, _activePlayer: Player, space: ISpace) {
+  // public onTilePlaced(cardOwner: IPlayer, _activePlayer: IPlayer, , space: ISpace) {
   //   if (MoonExpansion.spaceHasType(space, TileType.MOON_MINE)) {
   //     cardOwner.production.add(Resources.TITANIUM, 1, {log: true});
   //   }
   // }
-  public onTilePlaced(cardOwner: Player, activePlayer: Player, space: ISpace) {
+  public onTilePlaced(cardOwner: IPlayer, activePlayer: IPlayer, space: ISpace) {
     if (activePlayer === cardOwner && MoonExpansion.spaceHasType(space, TileType.MOON_MINE)) {
       cardOwner.production.add(Resource.TITANIUM, 1, {log: true});
     }

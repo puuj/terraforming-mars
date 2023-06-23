@@ -1,5 +1,5 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {CardType} from '../../../common/cards/CardType';
 import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
@@ -37,14 +37,14 @@ export class RoadPiracy extends Card implements IProjectCard {
     });
   }
 
-  private generateOption(player: Player, resource: Resource, title: Message, limit: number) {
+  private generateOption(player: IPlayer, resource: Resource, title: Message, limit: number) {
     const selectAmounts: Array<SelectAmount> = [];
-    const ledger: Map<Player, number> = new Map();
+    const ledger: Map<IPlayer, number> = new Map();
     for (const opponent of player.game.getPlayers()) {
       if (opponent === player) {
         continue;
       }
-      if (opponent.getResource(resource) > 0) {
+      if (opponent.stock.get(resource) > 0) {
         const cb = (amount: number) => {
           ledger.set(opponent, amount);
           return undefined;
@@ -55,7 +55,7 @@ export class RoadPiracy extends Card implements IProjectCard {
             undefined,
             cb,
             0,
-            opponent.getResource(resource));
+            opponent.stock.get(resource));
         selectAmounts.push(selectAmount);
       }
     }
@@ -71,7 +71,7 @@ export class RoadPiracy extends Card implements IProjectCard {
         throw new Error(`You may only steal up to ${limit} ${resource} from all players`);
       }
       for (const entry of ledger) {
-        entry[0].stealResource(resource, entry[1], player);
+        entry[0].stock.steal(resource, entry[1], player);
       }
       return undefined;
     };
@@ -80,7 +80,7 @@ export class RoadPiracy extends Card implements IProjectCard {
     return option;
   }
 
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     const game = player.game;
     const stealSteel = newMessage('Steal ${0} steel', (b) => b.number(6));
     const stealTitanium = newMessage('Steal ${0} titanium', (b) => b.number(4));

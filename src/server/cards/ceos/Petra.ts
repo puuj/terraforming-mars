@@ -1,5 +1,5 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PlayerInput} from '../../PlayerInput';
 import {CardRenderer} from '../render/CardRenderer';
 import {CeoCard} from './CeoCard';
@@ -30,7 +30,7 @@ export class Petra extends CeoCard {
     });
   }
 
-  public override canAct(player: Player): boolean {
+  public override canAct(player: IPlayer): boolean {
     if (!super.canAct(player)) {
       return false;
     }
@@ -43,7 +43,7 @@ export class Petra extends CeoCard {
     return playerTotalDelegateCount >= numNeutralDelegates;
   }
 
-  public action(player: Player): PlayerInput | undefined {
+  public action(player: IPlayer): PlayerInput | undefined {
     this.isDisabled = true;
 
     const turmoil = player.game.turmoil as Turmoil;
@@ -76,7 +76,7 @@ export class Petra extends CeoCard {
     }
     // If we dont do this player will not get the bonus for POLITICAN Awards
     player.totalDelegatesPlaced += count;
-    player.addResource(Resource.MEGACREDITS, count * 3, {log: true});
+    player.stock.add(Resource.MEGACREDITS, count * 3, {log: true});
 
     // Place 3 Neutral delegates
     const availableParties = turmoil.parties.map((party) => party.name);

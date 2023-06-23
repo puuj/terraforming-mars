@@ -1,11 +1,12 @@
 import {Board} from './boards/Board';
 import {BoardName} from '../common/boards/BoardName';
 import {ElysiumBoard} from './boards/ElysiumBoard';
-import {Game} from './Game';
+import {IGame} from './IGame';
 import {GameOptions} from './GameOptions';
 import {GameId, PlayerId} from '../common/Types';
 import {HellasBoard} from './boards/HellasBoard';
 import {TharsisBoard} from './boards/TharsisBoard';
+import {IPlayer} from './IPlayer';
 import {Player} from './Player';
 import {Color} from '../common/Color';
 import {TileType} from '../common/TileType';
@@ -19,7 +20,7 @@ import {AmazonisBoard} from './boards/AmazonisBoard';
 
 type BoardFactory = {
   newInstance: (gameOptions: GameOptions, rng: Random) => Board;
-  deserialize: (board: SerializedBoard, players: Array<Player>) => Board;
+  deserialize: (board: SerializedBoard, players: Array<IPlayer>) => Board;
 }
 const boards: Map<BoardName, BoardFactory> = new Map(
   [[BoardName.THARSIS, TharsisBoard],
@@ -36,23 +37,23 @@ export class GameSetup {
     return factory.newInstance(gameOptions, rng);
   }
 
-  public static deserializeBoard(players: Array<Player>, gameOptions: GameOptions, d: SerializedGame) {
+  public static deserializeBoard(players: Array<IPlayer>, gameOptions: GameOptions, d: SerializedGame) {
     const playersForBoard = players.length !== 1 ? players : [players[0], GameSetup.neutralPlayerFor(d.id)];
-    const factory = boards.get(gameOptions.boardName) ?? TharsisBoard;
+    const factory: BoardFactory = boards.get(gameOptions.boardName) ?? TharsisBoard;
     return factory.deserialize(d.board, playersForBoard);
   }
 
-  public static neutralPlayerFor(gameId: GameId): Player {
+  public static neutralPlayerFor(gameId: GameId): IPlayer {
     const playerId = 'p-' + gameId + '-neutral' as PlayerId;
     return new Player('neutral', Color.NEUTRAL, true, 0, playerId, undefined);
   }
 
-  public static setupNeutralPlayer(game: Game) {
+  public static setupNeutralPlayer(game: IGame) {
     // Single player add neutral player
     // put 2 neutrals cities on board with adjacent forest
     const neutral = this.neutralPlayerFor(game.id);
 
-    function placeCityAndForest(game: Game, direction: -1 | 1) {
+    function placeCityAndForest(game: IGame, direction: -1 | 1) {
       const board = game.board;
       const citySpace = game.getSpaceByOffset(direction, TileType.CITY);
       game.simpleAddTile(neutral, citySpace, {tileType: TileType.CITY});

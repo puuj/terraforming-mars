@@ -3,7 +3,7 @@ import {IProjectCard} from './IProjectCard';
 import {ISpace} from '../boards/ISpace';
 import {Message} from '../../common/logs/Message';
 import {PlayerInput} from '../PlayerInput';
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {Tag} from '../../common/cards/Tag';
 import {CardResource} from '../../common/CardResource';
 import {CardName} from '../../common/cards/CardName';
@@ -33,22 +33,22 @@ export function isIHasCheckLoops(object: any): object is IHasCheckLoops {
   return object.getCheckLoops !== undefined;
 }
 
-export type DynamicTRSource = (player: Player) => TRSource;
+export type DynamicTRSource = (player: IPlayer) => TRSource;
 
 export interface ICard {
     name: CardName;
     tags: Array<Tag>;
-    play: (player: Player) => PlayerInput | undefined;
-    getCardDiscount?: (player: Player, card: IProjectCard) => number;
+    play: (player: IPlayer) => PlayerInput | undefined;
+    getCardDiscount?: (player: IPlayer, card: IProjectCard) => number;
     cardDiscount?: CardDiscount | Array<CardDiscount>;
     // parameter is a Morningstar Inc. special case.
-    getRequirementBonus?: (player: Player, parameter: GlobalParameter) => number;
+    getRequirementBonus?: (player: IPlayer, parameter: GlobalParameter) => number;
     victoryPoints?: number | 'special' | IVictoryPoints,
-    getVictoryPoints: (player: Player) => number;
-    onCardPlayed?: (player: Player, card: IProjectCard) => PlayerInput | undefined | void;
-    onStandardProject?: (player: Player, project: ICard) => void;
-    onTilePlaced?: (cardOwner: Player, activePlayer: Player, space: ISpace, boardType: BoardType) => void;
-    onDiscard?: (player: Player) => void;
+    getVictoryPoints: (player: IPlayer) => number;
+    onCardPlayed?: (player: IPlayer, card: IProjectCard) => PlayerInput | undefined | void;
+    onStandardProject?: (player: IPlayer, project: ICard) => void;
+    onTilePlaced?: (cardOwner: IPlayer, activePlayer: IPlayer, space: ISpace, boardType: BoardType) => void;
+    onDiscard?: (player: IPlayer) => void;
     /**
      * Called when anybody gains TR
      *
@@ -56,7 +56,7 @@ export interface ICard {
      * @param cardOwner the owner of this card
      * @param steps the number of steps gained
      */
-    onIncreaseTerraformRating?(player: Player, cardOwner: Player, steps: number): void;
+    onIncreaseTerraformRating?(player: IPlayer, cardOwner: IPlayer, steps: number): void;
 
     /**
      * Optional callback when a resource is added to this card.
@@ -66,7 +66,7 @@ export interface ICard {
      * for cards like Meat Industry, `playedCard` is the destination card.
      * @param count the number of resources added to `card`
      */
-    onResourceAdded?: (player: Player, playedCard: ICard, count: number) => void;
+    onResourceAdded?: (player: IPlayer, playedCard: ICard, count: number) => void;
 
     cost?: number; /** Used with IProjectCard and PreludeCard. */
     type: CardType;
@@ -74,7 +74,7 @@ export interface ICard {
     metadata: ICardMetadata;
     warning?: string | Message;
     behavior?: Behavior,
-    produce?: (player: Player) => void;
+    produce?: (player: IPlayer) => void;
     tr?: TRSource | DynamicTRSource;
     resourceCount: number;
     resourceType?: CardResource;
@@ -83,8 +83,8 @@ export interface ICard {
 }
 
 export interface IActionCard {
-  action(player: Player): PlayerInput | undefined;
-  canAct(player: Player): boolean;
+  action(player: IPlayer): PlayerInput | undefined;
+  canAct(player: IPlayer): boolean;
 }
 
 export function isIActionCard(object: any): object is IActionCard {

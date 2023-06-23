@@ -1,5 +1,5 @@
 import {CardName} from '../../../common/cards/CardName';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {PlayerInput} from '../../PlayerInput';
 import {CardRenderer} from '../render/CardRenderer';
 import {CeoCard} from './CeoCard';
@@ -36,7 +36,7 @@ export class Shara extends CeoCard {
   }
 
 
-  public action(player: Player): PlayerInput | undefined {
+  public action(player: IPlayer): PlayerInput | undefined {
     this.isDisabled = true;
     const data = player.game.pathfindersData;
     if (data === undefined) {
@@ -49,7 +49,7 @@ export class Shara extends CeoCard {
         (tag) => {
           // const value = data[tag] - player.game.generation;
           const value = data[tag];
-          player.addResource(Resource.MEGACREDITS, value, {log: true});
+          player.stock.add(Resource.MEGACREDITS, value, {log: true});
         },
       ),
     );

@@ -1,5 +1,5 @@
 import {Tag} from '../../../common/cards/Tag';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {ICorporationCard} from '../corporation/ICorporationCard';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
@@ -59,16 +59,16 @@ export class PharmacyUnion extends Card implements ICorporationCard {
     return [Tag.MICROBE, Tag.MICROBE];
   }
 
-  public onCardPlayed(player: Player, card: IProjectCard): void {
+  public onCardPlayed(player: IPlayer, card: IProjectCard): void {
     this._onCardPlayed(player, card);
   }
 
-  public onCorpCardPlayed(player: Player, card: ICorporationCard) {
+  public onCorpCardPlayed(player: IPlayer, card: ICorporationCard) {
     this._onCardPlayed(player, card);
     return undefined;
   }
 
-  private _onCardPlayed(player: Player, card: IProjectCard | ICorporationCard): void {
+  private _onCardPlayed(player: IPlayer, card: IProjectCard | ICorporationCard): void {
     if (this.isDisabled) return undefined;
 
     const game = player.game;
@@ -88,8 +88,8 @@ export class PharmacyUnion extends Card implements ICorporationCard {
               new SelectOption('Turn it face down to gain 3 TR and lose up to 4 M€', 'Confirm', () => {
                 const megaCreditsLost = Math.min(player.megaCredits, 4);
                 this.isDisabled = true;
-                player.increaseTerraformRatingSteps(3);
-                player.deductResource(Resource.MEGACREDITS, megaCreditsLost);
+                player.increaseTerraformRating(3);
+                player.stock.deduct(Resource.MEGACREDITS, megaCreditsLost);
                 game.log('${0} turned ${1} face down to gain 3 TR and lost ${2} M€', (b) => b.player(player).card(this).number(megaCreditsLost));
                 return undefined;
               }),
@@ -139,7 +139,7 @@ export class PharmacyUnion extends Card implements ICorporationCard {
             return new OrOptions(
               new SelectOption('Turn this card face down and gain 3 TR', 'Gain TR', () => {
                 this.isDisabled = true;
-                player.increaseTerraformRatingSteps(3);
+                player.increaseTerraformRating(3);
                 game.log('${0} turned ${1} face down to gain 3 TR', (b) => b.player(player).card(this));
                 return undefined;
               }),

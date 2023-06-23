@@ -1,5 +1,5 @@
 import {GameIdLedger, IDatabase} from './IDatabase';
-import {Game, Score} from '../Game';
+import {IGame, Score} from '../IGame';
 import {GameOptions} from '../GameOptions';
 import {GameId, isGameId, ParticipantId} from '../../common/Types';
 import {SerializedGame} from '../SerializedGame';
@@ -46,7 +46,7 @@ export class LocalFilesystem implements IDatabase {
     return path.resolve(this.completedFolder, `${gameId}.json`);
   }
 
-  saveGame(game: Game): Promise<void> {
+  saveGame(game: IGame): Promise<void> {
     console.log(`saving ${game.id} at position ${game.lastSaveId}`);
     this.saveSerializedGame(game.serialize());
     game.lastSaveId++;
@@ -134,6 +134,7 @@ export class LocalFilesystem implements IDatabase {
     });
     return Promise.resolve(gameIds);
   }
+
 
   restoreReferenceGame(_gameId: GameId): Promise<Game> {
     throw new Error('Does not work');

@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {PartyName} from '../../src/common/turmoil/PartyName';
 import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {MarsFirst} from '../../src/server/turmoil/parties/MarsFirst';
 import {Phase} from '../../src/common/Phase';
 import {OrOptions} from '../../src/server/inputs/OrOptions';
@@ -623,21 +624,21 @@ describe('Turmoil', function() {
     expect(player.getTerraformRating()).eq(15);
 
     player.megaCredits = 3;
-    player.increaseTerraformRatingSteps(2);
+    player.increaseTerraformRating(2);
     runAllActions(game);
 
     expect(player.megaCredits).eq(3); // No change
     expect(player.getTerraformRating()).eq(15);
 
     player.megaCredits = 5;
-    player.increaseTerraformRatingSteps(2);
+    player.increaseTerraformRating(2);
     runAllActions(game);
 
     expect(player.megaCredits).eq(5); // No change
     expect(player.getTerraformRating()).eq(15);
 
     player.megaCredits = 6;
-    player.increaseTerraformRatingSteps(2);
+    player.increaseTerraformRating(2);
     runAllActions(game);
 
     expect(player.megaCredits).eq(0);
@@ -647,7 +648,7 @@ describe('Turmoil', function() {
     game.phase = Phase.SOLAR;
 
     player.megaCredits = 6;
-    player.increaseTerraformRatingSteps(2);
+    player.increaseTerraformRating(2);
     runAllActions(game);
 
     expect(player.megaCredits).eq(6);
@@ -777,7 +778,7 @@ describe('Turmoil', function() {
     expect(Array.from(t.usedFreeDelegateAction.values())).has.members(['p-blue-id']);
   });
 
-  function setRulingParty(turmoil: Turmoil, game: Game, party: IParty) {
+  function setRulingParty(turmoil: Turmoil, game: IGame, party: IParty) {
     turmoil.rulingParty = party;
     PoliticalAgendas.setNextAgenda(turmoil, game);
   }

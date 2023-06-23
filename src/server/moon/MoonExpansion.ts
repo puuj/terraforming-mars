@@ -1,7 +1,7 @@
-import {Game} from '../Game';
+import {IGame} from '../IGame';
 import {Tile} from '../Tile';
 import {MoonBoard} from './MoonBoard';
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {TileType} from '../../common/TileType';
 import {SpaceType} from '../../common/boards/SpaceType';
 import {IMoonData} from './IMoonData';
@@ -15,6 +15,7 @@ import {Resource} from '../../common/Resource';
 import {Phase} from '../../common/Phase';
 import {BoardType} from '../boards/BoardType';
 import {VictoryPointsBreakdown} from '../game/VictoryPointsBreakdown';
+import {SpaceId} from '../../common/Types';
 
 export class MoonExpansion {
   public static readonly MOON_TILES: Set<TileType> = new Set([
@@ -31,7 +32,7 @@ export class MoonExpansion {
   }
 
   // If the moon expansion is enabled, execute this callback, otherwise do nothing.
-  public static ifMoon<T>(game: Game, cb: (moonData: IMoonData) => T): T | undefined {
+  public static ifMoon<T>(game: IGame, cb: (moonData: IMoonData) => T): T | undefined {
     if (game.gameOptions.moonExpansion) {
       if (game.moonData === undefined) {
         console.log(`Assertion failure: game.moonData is undefined for ${game.id}`);
@@ -43,7 +44,7 @@ export class MoonExpansion {
   }
 
   // If the moon expansion is enabled, execute this callback, otherwise execute the else callback.
-  public static ifElseMoon<T>(game: Game, cb: (moonData: IMoonData) => T, elseCb: () => T): T {
+  public static ifElseMoon<T>(game: IGame, cb: (moonData: IMoonData) => T, elseCb: () => T): T {
     if (game.gameOptions.moonExpansion) {
       if (game.moonData === undefined) {
         console.log(`Assertion failure: game.moonData is undefined for ${game.id}`);
@@ -55,7 +56,7 @@ export class MoonExpansion {
   }
 
   // If the moon expansion is enabled, return with the game's MoonData instance, otherwise throw an error.
-  public static moonData(game: Game): IMoonData {
+  public static moonData(game: IGame): IMoonData {
     if (game.gameOptions.moonExpansion === true && game.moonData !== undefined) {
       return game.moonData;
     }
@@ -74,17 +75,17 @@ export class MoonExpansion {
   }
 
   public static addMineTile(
-    player: Player, spaceId: string, cardName: CardName | undefined = undefined): void {
+    player: IPlayer, spaceId: SpaceId, cardName: CardName | undefined = undefined): void {
     MoonExpansion.addTile(player, spaceId, {tileType: TileType.MOON_MINE, card: cardName});
   }
 
   public static addHabitatTile(
-    player: Player, spaceId: string, cardName: CardName | undefined = undefined): void {
+    player: IPlayer, spaceId: SpaceId, cardName: CardName | undefined = undefined): void {
     MoonExpansion.addTile(player, spaceId, {tileType: TileType.MOON_HABITAT, card: cardName});
   }
 
   public static addRoadTile(
-    player: Player, spaceId: string, cardName: CardName | undefined = undefined): void {
+    player: IPlayer, spaceId: SpaceId, cardName: CardName | undefined = undefined): void {
     MoonExpansion.addTile(player, spaceId, {tileType: TileType.MOON_ROAD, card: cardName});
   }
 
@@ -92,7 +93,7 @@ export class MoonExpansion {
   // isn't.
 
   // Update: I think this is going to have to merge with addTile. It won't be bad.
-  public static addTile(player: Player, spaceId: string, tile: Tile): void {
+  public static addTile(player: IPlayer, spaceId: SpaceId, tile: Tile): void {
     const game = player.game;
     MoonExpansion.ifMoon(game, (moonData) => {
       const space = moonData.moon.getSpace(spaceId);
@@ -133,7 +134,7 @@ export class MoonExpansion {
     });
   }
 
-  private static logTilePlacement(player: Player, space: ISpace, tileType: TileType) {
+  private static logTilePlacement(player: IPlayer, space: ISpace, tileType: TileType) {
     // Skip off-grid tiles
     if (space.x !== -1 && space.y !== -1) {
       const offsets = [-1, 0, 1, 1, 1, 0, -1];
@@ -151,7 +152,7 @@ export class MoonExpansion {
     }
   }
 
-  public static raiseMiningRate(player: Player, count: number = 1) {
+  public static raiseMiningRate(player: IPlayer, count: number = 1) {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       const available = MAXIMUM_MINING_RATE - moonData.miningRate;
       const increment = Math.min(count, available);
@@ -161,7 +162,7 @@ export class MoonExpansion {
           this.activateLunaFirst(undefined, player.game, increment);
         } else {
           player.game.log('${0} raised the mining rate ${1} step(s)', (b) => b.player(player).number(increment));
-          player.increaseTerraformRatingSteps(increment);
+          player.increaseTerraformRating(increment);
           this.bonus(moonData.miningRate, increment, 3, () => {
             player.drawCard();
           });
@@ -178,7 +179,7 @@ export class MoonExpansion {
     });
   }
 
-  public static raiseHabitatRate(player: Player, count: number = 1) {
+  public static raiseHabitatRate(player: IPlayer, count: number = 1) {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       const available = MAXIMUM_HABITAT_RATE - moonData.colonyRate;
       const increment = Math.min(count, available);
@@ -188,7 +189,7 @@ export class MoonExpansion {
           this.activateLunaFirst(undefined, player.game, count);
         } else {
           player.game.log('${0} raised the habitat rate ${1} step(s)', (b) => b.player(player).number(increment));
-          player.increaseTerraformRatingSteps(count);
+          player.increaseTerraformRating(increment);
           this.bonus(moonData.colonyRate, increment, 3, () => {
             player.drawCard();
           });
@@ -205,7 +206,7 @@ export class MoonExpansion {
     });
   }
 
-  public static raiseLogisticRate(player: Player, count: number = 1) {
+  public static raiseLogisticRate(player: IPlayer, count: number = 1) {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       const available = MAXIMUM_LOGISTICS_RATE - moonData.logisticRate;
       const increment = Math.min(count, available);
@@ -215,7 +216,7 @@ export class MoonExpansion {
           this.activateLunaFirst(undefined, player.game, increment);
         } else {
           player.game.log('${0} raised the logistic rate ${1} step(s)', (b) => b.player(player).number(increment));
-          player.increaseTerraformRatingSteps(count);
+          player.increaseTerraformRating(increment);
           this.bonus(moonData.logisticRate, increment, 3, () => {
             player.drawCard();
           });
@@ -232,17 +233,17 @@ export class MoonExpansion {
     });
   }
 
-  private static activateLunaFirst(sourcePlayer: Player | undefined, game: Game, count: number) {
+  private static activateLunaFirst(sourcePlayer: IPlayer | undefined, game: IGame, count: number) {
     const lunaFirstPlayer = MoonExpansion.moonData(game).lunaFirstPlayer;
     if (lunaFirstPlayer !== undefined) {
-      lunaFirstPlayer.addResource(Resource.MEGACREDITS, count, {log: true});
+      lunaFirstPlayer.stock.add(Resource.MEGACREDITS, count, {log: true});
       if (lunaFirstPlayer.id === sourcePlayer?.id) {
         lunaFirstPlayer.production.add(Resource.MEGACREDITS, count, {log: true});
       }
     }
   }
 
-  public static lowerMiningRate(player: Player, count: number) {
+  public static lowerMiningRate(player: IPlayer, count: number) {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       const increment = Math.min(moonData.miningRate, count);
       moonData.miningRate -= increment;
@@ -250,7 +251,7 @@ export class MoonExpansion {
     });
   }
 
-  public static lowerHabitatRate(player: Player, count: number) {
+  public static lowerHabitatRate(player: IPlayer, count: number) {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       const increment = Math.min(moonData.colonyRate, count);
       moonData.colonyRate -= increment;
@@ -258,7 +259,7 @@ export class MoonExpansion {
     });
   }
 
-  public static lowerLogisticRate(player: Player, count: number) {
+  public static lowerLogisticRate(player: IPlayer, count: number) {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       const increment = Math.min(moonData.logisticRate, count);
       moonData.logisticRate -= increment;
@@ -288,11 +289,11 @@ export class MoonExpansion {
    * Special tiles such as Lunar Mine Urbanization, are especially included.
    */
   public static spaces(
-    game: Game,
+    game: IGame,
     tileType?: TileType,
     options?: {
       surfaceOnly?: boolean,
-      ownedBy? : Player,
+      ownedBy? : IPlayer,
       upgradedTiles?: boolean,
     }): Array<ISpace> {
     return MoonExpansion.ifElseMoon(game, (moonData) => {
@@ -321,7 +322,7 @@ export class MoonExpansion {
   /*
    * Reservation units adjusted for cards in a player's hand that might reduce or eliminate these costs.
    */
-  public static adjustedReserveCosts(player: Player, card: IProjectCard) : Units {
+  public static adjustedReserveCosts(player: IPlayer, card: IProjectCard) : Units {
     // This is a bit hacky and uncoordinated only because this returns early when there's a moon card with LTF Privileges
     // even though the heat component below could be considered (and is, for LocalHeatTrapping.)
 
@@ -354,7 +355,7 @@ export class MoonExpansion {
     return Units.of({steel, titanium, heat});
   }
 
-  public static calculateVictoryPoints(player: Player, vpb: VictoryPointsBreakdown): void {
+  public static calculateVictoryPoints(player: IPlayer, vpb: VictoryPointsBreakdown): void {
     MoonExpansion.ifMoon(player.game, (moonData) => {
       // Each road tile on the map awards 1VP to the player owning it.
       // Each mine and colony (habitat) tile on the map awards 1VP per road tile touching them.

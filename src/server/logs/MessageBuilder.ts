@@ -1,5 +1,5 @@
 import {LogMessageDataType} from '../../common/logs/LogMessageDataType';
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {CardName} from '../../common/cards/CardName';
 import {ICard} from '../cards/ICard';
 import {IAward} from '../awards/IAward';
@@ -12,6 +12,7 @@ import {GlobalEventName} from '../../common/turmoil/globalEvents/GlobalEventName
 import {PartyName} from '../../common/turmoil/PartyName';
 import {IColony} from '../colonies/IColony';
 import {Message} from '../../common/logs/Message';
+import {Color} from '../../common/Color';
 
 export class MessageBuilder {
   protected message: Message;
@@ -38,11 +39,11 @@ export class MessageBuilder {
     return this;
   }
 
-  public player(value: Player): MessageBuilder {
-    return this.playerId(value.color);
+  public player(value: IPlayer): MessageBuilder {
+    return this.playerColor(value.color);
   }
 
-  public playerId(value: string): MessageBuilder {
+  public playerColor(value: Color): MessageBuilder {
     this.message.data.push({type: LogMessageDataType.PLAYER, value});
     return this;
   }

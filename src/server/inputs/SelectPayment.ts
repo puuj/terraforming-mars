@@ -1,9 +1,8 @@
 import {Message} from '../../common/logs/Message';
 import {BasePlayerInput, PlayerInput} from '../PlayerInput';
-import {PlayerInputType} from '../../common/input/PlayerInputType';
 import {isPayment, Payment} from '../../common/inputs/Payment';
 import {InputResponse, isSelectPaymentResponse} from '../../common/inputs/InputResponse';
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 
 export class SelectPayment extends BasePlayerInput {
   constructor(
@@ -17,11 +16,11 @@ export class SelectPayment extends BasePlayerInput {
     public amount: number,
     public cb: (payment: Payment) => PlayerInput | undefined,
   ) {
-    super(PlayerInputType.SELECT_PAYMENT, title);
+    super('payment', title);
     this.buttonLabel = 'Pay'; // no input button
   }
 
-  public process(input: InputResponse, player: Player) {
+  public process(input: InputResponse, player: IPlayer) {
     if (!isSelectPaymentResponse(input)) {
       throw new Error('Not a valid SelectPaymentResponse');
     }

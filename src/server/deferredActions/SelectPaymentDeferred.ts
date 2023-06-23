@@ -1,8 +1,7 @@
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {SelectPayment} from '../inputs/SelectPayment';
 import {Payment} from '../../common/inputs/Payment';
 import {DeferredAction, Priority} from './DeferredAction';
-import {Resource} from '../../common/Resource';
 import {CardName} from '../../common/cards/CardName';
 import {Message} from '../../common/logs/Message';
 
@@ -17,7 +16,7 @@ export type Options = {
 
 export class SelectPaymentDeferred extends DeferredAction {
   constructor(
-    player: Player,
+    player: IPlayer,
     public amount: number,
     public options: Options = {},
   ) {
@@ -53,7 +52,7 @@ export class SelectPaymentDeferred extends DeferredAction {
       if (this.player.megaCredits < this.amount) {
         throw new Error(`Player does not have ${this.amount} M€`);
       }
-      this.player.deductResource(Resource.MEGACREDITS, this.amount);
+      this.player.pay(Payment.of({megaCredits: this.amount}));
       this.options.afterPay?.();
       return undefined;
     }

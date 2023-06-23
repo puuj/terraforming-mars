@@ -5,7 +5,6 @@ import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
 
 interface DeprecatedFields {
-    tradesThisTurn?: number; // TODO(kberg): Remove tradesThisTurn after 2023-06-01
 }
 
 export interface SerializedPlayer extends DeprecatedFields{
@@ -67,8 +66,7 @@ export interface SerializedPlayer extends DeprecatedFields{
     titaniumProduction: number;
     titaniumValue: number;
     totalDelegatesPlaced: number;
-    // TODO(kberg): Remove ? by 2023-06-01
-    tradesThisGeneration?: number;
+    tradesThisGeneration: number;
     turmoilPolicyActionUsed: boolean;
     victoryPointsByGeneration: Array<number>;
 }

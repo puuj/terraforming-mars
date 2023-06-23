@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {SpaceBonus} from '../../src/common/boards/SpaceBonus';
 import {Game} from '../../src/server/Game';
+import {IGame} from '../../src/server/IGame';
 import {DEFAULT_GAME_OPTIONS} from '../../src/server/GameOptions';
 import {AresTestHelper} from './AresTestHelper';
 import {EmptyBoard} from './EmptyBoard';
@@ -72,13 +73,13 @@ describe('AresHandler', function() {
     secondSpace.adjacency = {bonus: [SpaceBonus.TITANIUM]};
     game.addTile(otherPlayer, secondSpace, {tileType: TileType.MINING_AREA});
 
-    player.setResourcesForTest(Units.EMPTY);
-    otherPlayer.setResourcesForTest(Units.EMPTY);
+    player.stock.override(Units.EMPTY);
+    otherPlayer.stock.override(Units.EMPTY);
 
     game.addTile(player, greenerySpace, {tileType: TileType.GREENERY});
 
-    expect(player.purse()).deep.eq(Units.of({titanium: 1, steel: 1}));
-    expect(otherPlayer.purse()).deep.eq(Units.of({megacredits: 2}));
+    expect(player.stock.asUnits()).deep.eq(Units.of({titanium: 1, steel: 1}));
+    expect(otherPlayer.stock.asUnits()).deep.eq(Units.of({megacredits: 2}));
   });
 
   describe('setupHazards', function() {
@@ -88,7 +89,7 @@ describe('AresHandler', function() {
       y: number;
     }
 
-    function spacesWithTiles(game: Game): Array<SpaceToTest> {
+    function spacesWithTiles(game: IGame): Array<SpaceToTest> {
       return game.board.spaces
         .filter((space) => space.tile !== undefined)
         .map((space) => {

@@ -1,5 +1,5 @@
 import {IProjectCard} from '../IProjectCard';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
 import {CardName} from '../../../common/cards/CardName';
@@ -39,15 +39,15 @@ export class SecretLabs extends Card implements IProjectCard {
     });
   }
 
-  private canAfford(player: Player, tr: TRSource, megacrdits: number = this.cost): boolean {
+  private canAfford(player: IPlayer, tr: TRSource, megacrdits: number = this.cost): boolean {
     return player.canAfford(megacrdits, {steel: true, titanium: true, tr});
   }
 
-  public override bespokeCanPlay(player: Player) {
+  public override bespokeCanPlay(player: IPlayer) {
     return this.canAfford(player, {oceans: 1}) || this.canAfford(player, {temperature: 1}) || this.canAfford(player, {oxygen: 1});
   }
 
-  public override bespokePlay(player: Player) {
+  public override bespokePlay(player: IPlayer) {
     const options = new OrOptions();
 
     if (this.canAfford(player, {oceans: 1}, 0)) {
@@ -60,7 +60,7 @@ export class SecretLabs extends Card implements IProjectCard {
     if (this.canAfford(player, {temperature: 1}, 0)) {
       options.options.push(new SelectOption('Raise temperature 1 step. Gain 3 plants.', 'select', () => {
         player.game.increaseTemperature(player, 1);
-        player.addResource(Resource.PLANTS, 3, {log: true});
+        player.stock.add(Resource.PLANTS, 3, {log: true});
         return undefined;
       }));
     }

@@ -5,7 +5,7 @@ import {CardRenderer} from '../render/CardRenderer';
 import {Card} from '../Card';
 import {IProjectCard} from '../IProjectCard';
 import {IActionCard} from '../ICard';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {IColonyTrader} from '../../colonies/IColonyTrader';
 import {IColony} from '../../colonies/IColony';
 import {ColoniesHandler} from '../../colonies/ColoniesHandler';
@@ -36,11 +36,11 @@ export class DarksideSmugglersUnion extends Card implements IProjectCard, IActio
     });
   }
 
-  public canAct(player: Player): boolean {
+  public canAct(player: IPlayer): boolean {
     return player.colonies.canTrade() && ColoniesHandler.tradeableColonies(player.game).length > 0;
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     const tradeableColonies = ColoniesHandler.tradeableColonies(player.game);
     return new SelectColony('Select colony tile to trade with for free', 'Select', tradeableColonies, (colony: IColony) => {
       colony.trade(player);
@@ -50,7 +50,7 @@ export class DarksideSmugglersUnion extends Card implements IProjectCard, IActio
 }
 
 export class TradeWithDarksideSmugglersUnion implements IColonyTrader {
-  constructor(private player: Player) {}
+  constructor(private player: IPlayer) {}
 
   public canUse() {
     return this.player.playedCards.find((card) => card.name === CardName.DARKSIDE_SMUGGLERS_UNION) !== undefined &&

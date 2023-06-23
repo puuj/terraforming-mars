@@ -1,5 +1,5 @@
 import {CardType} from '../../common/cards/CardType';
-import {Player} from '../Player';
+import {IPlayer} from '../IPlayer';
 import {IActionCard, ICard} from './ICard';
 import {TRSource} from '../../common/cards/TRSource';
 import {PlayerInput} from '../PlayerInput';
@@ -30,19 +30,19 @@ export abstract class StandardProjectCard extends Card implements IActionCard, I
     return CardType.STANDARD_PROJECT;
   }
 
-  protected discount(_player: Player) {
+  protected discount(_player: IPlayer) {
     return 0;
   }
 
-  protected abstract actionEssence(player: Player): void
+  protected abstract actionEssence(player: IPlayer): void
 
-  public onStandardProject(player: Player): void {
+  public onStandardProject(player: IPlayer): void {
     for (const playedCard of player.tableau) {
       playedCard.onStandardProject?.(player, this);
     }
   }
 
-  public canAct(player: Player): boolean {
+  public canAct(player: IPlayer): boolean {
     const canPayWith = this.canPayWith(player);
     return player.canAfford(
       this.cost - this.discount(player), {
@@ -53,11 +53,11 @@ export abstract class StandardProjectCard extends Card implements IActionCard, I
       });
   }
 
-  public canPayWith(_player: Player): {steel?: boolean, titanium?: boolean, seeds?: boolean, tr?: TRSource} {
+  public canPayWith(_player: IPlayer): {steel?: boolean, titanium?: boolean, seeds?: boolean, tr?: TRSource} {
     return {};
   }
 
-  protected projectPlayed(player: Player) {
+  protected projectPlayed(player: IPlayer) {
     player.game.log('${0} used ${1} standard project', (b) => b.player(player).card(this));
     this.onStandardProject(player);
   }
@@ -66,7 +66,7 @@ export abstract class StandardProjectCard extends Card implements IActionCard, I
     return cardName.split(':')[0];
   }
 
-  public action(player: Player): PlayerInput | undefined {
+  public action(player: IPlayer): PlayerInput | undefined {
     const canPayWith = this.canPayWith(player);
     player.game.defer(new SelectPaymentDeferred(
       player,
