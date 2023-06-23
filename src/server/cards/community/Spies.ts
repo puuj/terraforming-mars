@@ -1,7 +1,7 @@
 import {IProjectCard} from '../IProjectCard';
 import {Card} from '../Card';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {OrOptions} from '../../inputs/OrOptions';
 import {Resource} from '../../../common/Resource';
 import {Tag} from '../../../common/cards/Tag';
@@ -34,84 +34,84 @@ export class Spies extends Card implements IProjectCard {
     return undefined;
   }
 
-  public canAct(player: Player): boolean {
-    return player.megaCredits > 0;
+  public canAct(player: IPlayer): boolean {
+    return player.stock.megacredits > 0;
   }
 
-  public action(player: Player) {
+  public action(player: IPlayer) {
     if (player.game.isSoloMode()) return undefined;
     const availablePlayerTargets = player.game.getPlayersInGenerationOrder().filter((p) => p.id !== player.id);
     const availableActions = new OrOptions();
 
     availablePlayerTargets.forEach((target) => {
-      if (target.megaCredits > 0) {
-        const amountStolen = Math.min(1, target.megaCredits);
+      if (target.stock.megacredits > 0) {
+        const amountStolen = Math.min(1, target.stock.megacredits);
         const optionTitle = 'Steal ' + amountStolen + ' MC from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.megaCredits--;
-          player.megaCredits+=amountStolen;
-          target.addResource(Resource.MEGACREDITS, -1, {log: true, from: player});
+          player.stock.deduct(Resource.MEGACREDITS, 1);
+          player.stock.add(Resource.MEGACREDITS, amountStolen);
+          target.stock.deduct(Resource.MEGACREDITS, amountStolen, {log: true, from: player, stealing: true});
           return undefined;
         }));
       }
 
       if (target.steel > 0 && !target.alloysAreProtected()) {
-        const amountStolen = Math.min(1, target.steel);
+        const amountStolen = Math.min(1, target.stock.steel);
         const optionTitle = 'Steal ' + amountStolen + ' steel from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.megaCredits--;
-          player.steel+=amountStolen;
-          target.addResource(Resource.STEEL, -1, {log: true, from: player});
+          player.stock.deduct(Resource.MEGACREDITS, 1);
+          player.stock.add(Resource.STEEL, amountStolen);
+          target.stock.deduct(Resource.STEEL, amountStolen, {log: true, from: player, stealing: true});
           return undefined;
         }));
       }
 
       if (target.titanium > 0 && !target.alloysAreProtected()) {
-        const amountStolen = Math.min(1, target.titanium);
+        const amountStolen = Math.min(1, target.stock.titanium);
         const optionTitle = 'Steal ' + amountStolen + ' titanium from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.megaCredits--;
-          player.titanium+=amountStolen;
-          target.addResource(Resource.TITANIUM, -1, {log: true, from: player});
+          player.stock.deduct(Resource.MEGACREDITS,1);
+          player.stock.add(Resource.TITANIUM, amountStolen);
+          target.stock.deduct(Resource.TITANIUM, amountStolen, {log: true, from: player, stealing: true});
           return undefined;
         }));
       }
 
       if (target.plants > 0 && !target.plantsAreProtected()) {
-        const amountStolen = Math.min(1, target.plants);
+        const amountStolen = Math.min(1, target.stock.plants);
         const optionTitle = 'Steal ' + amountStolen + ' plants from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.megaCredits--;
-          player.plants+=amountStolen;
-          target.addResource(Resource.PLANTS, -1, {log: true, from: player});
+          player.stock.deduct(Resource.MEGACREDITS, 1);
+          player.stock.add(Resource.PLANTS, amountStolen);
+          target.stock.deduct(Resource.PLANTS, amountStolen, {log: true, from: player, stealing: true});
           return undefined;
         }));
       }
 
       if (target.energy > 0) {
-        const amountStolen = Math.min(1, target.energy);
+        const amountStolen = Math.min(1, target.stock.energy);
         const optionTitle = 'Steal ' + amountStolen + ' energy from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.megaCredits--;
-          player.energy+=amountStolen;
-          target.addResource(Resource.ENERGY, -1, {log: true, from: player});
+          player.stock.deduct(Resource.MEGACREDITS, 1);
+          player.stock.add(Resource.ENERGY, amountStolen);
+          target.stock.deduct(Resource.ENERGY, amountStolen, {log: true, from: player, stealing: true});
           return undefined;
         }));
       }
 
       if (target.heat > 0) {
-        const amountStolen = Math.min(1, target.heat);
+        const amountStolen = Math.min(1, target.stock.heat);
         const optionTitle = 'Steal ' + amountStolen + ' heat from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.megaCredits--;
-          player.heat+=amountStolen;
-          target.addResource(Resource.HEAT, -1, {log: true, from: player});
+          player.stock.deduct(Resource.MEGACREDITS, 1);
+          player.stock.add(Resource.HEAT, amountStolen);
+          target.stock.deduct(Resource.HEAT, amountStolen, {log: true, from: player, stealing: true});
           return undefined;
         }));
       }

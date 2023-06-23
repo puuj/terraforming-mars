@@ -53,7 +53,8 @@ export interface IPlayer {
   color: Color;
   beginner: boolean;
   handicap: number;
-
+  email: string | undefined;
+  
   game: IGame;
   tags: Tags;
   colonies: Colonies;
@@ -101,7 +102,8 @@ export interface IPlayer {
   draftedCorporations: Array<ICorporationCard>;
   cardCost: number;
   needsToDraft?: boolean;
-
+  passingTo: string;
+  
   timer: Timer;
 
   // Turmoil
@@ -202,6 +204,7 @@ export interface IPlayer {
   worldGovernmentTerraforming(): void;
   dealForDraft(quantity: number, cards: Array<IProjectCard>): void;
   askPlayerToDraft(initialDraft: boolean, playerName: string, passedCards?: Array<IProjectCard>): void;
+  runDraftCorporationPhase(playerName: string, passedCards: Array<ICorporationCard>): void;
   runResearchPhase(draftVariant: boolean): void;
   getCardCost(card: IProjectCard): number;
 

@@ -80,6 +80,5 @@ module.exports = {
   plugins,
   output: {
     path: __dirname + '/build',
-    hashFunction: 'xxhash64',
   },
 };

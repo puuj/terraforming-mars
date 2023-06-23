@@ -84,7 +84,7 @@ export interface IDatabase {
      * @param gameOptions the options used for this game.
      * @param scores an array of scores correlated to the player's corporation.
      */
-    saveGameResults(gameId: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: Game): void;
+    saveGameResults(gameId: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: IGame): void;
 
     /**
      * Load a game at save point 0, and provide it in the callback.

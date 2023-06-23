@@ -1,6 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRequirements} from '../requirements/CardRequirements';
@@ -21,7 +21,7 @@ export class IceAge extends Card implements IProjectCard {
     });
   }
 
-  public override play(player: Player) {
+  public override play(player: IPlayer) {
     player.game.increaseTemperature(player, -2);
     return undefined;
   }

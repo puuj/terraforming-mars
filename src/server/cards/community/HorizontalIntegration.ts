@@ -1,6 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {Tag} from '../../../common/cards/Tag';
 import {Resource} from '../../../common/Resource';
@@ -28,7 +28,7 @@ export class HorizontalIntegration extends Card implements IProjectCard {
     });
   }
 
-  public override canPlay(player: Player): boolean {
+  public override canPlay(player: IPlayer): boolean {
     if (player.megaCredits > 0 && player.steel > 0 && player.titanium > 0 &&
       player.plants > 0 && player.energy > 0 && player.heat > 0) {
       return true;
@@ -36,7 +36,7 @@ export class HorizontalIntegration extends Card implements IProjectCard {
     return false;
   }
 
-  public override play(player: Player) {
+  public override play(player: IPlayer) {
     player.megaCredits--;
     player.steel--;
     player.titanium--;

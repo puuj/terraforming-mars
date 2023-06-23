@@ -7,6 +7,7 @@ import {Color} from '../common/Color';
 import {FundedAward} from './awards/FundedAward';
 import {IAward} from './awards/IAward';
 import {IMilestone} from './milestones/IMilestone';
+import {ICorporationCard} from './cards/corporation/ICorporationCard';
 import {IProjectCard} from './cards/IProjectCard';
 import {ISpace} from './boards/ISpace';
 import {LogBuilder} from './logs/LogBuilder';
@@ -56,6 +57,7 @@ export interface IGame extends Logger {
   preludeDeck: PreludeDeck;
   ceoDeck: CeoDeck;
   corporationDeck: CorporationDeck;
+  corporationsToDraft: Array<ICorporationCard>;
   board: Board;
   activePlayer: PlayerId;
   claimedMilestones: Array<ClaimedMilestone>;
@@ -112,6 +114,7 @@ export interface IGame extends Logger {
   hasResearched(player: IPlayer): boolean;
   playerIsFinishedWithResearchPhase(player: IPlayer): void;
   playerIsFinishedWithDraftingPhase(initialDraft: boolean, player: IPlayer, cards : Array<IProjectCard>): void;
+  playerIsFinishedWithDraftingCorporationPhase(player: IPlayer, cards : Array<ICorporationCard>): void;
   playerIsFinishedTakingActions(): void;
   // Part of final greenery placement.
   canPlaceGreenery(player: IPlayer): boolean;
@@ -169,6 +172,7 @@ export interface IGame extends Logger {
   getSpaceByOffset(direction: -1 | 1, toPlace: TileType, cardCount?: 1 | 2): ISpace;
   expectedPurgeTimeMs(): number;
   logIllegalState(description: string, metadata: {}): void;
+  makeTurnNotification(player: IPlayer) : NodeJS.Timeout;
 }
 
 export function isIGame(object: any): object is IGame {

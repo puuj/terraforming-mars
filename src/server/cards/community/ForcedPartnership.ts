@@ -1,6 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {Resource} from '../../../common/Resource';
 import {Tag} from '../../../common/cards/Tag';
@@ -28,14 +28,14 @@ export class ForcedPartnership extends Card implements IProjectCard {
     });
   }
 
-  public override play(player: Player) {
-    player.increaseTerraformRatingSteps(2);
+  public override play(player: IPlayer) {
+    player.increaseTerraformRating(2);
 
     const availablePlayerTargets = player.game.getPlayersInGenerationOrder().filter((p) => p.id !== player.id);
     availablePlayerTargets.forEach((target) => {
       if (target.megaCredits >= 10) {
-        target.addResource(Resource.MEGACREDITS, -10, {log: true, from: player});
-        target.increaseTerraformRatingSteps(1);
+        target.stock.deduct(Resource.MEGACREDITS, -10, {log: true, from: player});
+        target.increaseTerraformRating(1);
       }
     });
     return undefined;

@@ -136,11 +136,11 @@ export class LocalFilesystem implements IDatabase {
   }
 
 
-  restoreReferenceGame(_gameId: GameId): Promise<Game> {
+  restoreReferenceGame(_gameId: GameId): Promise<IGame> {
     throw new Error('Does not work');
   }
 
-  saveGameResults(gameId: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: Game): void {
+  saveGameResults(gameId: GameId, players: number, generations: number, gameOptions: GameOptions, scores: Array<Score>, game: IGame): void {
     const obj = {gameId, players, generations, gameOptions, scores, game};
     const text = JSON.stringify(obj, null, 2);
     writeFileSync(this.completedFilename(gameId), text);

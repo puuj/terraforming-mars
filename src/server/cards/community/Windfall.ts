@@ -1,6 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {Tag} from '../../../common/cards/Tag';
 import {Resource} from '../../../common/Resource';
@@ -27,15 +27,15 @@ export class Windfall extends Card implements IProjectCard {
     });
   }
 
-  public override play(player: Player) {
+  public override play(player: IPlayer) {
     player.drawCard(4);
-    player.megaCredits += player.production.megacredits;
+    player.stock.add(Resource.MEGACREDITS,player.production.megacredits);
     // player.megaCredits += player.getTerraformRating();
-    player.heat += player.production.heat;
-    player.energy = player.production.energy;
-    player.titanium += player.production.titanium;
-    player.steel += player.production.steel;
-    player.plants += player.production.plants;
+    player.stock.add(Resource.HEAT, player.production.heat);
+    player.stock.add(Resource.ENERGY, player.production.energy);
+    player.stock.add(Resource.TITANIUM, player.production.titanium);
+    player.stock.add(Resource.STEEL, player.production.steel);
+    player.stock.add(Resource.PLANTS, player.production.plants);
     return undefined;
   }
 }

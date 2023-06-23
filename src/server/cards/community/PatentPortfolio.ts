@@ -1,7 +1,7 @@
 import {IProjectCard} from '../IProjectCard';
 import {Tag} from '../../../common/cards/Tag';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {Resource} from '../../../common/Resource';
@@ -25,8 +25,8 @@ export class PatentPortfolio extends Card implements IProjectCard {
     });
   }
 
-  public override play(player: Player) {
-    player.addResource(Resource.MEGACREDITS, player.cardsInHand.length, {log: true});
+  public override play(player: IPlayer) {
+    player.stock.add(Resource.MEGACREDITS, player.cardsInHand.length, {log: true});
     return undefined;
   }
 }

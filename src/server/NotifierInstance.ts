@@ -1,4 +1,4 @@
-import {Player} from './Player';
+import {IPlayer} from './IPlayer';
 const nodemailer = require('nodemailer');
 
 export class NotifierInstance {
@@ -10,7 +10,7 @@ export class NotifierInstance {
     this.sender = sender;
   }
 
-  sendEndMessage(player: Player, scores: string) : void {
+  sendEndMessage(player: IPlayer, scores: string) : void {
     if (player.email === undefined) {
       return;
     }
@@ -29,7 +29,7 @@ See the full results at: ${link}`,
     });
   }
 
-  sendTurnMessage(player: Player, transporter: any, url: string, sender: string) : void {
+  sendTurnMessage(player: IPlayer, transporter: any, url: string, sender: string) : void {
     const delay=Math.floor(player.timer.getActingTime()/60);
     const link = url+'/player?id='+player.id;
     // console.log(`Would notify ${player.name} for ${delay}`);
@@ -41,7 +41,7 @@ See the full results at: ${link}`,
     });
   }
 
-  makeTurnNotification(player: Player, interval: number) : NodeJS.Timeout {
+  makeTurnNotification(player: IPlayer, interval: number) : NodeJS.Timeout {
     const transporter = nodemailer.createTransport({
       sendmail: true,
     });

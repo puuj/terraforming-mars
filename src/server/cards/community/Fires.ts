@@ -1,6 +1,6 @@
 import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
-import {Player} from '../../Player';
+import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardRequirements} from '../requirements/CardRequirements';
 import {Tag} from '../../../common/cards/Tag';
@@ -26,7 +26,7 @@ export class Fires extends Card implements IProjectCard {
     });
   }
 
-  public override play(player: Player) {
+  public override play(player: IPlayer) {
     player.game.increaseOxygenLevel(player, -1);
     player.game.increaseTemperature(player, 1);
     return undefined;

@@ -372,7 +372,7 @@ export class Game implements IGame, Logger {
   }
 
 
-  public makeTurnNotification(player: Player) : NodeJS.Timeout {
+  public makeTurnNotification(player: IPlayer) : NodeJS.Timeout {
     return Notifier.getInstance().makeTurnNotification(player, 60*1000);
   }
 
@@ -896,7 +896,7 @@ export class Game implements IGame, Logger {
   }
 
   // Function use to manage corporation draft way
-  public playerIsFinishedWithDraftingCorporationPhase(player: Player, cards : Array<ICorporationCard>): void {
+  public playerIsFinishedWithDraftingCorporationPhase(player: IPlayer, cards : Array<ICorporationCard>): void {
     const nextPlayer = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(player) : this.getPlayerBefore(player);
     const passTo = this.corporationsDraftDirection === 'after' ? this.getPlayerAfter(nextPlayer) : this.getPlayerBefore(nextPlayer);
 
