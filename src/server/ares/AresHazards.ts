@@ -1,4 +1,4 @@
-import {ISpace} from '../boards/ISpace';
+import {Space} from '../boards/Space';
 import {IGame} from '../IGame';
 import {LogHelper} from '../LogHelper';
 import {Phase} from '../../common/Phase';
@@ -10,7 +10,7 @@ import {AresData, HazardConstraint} from '../../common/ares/AresData';
  * Package-private support for placing and upgrading hazard tiles.
  */
 export class _AresHazardPlacement {
-  public static putHazardAt(space: ISpace, tileType: TileType) {
+  public static putHazardAt(space: Space, tileType: TileType) {
     space.tile = {tileType: tileType, protectedHazard: false};
   }
 
@@ -62,7 +62,7 @@ export class _AresHazardPlacement {
 
     this.testConstraint(
       aresData.hazardData.erosionOceanCount,
-      player.game.board.getOceanCount(),
+      player.game.board.getOceanSpaces().length,
       () => {
         let type = TileType.EROSION_MILD;
         if (aresData.hazardData.severeErosionTemperature.available !== true) {
@@ -81,7 +81,7 @@ export class _AresHazardPlacement {
   private static testToRemoveDustStorms(aresData: AresData, player: IPlayer) {
     this.testConstraint(
       aresData.hazardData.removeDustStormsOceanCount,
-      player.game.board.getOceanCount(),
+      player.game.board.getOceanSpaces().length,
       () => {
         player.game.board.spaces.forEach((space) => {
           if (space.tile?.tileType === TileType.DUST_STORM_MILD || space.tile?.tileType === TileType.DUST_STORM_SEVERE) {

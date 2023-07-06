@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {UrbanizedArea} from '../../../src/server/cards/base/UrbanizedArea';
 import {Game} from '../../../src/server/Game';
-import {ISpace} from '../../../src/server/boards/ISpace';
+import {Space} from '../../../src/server/boards/Space';
 import {Resource} from '../../../src/common/Resource';
 import {SpaceName} from '../../../src/server/SpaceName';
 import {SpaceType} from '../../../src/common/boards/SpaceType';
@@ -14,7 +14,7 @@ describe('UrbanizedArea', function() {
   let card: UrbanizedArea;
   let player: TestPlayer;
   let game: Game;
-  let lands: ISpace[];
+  let lands: Space[];
 
   beforeEach(function() {
     card = new UrbanizedArea();
@@ -45,7 +45,7 @@ describe('UrbanizedArea', function() {
     expect(action.availableSpaces).has.lengthOf(1);
 
     action.cb(action.availableSpaces[0]);
-    expect(game.getCitiesCount()).to.eq(3);
+    expect(game.board.getCities()).has.length(3);
     expect(player.production.energy).to.eq(0);
     expect(player.production.megacredits).to.eq(2);
   });

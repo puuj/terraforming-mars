@@ -2,14 +2,14 @@ import {CardModel} from '../../common/models/CardModel';
 import {ColonyModel} from '../../common/models/ColonyModel';
 import {Color} from '../../common/Color';
 import {IGame} from '../IGame';
-import {GameOptions} from '../GameOptions';
+import {GameOptions} from '../game/GameOptions';
 import {SimpleGameModel} from '../../common/models/SimpleGameModel';
 import {GameOptionsModel} from '../../common/models/GameOptionsModel';
 import {ICard} from '../cards/ICard';
 import {isIProjectCard} from '../cards/IProjectCard';
 import {isICloneTagCard} from '../cards/pathfinders/ICloneTagCard';
 import {Board} from '../boards/Board';
-import {ISpace} from '../boards/ISpace';
+import {Space} from '../boards/Space';
 import {IPlayer} from '../IPlayer';
 import {PlayerInput} from '../PlayerInput';
 import {PlayerInputModel} from '../../common/models/PlayerInputModel';
@@ -35,7 +35,7 @@ import {SelectColony} from '../inputs/SelectColony';
 import {SelectProductionToLose} from '../inputs/SelectProductionToLose';
 import {ShiftAresGlobalParameters} from '../inputs/ShiftAresGlobalParameters';
 import {SpectatorModel} from '../../common/models/SpectatorModel';
-import {SelectPartyToSendDelegate} from '../inputs/SelectPartyToSendDelegate';
+import {SelectParty} from '../inputs/SelectParty';
 import {GameModel} from '../../common/models/GameModel';
 import {Turmoil} from '../turmoil/Turmoil';
 import {createPathfindersModel} from './PathfindersModel';
@@ -84,7 +84,7 @@ export class Server {
       lastSoloGeneration: game.lastSoloGeneration(),
       milestones: this.getMilestones(game),
       moon: this.getMoonModel(game),
-      oceans: game.board.getOceanCount(),
+      oceans: game.board.getOceanSpaces().length,
       oxygenLevel: game.getOxygenLevel(),
       passedPlayers: game.getPassedPlayers(),
       pathfinders: createPathfindersModel(game),
@@ -324,7 +324,7 @@ export class Server {
       );
       break;
     case 'party':
-      playerInputModel.availableParties = (waitingFor as SelectPartyToSendDelegate).availableParties;
+      playerInputModel.availableParties = (waitingFor as SelectParty).availableParties;
       if (player.game !== undefined) {
         playerInputModel.turmoil = getTurmoilModel(player.game);
       }
@@ -414,7 +414,7 @@ export class Server {
       cardCost: player.cardCost,
       cardDiscount: player.colonies.cardDiscount,
       cardsInHandNbr: player.cardsInHand.length,
-      citiesCount: player.game.getCitiesCount(player),
+      citiesCount: player.game.board.getCities(player).length,
       coloniesCount: player.getColoniesCount(),
       color: player.color,
       energy: player.energy,
@@ -515,7 +515,7 @@ export class Server {
 
   // Oceans can't be owned so they shouldn't have a color associated with them
   // Land claim can have a color on a space without a tile
-  private static getColor(space: ISpace): Color | undefined {
+  private static getColor(space: Space): Color | undefined {
     if (
       (space.tile === undefined || space.tile.tileType !== TileType.OCEAN) &&
     space.player !== undefined

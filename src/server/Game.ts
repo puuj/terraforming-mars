@@ -15,7 +15,7 @@ import {FundedAward, serializeFundedAwards, deserializeFundedAwards} from './awa
 import {IAward} from './awards/IAward';
 import {IMilestone} from './milestones/IMilestone';
 import {IProjectCard} from './cards/IProjectCard';
-import {ISpace} from './boards/ISpace';
+import {Space} from './boards/Space';
 import {Tile} from './Tile';
 import {LogBuilder} from './logs/LogBuilder';
 import {LogHelper} from './LogHelper';
@@ -41,7 +41,6 @@ import {GainResources} from './deferredActions/GainResources';
 import {SerializedGame} from './SerializedGame';
 import {SpaceBonus} from '../common/boards/SpaceBonus';
 import {SpaceName} from './SpaceName';
-import {SpaceType} from '../common/boards/SpaceType';
 import {TileType} from '../common/TileType';
 import {Turmoil} from './turmoil/Turmoil';
 import {RandomMAOptionType} from '../common/ma/RandomMAOptionType';
@@ -54,7 +53,7 @@ import {AresSetup} from './ares/AresSetup';
 import {IMoonData} from './moon/IMoonData';
 import {MoonExpansion} from './moon/MoonExpansion';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
-import {SeededRandom} from './Random';
+import {SeededRandom} from '../common/utils/Random';
 import {chooseMilestonesAndAwards} from './ma/MilestoneAwardSelector';
 import {BoardType} from './boards/BoardType';
 import {MultiSet} from 'mnemonist';
@@ -64,13 +63,14 @@ import {PathfindersData} from './pathfinders/PathfindersData';
 import {AddResourcesToCard} from './deferredActions/AddResourcesToCard';
 import {ColonyDeserializer} from './colonies/ColonyDeserializer';
 import {GameLoader} from './database/GameLoader';
-import {DEFAULT_GAME_OPTIONS, GameOptions} from './GameOptions';
+import {DEFAULT_GAME_OPTIONS, GameOptions} from './game/GameOptions';
 import {TheNewSpaceRace} from './cards/pathfinders/TheNewSpaceRace';
 import {CorporationDeck, PreludeDeck, ProjectDeck, CeoDeck} from './cards/Deck';
 import {Logger} from './logs/Logger';
 import {addDays, dayStringToDays} from './database/utils';
 import {ALL_TAGS, Tag} from '../common/cards/Tag';
 import {IGame, Score} from './IGame';
+import {MarsBoard} from './boards/MarsBoard';
 
 export class Game implements IGame, Logger {
   public readonly id: GameId;
@@ -96,7 +96,7 @@ export class Game implements IGame, Logger {
   public preludeDeck: PreludeDeck;
   public ceoDeck: CeoDeck;
   public corporationDeck: CorporationDeck;
-  public board: Board;
+  public board: MarsBoard;
 
   // Global parameters
   private oxygenLevel: number = constants.MIN_OXYGEN_LEVEL;
@@ -154,7 +154,7 @@ export class Game implements IGame, Logger {
     activePlayer: PlayerId,
     gameOptions: GameOptions,
     rng: SeededRandom,
-    board: Board,
+    board: MarsBoard,
     projectDeck: ProjectDeck,
     corporationDeck: CorporationDeck,
     preludeDeck: PreludeDeck,
@@ -1237,38 +1237,11 @@ export class Game implements IGame, Logger {
     return passedPlayersColors;
   }
 
-  public getCitiesOffMarsCount(player?: IPlayer): number {
-    return this.getCitiesCount(player, (space) => space.spaceType === SpaceType.COLONY);
-  }
-
-  public getCitiesOnMarsCount(player?: IPlayer): number {
-    return this.getCitiesCount(player, (space) => space.spaceType !== SpaceType.COLONY);
-  }
-
-  public getCitiesCount(player?: IPlayer, filter?: (space: ISpace) => boolean): number {
-    let cities = this.board.spaces.filter(Board.isCitySpace);
-    if (player !== undefined) cities = cities.filter(Board.ownedBy(player));
-    if (filter) cities = cities.filter(filter);
-    return cities.length;
-  }
-
-  public getGreeneriesCount(player?: IPlayer): number {
-    let greeneries = this.board.spaces.filter((space) => Board.isGreenerySpace(space));
-    if (player !== undefined) greeneries = greeneries.filter(Board.ownedBy(player));
-    return greeneries.length;
-  }
-
-  public getSpaceCount(tileType: TileType, player: IPlayer): number {
-    return this.board.spaces.filter(Board.ownedBy(player))
-      .filter((space) => space.tile?.tileType === tileType)
-      .length;
-  }
-
   // addTile applies to the Mars board, but not the Moon board, see MoonExpansion.addTile for placing
   // a tile on The Moon.
   public addTile(
     player: IPlayer,
-    space: ISpace,
+    space: Space,
     tile: Tile): void {
     // Part 1, basic validation checks.
 
@@ -1354,7 +1327,7 @@ export class Game implements IGame, Logger {
     });
   }
 
-  public simpleAddTile(player: IPlayer, space: ISpace, tile: Tile) {
+  public simpleAddTile(player: IPlayer, space: Space, tile: Tile) {
     space.tile = tile;
     space.player = player;
     if (tile.tileType === TileType.OCEAN || tile.tileType === TileType.MARTIAN_NATURE_WONDERS) {
@@ -1363,7 +1336,7 @@ export class Game implements IGame, Logger {
     LogHelper.logTilePlacement(player, space, tile.tileType);
   }
 
-  public grantSpaceBonuses(player: IPlayer, space: ISpace) {
+  public grantSpaceBonuses(player: IPlayer, space: Space) {
     const bonuses = MultiSet.from(space.bonus);
     bonuses.forEachMultiplicity((count: number, bonus: SpaceBonus) => {
       this.grantSpaceBonus(player, bonus, count);
@@ -1426,7 +1399,7 @@ export class Game implements IGame, Logger {
   }
 
   public addGreenery(
-    player: IPlayer, space: ISpace,
+    player: IPlayer, space: Space,
     shouldRaiseOxygen: boolean = true): undefined {
     this.addTile(player, space, {
       tileType: TileType.GREENERY,
@@ -1439,7 +1412,7 @@ export class Game implements IGame, Logger {
   }
 
   public addCity(
-    player: IPlayer, space: ISpace,
+    player: IPlayer, space: Space,
     cardName: CardName | undefined = undefined): void {
     this.addTile(player, space, {
       tileType: TileType.CITY,
@@ -1448,15 +1421,15 @@ export class Game implements IGame, Logger {
   }
 
   public canAddOcean(): boolean {
-    return this.board.getOceanCount() < constants.MAX_OCEAN_TILES;
+    return this.board.getOceanSpaces().length < constants.MAX_OCEAN_TILES;
   }
 
   public canRemoveOcean(): boolean {
-    const count = this.board.getOceanCount();
+    const count = this.board.getOceanSpaces().length;
     return count > 0 && count < constants.MAX_OCEAN_TILES;
   }
 
-  public addOcean(player: IPlayer, space: ISpace): void {
+  public addOcean(player: IPlayer, space: Space): void {
     if (this.canAddOcean() === false) return;
 
     this.addTile(player, space, {

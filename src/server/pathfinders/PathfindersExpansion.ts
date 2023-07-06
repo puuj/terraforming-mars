@@ -2,7 +2,7 @@ import {AddResourcesToCard} from '../deferredActions/AddResourcesToCard';
 import {CardName} from '../../common/cards/CardName';
 import {CardType} from '../../common/cards/CardType';
 import {IGame} from '../IGame';
-import {GameOptions} from '../GameOptions';
+import {GameOptions} from '../game/GameOptions';
 import {GrantResourceDeferred} from './GrantResourceDeferred';
 import {ICard} from '../cards/ICard';
 import {PathfindersData, PlanetaryTag, isPlanetaryTag} from './PathfindersData';
@@ -22,6 +22,7 @@ import {Tag} from '../../common/cards/Tag';
 import {Turmoil} from '../turmoil/Turmoil';
 import {VictoryPointsBreakdown} from '../game/VictoryPointsBreakdown';
 import {GlobalEventName} from '../../common/turmoil/globalEvents/GlobalEventName';
+import {Priority, SimpleDeferredAction} from '../deferredActions/DeferredAction';
 
 export const TRACKS = PlanetaryTracks.initialize();
 
@@ -281,7 +282,11 @@ export class PathfindersExpansion {
   public static addToSolBank(player: IPlayer) {
     const solBank = player.getCorporation(CardName.SOLBANK);
     if (solBank !== undefined) {
-      player.addResourceTo(solBank, {qty: 1, log: true});
+      player.game.defer(new SimpleDeferredAction(player, () => {
+        player.addResourceTo(solBank, {qty: 1, log: true});
+        return undefined;
+      }),
+      Priority.GAIN_RESOURCE_OR_PRODUCTION);
     }
   }
 }

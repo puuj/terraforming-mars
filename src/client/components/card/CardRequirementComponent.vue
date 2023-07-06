@@ -2,7 +2,7 @@
   <div class="card-requirement">
       <div class="card-item-container">
         <template v-if="requirement.isMax">max&nbsp;</template>
-        <span v-if="!isRepeated">{{amount()}}</span>{{suffix()}}
+        <span v-if="!isRepeated">{{amount}}</span>{{suffix}}
         <template v-if="requirement.type === RequirementType.REMOVED_PLANTS">
           <div class="card-special card-minus"></div>
           <div class="card-resource card-resource-plant red-outline"></div>
@@ -14,17 +14,17 @@
               <div class="card-production-box-row-item">
                 <div class="card-item-container">
                   <template v-for="num in repeats">
-                    <div :class="getProductionClass()" :key="num"></div>
+                    <div :class="productionClass" :key="num"></div>
                   </template>
                 </div>
               </div>
             </div>
           </div>
         </template>
-        <CardParty v-else-if="requirement.type === RequirementType.PARTY" :party="getParty()" size="req" />
+        <CardParty v-else-if="requirement.type === RequirementType.PARTY" :party="party" size="req" />
         <template v-else>
           <template v-for="num in repeats">
-            <div :class="getComponentClasses()" :key="num"></div>
+            <div :class="componentClasses" :key="num"></div>
           </template>
         </template>
       </div>
@@ -53,7 +53,7 @@ export default Vue.extend({
   components: {
     CardParty,
   },
-  methods: {
+  computed: {
     amount(): string | number {
       // <span v-if="requirement.isMax || requirement.amount != 0">{{requirement.amount}}</span>
       switch (this.requirement.type) {
@@ -67,6 +67,9 @@ export default Vue.extend({
       }
       if (this.requirement.isMax) {
         return this.requirement.amount;
+      }
+      if (this.requirement.amount === 0) {
+        return '';
       }
       if (this.requirement.amount !== 1) {
         return this.requirement.amount;
@@ -86,14 +89,14 @@ export default Vue.extend({
     isAny(): string {
       return this.requirement.isAny ? 'red-outline' : '';
     },
-    getComponentClasses(): string {
-      const classes = this.getComponentClassArray();
+    componentClasses(): string {
+      const classes = this.componentClassArray;
       if (this.requirement.isAny) {
         classes.push('red-outline');
       }
       return generateClassString(classes);
     },
-    getComponentClassArray(): Array<string> {
+    componentClassArray(): Array<string> {
       // TODO(kberg): This duplicates CardRenderItemComponent. That shouldn't be
       // necessary.
       switch (this.requirement.type) {
@@ -142,7 +145,7 @@ export default Vue.extend({
       }
       return [];
     },
-    getParty(): PartyName {
+    party(): PartyName {
       if (this.requirement.type === RequirementType.PARTY) {
         return (this.requirement as IPartyCardRequirement).party;
       } else {
@@ -150,7 +153,7 @@ export default Vue.extend({
         return PartyName.GREENS;
       }
     },
-    getProductionClass(): string {
+    productionClass(): string {
       if (this.requirement.type === RequirementType.PRODUCTION) {
         const resource = (this.requirement as IProductionCardRequirement).resource;
         return `card-resource card-resource-${resource}`;
@@ -159,8 +162,6 @@ export default Vue.extend({
         return '';
       }
     },
-  },
-  computed: {
     RequirementType() {
       return RequirementType;
     },

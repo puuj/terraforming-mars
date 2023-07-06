@@ -2,9 +2,8 @@ import {expect} from 'chai';
 import {Player} from '../src/server/Player';
 import {IGame} from '../src/server/IGame';
 import * as constants from '../src/common/constants';
-import {ISpace} from '../src/server/boards/ISpace';
+import {Space} from '../src/server/boards/Space';
 import {Phase} from '../src/common/Phase';
-import {IParty} from '../src/server/turmoil/parties/IParty';
 import {Turmoil} from '../src/server/turmoil/Turmoil';
 import {Message} from '../src/common/logs/Message';
 import {PolicyId} from '../src/common/turmoil/Types';
@@ -19,15 +18,16 @@ import {SpaceId} from '../src/common/Types';
 import {PlayerInput} from '../src/server/PlayerInput';
 import {IActionCard} from '../src/server/cards/ICard';
 import {TestPlayer} from './TestPlayer';
+import {PartyName} from '../src/common/turmoil/PartyName';
 
 // Returns the oceans created during this operation which may not reflect all oceans.
-export function maxOutOceans(player: Player, toValue: number = 0): Array<ISpace> {
+export function maxOutOceans(player: Player, toValue: number = 0): Array<Space> {
   const oceans = [];
   if (toValue < 1) {
     toValue = constants.MAX_OCEAN_TILES;
   }
 
-  while (player.game.board.getOceanCount() < toValue) {
+  while (player.game.board.getOceanSpaces().length < toValue) {
     oceans.push(addOcean(player));
   }
   return oceans;
@@ -45,7 +45,7 @@ export function setVenusScaleLevel(game: IGame, venusScaleLevel: number) {
   (game as any).venusScaleLevel = venusScaleLevel;
 }
 
-export function addGreenery(player: Player, spaceId?: SpaceId): ISpace {
+export function addGreenery(player: Player, spaceId?: SpaceId): Space {
   const space = spaceId ?
     player.game.board.getSpace(spaceId) :
     player.game.board.getAvailableSpacesForGreenery(player)[0];
@@ -53,7 +53,7 @@ export function addGreenery(player: Player, spaceId?: SpaceId): ISpace {
   return space;
 }
 
-export function addOcean(player: Player, spaceId?: SpaceId): ISpace {
+export function addOcean(player: Player, spaceId?: SpaceId): Space {
   const space = spaceId ?
     player.game.board.getSpace(spaceId) :
     player.game.board.getAvailableSpacesForOcean(player)[0];
@@ -61,7 +61,7 @@ export function addOcean(player: Player, spaceId?: SpaceId): ISpace {
   return space;
 }
 
-export function addCity(player: Player, spaceId?: SpaceId): ISpace {
+export function addCity(player: Player, spaceId?: SpaceId): Space {
   const space = spaceId ?
     player.game.board.getSpace(spaceId) :
     player.game.board.getAvailableSpacesForCity(player)[0];
@@ -76,9 +76,13 @@ export function resetBoard(game: IGame): void {
   });
 }
 
-export function setRulingPartyAndRulingPolicy(game: IGame, turmoil: Turmoil, party: IParty, policyId: PolicyId) {
+export function setRulingParty(game: IGame, partyName: PartyName, policyId?: PolicyId) {
+  const turmoil = Turmoil.getTurmoil(game);
+  const party = turmoil.getPartyByName(partyName);
+  const resolvedPolicyId = policyId ?? party.policies[0].id;
+
   turmoil.rulingParty = party;
-  turmoil.politicalAgendasData.agendas.set(party.name, {bonusId: party.bonuses[0].id, policyId: policyId});
+  turmoil.politicalAgendasData.agendas.set(party.name, {bonusId: party.bonuses[0].id, policyId: resolvedPolicyId});
   game.phase = Phase.ACTION;
 }
 

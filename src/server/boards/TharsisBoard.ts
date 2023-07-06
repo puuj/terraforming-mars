@@ -2,14 +2,15 @@ import {SpaceBonus} from '../../common/boards/SpaceBonus';
 import {SpaceName} from '../SpaceName';
 import {Board} from './Board';
 import {IPlayer} from '../IPlayer';
-import {ISpace} from './ISpace';
+import {Space} from './Space';
 import {BoardBuilder} from './BoardBuilder';
 import {SerializedBoard} from './SerializedBoard';
-import {Random} from '../Random';
-import {GameOptions} from '../GameOptions';
+import {Random} from '../../common/utils/Random';
+import {GameOptions} from '../game/GameOptions';
 import {SpaceId} from '../../common/Types';
+import {MarsBoard} from './MarsBoard';
 
-export class TharsisBoard extends Board {
+export class TharsisBoard extends MarsBoard {
   public static newInstance(gameOptions: GameOptions, rng: Random): TharsisBoard {
     const builder = new BoardBuilder(gameOptions.venusNextExtension, gameOptions.pathfindersExpansion);
 
@@ -50,15 +51,15 @@ export class TharsisBoard extends Board {
     return new TharsisBoard(Board.deserializeSpaces(board.spaces, players));
   }
 
-  public override getNonReservedLandSpaces(): ReadonlyArray<ISpace> {
+  public override getNonReservedLandSpaces(): ReadonlyArray<Space> {
     return super.getNonReservedLandSpaces().filter((space) => space.id !== SpaceName.NOCTIS_CITY);
   }
 
-  public override getAvailableSpacesOnLand(player: IPlayer): ReadonlyArray<ISpace> {
+  public override getAvailableSpacesOnLand(player: IPlayer): ReadonlyArray<Space> {
     return super.getAvailableSpacesOnLand(player).filter((space) => space.id !== SpaceName.NOCTIS_CITY);
   }
 
-  public override canPlaceTile(space: ISpace): boolean {
+  public override canPlaceTile(space: Space): boolean {
     return super.canPlaceTile(space) && space.id !== SpaceName.NOCTIS_CITY;
   }
 
