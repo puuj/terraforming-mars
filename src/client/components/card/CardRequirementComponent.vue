@@ -10,7 +10,6 @@
         <template v-if="requirement.type === RequirementType.PRODUCTION">
           <div class="card-production-box card-production-box--req">
             <div class="card-production-box-row">
-              <span v-if="isRepeated">{{amount()}}</span>
               <div class="card-production-box-row-item">
                 <div class="card-item-container">
                   <template v-for="num in repeats">
@@ -126,7 +125,7 @@ export default Vue.extend({
         return ['card-party-leader--req'];
       case RequirementType.TAG:
         const tagRequirement = this.requirement as ITagCardRequirement;
-        return ['card-resource-tag--S', 'card-tag-' + tagRequirement.tag.toLowerCase()];
+        return ['card-resource-tag--S', 'card-tag-' + tagRequirement.tag];
       case RequirementType.HABITAT_RATE:
         return ['card-colony-rate', 'card-colony-rate--req'];
       case RequirementType.MINING_RATE:
