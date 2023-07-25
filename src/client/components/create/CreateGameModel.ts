@@ -56,6 +56,7 @@ export interface CreateGameModel {
   seededGame: boolean;
   escapeVelocityMode: boolean;
   escapeVelocityThreshold: number;
+  escapeVelocityBonusSeconds: number;
   escapeVelocityPeriod: number;
   escapeVelocityPenalty: number;
   twoCorpsVariant: boolean;
