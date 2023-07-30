@@ -34,7 +34,7 @@ export class ForcedPartnership extends Card implements IProjectCard {
     const availablePlayerTargets = player.game.getPlayersInGenerationOrder().filter((p) => p.id !== player.id);
     availablePlayerTargets.forEach((target) => {
       if (target.megaCredits >= 10) {
-        target.stock.deduct(Resource.MEGACREDITS, -10, {log: true, from: player});
+        target.stock.deduct(Resource.MEGACREDITS, 10, {log: true, from: player});
         target.increaseTerraformRating(1);
       }
     });
