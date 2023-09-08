@@ -88,11 +88,11 @@ export interface IGame extends Logger {
   toJSON(): string;
   serialize(): SerializedGame;
   isSoloMode() :boolean;
-  // Function to retrieve a player by it's id
+  // Retrieve a player by it's id
   getPlayerById(id: PlayerId): IPlayer;
-  // Function to return an array of players from an array of player ids
+  // Return an array of players from an array of player ids
   getPlayersById(ids: Array<PlayerId>): Array<IPlayer>;
-  defer(action: DeferredAction, priority?: Priority): void;
+  defer(action: DeferredAction<any>, priority?: Priority): void;
   milestoneClaimed(milestone: IMilestone): boolean;
   marsIsTerraformed(): boolean;
   lastSoloGeneration(): number;

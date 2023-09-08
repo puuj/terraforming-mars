@@ -1,10 +1,12 @@
 import {CardName} from '../../../common/cards/CardName';
 import {ModuleManifest} from '../ModuleManifest';
 import {Advertising} from './Advertising';
+import {AntidesertificationTechniques} from '../promo/AntidesertificationTechniques';
 import {ArcadianCommunities} from './ArcadianCommunities';
 import {AsteroidDeflectionSystem} from './AsteroidDeflectionSystem';
 import {AsteroidHollowing} from './AsteroidHollowing';
 import {AsteroidRights} from './AsteroidRights';
+import {AstraMechanica} from './AstraMechanica';
 import {Astrodrill} from './Astrodrill';
 import {BactoviralResearch} from './BactoviralResearch';
 import {BioPrintingFacility} from './BioPrintingFacility';
@@ -14,6 +16,8 @@ import {CrashSiteCleanup} from './CrashSiteCleanup';
 import {CuttingEdgeTechnology} from './CuttingEdgeTechnology';
 import {DeimosDownPromo} from './DeimosDownPromo';
 import {DirectedImpactors} from './DirectedImpactors';
+import {DirectedHeatUsage} from './DirectedHeatUsage';
+import {AqueductSystems} from './AqueductSystems';
 import {DiversitySupport} from './DiversitySupport';
 import {DoubleDown} from './DoubleDown';
 import {DuskLaserMining} from './DuskLaserMining';
@@ -57,6 +61,8 @@ import {StanfordTorus} from './StanfordTorus';
 import {SubCrustMeasurements} from './SubCrustMeasurements';
 import {Supercapacitors} from './Supercapacitors';
 import {TopsoilContract} from './TopsoilContract';
+import {TychoMagnetics} from './TychoMagnetics';
+import {AppliedScience} from '../prelude2/AppliedScience';
 
 export const PROMO_CARD_MANIFEST = new ModuleManifest({
   module: 'promo',
@@ -105,13 +111,19 @@ export const PROMO_CARD_MANIFEST = new ModuleManifest({
     [CardName.PSYCHE]: {Factory: Psyche},
     [CardName.ROBOT_POLLINATORS]: {Factory: RobotPollinators},
     [CardName.SUPERCAPACITORS]: {Factory: Supercapacitors},
+    [CardName.DIRECTED_HEAT_USAGE]: {Factory: DirectedHeatUsage},
+    [CardName.AQUEDUCT_SYSTEMS]: {Factory: AqueductSystems},
+    [CardName.ASTRA_MECHANICA]: {Factory: AstraMechanica},
   },
+
   preludeCards: {
     [CardName.NEW_PARTNER]: {Factory: NewPartner},
     [CardName.MERGER]: {Factory: Merger},
     [CardName.CORPORATE_ARCHIVES]: {Factory: CorporateArchives},
     [CardName.DOUBLE_DOWN]: {Factory: DoubleDown, compatibility: 'prelude'},
     [CardName.HEAD_START]: {Factory: HeadStart},
+    [CardName.ANTI_DESERTIFICATION_TECHNIQUES]: {Factory: AntidesertificationTechniques},
+    [CardName.APPLIED_SCIENCE]: {Factory: AppliedScience},
   },
 
   cardsToRemove: [
@@ -128,5 +140,6 @@ export const PROMO_CARD_MANIFEST = new ModuleManifest({
     [CardName.MONS_INSURANCE]: {Factory: MonsInsurance},
     [CardName.RECYCLON]: {Factory: Recyclon},
     [CardName.SPLICE]: {Factory: Splice},
+    [CardName.TYCHO_MAGNETICS]: {Factory: TychoMagnetics},
   },
 });

@@ -679,7 +679,7 @@ export class Game implements IGame, Logger {
     });
   }
 
-  private gotoDraftingPhase(): void {
+  private gotoDraftPhase(): void {
     this.phase = Phase.DRAFTING;
     this.draftRound = 1;
     this.runDraftRound();
@@ -776,7 +776,7 @@ export class Game implements IGame, Logger {
     });
 
     if (this.gameOptions.draftVariant) {
-      this.gotoDraftingPhase();
+      this.gotoDraftPhase();
     } else {
       this.gotoResearchPhase();
     }
@@ -1681,8 +1681,7 @@ export class Game implements IGame, Logger {
     game.initialDraftIteration = d.initialDraftIteration;
     game.someoneHasRemovedOtherPlayersPlants = d.someoneHasRemovedOtherPlayersPlants;
     game.syndicatePirateRaider = d.syndicatePirateRaider;
-    // TODO(kberg): remove ?? [] by 2023-07-15
-    game.gagarinBase = d.gagarinBase ?? [];
+    game.gagarinBase = d.gagarinBase;
 
     // Still in Draft or Research of generation 1
     if (game.generation === 1 && players.some((p) => p.corporations.length === 0)) {

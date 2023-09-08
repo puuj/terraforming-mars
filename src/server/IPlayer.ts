@@ -14,7 +14,7 @@ import {Priority} from './deferredActions/DeferredAction';
 import {RobotCard} from './cards/promo/SelfReplicatingRobots';
 import {SerializedPlayer} from './SerializedPlayer';
 import {Timer} from '../common/Timer';
-import {DrawCards} from './deferredActions/DrawCards';
+import {AllOptions, DrawOptions} from './deferredActions/DrawCards';
 import {Units} from '../common/Units';
 import {IStandardProjectCard} from './cards/IStandardProjectCard';
 import {GlobalParameter} from '../common/GlobalParameter';
@@ -33,7 +33,8 @@ import {Stock} from './player/Stock';
 
 export type ResourceSource = IPlayer | GlobalEventName | ICard;
 
-export interface CanAffordOptions extends Partial<Payment.Options> {
+export type CanAffordOptions = Partial<Payment.Options> & {
+  cost: number,
   reserveUnits?: Units,
   tr?: TRSource | DynamicTRSource,
 }
@@ -224,21 +225,23 @@ export interface IPlayer {
   onCardPlayed(card: IProjectCard): void;
   playAdditionalCorporationCard(corporationCard: ICorporationCard): void;
   playCorporationCard(corporationCard: ICorporationCard): void;
-  drawCard(count?: number, options?: DrawCards.DrawOptions): undefined;
-  drawCardKeepSome(count: number, options: DrawCards.AllOptions): SelectCard<IProjectCard>;
+  drawCard(count?: number, options?: DrawOptions): void;
+  drawCardKeepSome(count: number, options: AllOptions): void;
   discardPlayedCard(card: IProjectCard): void;
 
   pass(): void;
   takeActionForFinalGreenery(): void;
   getPlayableCards(): Array<PlayableCard>;
-  // TODO(kberg): After migration, see if this can become private again.
-  // Or perhaps moved into card?
-  canAffordCard(card: IProjectCard): boolean;
   canPlay(card: IProjectCard): boolean | YesAnd;
-  simpleCanPlay(card: IProjectCard): boolean | YesAnd;
+  simpleCanPlay(card: IProjectCard, canAffordOptions?: CanAffordOptions): boolean | YesAnd;
   canSpend(payment: Payment, reserveUnits?: Units): boolean;
   payingAmount(payment: Payment, options?: Partial<Payment.Options>): number;
-  canAfford(cost: number, options?: CanAffordOptions): boolean;
+  /**
+   * Returns a summary of how much a player would have to spend to play a card,
+   * any associated costs, and ways the player can pay.
+   */
+  affordOptionsForCard(card: IProjectCard): CanAffordOptions;
+  canAfford(options: number | CanAffordOptions): boolean;
   getStandardProjectOption(): SelectCard<IStandardProjectCard>;
   takeAction(saveBeforeTakingAction?: boolean): void;
   runInitialAction(corp: ICorporationCard): void;

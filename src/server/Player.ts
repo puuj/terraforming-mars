@@ -36,7 +36,7 @@ import {Tag} from '../common/cards/Tag';
 import {Timer} from '../common/Timer';
 import {TurmoilHandler} from './turmoil/TurmoilHandler';
 import {GameCards} from './GameCards';
-import {DrawCards} from './deferredActions/DrawCards';
+import {AllOptions, DrawCards, DrawOptions} from './deferredActions/DrawCards';
 import {Units} from '../common/Units';
 import {MoonExpansion} from './moon/MoonExpansion';
 import {IStandardProjectCard} from './cards/IStandardProjectCard';
@@ -70,6 +70,7 @@ import {CanAffordOptions, CardAction, IPlayer, ResourceSource, isIPlayer} from '
 import {IPreludeCard} from './cards/prelude/IPreludeCard';
 import {sum} from '../common/utils/utils';
 import {PreludesExpansion} from './preludes/PreludesExpansion';
+import {ChooseCards} from './deferredActions/ChooseCards';
 
 const THROW_WAITING_FOR = Boolean(process.env.THROW_WAITING_FOR);
 
@@ -855,7 +856,8 @@ export class Player implements IPlayer {
       cardsToKeep = 5;
     }
 
-    const action = DrawCards.choose(this, dealtCards, {paying: true, keepMax: cardsToKeep});
+    // TODO(kberg): Using .execute to rely on directly calling setWaitingFor is not great.
+    const action = new ChooseCards(this, dealtCards, {paying: true, keepMax: cardsToKeep}).execute();
     this.setWaitingFor(action, () => this.game.playerIsFinishedWithResearchPhase(this));
   }
 
@@ -1188,12 +1190,12 @@ export class Player implements IPlayer {
     }
   }
 
-  public drawCard(count?: number, options?: DrawCards.DrawOptions): undefined {
+  public drawCard(count?: number, options?: DrawOptions): undefined {
     return DrawCards.keepAll(this, count, options).execute();
   }
 
-  public drawCardKeepSome(count: number, options: DrawCards.AllOptions): SelectCard<IProjectCard> {
-    return DrawCards.keepSome(this, count, options).execute();
+  public drawCardKeepSome(count: number, options: AllOptions): void {
+    this.game.defer(DrawCards.keepSome(this, count, options));
   }
 
   public discardPlayedCard(card: IProjectCard) {
@@ -1351,21 +1353,19 @@ export class Player implements IPlayer {
     return playableCards;
   }
 
-  // TODO(kberg): After migration, see if this can become private again.
-  // Or perhaps moved into card?
-  public canAffordCard(card: IProjectCard): boolean {
+  public affordOptionsForCard(card: IProjectCard): CanAffordOptions {
     const trSource: TRSource | DynamicTRSource | undefined = card.tr || (card.behavior !== undefined ? getBehaviorExecutor().toTRSource(card.behavior) : undefined);
-    return this.canAfford(
-      this.getCardCost(card),
-      {
-        ...this.paymentOptionsForCard(card),
-        reserveUnits: MoonExpansion.adjustedReserveCosts(this, card),
-        tr: trSource,
-      });
+    return {
+      cost: this.getCardCost(card),
+      ...this.paymentOptionsForCard(card),
+      reserveUnits: MoonExpansion.adjustedReserveCosts(this, card),
+      tr: trSource,
+    };
   }
 
   public canPlay(card: IProjectCard): boolean | YesAnd {
-    return this.canAffordCard(card) && this.simpleCanPlay(card);
+    const options = this.affordOptionsForCard(card);
+    return this.canAfford(options) && this.simpleCanPlay(card, options);
   }
 
   /**
@@ -1373,7 +1373,7 @@ export class Player implements IPlayer {
    * Only made public for tests.
    */
   // TODO(kberg): use CanPlayResponse
-  public simpleCanPlay(card: IProjectCard): boolean | YesAnd {
+  public simpleCanPlay(card: IProjectCard, canAffordOptions?: CanAffordOptions): boolean | YesAnd {
     let satisfies: boolean | YesAnd = true;
     if (card.requirements !== undefined) {
       satisfies = card.requirements.satisfies(this);
@@ -1381,7 +1381,7 @@ export class Player implements IPlayer {
         return false;
       }
     }
-    const canPlay = card.canPlay(this);
+    const canPlay = card.canPlay(this, canAffordOptions);
     if (canPlay === false) {
       return false;
     }
@@ -1463,11 +1463,12 @@ export class Player implements IPlayer {
   }
 
   /**
-   * Returns `true` if the player can afford to pay `cost` mc (possibly replaceable with steel, titanium etc.)
+   * Returns `true` if the player can afford to pay `options.cost` mc (possibly replaceable with steel, titanium etc.)
    * and additionally pay the reserveUnits (no replaces here)
    */
-  public canAfford(cost: number, options?: CanAffordOptions): boolean {
-    const reserveUnits = options?.reserveUnits ?? Units.EMPTY;
+  public canAfford(o: number | CanAffordOptions): boolean {
+    const options = typeof(o) === 'number' ? {cost: o} : o;
+    const reserveUnits = options.reserveUnits ?? Units.EMPTY;
     if (reserveUnits.heat > 0) {
       // Special-case heat
       const unitsWithoutHeat = {...reserveUnits, heat: 0};
@@ -1484,7 +1485,7 @@ export class Player implements IPlayer {
     }
 
     const maxPayable = this.maxSpendable(reserveUnits);
-    const redsCost = TurmoilHandler.computeTerraformRatingBump(this, options?.tr) * REDS_RULING_POLICY_COST;
+    const redsCost = TurmoilHandler.computeTerraformRatingBump(this, options.tr) * REDS_RULING_POLICY_COST;
     if (redsCost > 0) {
       const usableForRedsCost = this.payingAmount(maxPayable, {});
       if (usableForRedsCost < redsCost) {
@@ -1494,7 +1495,7 @@ export class Player implements IPlayer {
 
     const usable = this.payingAmount(maxPayable, options);
 
-    return cost + redsCost <= usable;
+    return options.cost + redsCost <= usable;
   }
 
   private getStandardProjects(): Array<IStandardProjectCard> {
