@@ -143,6 +143,8 @@ export class Game implements IGame, Logger {
   public syndicatePirateRaider?: PlayerId;
   // Gagarin Mobile Base
   public gagarinBase: Array<SpaceId> = [];
+  // St. Joseph of Cupertino Mission
+  stJosephCathedrals: Array<SpaceId> = [];
 
   // The set of tags available in this game.
   public readonly tags: ReadonlyArray<Tag>;
@@ -414,6 +416,7 @@ export class Game implements IGame, Logger {
       first: this.first.id,
       fundedAwards: serializeFundedAwards(this.fundedAwards),
       gagarinBase: this.gagarinBase,
+      stJosephCathedrals: this.stJosephCathedrals,
       gameAge: this.gameAge,
       gameLog: this.gameLog,
       gameOptions: this.gameOptions,
@@ -1682,6 +1685,8 @@ export class Game implements IGame, Logger {
     game.someoneHasRemovedOtherPlayersPlants = d.someoneHasRemovedOtherPlayersPlants;
     game.syndicatePirateRaider = d.syndicatePirateRaider;
     game.gagarinBase = d.gagarinBase;
+    // TODO(kberg): remove ?? [] by 2023-11-01
+    game.stJosephCathedrals = d.stJosephCathedrals ?? [];
 
     // Still in Draft or Research of generation 1
     if (game.generation === 1 && players.some((p) => p.corporations.length === 0)) {

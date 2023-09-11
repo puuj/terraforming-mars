@@ -17,4 +17,5 @@ export enum CardResource {
     AGENDA = 'Agenda',
     ORBITAL = 'Orbital',
     CANDLE = 'Candle',
+    GRAPHENE = 'Graphene',
 }

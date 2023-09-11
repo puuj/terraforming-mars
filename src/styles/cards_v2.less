@@ -993,6 +993,13 @@
                 margin: 0 4px;
             }
 
+            .nextto-leftside {
+                margin: 0 -2px 0 4px;
+            }
+            .nextto-rightside {
+                margin: 0 4px 0 -2px;
+            }
+
             /*requirements*/
             .card-global-requirement {
                 position: relative;
@@ -1178,7 +1185,12 @@
             .card-resource-community {
                 background: linear-gradient(orange, orangered);
             }
-
+            .card-resource-cathedral {
+                background-image: url(./assets/promo/cathedral.png);
+            }
+            .card-resource-graphene {
+                background-image: url(./assets/resources/graphene.png);
+            }
             /* CEO Assets */
             .card-arrow-opg {
                 display: inline-block;
@@ -2348,7 +2360,7 @@ each(@parties, {
     // the stuff above wasn't contained inside card-content.
     @resource_types: microbe, animal, science, floater, fighter, camp,
       asteroid, disease, preservation, data, syndicate-fleet, cube,
-      venusian-habitat, specialized-robot, seed, orbital, candle, agenda;
+      venusian-habitat, specialized-robot, seed, orbital, candle, agenda, graphene;
     each(@resource_types, {
       .card-resource-@{value} {
         background-image: url("./assets/resources/@{value}.png");

@@ -10,6 +10,7 @@ export type Options = {
   canUseTitanium?: boolean;
   canUseSeeds?: boolean,
   canUseData?: boolean,
+  canUseGraphene?: boolean;
   title?: string | Message;
   afterPay?: () => void;
 }
@@ -33,14 +34,17 @@ export class SelectPaymentDeferred extends DeferredAction {
     if (this.options.canUseTitanium && this.player.titanium > 0) {
       return false;
     }
+    if (this.options.canUseGraphene && this.player.resourcesOnCard(CardName.CARBON_NANOSYSTEMS) > 0) {
+      return false;
+    }
     // HOOK: Luna Trade Federation
     if (this.player.isCorporation(CardName.LUNA_TRADE_FEDERATION) && this.player.titanium > 0) {
       return false;
     }
-    if (this.options.canUseSeeds && (this.player.getCorporation(CardName.SOYLENT_SEEDLING_SYSTEMS)?.resourceCount ?? 0) > 0) {
+    if (this.options.canUseSeeds && (this.player.resourcesOnCard(CardName.SOYLENT_SEEDLING_SYSTEMS) > 0)) {
       return false;
     }
-    if (this.options.canUseData && (this.player.getCorporation(CardName.AURORAI)?.resourceCount ?? 0) > 0) {
+    if (this.options.canUseData && (this.player.resourcesOnCard(CardName.AURORAI) > 0)) {
       return false;
     }
 
@@ -59,13 +63,15 @@ export class SelectPaymentDeferred extends DeferredAction {
 
     return new SelectPayment(
       this.options.title || 'Select how to spend ' + this.amount + ' M€',
-      this.options.canUseSteel || false,
-      this.options.canUseTitanium || false,
-      this.player.canUseHeatAsMegaCredits,
-      this.options.canUseSeeds || false,
-      this.options.canUseData || false,
-      this.player.canUseTitaniumAsMegacredits,
       this.amount,
+      {
+        steel: this.options.canUseSteel || false,
+        titanium: this.options.canUseTitanium || false,
+        heat: this.player.canUseHeatAsMegaCredits,
+        seeds: this.options.canUseSeeds || false,
+        data: this.options.canUseData || false,
+        lunaTradeFederationTitanium: this.player.canUseTitaniumAsMegacredits,
+      },
       (payment: Payment) => {
         if (!this.player.canSpend(payment)) {
           throw new Error('You do not have that many resources to spend');

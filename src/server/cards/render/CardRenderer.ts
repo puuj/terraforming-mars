@@ -176,6 +176,10 @@ abstract class Builder<T> {
     return this._appendToRow(new CardRenderItem(CardRenderItemType.ASTEROIDS, amount, options));
   }
 
+  public graphene(amount: number, options?: ItemOptions): this {
+    return this._appendToRow(new CardRenderItem(CardRenderItemType.GRAPHENE, amount, options));
+  }
+
   public event(options?: ItemOptions): this {
     return this._appendToRow(new CardRenderItem(CardRenderItemType.EVENT, -1, options));
   }
@@ -414,6 +418,11 @@ abstract class Builder<T> {
     this._appendToRow(new CardRenderItem(CardRenderItemType.ORBITAL, 1));
     return this;
   }
+
+  public cathedral(): this {
+    return this._appendToRow(new CardRenderItem(CardRenderItemType.CATHEDRAL, 1));
+  }
+
 
   public specialTile(options?: ItemOptions) {
     this._appendToRow(new CardRenderItem(CardRenderItemType.EMPTY_TILE_SPECIAL, 1, options));

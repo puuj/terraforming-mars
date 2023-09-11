@@ -21,7 +21,7 @@ export class AstraMechanica extends Card implements IProjectCard {
         renderData: CardRenderer.builder((b) => {
           b.cards(2, {secondaryTag: Tag.EVENT}).asterix();
         }),
-        description: 'RETURN UP TO 2 PLAYED EVENT CARDS TO YOUR HAND. THEY MAY NOT BE CARDS THAT PLACE SPECIAL TILES.',
+        description: 'RETURN UP TO 2 OF YOUR PLAYED EVENT CARDS TO YOUR HAND. THEY MAY NOT BE CARDS THAT PLACE SPECIAL TILES.',
       },
     });
   }
@@ -49,7 +49,7 @@ export class AstraMechanica extends Card implements IProjectCard {
       events,
       (cards) => {
         for (const card of cards) {
-          player.playedCards.filter((c) => c.name !== card.name);
+          player.playedCards = player.playedCards.filter((c) => c.name !== card.name);
           player.cardsInHand.push(card);
           player.game.log('${0} returned ${1} to their hand', (b) => b.player(player).card(card));
         }

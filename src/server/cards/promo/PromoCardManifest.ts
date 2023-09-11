@@ -2,6 +2,7 @@ import {CardName} from '../../../common/cards/CardName';
 import {ModuleManifest} from '../ModuleManifest';
 import {Advertising} from './Advertising';
 import {AntidesertificationTechniques} from '../promo/AntidesertificationTechniques';
+import {AppliedScience} from '../prelude2/AppliedScience';
 import {ArcadianCommunities} from './ArcadianCommunities';
 import {AsteroidDeflectionSystem} from './AsteroidDeflectionSystem';
 import {AsteroidHollowing} from './AsteroidHollowing';
@@ -10,10 +11,12 @@ import {AstraMechanica} from './AstraMechanica';
 import {Astrodrill} from './Astrodrill';
 import {BactoviralResearch} from './BactoviralResearch';
 import {BioPrintingFacility} from './BioPrintingFacility';
+import {CarbonNanosystems} from './CarbonNanosystems';
 import {CometAiming} from './CometAiming';
 import {CorporateArchives} from './CorporateArchives';
 import {CrashSiteCleanup} from './CrashSiteCleanup';
 import {CuttingEdgeTechnology} from './CuttingEdgeTechnology';
+import {CyberiaSystems} from './CyberiaSystems';
 import {DeimosDownPromo} from './DeimosDownPromo';
 import {DirectedImpactors} from './DirectedImpactors';
 import {DirectedHeatUsage} from './DirectedHeatUsage';
@@ -58,11 +61,11 @@ import {SmallAsteroid} from './SmallAsteroid';
 import {SnowAlgae} from './SnowAlgae';
 import {Splice} from './Splice';
 import {StanfordTorus} from './StanfordTorus';
+import {StJosephOfCupertinoMission} from './StJosephOfCupertinoMission';
 import {SubCrustMeasurements} from './SubCrustMeasurements';
 import {Supercapacitors} from './Supercapacitors';
 import {TopsoilContract} from './TopsoilContract';
 import {TychoMagnetics} from './TychoMagnetics';
-import {AppliedScience} from '../prelude2/AppliedScience';
 
 export const PROMO_CARD_MANIFEST = new ModuleManifest({
   module: 'promo',
@@ -114,6 +117,9 @@ export const PROMO_CARD_MANIFEST = new ModuleManifest({
     [CardName.DIRECTED_HEAT_USAGE]: {Factory: DirectedHeatUsage},
     [CardName.AQUEDUCT_SYSTEMS]: {Factory: AqueductSystems},
     [CardName.ASTRA_MECHANICA]: {Factory: AstraMechanica},
+    [CardName.ST_JOSEPH_OF_CUPERTINO_MISSION]: {Factory: StJosephOfCupertinoMission},
+    [CardName.CARBON_NANOSYSTEMS]: {Factory: CarbonNanosystems},
+    [CardName.CYBERIA_SYSTEMS]: {Factory: CyberiaSystems},
   },
 
   preludeCards: {

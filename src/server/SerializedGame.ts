@@ -56,6 +56,7 @@ export type SerializedGame = {
     seed: number;
     someoneHasRemovedOtherPlayersPlants: boolean;
     spectatorId: SpectatorId | undefined;
+    stJosephCathedrals: Array<SpaceId>;
     syndicatePirateRaider: PlayerId | undefined;
     temperature: number;
     turmoil?: SerializedTurmoil;
