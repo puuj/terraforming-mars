@@ -80,6 +80,7 @@ export default Vue.extend({
         if (this.item.size !== undefined && this.item.size !== Size.MEDIUM) {
           classes.push(`card-money--${this.item.size}`);
         }
+        break;
       case CardRenderItemType.CANDLE:
         classes.push('card-resource', 'card-resource-candle');
         break;
