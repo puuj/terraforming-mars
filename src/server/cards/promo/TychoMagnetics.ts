@@ -24,7 +24,8 @@ export class TychoMagnetics extends Card implements ICorporationCard {
         cardNumber: '',
         description: 'You start with 42 M€. Increase your energy production 1 step.',
         renderData: CardRenderer.builder((b) => {
-          b.vSpace(Size.LARGE);
+          b.br;
+          b.production((pb) => pb.energy(1)).nbsp.megacredits(42);          
           b.corpBox('action', (cb) => {
             cb.action('Spend any amount of energy to draw the that many cards. Keep 1 and discard the rest.', (ab) => {
               ab.text('X').energy(1).startAction.text('X').cards(1).text('KEEP 1');
