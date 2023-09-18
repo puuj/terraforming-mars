@@ -1,7 +1,7 @@
 <template>
   <div class="card-item-container">
-    <div class="card-res-amount" v-if="item.showDigit">{{ getAmountAbs() }}</div>
-    <div :class="getComponentClasses()" v-for="index in itemsToShow()" v-html="itemHtmlContent()" :key="index"/>
+    <div class="card-res-amount" v-if="item.showDigit">{{ amountAbs }}</div>
+    <div :class="componentClasses" v-for="index in itemsToShow" v-html="itemHtmlContent" :key="index"/>
     <div class="card-over" v-if="this.item.over !== undefined">over {{this.item.over}}</div>
   </div>
 </template>
@@ -9,7 +9,6 @@
 <script lang="ts">
 
 import Vue from 'vue';
-import {generateClassString} from '@/common/utils/utils';
 import {CardRenderItemType} from '@/common/cards/render/CardRenderItemType';
 import {AltSecondaryTag} from '@/common/cards/render/AltSecondaryTag';
 import {Size} from '@/common/cards/render/Size';
@@ -35,7 +34,9 @@ export default Vue.extend({
     sized(clazz: string, size: string | undefined) {
       return size !== undefined ? `${clazz}--${size}` : clazz;
     },
-    getComponentClasses(): string {
+  },
+  computed: {
+    componentClasses(): ReadonlyArray<string> {
       let classes: Array<string> = [];
 
       switch (this.item.type) {
@@ -157,6 +158,9 @@ export default Vue.extend({
         break;
       case CardRenderItemType.NO_TAGS:
         classes.push('card-resource-tag', 'card-community-services');
+        break;
+      case CardRenderItemType.EMPTY_TAG:
+        classes.push('card-resource-tag', 'card-tag-empty');
         break;
       case CardRenderItemType.CITY:
         if (this.item.isPlayed !== true) {
@@ -283,6 +287,12 @@ export default Vue.extend({
       case CardRenderItemType.GRAPHENE:
         classes.push('card-resource', 'card-resource-graphene');
         break;
+      case CardRenderItemType.NOMADS:
+        classes.push('card-resource', 'card-resource-nomads');
+        break;
+      case CardRenderItemType.HYDROELECTRIC_RESOURCE:
+        classes.push('card-resource', 'card-resource-hydroelectric-resource');
+        break;
       }
 
       if (this.item.secondaryTag === AltSecondaryTag.NO_PLANETARY_TAG) {
@@ -346,16 +356,15 @@ export default Vue.extend({
           classes.push('card-text-normal');
         }
       }
-
-      return generateClassString(classes);
+      return classes;
     },
-    getAmountAbs(): number {
+    amountAbs(): number {
       if (this.item.amountInside) return 1;
       return Math.abs(this.item.amount);
     },
     itemsToShow(): number {
       if (this.item.showDigit) return 1;
-      return this.getAmountAbs();
+      return this.amountAbs;
     },
     // Oooh this is begging to be a template or something.
     itemHtmlContent(): string {

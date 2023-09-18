@@ -140,6 +140,12 @@
         <div>MAGNETICS</div>
       </div>
     </template>
+    <template v-else-if="title === CardName.NIRGAL_ENTERPRISES">
+      <div class="nirgal-enterprises-logo">
+        <div>NIRGRAL</div>
+        <div>ENTERPRISES</div>
+      </div>
+    </template>
     <template v-else>
       <div :class="logoClass">{{capsTitle}}</div>
     </template>

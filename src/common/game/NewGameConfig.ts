@@ -45,6 +45,7 @@ export interface NewGameConfig {
   // coloniesExtension: boolean;
   // preludeExtension: boolean;
   // turmoilExtension: boolean;
+  prelude2Expansion: boolean;
   promoCardsOption: boolean;
   communityCardsOption: boolean;
   aresExtension: boolean;

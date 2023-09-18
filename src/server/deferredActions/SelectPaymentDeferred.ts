@@ -11,6 +11,7 @@ export type Options = {
   canUseSeeds?: boolean,
   canUseData?: boolean,
   canUseGraphene?: boolean;
+  canUseAsteroids?: boolean;
   title?: string | Message;
   afterPay?: () => void;
 }
@@ -35,6 +36,9 @@ export class SelectPaymentDeferred extends DeferredAction {
       return false;
     }
     if (this.options.canUseGraphene && this.player.resourcesOnCard(CardName.CARBON_NANOSYSTEMS) > 0) {
+      return false;
+    }
+    if (this.options.canUseAsteroids && this.player.resourcesOnCard(CardName.KUIPER_COOPERATIVE) > 0) {
       return false;
     }
     // HOOK: Luna Trade Federation
@@ -71,23 +75,9 @@ export class SelectPaymentDeferred extends DeferredAction {
         seeds: this.options.canUseSeeds || false,
         data: this.options.canUseData || false,
         lunaTradeFederationTitanium: this.player.canUseTitaniumAsMegacredits,
+        kuiperAsteroids: this.options.canUseAsteroids || false,
       },
       (payment: Payment) => {
-        if (!this.player.canSpend(payment)) {
-          throw new Error('You do not have that many resources to spend');
-        }
-        const amountPaid = this.player.payingAmount(payment, {
-          steel: this.options.canUseSteel,
-          titanium: this.options.canUseTitanium,
-          seeds: this.options.canUseSeeds,
-          floaters: false, // Used in project cards only
-          microbes: false, // Used in project cards only
-          science: false, // Used in project cards only
-          auroraiData: this.options.canUseData,
-        });
-        if (amountPaid < this.amount) {
-          throw new Error('Did not spend enough');
-        }
         this.player.pay(payment);
         this.options.afterPay?.();
         return undefined;

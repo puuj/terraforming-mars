@@ -291,18 +291,6 @@
                 text-shadow: orange 0px 0px 1px, darkorange 0px 2px 2px;
                 font-size: 32px;
             }
-            .card-tycho-magnetics-logo {
-                position: absolute;
-                text-transform: none;
-                top: 15px;
-                left: 3px;
-                color: rgb(32, 32, 32);
-                font-family: monospace;
-                letter-spacing: 2px;
-                text-align: left;
-                text-shadow: yellow 0px 0px 1px, yellowgreen 0px 2px 2px;
-                font-size: 30px;
-            }
             .card-factorum-logo {
                 position: absolute;
                 top: 15px;
@@ -706,6 +694,29 @@
                     line-height: 18px;
                     font-size: 7px;
                 }
+            }
+            .card-tycho-magnetics-logo {
+                position: absolute;
+                text-transform: none;
+                top: 15px;
+                left: 3px;
+                color: rgb(32, 32, 32);
+                font-family: monospace;
+                letter-spacing: 2px;
+                text-align: left;
+                text-shadow: yellow 0px 0px 1px, yellowgreen 0px 2px 2px;
+                font-size: 30px;
+            }
+            .nirgal-enterprises-logo {
+                position: absolute;
+                text-transform: none;
+                top: 32px;
+                left: 3px;
+                color: rgb(50, 100, 50);
+                font-family: 'Times New Roman', Times, serif;
+                letter-spacing: 2px;
+                text-align: left;
+                font-size: 27px;
             }
             .card-nanotech-industries-logo {
                 background-image: url(./assets/moon/corp-logo-nanotech.png);
@@ -1191,6 +1202,13 @@
             .card-resource-graphene {
                 background-image: url(./assets/resources/graphene.png);
             }
+            .card-resource-nomads {
+                background: linear-gradient(to bottom right, gold, goldenrod, gold);
+                border: 1px solid black;
+            }
+            .card-resource-hydroelectric-resource {
+                background-image: url(./assets/resources/hydroelectric-resource.png);
+            }
             /* CEO Assets */
             .card-arrow-opg {
                 display: inline-block;
@@ -1517,6 +1535,9 @@
             }
             .card-tag-mars {
                 background-image: url("./assets/tags/mars.png");
+            }
+            .card-tag-empty {
+                background-image: url("./assets/tags/empty.png");
             }
             .card-tag-diverse {
                 background: linear-gradient(to bottom right, green, yellow, red);
@@ -2360,7 +2381,7 @@ each(@parties, {
     // the stuff above wasn't contained inside card-content.
     @resource_types: microbe, animal, science, floater, fighter, camp,
       asteroid, disease, preservation, data, syndicate-fleet, cube,
-      venusian-habitat, specialized-robot, seed, orbital, candle, agenda, graphene;
+      venusian-habitat, specialized-robot, seed, orbital, candle, agenda, graphene, hydroelectric-resource;
     each(@resource_types, {
       .card-resource-@{value} {
         background-image: url("./assets/resources/@{value}.png");

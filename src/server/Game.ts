@@ -145,6 +145,8 @@ export class Game implements IGame, Logger {
   public gagarinBase: Array<SpaceId> = [];
   // St. Joseph of Cupertino Mission
   stJosephCathedrals: Array<SpaceId> = [];
+  // Mars Nomads
+  nomadSpace: SpaceId | undefined = undefined;
 
   // The set of tags available in this game.
   public readonly tags: ReadonlyArray<Tag>;
@@ -417,6 +419,7 @@ export class Game implements IGame, Logger {
       fundedAwards: serializeFundedAwards(this.fundedAwards),
       gagarinBase: this.gagarinBase,
       stJosephCathedrals: this.stJosephCathedrals,
+      nomadSpace: this.nomadSpace,
       gameAge: this.gameAge,
       gameLog: this.gameLog,
       gameOptions: this.gameOptions,
@@ -1202,6 +1205,7 @@ export class Game implements IGame, Logger {
         player.production.add(Resource.HEAT, 1, {log: true});
       }
 
+      player.playedCards.forEach((card) => card.onGlobalParameterIncrease?.(player, GlobalParameter.TEMPERATURE, steps));
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.TEMPERATURE, steps);
       player.increaseTerraformRating(steps);
     }
@@ -1687,6 +1691,7 @@ export class Game implements IGame, Logger {
     game.gagarinBase = d.gagarinBase;
     // TODO(kberg): remove ?? [] by 2023-11-01
     game.stJosephCathedrals = d.stJosephCathedrals ?? [];
+    game.nomadSpace = d.nomadSpace;
 
     // Still in Draft or Research of generation 1
     if (game.generation === 1 && players.some((p) => p.corporations.length === 0)) {

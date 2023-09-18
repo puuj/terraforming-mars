@@ -89,7 +89,7 @@ export class Server {
       passedPlayers: game.getPassedPlayers(),
       pathfinders: createPathfindersModel(game),
       phase: game.phase,
-      spaces: this.getSpaces(game.board, game.gagarinBase, game.stJosephCathedrals),
+      spaces: this.getSpaces(game.board, game.gagarinBase, game.stJosephCathedrals, game.nomadSpace),
       spectatorId: game.spectatorId,
       temperature: game.getTemperature(),
       isTerraformed: game.marsIsTerraformed(),
@@ -227,6 +227,7 @@ export class Server {
       canUseSeeds: undefined,
       canUseData: undefined,
       canUseGraphene: undefined,
+      canUseAsteroids: undefined,
       players: undefined,
       availableSpaces: undefined,
       maxByDefault: undefined,
@@ -236,6 +237,7 @@ export class Server {
       seeds: undefined,
       auroraiData: undefined,
       graphene: undefined,
+      kuiperAsteroids: undefined,
       coloniesModel: undefined,
       payProduction: undefined,
       aresData: undefined,
@@ -270,6 +272,7 @@ export class Server {
       playerInputModel.science = player.getSpendableScienceResources();
       playerInputModel.seeds = player.getSpendableSeedResources();
       playerInputModel.graphene = player.getSpendableGraphene();
+      playerInputModel.kuiperAsteroids = player.getSpendableKuiperAsteroids();
       break;
     case 'card':
       const selectCard = waitingFor as SelectCard<ICard>;
@@ -299,7 +302,10 @@ export class Server {
       playerInputModel.canUseSeeds = sp.canUse.seeds ?? false;
       playerInputModel.seeds = player.getSpendableSeedResources();
       playerInputModel.canUseData = sp.canUse.data ?? false;
+      playerInputModel.auroraiData = player.getSpendableData();
       playerInputModel.canUseGraphene = sp.canUse.graphene && player.getSpendableData() > 0;
+      playerInputModel.canUseAsteroids = sp.canUse.kuiperAsteroids && player.getSpendableKuiperAsteroids() > 0;
+      playerInputModel.kuiperAsteroids = player.getSpendableKuiperAsteroids();
       break;
     case 'player':
       playerInputModel.players = (waitingFor as SelectPlayer).players.map(
@@ -532,7 +538,11 @@ export class Server {
     return undefined;
   }
 
-  private static getSpaces(board: Board, gagarin: ReadonlyArray<SpaceId> = [], cathedrals: ReadonlyArray<SpaceId> = []): Array<SpaceModel> {
+  private static getSpaces(
+    board: Board,
+    gagarin: ReadonlyArray<SpaceId> = [],
+    cathedrals: ReadonlyArray<SpaceId> = [],
+    nomads: SpaceId | undefined = undefined): Array<SpaceModel> {
     const volcanicSpaceIds = board.getVolcanicSpaceIds();
     const noctisCitySpaceIds = board.getNoctisCitySpaceId();
 
@@ -566,6 +576,9 @@ export class Server {
       }
       if (cathedrals.includes(space.id)) {
         model.cathedral = true;
+      }
+      if (space.id === nomads) {
+        model.nomads = true;
       }
 
       return model;

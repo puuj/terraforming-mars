@@ -19,6 +19,7 @@ const RESOURCE_TO_ITEM_TYPE = new Map([
   [CardResource.VENUSIAN_HABITAT, CardRenderItemType.VENUSIAN_HABITAT],
   [CardResource.SPECIALIZED_ROBOT, CardRenderItemType.SPECIALIZED_ROBOT],
   [CardResource.CANDLE, CardRenderItemType.CANDLE],
+  [CardResource.HYDROELECTRIC_RESOURCE, CardRenderItemType.HYDROELECTRIC_RESOURCE],
 ]);
 
 export class CardRenderDynamicVictoryPoints implements ICardRenderDynamicVictoryPoints {

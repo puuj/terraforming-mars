@@ -18,4 +18,5 @@ export enum CardResource {
     ORBITAL = 'Orbital',
     CANDLE = 'Candle',
     GRAPHENE = 'Graphene',
+    HYDROELECTRIC_RESOURCE = 'Hydroelectric resource',
 }
