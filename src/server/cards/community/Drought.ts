@@ -3,7 +3,6 @@ import {CardType} from '../../../common/cards/CardType';
 import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {Tag} from '../../../common/cards/Tag';
 import {RemoveOceanTile} from '../../deferredActions/RemoveOceanTile';
 import {CardRenderer} from '../render/CardRenderer';
@@ -15,7 +14,7 @@ export class Drought extends Card implements IProjectCard {
       tags: [Tag.CITY],
       name: CardName.DROUGHT,
       cost: 7,
-      requirements: CardRequirements.builder((b) => b.oceans(1)),
+      requirements: {oceans: 1},
       metadata: {
         cardNumber: 'J001',
         renderData: CardRenderer.builder((b) => b.minus().oceans(1)),

@@ -4,7 +4,6 @@ import {Player} from '../../Player';
 import {Card} from '../Card';
 import {CardName} from '../../../common/cards/CardName';
 import {Tag} from '../../../common/cards/Tag';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {CardRenderer} from '../render/CardRenderer';
 import {max} from '../Options';
 
@@ -17,7 +16,7 @@ export class DarkHorse extends Card implements IProjectCard {
       cost: 16,
       victoryPoints: 5,
 
-      requirements: CardRequirements.builder((b) => b.temperature(-16, {max})),
+      requirements: {temperature: -16, max},
       metadata: {
         cardNumber: 'J008',
         renderData: CardRenderer.builder((b) => {

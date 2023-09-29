@@ -73,9 +73,9 @@ export class CardRequirements {
     if (descriptor.tag !== undefined) {
       return new TagCardRequirement(descriptor.tag, descriptor);
     } else if (descriptor.cardsInHand !== undefined) {
-      return new CardsInHandRequirement(...descriptor, count: descriptor.cardsInHand);
-    } else if (descriptor.cardsPlayer !== undefined) {
-      return new CardsPlayedRequirement(...descriptor, count: descriptor.cardsPlayed);
+      return new CardsInHandRequirement({...descriptor, count: descriptor.cardsInHand});
+    } else if (descriptor.cardsPlayed !== undefined) {
+      return new CardsPlayedRequirement({...descriptor, count: descriptor.cardsPlayed});
     } else if (descriptor.oceans !== undefined) {
       return new OceanRequirement({...descriptor, count: descriptor.oceans});
     } else if (descriptor.oxygen !== undefined) {

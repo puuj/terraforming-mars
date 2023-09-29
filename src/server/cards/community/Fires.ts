@@ -2,7 +2,6 @@ import {IProjectCard} from '../IProjectCard';
 import {CardType} from '../../../common/cards/CardType';
 import {IPlayer} from '../../IPlayer';
 import {Card} from '../Card';
-import {CardRequirements} from '../requirements/CardRequirements';
 import {Tag} from '../../../common/cards/Tag';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
@@ -14,7 +13,7 @@ export class Fires extends Card implements IProjectCard {
       name: CardName.FIRES,
       tags: [Tag.POWER],
       cost: 10,
-      requirements: CardRequirements.builder((b) => b.oxygen(1)),
+      requirements: {oxygen: 1},
       metadata: {
         cardNumber: 'J002',
         renderData: CardRenderer.builder((b) => {
