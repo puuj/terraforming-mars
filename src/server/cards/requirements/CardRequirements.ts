@@ -61,7 +61,7 @@ export class CardRequirements {
     }
     return result;
   }
-  
+
   public static compile(descriptors: Array<CardRequirementDescriptor> | undefined): CardRequirements {
     if (descriptors === undefined) {
       return new CardRequirements([]);

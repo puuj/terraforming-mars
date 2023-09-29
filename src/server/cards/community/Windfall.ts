@@ -14,7 +14,7 @@ export class Windfall extends Card implements IProjectCard {
       name: CardName.WINDFALL,
       tags: [Tag.JOVIAN],
       cost: 0,
-      requirements: [ {tag: Tag.BUILDING}, {tag: Tag.SPACE}, {tag: Tag.SCIENCE}, {tag: Tag.POWER}, {tag: Tag.EARTH}, {tag: Tag.JOVIAN}, {tag: Tag.PLANT}, {tag: Tag.MICROBE}, {tag: Tag.ANIMAL}, {tag: Tag.CITY}, {production: Resource.MEGACREDITS}, {production: Resource.STEEL}, {production: Resource.TITANIUM}, {production: Resource.PLANTS }, {production: Resource.ENERGY}, {production: Resource.HEAT}, {tr: 30} ],
+      requirements: [{tag: Tag.BUILDING}, {tag: Tag.SPACE}, {tag: Tag.SCIENCE}, {tag: Tag.POWER}, {tag: Tag.EARTH}, {tag: Tag.JOVIAN}, {tag: Tag.PLANT}, {tag: Tag.MICROBE}, {tag: Tag.ANIMAL}, {tag: Tag.CITY}, {production: Resource.MEGACREDITS}, {production: Resource.STEEL}, {production: Resource.TITANIUM}, {production: Resource.PLANTS}, {production: Resource.ENERGY}, {production: Resource.HEAT}, {tr: 30}],
       metadata: {
         cardNumber: 'J010',
         renderData: CardRenderer.builder((b) => {
@@ -28,7 +28,7 @@ export class Windfall extends Card implements IProjectCard {
 
   public override play(player: IPlayer) {
     player.drawCard(4);
-    player.stock.add(Resource.MEGACREDITS,player.production.megacredits);
+    player.stock.add(Resource.MEGACREDITS, player.production.megacredits);
     // player.megaCredits += player.getTerraformRating();
     player.stock.add(Resource.HEAT, player.production.heat);
     player.stock.add(Resource.ENERGY, player.production.energy);

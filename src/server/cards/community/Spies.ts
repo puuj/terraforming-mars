@@ -73,7 +73,7 @@ export class Spies extends Card implements IProjectCard {
         const optionTitle = 'Steal ' + amountStolen + ' titanium from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
-          player.stock.deduct(Resource.MEGACREDITS,1);
+          player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.TITANIUM, amountStolen);
           target.stock.deduct(Resource.TITANIUM, amountStolen, {log: true, from: player, stealing: true});
           return undefined;

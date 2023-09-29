@@ -55,7 +55,7 @@ export interface IPlayer {
   beginner: boolean;
   handicap: number;
   email: string | undefined;
-  
+
   game: IGame;
   tags: Tags;
   colonies: Colonies;
@@ -104,7 +104,7 @@ export interface IPlayer {
   cardCost: number;
   needsToDraft?: boolean;
   passingTo: string;
-  
+
   timer: Timer;
 
   // Turmoil

@@ -947,7 +947,6 @@ export class Game implements IGame, Logger {
   }
 
   private getDraftCardsFrom(player: IPlayer): IPlayer {
-
     // Special-case for the initial draft direction on second iteration
     if (this.generation === 1 && this.initialDraftIteration === 2) {
       return this.getPlayerBefore(player);
@@ -1044,7 +1043,6 @@ export class Game implements IGame, Logger {
     gameLoader.completeGame(this);
     gameLoader.mark(this.id);
     gameLoader.maintenance();
-
   }
 
   // Part of final greenery placement.

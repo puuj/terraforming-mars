@@ -202,7 +202,6 @@ export class MoonExpansion {
         if (player.game.gameOptions.requiresMoonTrackCompletion && player.game.marsIsTerraformed()) {
           player.game.log('Mars is terraformed!');
         }
-
       }
     });
   }
