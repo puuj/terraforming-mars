@@ -33,7 +33,7 @@ export class CeresTechMarket extends Card implements IActionCard {
           b.action('Discard any number of cards from your hand to gain 2 M€ for each discarded card.', (ab) =>
             ab.text('-X').cards(1).startAction.text('2x').megacredits(1, {digit})).br;
           b.megacredits(2).slash().colonies().br;
-          b.plainText('(Gain 2 M€ per colony you own.').br;
+          b.plainText('(Gain 2 M€ per colony you own.)').br;
         }),
       },
     });
@@ -51,15 +51,7 @@ export class CeresTechMarket extends Card implements IActionCard {
       'Discard',
       player.cardsInHand,
       (cards) => {
-        cards.forEach((card) => {
-          for (let i = 0; i < player.cardsInHand.length; i++) {
-            if (player.cardsInHand[i].name === card.name) {
-              player.cardsInHand.splice(i, 1);
-              break;
-            }
-          }
-          player.game.projectDeck.discard(card);
-        });
+        cards.forEach((card) => player.discardCardFromHand(card));
         const megacredits = cards.length * 2;
         player.megaCredits += megacredits;
         player.game.log('${0} gained ${1} M€ by discarding ${2} cards', (b) => b.player(player).number(megacredits).number(cards.length));

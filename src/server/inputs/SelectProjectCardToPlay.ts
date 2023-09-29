@@ -8,6 +8,8 @@ import {InputResponse, isSelectProjectCardToPlayResponse} from '../../common/inp
 import {CardName} from '../../common/cards/CardName';
 import {CanPlayResponse} from '../cards/IProjectCard';
 import {YesAnd} from '../cards/requirements/CardRequirement';
+import {cardsToModel} from '../models/ModelUtils';
+import {SelectProjectCardToPlayModel} from '../../common/models/PlayerInputModel';
 
 export type PlayCardMetadata = {
   reserveUnits: Readonly<Units>;
@@ -42,6 +44,25 @@ export class SelectProjectCardToPlay extends BasePlayerInput {
       }));
   }
 
+  public toModel(player: IPlayer): SelectProjectCardToPlayModel {
+    return {
+      title: this.title,
+      buttonLabel: this.buttonLabel,
+      type: 'projectCard',
+      cards: cardsToModel(player, this.cards, {showCalculatedCost: true, extras: this.extras}),
+      microbes: player.getSpendableMicrobes(),
+      floaters: player.getSpendableFloaters(),
+      paymentOptions: {
+        heat: player.canUseHeatAsMegaCredits,
+        lunaTradeFederationTitanium: player.canUseTitaniumAsMegacredits,
+      },
+      lunaArchivesScience: player.getSpendableLunaArchiveScienceResources(),
+      seeds: player.getSpendableSeedResources(),
+      graphene: player.getSpendableGraphene(),
+      kuiperAsteroids: player.getSpendableKuiperAsteroids(),
+    };
+  }
+
   public process(input: InputResponse) {
     if (!isSelectProjectCardToPlayResponse(input)) {
       throw new Error('Not a valid SelectProjectCardToPlayResponse');
@@ -66,6 +87,9 @@ export class SelectProjectCardToPlay extends BasePlayerInput {
     }
     if (reserveUnits.titanium + input.payment.titanium > this.player.titanium) {
       throw new Error(`${reserveUnits.titanium} units of titanium must be reserved for ${input.card}`);
+    }
+    if (reserveUnits.plants + input.payment.plants > this.player.plants) {
+      throw new Error(`${reserveUnits.titanium} units of plants must be reserved for ${input.card}`);
     }
     const yesAnd = typeof(details.details) === 'boolean' ? undefined : details.details;
     this.payAndPlay(card, input.payment, yesAnd);
