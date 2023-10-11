@@ -5,6 +5,8 @@ import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
 
 interface DeprecatedFields {
+  // TODO(kberg): remove after 2024-11-30
+  hasIncreasedTerraformRatingThisGeneration?: boolean;
 }
 
 export interface SerializedPlayer extends DeprecatedFields{
@@ -33,7 +35,6 @@ export interface SerializedPlayer extends DeprecatedFields{
     energyProduction: number;
     fleetSize: number;
     handicap: number;
-    hasIncreasedTerraformRatingThisGeneration: boolean;
     hasTurmoilScienceTagBonus: boolean;
     heat: number;
     heatProduction: number;
@@ -61,7 +62,6 @@ export interface SerializedPlayer extends DeprecatedFields{
     steelProduction: number;
     steelValue: number;
     terraformRating: number;
-    terraformRatingAtGenerationStart: number;
     timer: SerializedTimer;
     titanium: number;
     titaniumProduction: number;

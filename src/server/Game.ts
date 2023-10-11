@@ -31,7 +31,7 @@ import {PlayerId, GameId, SpectatorId, SpaceId} from '../common/Types';
 import {PlayerInput} from './PlayerInput';
 import {CardResource} from '../common/CardResource';
 import {Resource} from '../common/Resource';
-import {DeferredAction, Priority, SimpleDeferredAction} from './deferredActions/DeferredAction';
+import {AndThen, DeferredAction, Priority, SimpleDeferredAction} from './deferredActions/DeferredAction';
 import {DeferredActionsQueue} from './deferredActions/DeferredActionsQueue';
 import {SelectPaymentDeferred} from './deferredActions/SelectPaymentDeferred';
 import {SelectInitialCards} from './inputs/SelectInitialCards';
@@ -89,6 +89,7 @@ export class Game implements IGame, Logger {
   public undoCount: number = 0; // Each undo increases it
   public inputsThisRound = 0;
   public resettable: boolean = false;
+  public globalsPerGeneration: Array<Partial<Record<GlobalParameter, number>>> = [];
 
   public generation: number = 1;
   public phase: Phase = Phase.RESEARCH;
@@ -147,14 +148,13 @@ export class Game implements IGame, Logger {
   stJosephCathedrals: Array<SpaceId> = [];
   // Mars Nomads
   nomadSpace: SpaceId | undefined = undefined;
-
-  // The set of tags available in this game.
-  public readonly tags: ReadonlyArray<Tag>;
-
   // Trade Embargo
   public tradeEmbargo: boolean = false;
   // Behold The Emperor
   public beholdTheEmperor: boolean = false;
+
+  // The set of tags available in this game.
+  public readonly tags: ReadonlyArray<Tag>;
 
   private constructor(
     id: GameId,
@@ -246,7 +246,6 @@ export class Game implements IGame, Logger {
       gameOptions.randomMA = RandomMAOptionType.NONE;
 
       players[0].setTerraformRating(14);
-      players[0].terraformRatingAtGenerationStart = 14;
     }
 
     const game = new Game(id, players, firstPlayer, activePlayer, gameOptions, rng, board, projectDeck, corporationDeck, preludeDeck, ceoDeck);
@@ -430,6 +429,7 @@ export class Game implements IGame, Logger {
       gameLog: this.gameLog,
       gameOptions: this.gameOptions,
       generation: this.generation,
+      globalsPerGeneration: this.globalsPerGeneration,
       id: this.id,
       initialDraftIteration: this.initialDraftIteration,
       lastSaveId: this.lastSaveId,
@@ -490,11 +490,12 @@ export class Game implements IGame, Logger {
     return ids.map((id) => this.getPlayerById(id));
   }
 
-  public defer(action: DeferredAction, priority?: Priority): void {
+  public defer<T>(action: DeferredAction<T>, priority?: Priority): AndThen<T> {
     if (priority !== undefined) {
       action.priority = priority;
     }
     this.deferredActions.push(action);
+    return action;
   }
 
   public milestoneClaimed(milestone: IMilestone): boolean {
@@ -754,8 +755,6 @@ export class Game implements IGame, Logger {
       this.syndicatePirateRaider = undefined;
       // Trade embargo hook.
       this.tradeEmbargo = false;
-      // Behold The Emperor hook
-      this.beholdTheEmperor = false;
     }
   }
 
@@ -764,6 +763,8 @@ export class Game implements IGame, Logger {
 
     Turmoil.ifTurmoil(this, (turmoil) => {
       turmoil.endGeneration(this);
+      // Behold The Emperor hook
+      this.beholdTheEmperor = false;
     });
 
     // turmoil.endGeneration might have added actions.
@@ -775,22 +776,37 @@ export class Game implements IGame, Logger {
     }
   }
 
-  private updateVPbyGeneration(): void {
+  private updatePlayerVPForTheGeneration(): void {
     this.getPlayers().forEach((player) => {
       player.victoryPointsByGeneration.push(player.getVictoryPoints().total);
     });
   }
 
+  private updateGlobalsForTheGeneration(): void {
+    if (!Array.isArray(this.globalsPerGeneration)) {
+      this.globalsPerGeneration = [];
+    }
+    this.globalsPerGeneration.push({});
+    const entry = this.globalsPerGeneration[this.globalsPerGeneration.length - 1];
+    entry[GlobalParameter.TEMPERATURE] = this.temperature;
+    entry[GlobalParameter.OXYGEN] = this.oxygenLevel;
+    entry[GlobalParameter.OCEANS] = this.board.getOceanSpaces().length;
+    if (this.gameOptions.venusNextExtension) {
+      entry[GlobalParameter.VENUS] = this.venusScaleLevel;
+    }
+    MoonExpansion.ifMoon(this, (moonData) => {
+      entry[GlobalParameter.MOON_HABITAT_RATE] = moonData.habitatRate;
+      entry[GlobalParameter.MOON_MINING_RATE] = moonData.miningRate;
+      entry[GlobalParameter.MOON_LOGISTICS_RATE] = moonData.logisticRate;
+    });
+  }
+
   private goToDraftOrResearch() {
-    this.updateVPbyGeneration();
+    this.updatePlayerVPForTheGeneration();
+    this.updateGlobalsForTheGeneration();
     this.generation++;
     this.log('Generation ${0}', (b) => b.forNewGeneration().number(this.generation));
     this.incrementFirstPlayer();
-
-    this.players.forEach((player) => {
-      player.terraformRatingAtGenerationStart = player.getTerraformRating();
-      player.hasIncreasedTerraformRatingThisGeneration = false;
-    });
 
     if (this.gameOptions.draftVariant) {
       this.gotoDraftPhase();
@@ -1087,7 +1103,8 @@ export class Game implements IGame, Logger {
         this.donePlayers.add(player.id);
       }
     }
-    this.updateVPbyGeneration();
+    this.updatePlayerVPForTheGeneration();
+    this.updateGlobalsForTheGeneration();
     this.gotoEndGame();
   }
 
@@ -1558,14 +1575,14 @@ export class Game implements IGame, Logger {
     if (cardCount === 1) {
       const card = this.projectDeck.draw(this);
       this.projectDeck.discard(card);
-      this.log('Drew and discarded ${0} (cost ${1}) to place a ${2}', (b) => b.card(card).number(card.cost).tileType(toPlace));
+      this.log('Drew and discarded ${0} to place a ${1}', (b) => b.card(card, {cost: true}).tileType(toPlace));
       return card.cost;
     } else {
       const card1 = this.projectDeck.draw(this);
       this.projectDeck.discard(card1);
       const card2 = this.projectDeck.draw(this);
       this.projectDeck.discard(card2);
-      this.log('Drew and discarded ${0} (cost ${1}) and ${2} (cost ${3}) to place a ${4}', (b) => b.card(card1).number(card1.cost).card(card2).number(card2.cost).tileType(toPlace));
+      this.log('Drew and discarded ${0} and ${1} to place a ${2}', (b) => b.card(card1, {cost: true}).card(card2, {cost: true}).tileType(toPlace));
       return card1.cost + card2.cost;
     }
   }
@@ -1702,12 +1719,13 @@ export class Game implements IGame, Logger {
     game.someoneHasRemovedOtherPlayersPlants = d.someoneHasRemovedOtherPlayersPlants;
     game.syndicatePirateRaider = d.syndicatePirateRaider;
     game.gagarinBase = d.gagarinBase;
-    // TODO(kberg): remove ?? [] by 2023-11-01
+    // TODO(kberg): remove ?? [] after 2023-11-01
     game.stJosephCathedrals = d.stJosephCathedrals ?? [];
     game.nomadSpace = d.nomadSpace;
     game.tradeEmbargo = d.tradeEmbargo ?? false;
     game.beholdTheEmperor = d.beholdTheEmperor ?? false;
-
+    // TODO(kberg): remove ?? {} after 2023-11-30
+    game.globalsPerGeneration = d.globalsPerGeneration ?? [];
     // Still in Draft or Research of generation 1
     if (game.generation === 1 && players.some((p) => p.corporations.length === 0)) {
       if (game.phase === Phase.INITIALDRAFTING) {

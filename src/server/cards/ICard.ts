@@ -17,6 +17,7 @@ import {Behavior} from '../behavior/Behavior';
 import {TRSource} from '../../common/cards/TRSource';
 import {CardRequirementDescriptor} from '../../common/cards/CardRequirementDescriptor';
 import {OneOrArray} from '../../common/utils/types';
+import {JSONValue} from '../../common/Types';
 
 /*
  * Represents a card which has an action that itself allows a player
@@ -39,19 +40,19 @@ export type DynamicTRSource = (player: IPlayer) => TRSource;
 export interface ICard {
   name: CardName;
   tags: Array<Tag>;
-  play: (player: IPlayer) => PlayerInput | undefined;
-  getCardDiscount?: (player: IPlayer, card: IProjectCard) => number;
+  play(player: IPlayer): PlayerInput | undefined;
+  getCardDiscount?(player: IPlayer, card: IProjectCard): number;
   cardDiscount?: OneOrArray<CardDiscount>;
   // parameter is a Morningstar Inc. special case.
-  getRequirementBonus?: (player: IPlayer, parameter: GlobalParameter) => number;
+  getRequirementBonus?(player: IPlayer, parameter: GlobalParameter): number;
   victoryPoints?: number | 'special' | IVictoryPoints,
-  getVictoryPoints: (player: IPlayer) => number;
+  getVictoryPoints(player: IPlayer): number;
   /** Called when cards are played. However, if this is a corp, it'll be called when opponents play cards, too. */
-  onCardPlayed?: (player: IPlayer, card: IProjectCard) => PlayerInput | undefined | void;
-  onCardPlayedFromAnyPlayer?: (thisCardOwner: IPlayer, playedCardOwner: IPlayer, card: IProjectCard) => PlayerInput | undefined;
-  onStandardProject?: (player: IPlayer, project: ICard) => void;
-  onTilePlaced?: (cardOwner: IPlayer, activePlayer: IPlayer, space: Space, boardType: BoardType) => void;
-  onDiscard?: (player: IPlayer) => void;
+  onCardPlayed?(player: IPlayer, card: IProjectCard): PlayerInput | undefined | void;
+  onCardPlayedFromAnyPlayer?(thisCardOwner: IPlayer, playedCardOwner: IPlayer, card: IProjectCard): PlayerInput | undefined;
+  onStandardProject?(player: IPlayer, project: ICard): void;
+  onTilePlaced?(cardOwner: IPlayer, activePlayer: IPlayer, space: Space, boardType: BoardType): void;
+  onDiscard?(player: IPlayer): void;
   /**
    * Called when anybody gains TR
    *
@@ -70,7 +71,7 @@ export interface ICard {
    * for cards like Meat Industry, `playedCard` is the destination card.
    * @param count the number of resources added to `card`
    */
-  onResourceAdded?: (player: IPlayer, playedCard: ICard, count: number) => void;
+  onResourceAdded?(player: IPlayer, playedCard: ICard, count: number): void;
 
   cost?: number; /** Used with IProjectCard and PreludeCard. */
   type: CardType;
@@ -78,13 +79,19 @@ export interface ICard {
   metadata: ICardMetadata;
   warning?: string | Message;
   behavior?: Behavior,
-  produce?: (player: IPlayer) => void;
+  produce?(player: IPlayer): void;
   tr?: TRSource | DynamicTRSource;
   resourceCount: number;
   resourceType?: CardResource;
   /** Currently used for The Moon, but can be expanded to encompass other tile-placing cards. */
   tilesBuilt?: Array<TileType>;
   isDisabled?: boolean; // For Pharmacy Union and CEO cards.
+  /**
+   * Extra data that the game will serialize and deserialize along with the card.
+   *
+   * ONLY store plain JSON data. Classes, objects, functions, will all be incorrectly serialized.
+   */
+  data?: JSONValue;
 }
 
 export interface IActionCard {

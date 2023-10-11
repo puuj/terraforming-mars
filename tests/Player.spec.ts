@@ -116,13 +116,13 @@ describe('Player', function() {
   it('Chains onend functions from player inputs', function(done) {
     const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
     Game.newInstance('gameid', [player], player);
-    const mockOption3 = new SelectOption('Mock select option 3', 'Save', () => {
+    const mockOption3 = new SelectOption('Mock select option 3').andThen(() => {
       return undefined;
     });
-    const mockOption2 = new SelectOption('Mock select option 2', 'Save', () => {
+    const mockOption2 = new SelectOption('Mock select option 2').andThen(() => {
       return mockOption3;
     });
-    const mockOption = new SelectOption('Mock select option', 'Save', () => {
+    const mockOption = new SelectOption('Mock select option').andThen(() => {
       return mockOption2;
     });
     player.setWaitingFor(mockOption, done);
@@ -206,8 +206,6 @@ describe('Player', function() {
       pickedCorporationCard: 'Tharsis Republic' as CardName,
       terraformRating: 20,
       corporations: [],
-      hasIncreasedTerraformRatingThisGeneration: false,
-      terraformRatingAtGenerationStart: 20,
       megaCredits: 1,
       megaCreditProduction: 2,
       steel: 3,

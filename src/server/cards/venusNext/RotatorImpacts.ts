@@ -11,6 +11,7 @@ import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred
 import {CardRenderer} from '../render/CardRenderer';
 import {Card} from '../Card';
 import {max} from '../Options';
+import {TITLES} from '../../inputs/titles';
 
 export class RotatorImpacts extends Card implements IActionCard {
   constructor() {
@@ -47,8 +48,8 @@ export class RotatorImpacts extends Card implements IActionCard {
   public action(player: IPlayer) {
     const opts: Array<SelectOption> = [];
 
-    const addResource = new SelectOption('Pay 6 M€ to add 1 asteroid to this card', 'Pay', () => this.addResource(player));
-    const spendResource = new SelectOption('Remove 1 asteroid to raise Venus 1 step', 'Remove asteroid', () => this.spendResource(player));
+    const addResource = new SelectOption('Pay 6 M€ to add 1 asteroid to this card', 'Pay').andThen(() => this.addResource(player));
+    const spendResource = new SelectOption('Remove 1 asteroid to raise Venus 1 step', 'Remove asteroid').andThen(() => this.spendResource(player));
 
     if (this.resourceCount > 0 && player.game.getVenusScaleLevel() < MAX_VENUS_SCALE) {
       opts.push(spendResource);
@@ -66,7 +67,7 @@ export class RotatorImpacts extends Card implements IActionCard {
   }
 
   private addResource(player: IPlayer) {
-    player.game.defer(new SelectPaymentDeferred(player, 6, {canUseTitanium: true, title: 'Select how to pay for action'}));
+    player.game.defer(new SelectPaymentDeferred(player, 6, {canUseTitanium: true, title: TITLES.payForCardAction(this.name)}));
     player.addResourceTo(this, {log: true});
     return undefined;
   }
