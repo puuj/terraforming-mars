@@ -48,7 +48,7 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.megacredits);
         const optionTitle = 'Steal ' + amountStolen + ' MC from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.MEGACREDITS, amountStolen);
           target.stock.deduct(Resource.MEGACREDITS, amountStolen, {log: true, from: player, stealing: true});
@@ -60,7 +60,7 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.steel);
         const optionTitle = 'Steal ' + amountStolen + ' steel from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.STEEL, amountStolen);
           target.stock.deduct(Resource.STEEL, amountStolen, {log: true, from: player, stealing: true});
@@ -72,7 +72,7 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.titanium);
         const optionTitle = 'Steal ' + amountStolen + ' titanium from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen( () => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.TITANIUM, amountStolen);
           target.stock.deduct(Resource.TITANIUM, amountStolen, {log: true, from: player, stealing: true});
@@ -84,7 +84,7 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.plants);
         const optionTitle = 'Steal ' + amountStolen + ' plants from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.PLANTS, amountStolen);
           target.stock.deduct(Resource.PLANTS, amountStolen, {log: true, from: player, stealing: true});
@@ -96,7 +96,7 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.energy);
         const optionTitle = 'Steal ' + amountStolen + ' energy from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.ENERGY, amountStolen);
           target.stock.deduct(Resource.ENERGY, amountStolen, {log: true, from: player, stealing: true});
@@ -108,7 +108,7 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.heat);
         const optionTitle = 'Steal ' + amountStolen + ' heat from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle, 'Confirm', () => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
           player.stock.add(Resource.HEAT, amountStolen);
           target.stock.deduct(Resource.HEAT, amountStolen, {log: true, from: player, stealing: true});

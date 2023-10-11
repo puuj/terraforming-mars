@@ -793,7 +793,8 @@ export class Player implements IPlayer {
         newMessage('Select a corporation to keep and pass the rest to ${0}', (b) => b.rawString(playerName)), // TODO(kberg): replace with player?`
         'Keep',
         cards,
-        (foundCards: Array<ICorporationCard>) => {
+        {min: 1, max: 1, played: false})
+        .andThen((foundCards: Array<ICorporationCard>) => {
           foundCards.forEach((card) => {
             this.draftedCorporations.push(card);
             this.game.log('${0} kept ${1}', (b) => b.player(this).card(card));
@@ -801,8 +802,9 @@ export class Player implements IPlayer {
           });
           this.game.playerIsFinishedWithDraftingCorporationPhase(this, cards);
           return undefined;
-        }, {min: 1, max: 1, played: false}),
+        }),
     );
+         
   }
 
   /**
