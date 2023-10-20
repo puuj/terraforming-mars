@@ -267,6 +267,7 @@ describe('Player', function() {
       email: 'test@example.com',
       totalDelegatesPlaced: 0,
       victoryPointsByGeneration: [],
+      underworldData: {corruption: 0},
     };
 
     const newPlayer = Player.deserialize(json);

@@ -1,13 +1,21 @@
 import {CardName} from '../../../common/cards/CardName';
 import {ModuleManifest} from '../ModuleManifest';
+import {GlobalEventName} from '../../../common/turmoil/globalEvents/GlobalEventName';
+
+import {AerospaceMission} from './AerospaceMission';
 import {AgricolaInc} from './AgricolaInc';
+import {ByElection} from './ByElection';
+import {CuriosityII} from './CuriosityII';
+import {ExecutiveOrder} from './ExecutiveOrder';
 import {Incite} from './Incite';
+import {JunkVentures} from './JunkVentures';
+import {LeadershipSummit} from './LeadershipSummit';
+import {Midas} from './Midas';
 import {Playwrights} from './Playwrights';
+import {PoliticalUprising} from './PoliticalUprising';
 import {ProjectWorkshop} from './ProjectWorkshop';
 import {ResearchGrant} from './ResearchGrant';
-import {ValuableGases} from './ValuableGases';
-import {VenusFirst} from './VenusFirst';
-import {AerospaceMission} from './AerospaceMission';
+import {SpecialDesignProxy} from './SpecialDesignProxy';
 import {TradeAdvance} from './TradeAdvance';
 import {PoliticalUprising} from './PoliticalUprising';
 import {ByElection} from './ByElection';
@@ -26,8 +34,8 @@ import {Uno} from './Uno';
 import {Windfall} from './Windfall';
 import {ExecutiveOrder} from './ExecutiveOrder';
 import {UnitedNationsMissionOne} from './UnitedNationsMissionOne';
-import {JunkVentures} from './JunkVentures';
-import {SpecialDesignProxy} from './SpecialDesignProxy';
+import {ValuableGases} from './ValuableGases';
+import {VenusFirst} from './VenusFirst';
 
 export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
   module: 'community',
@@ -65,6 +73,7 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
     [CardName.BY_ELECTION]: {Factory: ByElection, compatibility: 'turmoil'},
     [CardName.EXECUTIVE_ORDER]: {Factory: ExecutiveOrder, compatibility: 'turmoil'},
   },
-
-
+  globalEvents: {
+    [GlobalEventName.LEADERSHIP_SUMMIT]: {Factory: LeadershipSummit},
+  },
 });

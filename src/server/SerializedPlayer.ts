@@ -3,9 +3,10 @@ import {CardName} from '../common/cards/CardName';
 import {Color} from '../common/Color';
 import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
+import {UnderworldPlayerData} from './underworld/UnderworldData';
 
 interface DeprecatedFields {
-  // TODO(kberg): remove after 2024-11-30
+  // TODO(kberg): remove after 2023-11-30
   hasIncreasedTerraformRatingThisGeneration?: boolean;
 }
 
@@ -69,5 +70,6 @@ export interface SerializedPlayer extends DeprecatedFields{
     totalDelegatesPlaced: number;
     tradesThisGeneration: number;
     turmoilPolicyActionUsed: boolean;
+    underworldData: UnderworldPlayerData;
     victoryPointsByGeneration: Array<number>;
 }
