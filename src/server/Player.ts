@@ -779,7 +779,7 @@ export class Player implements IPlayer {
 
     this.setWaitingFor(
       new SelectCard(
-        newMessage('Select a corporation to keep and pass the rest to ${0}', (b) => b.rawString(playerName)), // TODO(kberg): replace with player?`
+        message('Select a corporation to keep and pass the rest to ${0}', (b) => b.rawString(playerName)), // TODO(kberg): replace with player?`
         'Keep',
         cards,
         {min: 1, max: 1, played: false})
