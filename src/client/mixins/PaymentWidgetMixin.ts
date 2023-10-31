@@ -7,7 +7,8 @@ import {Tag} from '@/common/cards/Tag';
 import {Units} from '@/common/Units';
 import {CardResource} from '@/common/CardResource';
 import {getCard} from '@/client/cards/ClientCardManifest';
-import {DEFAULT_PAYMENT_VALUES, PAYMENT_UNITS, Payment, PaymentUnit} from '@/common/inputs/Payment';
+import {DEFAULT_PAYMENT_VALUES, Payment} from '@/common/inputs/Payment';
+import {SPENDABLE_RESOURCES, SpendableResource} from '@/common/inputs/Spendable';
 
 export type SelectPaymentDataModel = {
   card?: CardModel;
@@ -25,7 +26,7 @@ export type SelectProjectCardToPlayDataModel = SelectPaymentDataModel & {
   card: CardModel;
   reserveUnits: Units;
   tags: Array<Tag>;
-  available: Units;
+  available: Omit<Units, 'megacredits' | 'energy'>;
 }
 
 type PaymentWidgetModel = SelectPaymentDataModel & Partial<SelectProjectCardToPlayDataModel> & {
@@ -52,7 +53,7 @@ export const PaymentWidgetMixin = {
       const model = this.asModel();
       return Math.min(this.getAvailableUnits('megaCredits'), model.cost);
     },
-    getResourceRate(unit: PaymentUnit): number {
+    getResourceRate(unit: SpendableResource): number {
       switch (unit) {
       case 'steel':
         return this.asModel().playerView.thisPlayer.steelValue;
@@ -71,39 +72,48 @@ export const PaymentWidgetMixin = {
       }
       return titaniumValue;
     },
-    reduceValue(unit: PaymentUnit, delta: number): void {
+    /**
+     * Reduce `unit` by one.
+     */
+    reduceValue(unit: SpendableResource): void {
       const currentValue: number | undefined = this.asModel().payment[unit];
       if (currentValue === undefined) {
         throw new Error(`can not reduceValue for ${unit} on this`);
       }
 
-      const adjustedDelta = Math.min(delta, currentValue);
+      const adjustedDelta = Math.min(1, currentValue);
       if (adjustedDelta === 0) return;
       this.asModel().payment[unit] -= adjustedDelta;
       if (unit !== 'megaCredits') this.setRemainingMCValue();
     },
-    // max is the largest value this item can be. It's not the largest delta.
-    addValue(unit: PaymentUnit, delta: number, max?: number): void {
+    /**
+     * Increase `unit` by one.
+     */
+    addValue(unit: SpendableResource): void {
       const currentValue: number | undefined = this.asModel().payment[unit];
       if (currentValue === undefined) {
         throw new Error(`can not addValue for ${unit} on this`);
       }
 
-      let maxValue: number = max ?? this.getAvailableUnits(unit);
-      // TODO(kberg): Remove this special code for MC?
-      if (unit === 'megaCredits') {
-        maxValue = this.getMegaCreditsMax();
-      }
+      // Maxiumum value for this unit.
+      // MC has a special-case because the max isn't how many MC the player has,
+      // but how much they need to spend.
+      const maxValue =
+        unit === 'megaCredits' ?
+          this.getMegaCreditsMax() :
+          this.getAvailableUnits(unit);
 
       if (currentValue === maxValue) {
         return;
       }
 
-      const adjustedDelta = Math.min(delta, maxValue - currentValue);
-      if (adjustedDelta === 0) {
+      // addValue used to take a delta parameter, but now add only goes up by one.
+      // This Math.min is probably no longer necessary.
+      const delta = Math.min(1, maxValue - currentValue);
+      if (delta === 0) {
         return;
       }
-      this.asModel().payment[unit] += adjustedDelta;
+      this.asModel().payment[unit] += delta;
       if (unit !== 'megaCredits') {
         this.setRemainingMCValue();
       }
@@ -113,17 +123,16 @@ export const PaymentWidgetMixin = {
 
       let remainingMC = ta.cost;
 
-      for (const resource of PAYMENT_UNITS) {
+      for (const resource of SPENDABLE_RESOURCES) {
         if (resource === 'megaCredits') {
           continue;
         }
         const value = (ta.payment[resource] ?? 0) * this.getResourceRate(resource);
         remainingMC -= value;
       }
-
       ta.payment.megaCredits = Math.max(0, Math.min(this.getMegaCreditsMax(), remainingMC));
     },
-    setMaxValue(unit: PaymentUnit, max?: number): void {
+    setMaxValue(unit: SpendableResource): void {
       let currentValue: number | undefined = this.asModel().payment[unit];
       if (currentValue === undefined) {
         throw new Error(`can not setMaxValue for ${unit} on this`);
@@ -134,27 +143,36 @@ export const PaymentWidgetMixin = {
       const amountHave: number = this.getAvailableUnits(unit);
 
       while (currentValue < amountHave && currentValue < amountNeed) {
-        this.addValue(unit, 1, max);
+        this.addValue(unit);
         currentValue++;
       }
     },
     // Perhaps this is unnecessary. It's just a >0 check.
-    hasUnits(unit: PaymentUnit): boolean {
+    hasUnits(unit: SpendableResource): boolean {
       return this.getAvailableUnits(unit) > 0;
     },
-    getAvailableUnits(unit: PaymentUnit): number {
+    getAvailableUnits(unit: SpendableResource): number {
       let amount: number | undefined = undefined;
       const model = this.asModel();
       const thisPlayer = model.playerView.thisPlayer;
       switch (unit) {
       case 'heat':
-        amount = this.availableHeat();
+        if (model.hasOwnProperty('available')) {
+          amount = model.available?.[unit] ?? -1;
+        } else {
+          amount = this.availableHeat();
+        }
         break;
 
       case 'steel':
       case 'titanium':
-      case 'megaCredits':
       case 'plants':
+        if (model.hasOwnProperty('available')) {
+          amount = model.available?.[unit] ?? -1;
+          break;
+        }
+      // eslint-disable-next-line no-fallthrough
+      case 'megaCredits':
         amount = thisPlayer[unit];
         break;
 
@@ -199,11 +217,29 @@ export const PaymentWidgetMixin = {
       const model = this.asModel();
       const thisPlayer = model.playerView.thisPlayer;
       const stormcraft = thisPlayer.tableau.find((card) => card.name === CardName.STORMCRAFT_INCORPORATED);
-      if (stormcraft !== undefined && stormcraft.resources !== undefined) {
+      if (stormcraft?.resources !== undefined) {
         return thisPlayer.heat + (stormcraft.resources * 2);
       }
       return thisPlayer.heat;
     },
-
+  },
+  computed: {
+    descriptions(): Record<SpendableResource, string> {
+      return {
+        steel: 'Steel',
+        titanium: 'Titanium',
+        heat: 'Heat',
+        seeds: 'Seeds',
+        auroraiData: 'Data',
+        kuiperAsteroids: 'Asteroids',
+        spireScience: 'Science',
+        megaCredits: 'M€',
+        floaters: 'Floaters',
+        graphene: 'Graphene',
+        lunaArchivesScience: 'Science',
+        microbes: 'Microbes',
+        plants: 'Plants',
+      };
+    },
   },
 };

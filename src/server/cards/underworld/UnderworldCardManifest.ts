@@ -9,11 +9,11 @@ import {AntiTrustCrackdown} from './AntiTrustCrackdown';
 // // import {AresMedia} from './AresMedia';
 // import {ArtesianAquifer} from './ArtesianAquifer';
 // import {BatteryFactory} from './BatteryFactory';
-// import {BatteryShipment} from './BatteryShipment';
+import {BatteryShipment} from './BatteryShipment';
 // import {BehemothExcavator} from './BehemothExcavator';
 // import {Casino} from './Casino';
 // import {CaveCity} from './CaveCity';
-// import {CentralReservoir} from './CentralReservoir';
+import {CentralReservoir} from './CentralReservoir';
 // import {ChemicalFactory} from './ChemicalFactory';
 // import {ClassActionLawsuit} from './ClassActionLawsuit';
 // import {CloudVortexOutpost} from './CloudVortexOutpost';
@@ -28,16 +28,16 @@ import {AntiTrustCrackdown} from './AntiTrustCrackdown';
 // import {DeepwaterDome} from './DeepwaterDome';
 // import {DemetronLabs} from './DemetronLabs';
 // import {EarthquakeMachine} from './EarthquakeMachine';
-// import {ElectionSponsorship} from './ElectionSponsorship';
+import {ElectionSponsorship} from './ElectionSponsorship';
 // import {ExcavateStandardProject} from './ExcavateStandardProject';
 // import {ExcavatorLeasing} from './ExcavatorLeasing';
 // import {ExpeditionVehicles} from './ExpeditionVehicles';
-// import {FabricatedScandal} from './FabricatedScandal';
-// import {ForestTunnels} from './ForestTunnels';
-// import {FreeTradePort} from './FreeTradePort';
+import {FabricatedScandal} from './FabricatedScandal';
+import {ForestTunnels} from './ForestTunnels';
+import {FreeTradePort} from './FreeTradePort';
 // // import {FriendsinHighPlaces} from './FriendsinHighPlaces';
 // // import {GaiaCity} from './GaiaCity';
-// import {GanymedeTradingCompany} from './GanymedeTradingCompany';
+import {GanymedeTradingCompany} from './GanymedeTradingCompany';
 // import {GeologicalExpertise} from './GeologicalExpertise';
 // // import {GeologicalExpertise} from './GeologicalExpertise';
 // import {GeologicalSurvey} from './GeologicalSurvey';
@@ -56,10 +56,10 @@ import {AntiTrustCrackdown} from './AntiTrustCrackdown';
 // import {ImportedHeavyMachinery} from './ImportedHeavyMachinery';
 // import {InducedTremor} from './InducedTremor';
 // import {InfrastructureOverload} from './InfrastructureOverload';
-// import {InheritedFortune} from './InheritedFortune';
+import {InheritedFortune} from './InheritedFortune';
 // // import {IntellectualPropertyTheft} from './IntellectualPropertyTheft';
 // import {InvestigativeJournalism} from './InvestigativeJournalism';
-// import {InvestorPlaza} from './InvestorPlaza';
+import {InvestorPlaza} from './InvestorPlaza';
 // import {JensonBoyleCo} from './JensonBoyleCo';
 // import {Keplertec} from './Keplertec';
 // // import {Keplertec} from './Keplertec';
@@ -67,7 +67,7 @@ import {AntiTrustCrackdown} from './AntiTrustCrackdown';
 // import {LaborTrafficking} from './LaborTrafficking';
 // import {Landfill} from './Landfill';
 // import {LobbyingNetwork} from './LobbyingNetwork';
-// import {ManMadeVolcano} from './ManMadeVolcano';
+import {ManMadeVolcano} from './ManMadeVolcano';
 // import {MartianExpress} from './MartianExpress';
 // // import {MediaFrenzy} from './MediaFrenzy';
 // // import {MercenaryAssault} from './MercenaryAssault';
@@ -79,9 +79,9 @@ import {AntiTrustCrackdown} from './AntiTrustCrackdown';
 // import {Nanofoundry} from './Nanofoundry';
 // import {NarrativeSpin} from './NarrativeSpin';
 // // import {Neutrinograph} from './Neutrinograph';
-// import {Nightclubs} from './Nightclubs';
-// import {OffWorldTaxHaven} from './OffWorldTaxHaven';
-// import {OldWorldMafia} from './OldWorldMafia';
+import {Nightclubs} from './Nightclubs';
+import {OffWorldTaxHaven} from './OffWorldTaxHaven';
+import {OldWorldMafia} from './OldWorldMafia';
 // import {OrbitalLaserDrill} from './OrbitalLaserDrill';
 // import {PatentManipulation} from './PatentManipulation';
 // import {PersonalSpacecruiser} from './PersonalSpacecruiser';
@@ -109,17 +109,17 @@ import {Scapegoat} from './Scapegoat';
 // import {StarVegas} from './StarVegas';
 // import {StemFieldSubsidies} from './StemFieldSubsidies';
 // import {SubnauticPirates} from './SubnauticPirates';
-// import {SubterraneanSea} from './SubterraneanSea';
+import {SubterraneanSea} from './SubterraneanSea';
 // // import {ThiolavaVents} from './ThiolavaVents';
 // import {TitanManufacturingColony} from './TitanManufacturingColony';
-// import {TunnelBoringMachine} from './TunnelBoringMachine';
+import {TunnelBoringMachine} from './TunnelBoringMachine';
 // import {TunnelingOperation} from './TunnelingOperation';
-// import {TunnelingSubcontractor} from './TunnelingSubcontractor';
+import {TunnelingSubcontractor} from './TunnelingSubcontractor';
 // import {UndergroundAmusementPark} from './UndergroundAmusementPark';
 // import {UndergroundHabitat} from './UndergroundHabitat';
 // import {UndergroundRailway} from './UndergroundRailway';
 // // import {UndergroundResearchCenter} from './UndergroundResearchCenter';
-// import {UndergroundSettlement} from './UndergroundSettlement';
+import {UndergroundSettlement} from './UndergroundSettlement';
 // import {UndergroundShelters} from './UndergroundShelters';
 // import {UndergroundSmugglingRing} from './UndergroundSmugglingRing';
 // import {Voltagon} from './Voltagon';
@@ -134,23 +134,23 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     // // 1-9
     // [CardName.GEOLOGIST_TEAM]: {Factory: GeologistTeam},
     // [CardName.GEOSCAN_SATELLITE]: {Factory: GeoscanSatellite},
-    // [CardName.TUNNEL_BORING_MACHINE]: {Factory: TunnelBoringMachine},
+    [CardName.TUNNEL_BORING_MACHINE]: {Factory: TunnelBoringMachine},
     // [CardName.UNDERGROUND_RAILWAY]: {Factory: UndergroundRailway},
     // // [CardName.GAIA_CITY]: {Factory: GaiaCity},
     // [CardName.DEEPNUKING]: {Factory: Deepnuking},
-    // [CardName.OLD_WORLD_MAFIA]: {Factory: OldWorldMafia},
-    // [CardName.NIGHTCLUBS]: {Factory: Nightclubs},
+    [CardName.OLD_WORLD_MAFIA]: {Factory: OldWorldMafia},
+    [CardName.NIGHTCLUBS]: {Factory: Nightclubs},
     // [CardName.RECKLESS_DETONATION]: {Factory: RecklessDetonation},
     // // 10-18
-    // [CardName.OFF_WORLD_TAX_HAVEN]: {Factory: OffWorldTaxHaven},
+    [CardName.OFF_WORLD_TAX_HAVEN]: {Factory: OffWorldTaxHaven},
     // [CardName.SUBNAUTIC_PIRATES]: {Factory: SubnauticPirates},
     // // [CardName.SOCIAL_ENGINEERING]: {Factory: SocialEngineering}, // Use another player's action. Not right now.
-    // [CardName.FABRICATED_SCANDAL]: {Factory: FabricatedScandal},
+    [CardName.FABRICATED_SCANDAL]: {Factory: FabricatedScandal},
     // [CardName.LABOR_TRAFFICKING]: {Factory: LaborTrafficking},
-    // [CardName.SUBTERRANEAN_SEA]: {Factory: SubterraneanSea},
-    // [CardName.FOREST_TUNNELS]: {Factory: ForestTunnels},
-    // [CardName.MAN_MADE_VOLCANO]: {Factory: ManMadeVolcano},
-    // [CardName.TUNNELING_SUBCONTRACTOR]: {Factory: TunnelingSubcontractor},
+    [CardName.SUBTERRANEAN_SEA]: {Factory: SubterraneanSea},
+    [CardName.FOREST_TUNNELS]: {Factory: ForestTunnels},
+    [CardName.MAN_MADE_VOLCANO]: {Factory: ManMadeVolcano},
+    [CardName.TUNNELING_SUBCONTRACTOR]: {Factory: TunnelingSubcontractor},
     // // 19-27
     // [CardName.UNDERGROUND_AMUSEMENT_PARK]: {Factory: UndergroundAmusementPark},
     // [CardName.CASINO]: {Factory: Casino},
@@ -260,20 +260,20 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
   },
 
   preludeCards: {
-    // [CardName.FREE_TRADE_PORT]: {Factory: FreeTradePort},
-    // [CardName.INVESTOR_PLAZA]: {Factory: InvestorPlaza},
-    // [CardName.INHERITED_FORTUNE]: {Factory: InheritedFortune},
+    [CardName.FREE_TRADE_PORT]: {Factory: FreeTradePort, compatibility: 'colonies'},
+    [CardName.INVESTOR_PLAZA]: {Factory: InvestorPlaza},
+    [CardName.INHERITED_FORTUNE]: {Factory: InheritedFortune},
     // // [CardName.INTELLECTUAL_PROPERTY_THEFT]: {Factory: IntellectualPropertyTheft},
     // [CardName.TUNNELING_OPERATION]: {Factory: TunnelingOperation},
     // [CardName.GEOLOGICAL_EXPERTISE]: {Factory: GeologicalExpertise},
-    // [CardName.UNDERGROUND_SETTLEMENT]: {Factory: UndergroundSettlement},
-    // [CardName.GANYMEDE_TRADING_COMPANY]: {Factory: GanymedeTradingCompany},
-    // [CardName.CENTRAL_RESERVOIR]: {Factory: CentralReservoir},
-    // [CardName.BATTERY_SHIPMENT]: {Factory: BatteryShipment},
+    [CardName.UNDERGROUND_SETTLEMENT]: {Factory: UndergroundSettlement},
+    [CardName.GANYMEDE_TRADING_COMPANY]: {Factory: GanymedeTradingCompany, compatibility: 'colonies'},
+    [CardName.CENTRAL_RESERVOIR]: {Factory: CentralReservoir},
+    [CardName.BATTERY_SHIPMENT]: {Factory: BatteryShipment},
     // [CardName.DEEPWATER_DOME]: {Factory: DeepwaterDome},
     // [CardName.SECRET_RESEARCH]: {Factory: SecretResearch},
     // [CardName.PROSPECTING]: {Factory: Prospecting, compatibility: 'colonies'},
-    // [CardName.ELECTION_SPONSORSHIP]: {Factory: ElectionSponsorship, compatibility: 'turmoil'},
+    [CardName.ELECTION_SPONSORSHIP]: {Factory: ElectionSponsorship, compatibility: 'turmoil'},
     // [CardName.CLOUD_VORTEX_OUTPOST]: {Factory: CloudVortexOutpost, compatibility: 'venus'},
   },
 
