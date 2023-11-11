@@ -107,7 +107,6 @@ export class GameHandler extends Handler {
             politicalAgendasExtension: gameReq.politicalAgendasExtension,
             moonExpansion: gameReq.moonExpansion,
             pathfindersExpansion: gameReq.pathfindersExpansion,
-            underworldExpansion: false,
             promoCardsOption: gameReq.promoCardsOption,
             communityCardsOption: gameReq.communityCardsOption,
             solarPhaseOption: gameReq.solarPhaseOption,
@@ -140,6 +139,7 @@ export class GameHandler extends Handler {
             customCeos: gameReq.customCeos,
             startingCeos: gameReq.startingCeos,
             starWarsExpansion: gameReq.starWarsExpansion,
+            underworldExpansion: gameReq.underworldExpansion,
           };
 
           let game: IGame;

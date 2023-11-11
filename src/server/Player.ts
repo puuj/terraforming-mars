@@ -277,7 +277,7 @@ export class Player implements IPlayer {
   }
 
   public decreaseTitaniumValue(): void {
-    if (this.titaniumValue > constants.DEFAULT_TITANIUM_VALUE) {
+    if (this.titaniumValue > 0) {
       this.titaniumValue--;
     }
   }
@@ -295,7 +295,7 @@ export class Player implements IPlayer {
   }
 
   public decreaseSteelValue(): void {
-    if (this.steelValue > constants.DEFAULT_STEEL_VALUE) {
+    if (this.steelValue > 0) {
       this.steelValue--;
     }
   }
@@ -620,8 +620,7 @@ export class Player implements IPlayer {
     this.energy += this.production.energy;
     this.heat += this.production.heat;
 
-    // this.tableau.forEach((card) => card.onProductionPhase?.(this));
-    this.corporations.forEach((card) => card.onProductionPhase?.(this));
+    this.tableau.forEach((card) => card.onProductionPhase?.(this));
     // Turn off CEO OPG actions that were activated this generation
     for (const card of this.playedCards) {
       if (isCeoCard(card)) {
@@ -1510,10 +1509,10 @@ export class Player implements IPlayer {
         case CardName.MOON_MINE_STANDARD_PROJECT_V2:
         case CardName.MOON_ROAD_STANDARD_PROJECT_V2:
           return gameOptions.moonStandardProjectVariant === true;
-        // case CardName.EXCAVATE_STANDARD_PROJECT:
-        //   return gameOptions.underworldExpansion === true;
-        // case CardName.COLLUSION_STANDARD_PROJECT:
-        //   return gameOptions.underworldExpansion === true && gameOptions.turmoilExtension === true;
+        case CardName.EXCAVATE_STANDARD_PROJECT:
+          return gameOptions.underworldExpansion === true;
+        case CardName.COLLUSION_STANDARD_PROJECT:
+          return gameOptions.underworldExpansion === true && gameOptions.turmoilExtension === true;
         default:
           return true;
         }
@@ -1941,8 +1940,7 @@ export class Player implements IPlayer {
     player.actionsTakenThisGame = d.actionsTakenThisGame;
     player.actionsTakenThisRound = d.actionsTakenThisRound;
     player.canUseHeatAsMegaCredits = d.canUseHeatAsMegaCredits;
-    // TODO(kberg): Remove ?? false after 2023-11-01
-    player.canUsePlantsAsMegacredits = d.canUsePlantsAsMegaCredits ?? false;
+    player.canUsePlantsAsMegacredits = d.canUsePlantsAsMegaCredits;
     player.canUseTitaniumAsMegacredits = d.canUseTitaniumAsMegacredits;
     player.cardCost = d.cardCost;
     player.colonies.cardDiscount = d.cardDiscount;
