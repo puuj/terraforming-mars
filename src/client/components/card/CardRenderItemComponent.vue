@@ -308,22 +308,22 @@ export default Vue.extend({
         classes.push('card-excavation');
         break;
       case CardRenderItemType.CORRUPTION:
-        classes.push('card-resource', 'card-resource-corruption');
+        classes.push(this.cardResource, 'card-resource-corruption');
         break;
       case CardRenderItemType.TOOL:
-        classes.push('card-resource', 'card-resource-tool');
+        classes.push(this.cardResource, 'card-resource-tool');
         break;
       case CardRenderItemType.WARE:
-        classes.push('card-resource', 'card-resource-ware');
+        classes.push(this.cardResource, 'card-resource-ware');
         break;
       case CardRenderItemType.SCOOP:
-        classes.push('card-resource', 'card-resource-scoop');
+        classes.push(this.cardResource, 'card-resource-scoop');
         break;
       case CardRenderItemType.JOURNALISM:
-        classes.push('card-resource', 'card-resource-journalism');
+        classes.push(this.cardResource, 'card-resource-journalism');
         break;
       case CardRenderItemType.ACTIVIST:
-        classes.push('card-resource', 'card-resource-activist');
+        classes.push(this.cardResource, 'card-resource-activist');
         break;
       case CardRenderItemType.NEUTRAL_DELEGATE:
         classes.push('card-neutral-delegate');
@@ -333,7 +333,6 @@ export default Vue.extend({
         break;
       case CardRenderItemType.CORRUPTION_SHIELD:
         classes.push('card-corruption-shield');
-        break;
       }
 
       if (this.item.secondaryTag === AltSecondaryTag.NO_PLANETARY_TAG) {

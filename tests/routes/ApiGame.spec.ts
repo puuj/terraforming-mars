@@ -75,6 +75,7 @@ describe('ApiGame', () => {
           'moonExpansion': false,
           'pathfindersExpansion': false,
           'preludeExtension': false,
+          'prelude2Expansion': false,
           'promoCardsOption': false,
           'politicalAgendasExtension': 'Standard',
           'removeNegativeGlobalEvents': false,

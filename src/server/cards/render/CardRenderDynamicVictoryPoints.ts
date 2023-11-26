@@ -22,6 +22,7 @@ const RESOURCE_TO_ITEM_TYPE: Record<CardResource, CardRenderItemType | undefined
   [CardResource.HYDROELECTRIC_RESOURCE]: CardRenderItemType.HYDROELECTRIC_RESOURCE,
   [CardResource.CANDLE]: CardRenderItemType.CANDLE,
   [CardResource.CLONE_TROOPER]: CardRenderItemType.CLONE_TROOPER,
+  [CardResource.JOURNALISM]: CardRenderItemType.JOURNALISM,
   [CardResource.DISEASE]: undefined,
   [CardResource.SYNDICATE_FLEET]: undefined,
   [CardResource.SEED]: undefined,
@@ -29,6 +30,9 @@ const RESOURCE_TO_ITEM_TYPE: Record<CardResource, CardRenderItemType | undefined
   [CardResource.ORBITAL]: undefined,
   [CardResource.GRAPHENE]: undefined,
   [CardResource.TOOL]: undefined,
+  [CardResource.WARE]: undefined,
+  [CardResource.SCOOP]: undefined,
+  [CardResource.ACTIVIST]: undefined,
 };
 
 const TAG_TO_ITEM_TYPE = new Map<Tag, CardRenderItemType>([
@@ -99,8 +103,8 @@ export class CardRenderDynamicVictoryPoints implements ICardRenderDynamicVictory
     const item = new CardRenderItem(CardRenderItemType.CATHEDRAL);
     return new CardRenderDynamicVictoryPoints(item, 1, 1);
   }
-  public static questionmark(): CardRenderDynamicVictoryPoints {
-    return new CardRenderDynamicVictoryPoints(undefined, 0, 0);
+  public static questionmark(points: number = 0, per: number = 0): CardRenderDynamicVictoryPoints {
+    return new CardRenderDynamicVictoryPoints(undefined, points, per);
   }
   public static any(points: number): CardRenderDynamicVictoryPoints {
     const item = new CardRenderDynamicVictoryPoints(undefined, points, points);
