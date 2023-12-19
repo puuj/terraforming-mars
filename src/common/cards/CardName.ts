@@ -113,6 +113,7 @@ export enum CardName {
   GREENHOUSES = 'Greenhouses',
   GYROPOLIS = 'Gyropolis',
   HACKERS = 'Hackers',
+  HAPPY_BIRTHDAY = 'Happy Birthday',
   HEATHER = 'Heather',
   HEAT_TRAPPERS = 'Heat Trappers',
   HEAVY_TAXATION = 'Heavy Taxation',
@@ -340,7 +341,6 @@ export enum CardName {
   WINDMILLS = 'Windmills',
   WORMS = 'Worms',
   ZEPPELINS = 'Zeppelins',
->>>>>>> upstream/main
 
   // Corps:
   BEGINNER_CORPORATION = 'Beginner Corporation',
@@ -558,7 +558,6 @@ export enum CardName {
   SPIES = 'Spies',
   UNO = 'Uno',
   WINDFALL = 'Windfall',
-  HAPPY_BIRTHDAY = "Happy Birthday",
 
   // For Playwright.
   SPECIAL_DESIGN_PROXY = 'Special Design:proxy',
