@@ -114,7 +114,7 @@ export class Game implements IGame, Logger {
   private researchedPlayers = new Set<PlayerId>();
   private draftedPlayers = new Set<PlayerId>();
   // The first player of this generation.
-  private first: IPlayer;
+  public first: IPlayer;
 
   // Drafting
   private draftRound: number = 1;
@@ -819,6 +819,10 @@ export class Game implements IGame, Logger {
     this.generation++;
     this.log('Generation ${0}', (b) => b.forNewGeneration().number(this.generation));
     this.incrementFirstPlayer();
+
+    this.players.forEach((player) => {
+      player.hasIncreasedTerraformRatingThisGeneration = false;
+    });
 
     if (this.gameOptions.draftVariant) {
       this.gotoDraftPhase();

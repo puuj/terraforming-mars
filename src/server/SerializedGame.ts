@@ -37,7 +37,7 @@ export type SerializedGame = {
     donePlayers: Array<PlayerId>;
     draftedPlayers: Array<PlayerId>;
     draftRound: number;
-    first: SerializedPlayer | PlayerId;
+    first: PlayerId;
     fundedAwards: Array<SerializedFundedAward>;
     gagarinBase: Array<SpaceId>;
     gameAge: number;
