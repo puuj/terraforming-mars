@@ -375,7 +375,7 @@ export class Game implements IGame, Logger {
     if (gameOptions.corporationsDraft) {
       game.phase = Phase.CORPORATIONDRAFTING;
       for (let i = 0; i < gameOptions.startingCorporations * players.length; i++) {
-        game.corporationsToDraft.push(game.corporationDeck.draw(game));
+        game.corporationsToDraft.push(game.corporationDeck.drawLegacy(game));
       }
       // First player should be the last player
       const playerStartingCorporationsDraft = game.getPlayerBefore(firstPlayer);
