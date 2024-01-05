@@ -35,6 +35,10 @@ export class RemoveResources extends DeferredAction<number> {
       qtyLost = Math.ceil(qtyLost / 2);
     }
 
+    if (qtyLost === 0) {
+      return undefined;
+    }
+    // Move to this.target.maybeBlockAttack?
     return UnderworldExpansion.maybeBlockAttack(this.target, this.player, () => {
       this.target.stock.deduct(this.resource, qtyLost, {log: true, from: this.player});
       this.cb(qtyLost);

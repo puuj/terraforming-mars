@@ -3,6 +3,7 @@
           <ul>
             <li><div class="setup-item" v-i18n>Expansion:</div>
 
+
               <div v-if="gameOptions.corporateEra" class="create-game-expansion-icon expansion-icon-CE" title="Corporate Era"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-CE expansion-disabled" title="Corporate Era disabled"></div>
               <div v-if="gameOptions.venusNextExtension" class="create-game-expansion-icon expansion-icon-venus" title="Venus"></div>
@@ -31,6 +32,10 @@
               <div v-else class="create-game-expansion-icon expansion-icon-ceo expansion-disabled" title="CEOs disabled"></div>
               <div v-if="gameOptions.underworldExpansion" class="create-game-expansion-icon expansion-icon-underworld" title="Underworld"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-underworld expansion-disabled" title="Underworld disabled"></div>
+=======
+
+
+>>>>>>> upstream/main
             </li>
 
             <li><div class="setup-item" v-i18n>Board:</div>

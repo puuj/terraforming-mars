@@ -4,7 +4,6 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {SelectCard} from '../../inputs/SelectCard';
 import {Size} from '../../../common/cards/render/Size';
-import {SimpleDeferredAction} from '../../deferredActions/DeferredAction';
 import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
 import {LogHelper} from '../../LogHelper';
 import {ICorporationCard} from '../corporation/ICorporationCard';
@@ -42,7 +41,7 @@ export class Merger extends PreludeCard {
       dealtCorps.forEach((corp) => game.corporationDeck.discard(corp));
       return undefined;
     }
-    game.defer(new SimpleDeferredAction(player, () => {
+    player.defer(() => {
       return new SelectCard('Choose corporation card to play', 'Play', dealtCorps, {enabled: enabled})
         .andThen(([card]) => {
           player.playAdditionalCorporationCard(card);
@@ -54,7 +53,7 @@ export class Merger extends PreludeCard {
           game.defer(new SelectPaymentDeferred(player, Merger.mergerCost, {title: 'Select how to pay for Merger'}));
           return undefined;
         });
-    }));
+    });
     return undefined;
   }
 
@@ -62,7 +61,7 @@ export class Merger extends PreludeCard {
     const cards: Array<ICorporationCard> = [];
     try {
       while (cards.length < 4) {
-        cards.push(corporationDeck.draw(player.game));
+        cards.push(corporationDeck.drawLegacy(player.game));
       }
     } catch (err) {
       // Error will only occur if the deck is empty. That won't happen, but here we'll just do our best.

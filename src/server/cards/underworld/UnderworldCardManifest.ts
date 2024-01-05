@@ -2,7 +2,7 @@ import {CardName} from '../../../common/cards/CardName';
 import {ModuleManifest} from '../ModuleManifest';
 import {GlobalEventName} from '../../../common/turmoil/globalEvents/GlobalEventName';
 
-// import {AeronGenomics} from './AeronGenomics';
+import {AeronGenomics} from './AeronGenomics';
 import {AntiTrustCrackdown} from './AntiTrustCrackdown';
 // import {AnubisSecurities} from './AnubisSecurities';
 import {ArboristCollective} from './ArboristCollective';
@@ -16,7 +16,7 @@ import {CaveCity} from './CaveCity';
 import {CentralReservoir} from './CentralReservoir';
 import {ChemicalFactory} from './ChemicalFactory';
 // import {ClassActionLawsuit} from './ClassActionLawsuit';
-// import {CloudVortexOutpost} from './CloudVortexOutpost';
+import {CloudVortexOutpost} from './CloudVortexOutpost';
 import {CollusionStandardProject} from './CollusionStandardProject';
 import {ConcessionRights} from './ConcessionRights';
 import {CorporateBlackmail} from './CorporateBlackmail';
@@ -25,7 +25,7 @@ import {CraterSurvey} from './CraterSurvey';
 import {CutThroatBudgeting} from './CutThroatBudgeting';
 // import {Deepmining} from './Deepmining';
 import {Deepnuking} from './Deepnuking';
-// import {DeepwaterDome} from './DeepwaterDome';
+import {DeepwaterDome} from './DeepwaterDome';
 // import {DemetronLabs} from './DemetronLabs';
 import {EarthquakeMachine} from './EarthquakeMachine';
 import {ElectionSponsorship} from './ElectionSponsorship';
@@ -49,7 +49,7 @@ import {GreyMarketExploitation} from './GreyMarketExploitation';
 // // import {GuerillaEcologists} from './GuerillaEcologists';
 import {Hackers} from './Hackers';
 import {Hadesphere} from './Hadesphere';
-// import {HectateSpeditions} from './HectateSpeditions';
+import {HectateSpeditions} from './HectateSpeditions';
 import {HenkeiGenetics} from './HenkeiGenetics';
 import {HiredRaiders} from './HiredRaiders';
 import {HyperspaceDrivePrototype} from './HyperspaceDrivePrototype';
@@ -58,11 +58,10 @@ import {ImportedHeavyMachinery} from './ImportedHeavyMachinery';
 import {InfrastructureOverload} from './InfrastructureOverload';
 import {InheritedFortune} from './InheritedFortune';
 // // import {IntellectualPropertyTheft} from './IntellectualPropertyTheft';
-// import {InvestigativeJournalism} from './InvestigativeJournalism';
+import {InvestigativeJournalism} from './InvestigativeJournalism';
 import {InvestorPlaza} from './InvestorPlaza';
 import {JensonBoyleCo} from './JensonBoyleCo';
 // import {Keplertec} from './Keplertec';
-// // import {Keplertec} from './Keplertec';
 import {KingdomofTauraro} from './KingdomofTauraro';
 // import {LaborTrafficking} from './LaborTrafficking';
 import {LaggingRegulation} from './LaggingRegulation';
@@ -94,10 +93,10 @@ import {PriceWars} from './PriceWars';
 import {PrivateInvestigator} from './PrivateInvestigator';
 import {PrivateMilitaryContractor} from './PrivateMilitaryContractor';
 import {PrivateResorts} from './PrivateResorts';
-// import {Prospecting} from './Prospecting';
+import {Prospecting} from './Prospecting';
 import {PublicSpaceline} from './PublicSpaceline';
 // import {RecklessDetonation} from './RecklessDetonation';
-// import {ResearchDevelopmentHub} from './ResearchDevelopmentHub';
+import {ResearchDevelopmentHub} from './ResearchDevelopmentHub';
 import {RobotMoles} from './RobotMoles';
 import {Scapegoat} from './Scapegoat';
 import {SearchforLifeUnderground} from './SearchforLifeUnderground';
@@ -227,10 +226,10 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     // // 82-90
     // [CardName.CLASS_ACTION_LAWSUIT]: {Factory: ClassActionLawsuit},
     // // [CardName.MERCENARY_ASSAULT]: {Factory: MercenaryAssault}, // Blocking rules.
-    // [CardName.RESEARCH_DEVELOPMENT_HUB]: {Factory: ResearchDevelopmentHub},
+    [CardName.RESEARCH_DEVELOPMENT_HUB]: {Factory: ResearchDevelopmentHub},
     [CardName.PLANETARY_RIGHTS_BUYOUT]: {Factory: PlanetaryRightsBuyout},
     // // [CardName.MEDIA_FRENZY]: {Factory: MediaFrenzy}, // Scoops is not quite clear yet.
-    // [CardName.INVESTIGATIVE_JOURNALISM]: {Factory: InvestigativeJournalism},
+    [CardName.INVESTIGATIVE_JOURNALISM]: {Factory: InvestigativeJournalism},
     // // [CardName.WHALES]: {Factory: Whales}, // This is gonna be tricky.
     // // [CardName.GUERILLA_ECOLOGISTS]: {Factory: GuerillaEcologists}, // IP.
     // // [CardName.THIOLAVA_VENTS]: {Factory: ThiolavaVents}, // Uncomment when tests are more manageable. See Production.ts
@@ -254,12 +253,12 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.HENKEI_GENETICS]: {Factory: HenkeiGenetics},
     [CardName.ARBORIST_COLLECTIVE]: {Factory: ArboristCollective},
     [CardName.KINGDOM_OF_TAURARO]: {Factory: KingdomofTauraro},
-    // [CardName.AERON_GENOMICS]: {Factory: AeronGenomics},
+    [CardName.AERON_GENOMICS]: {Factory: AeronGenomics},
     // [CardName.KEPLERTEC]: {Factory: Keplertec},
     [CardName.VOLTAGON]: {Factory: Voltagon, compatibility: 'venus'},
     // // [CardName.ARES_MEDIA]: {Factory: AresMedia}, // Not another events are up card.
     // [CardName.ANUBIS_SECURITIES]: {Factory: AnubisSecurities},
-    // [CardName.HECTATE_SPEDITIONS]: {Factory: HectateSpeditions, compatibility: 'colonies'},
+    [CardName.HECTATE_SPEDITIONS]: {Factory: HectateSpeditions, compatibility: 'colonies'},
   },
 
   preludeCards: {
@@ -273,11 +272,11 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.GANYMEDE_TRADING_COMPANY]: {Factory: GanymedeTradingCompany, compatibility: 'colonies'},
     [CardName.CENTRAL_RESERVOIR]: {Factory: CentralReservoir},
     [CardName.BATTERY_SHIPMENT]: {Factory: BatteryShipment},
-    // [CardName.DEEPWATER_DOME]: {Factory: DeepwaterDome},
+    [CardName.DEEPWATER_DOME]: {Factory: DeepwaterDome},
     [CardName.SECRET_RESEARCH]: {Factory: SecretResearch},
-    // [CardName.PROSPECTING]: {Factory: Prospecting, compatibility: 'colonies'},
+    [CardName.PROSPECTING]: {Factory: Prospecting, compatibility: 'colonies'},
     [CardName.ELECTION_SPONSORSHIP]: {Factory: ElectionSponsorship, compatibility: 'turmoil'},
-    // [CardName.CLOUD_VORTEX_OUTPOST]: {Factory: CloudVortexOutpost, compatibility: 'venus'},
+    [CardName.CLOUD_VORTEX_OUTPOST]: {Factory: CloudVortexOutpost, compatibility: 'venus'},
   },
 
   standardProjects: {

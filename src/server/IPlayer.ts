@@ -180,6 +180,8 @@ export interface IPlayer {
   alloysAreProtected(): boolean;
   canReduceAnyProduction(resource: Resource, minQuantity?: number): boolean;
   canHaveProductionReduced(resource: Resource, minQuantity: number, attacker: IPlayer): void;
+  maybeBlockAttack(perpetrator: IPlayer, cb: (proceed: boolean) => PlayerInput | undefined): void;
+
   /**
    * Return true if this player cannot have their production reduced.
    *
@@ -314,7 +316,7 @@ export interface IPlayer {
   setWaitingForSafely(input: PlayerInput, cb?: () => void): void;
   serialize(): SerializedPlayer;
   /** Shorthand for deferring evaluating a PlayerInput */
-  defer(input: PlayerInput | undefined, priority?: Priority): void;
+  defer(input: PlayerInput | undefined | void | (() => PlayerInput | undefined | void), priority?: Priority): void;
 }
 
 export function isIPlayer(object: any): object is IPlayer {

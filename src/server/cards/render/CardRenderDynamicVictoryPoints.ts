@@ -6,6 +6,7 @@ import {CardResource} from '../../../common/CardResource';
 import {Tag} from '../../../common/cards/Tag';
 
 
+// TODO(kberg): This doesn't just apply to VP, does it?
 const RESOURCE_TO_ITEM_TYPE: Record<CardResource, CardRenderItemType | undefined> = {
   [CardResource.MICROBE]: CardRenderItemType.MICROBES,
   [CardResource.ANIMAL]: CardRenderItemType.ANIMALS,
@@ -33,6 +34,7 @@ const RESOURCE_TO_ITEM_TYPE: Record<CardResource, CardRenderItemType | undefined
   [CardResource.WARE]: undefined,
   [CardResource.SCOOP]: undefined,
   [CardResource.ACTIVIST]: undefined,
+  [CardResource.SUPPLY_CHAIN]: undefined,
 };
 
 const TAG_TO_ITEM_TYPE = new Map<Tag, CardRenderItemType>([

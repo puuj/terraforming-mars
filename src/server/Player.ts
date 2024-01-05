@@ -439,6 +439,11 @@ export class Player implements IPlayer {
     return true;
   }
 
+
+  public maybeBlockAttack(perpetrator: IPlayer, cb: (proceed: boolean) => PlayerInput | undefined): void {
+    this.defer(UnderworldExpansion.maybeBlockAttack(this, perpetrator, cb));
+  }
+
   public productionIsProtected(attacker: IPlayer): boolean {
     return attacker !== this && this.cardIsInEffect(CardName.PRIVATE_SECURITY);
   }
@@ -713,7 +718,7 @@ export class Player implements IPlayer {
 
   public dealForDraft(quantity: number, cards: Array<IProjectCard>): void {
     for (let i = 0; i < quantity; i++) {
-      cards.push(this.game.projectDeck.draw(this.game, 'bottom'));
+      cards.push(this.game.projectDeck.drawLegacy(this.game, 'bottom'));
     }
   }
 
@@ -1029,7 +1034,7 @@ export class Player implements IPlayer {
         if (corporation.onCorpCardPlayed === undefined) {
           continue;
         }
-        this.defer(corporation.onCorpCardPlayed?.(this, playedCorporationCard, somePlayer));
+        this.defer(corporation.onCorpCardPlayed(this, playedCorporationCard, somePlayer));
       }
     }
   }
@@ -1658,14 +1663,14 @@ export class Player implements IPlayer {
 
   // TODO(kberg): perhaps move to Card
   public deferInitialAction(corp: ICorporationCard) {
-    this.game.defer(new SimpleDeferredAction(this, () => {
+    this.defer(() => {
       if (corp.initialAction) {
         return corp.initialAction(this);
       } else if (corp.firstAction !== undefined) {
         getBehaviorExecutor().execute(corp.firstAction, this, corp);
       }
       return undefined;
-    }));
+    });
   }
 
   private incrementActionsTaken(): void {
@@ -2035,11 +2040,12 @@ export class Player implements IPlayer {
   }
 
   /* Shorthand for deferring things */
-  public defer(input: PlayerInput | undefined | void, priority: Priority = Priority.DEFAULT): void {
+  public defer(input: PlayerInput | undefined | void | (() => PlayerInput | undefined), priority: Priority = Priority.DEFAULT): void {
     if (input === undefined) {
       return;
     }
-    const action = new SimpleDeferredAction(this, () => input, priority);
+    const cb = typeof(input) === 'function' ? input : () => input;
+    const action = new SimpleDeferredAction(this, cb, priority);
     this.game.defer(action);
   }
 }
