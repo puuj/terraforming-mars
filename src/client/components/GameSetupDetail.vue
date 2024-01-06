@@ -32,10 +32,6 @@
               <div v-else class="create-game-expansion-icon expansion-icon-ceo expansion-disabled" title="CEOs disabled"></div>
               <div v-if="gameOptions.underworldExpansion" class="create-game-expansion-icon expansion-icon-underworld" title="Underworld"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-underworld expansion-disabled" title="Underworld disabled"></div>
-=======
-
-
->>>>>>> upstream/main
             </li>
 
             <li><div class="setup-item" v-i18n>Board:</div>
