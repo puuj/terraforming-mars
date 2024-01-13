@@ -301,7 +301,11 @@ input[type="radio"]:checked + .filterDiv::after {
 
 .prelude2-icon:after {
   &:extend(.prelude-icon:after);
+  background-image: url("./assets/prelude2/prelude2-triangle16.png");
+  transform: rotate(0deg);
+  background-position: bottom 4px right 3px;
 }
+
 .venus-icon:after {
     position: absolute;
     border: 1px solid black;
@@ -2698,9 +2702,8 @@ input[type="radio"]:checked + .filterDiv::after {
     background-image: url(./assets/expansion_icons/expansion_icon_prelude.png);
 }
 
-// Create an icon with a 2, perhaps?
 .expansion-icon-prelude2 {
-    background-image: url(./assets/expansion_icons/expansion_icon_prelude.png);
+    background-image: url(./assets/expansion_icons/expansion_icon_prelude2.png);
 }
 
 .expansion-icon-colony {
