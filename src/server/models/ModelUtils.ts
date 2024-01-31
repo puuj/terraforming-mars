@@ -33,8 +33,7 @@ export function cardsToModel(
       discount = [{tag: Tag.MARS, amount: player.tags.count(Tag.MARS)}];
     }
 
-
-    let warning = card.warning;
+    let warning = undefined;
     const playCardMetadata = options?.extras?.get(card.name);
     if (typeof(playCardMetadata?.details) === 'object') {
       const thinkTankResources = playCardMetadata?.details.thinkTankResources;
@@ -59,6 +58,9 @@ export function cardsToModel(
     const reserveUnits = playCardMetadata?.reserveUnits;
     if (reserveUnits !== undefined) {
       model.reserveUnits = reserveUnits;
+    }
+    if (card.warnings.size > 0) {
+      model.warnings = Array.from(card.warnings);
     }
     return model;
   });
