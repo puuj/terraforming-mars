@@ -293,7 +293,6 @@ export class Turmoil {
     // 4.c - Draw the new distant event and add neutral delegate
     this.distantGlobalEvent = this.globalEventDealer.draw();
     this.addNeutralDelegate(this.distantGlobalEvent?.revealedDelegate, game);
-    game.log('Turmoil phase has been resolved');
   }
 
   private addNeutralDelegate(partyName: PartyName | undefined, game: IGame) {
@@ -395,7 +394,7 @@ export class Turmoil {
 
   public getPlayerInfluence(player: IPlayer) {
     let influence = 0;
-    if (this.chairman !== undefined && this.chairman === player) influence++;
+    if (this.chairman === player) influence++;
 
     const dominantParty : IParty = this.dominantParty;
     const isPartyLeader = dominantParty.partyLeader === player;

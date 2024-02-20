@@ -1129,13 +1129,13 @@ export class Player implements IPlayer {
       const diff = this.cardsInHand.length * this.cardCost;
       this.stock.deduct(Resource.MEGACREDITS, diff);
     }
+    this.game.log('${0} played ${1}', (b) => b.player(this).card(corporationCard));
     // Calculating this before playing the corporation card, which might change the player's hand size.
     const numberOfCardInHand = this.cardsInHand.length;
     corporationCard.play(this);
     if (corporationCard.initialAction !== undefined || corporationCard.firstAction !== undefined) {
       this.pendingInitialActions.push(corporationCard);
     }
-    this.game.log('${0} played ${1}', (b) => b.player(this).card(corporationCard));
     if (additionalCorp === false) {
       this.game.log('${0} kept ${1} project cards', (b) => b.player(this).number(numberOfCardInHand));
     }
@@ -1344,6 +1344,7 @@ export class Player implements IPlayer {
 
     const playableCards: Array<PlayableCard> = [];
     for (const card of candidateCards) {
+      card.warnings.clear();
       const canPlay = this.canPlay(card);
       if (canPlay !== false) {
         playableCards.push({
@@ -1371,10 +1372,22 @@ export class Player implements IPlayer {
 
   public canPlay(card: IProjectCard): boolean | YesAnd {
     const options = this.affordOptionsForCard(card);
-    if (!this.canAfford(options)) {
+    const canAfford = this.newCanAfford(options);
+    if (!canAfford.canAfford) {
       return false;
     }
-    return this.simpleCanPlay(card, options);
+    const canPlay = this.simpleCanPlay(card, options);
+    if (canPlay === false) {
+      return false;
+    }
+    if (canAfford.redsCost > 0) {
+      if (typeof canPlay === 'boolean') {
+        return {redsCost: canAfford.redsCost};
+      } else {
+        return {...canPlay, redsCost: canAfford.redsCost};
+      }
+    }
+    return canPlay;
   }
 
   /**
@@ -1458,11 +1471,12 @@ export class Player implements IPlayer {
     return totalToPay;
   }
 
+  private static CANNOT_AFFORD = {canAfford: false, redsCost: 0} as const;
+
   /**
-   * Returns `true` if the player can afford to pay `options.cost` mc (possibly replaceable with steel, titanium etc.)
-   * and additionally pay the reserveUnits (no replaces here)
+   * Returns information about whether a player can afford to spend money with other costs and ways to pay taken into account.
    */
-  public canAfford(o: number | CanAffordOptions): boolean {
+  public newCanAfford(o: number | CanAffordOptions): {redsCost: number, canAfford: boolean} {
     const options: CanAffordOptions = typeof(o) === 'number' ? {cost: o} : {...o};
 
     // TODO(kberg): These are set both here and in SelectPayment. Consolidate, perhaps.
@@ -1474,14 +1488,14 @@ export class Player implements IPlayer {
       // Special-case heat
       const unitsWithoutHeat = {...reserveUnits, heat: 0};
       if (!this.stock.has(unitsWithoutHeat)) {
-        return false;
+        return Player.CANNOT_AFFORD;
       }
       if (this.availableHeat() < reserveUnits.heat) {
-        return false;
+        return Player.CANNOT_AFFORD;
       }
     } else {
       if (!this.stock.has(reserveUnits)) {
-        return false;
+        return Player.CANNOT_AFFORD;
       }
     }
 
@@ -1490,13 +1504,22 @@ export class Player implements IPlayer {
     if (redsCost > 0) {
       const usableForRedsCost = this.payingAmount(maxPayable, {});
       if (usableForRedsCost < redsCost) {
-        return false;
+        return Player.CANNOT_AFFORD;
       }
     }
 
     const usable = this.payingAmount(maxPayable, options);
 
-    return options.cost + redsCost <= usable;
+    const canAfford = options.cost + redsCost <= usable;
+    return {canAfford, redsCost};
+  }
+
+  /**
+   * Returns `true` if the player can afford to pay `options.cost` mc (possibly replaceable with steel, titanium etc.)
+   * and additionally pay the reserveUnits (no replaces here)
+   */
+  public canAfford(o: number | CanAffordOptions): boolean {
+    return this.newCanAfford(o).canAfford;
   }
 
   private getStandardProjects(): Array<IStandardProjectCard> {
@@ -1714,6 +1737,9 @@ export class Player implements IPlayer {
       });
       if (convertHeat.warnings.size > 0) {
         option.warnings = Array.from(convertHeat.warnings);
+        if (convertHeat.warnings.has('maxtemp')) {
+          option.eligibleForDefault = false;
+        }
       }
       action.options.push(option);
     }

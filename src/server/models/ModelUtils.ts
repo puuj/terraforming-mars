@@ -10,7 +10,6 @@ import {PlayCardMetadata} from '../inputs/SelectProjectCardToPlay';
 import {IColony} from '../colonies/IColony';
 import {CardName} from '../../common/cards/CardName';
 import {Tag} from '../../common/cards/Tag';
-import {isICorporationCard} from '../cards/corporation/ICorporationCard';
 
 export function cardsToModel(
   player: IPlayer,
@@ -36,9 +35,13 @@ export function cardsToModel(
     let warning = undefined;
     const playCardMetadata = options?.extras?.get(card.name);
     if (typeof(playCardMetadata?.details) === 'object') {
-      const thinkTankResources = playCardMetadata?.details.thinkTankResources;
+      const thinkTankResources = playCardMetadata.details.thinkTankResources;
       if ((thinkTankResources ?? 0) > 0) {
-        warning = `Playing ${card.name} Consumes ${thinkTankResources} data from Think Tank`;
+        warning = `Playing ${card.name} consumes ${thinkTankResources} data from Think Tank`;
+      }
+      if (playCardMetadata.details.redsCost) {
+        warning = warning === undefined ? '' : '\n';
+        warning += `Playing ${card.name} will cost ${playCardMetadata.details.redsCost} M€ more because Reds are in power`;
       }
     }
 
@@ -51,8 +54,9 @@ export function cardsToModel(
       discount: discount,
       cloneTag: isICloneTagCard(card) ? card.cloneTag : undefined,
     };
-    const isDisabled = isICorporationCard(card) ? (card.isDisabled || false) : (options.enabled?.[index] === false);
-    if (isDisabled === true) {
+    if (card.isDisabled) {
+      model.isDisabled = true;
+    } else if (options.enabled?.[index] === false) {
       model.isDisabled = true;
     }
     const reserveUnits = playCardMetadata?.reserveUnits;

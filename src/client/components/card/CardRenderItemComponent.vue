@@ -40,7 +40,7 @@ export default Vue.extend({
       return this.item.secondaryTag !== undefined ? 'card-resource--has-secondary-tag' : 'card-resource';
     },
     componentClasses(): ReadonlyArray<string> {
-      let classes: Array<string> = [];
+      let classes = [];
       switch (this.item.type) {
       case CardRenderItemType.TEMPERATURE:
         classes.push('card-global-requirement', 'card-temperature-global-requirement');
@@ -420,18 +420,17 @@ export default Vue.extend({
     itemHtmlContent(): string {
       let result = '';
       // in case of symbols inside
-      if (isICardRenderItem(this.item) && this.item.amountInside) {
-        if (this.item.questionMark === true) {
-          result += '?';
-        } else if (this.item.amount !== 0 && !this.item.multiplier) {
-          result += this.item.amount.toString();
-        }
+      if (isICardRenderItem(this.item)) {
+        if (this.item.innerText) {
+          result += this.item.innerText;
+        } else if (this.item.amountInside) {
+          if (this.item.amount !== 0) {
+            result += this.item.amount.toString();
+          }
 
-        if (this.item.multiplier) {
-          result += 'X';
-        }
-        if (this.item.clone) {
-          result += '<div style="-webkit-filter: greyscale(100%);filter: grayscale(100%)">🪐</div>';
+          if (this.item.clone) {
+            result += '<div style="-webkit-filter: greyscale(100%);filter: grayscale(100%)">🪐</div>';
+          }
         }
       }
 

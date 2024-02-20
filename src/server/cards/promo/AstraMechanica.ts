@@ -31,12 +31,17 @@ export class AstraMechanica extends Card implements IProjectCard {
       if (card.type !== CardType.EVENT) {
         return false;
       }
-      if ((card.tilesBuilt ?? []).some(isSpecialTile)) {
+      if (card.tilesBuilt.some(isSpecialTile)) {
         return false;
       }
       return true;
     });
   }
+
+  public override bespokeCanPlay(player: IPlayer) {
+    return this.getCards(player).length > 0;
+  }
+
   public override bespokePlay(player: IPlayer) {
     const events = this.getCards(player);
     if (events.length === 0) {

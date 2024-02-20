@@ -4,7 +4,7 @@ import {GlobalEventName} from '../../../common/turmoil/globalEvents/GlobalEventN
 
 import {AeronGenomics} from './AeronGenomics';
 import {AntiTrustCrackdown} from './AntiTrustCrackdown';
-// import {AnubisSecurities} from './AnubisSecurities';
+import {AnubisSecurities} from './AnubisSecurities';
 import {ArboristCollective} from './ArboristCollective';
 // // import {AresMedia} from './AresMedia';
 import {ArtesianAquifer} from './ArtesianAquifer';
@@ -23,7 +23,7 @@ import {CorporateBlackmail} from './CorporateBlackmail';
 // // import {CorporateTheft} from './CorporateTheft';
 import {CraterSurvey} from './CraterSurvey';
 import {CutThroatBudgeting} from './CutThroatBudgeting';
-// import {Deepmining} from './Deepmining';
+import {Deepmining} from './Deepmining';
 import {Deepnuking} from './Deepnuking';
 import {DeepwaterDome} from './DeepwaterDome';
 // import {DemetronLabs} from './DemetronLabs';
@@ -49,19 +49,19 @@ import {GreyMarketExploitation} from './GreyMarketExploitation';
 // // import {GuerillaEcologists} from './GuerillaEcologists';
 import {Hackers} from './Hackers';
 import {Hadesphere} from './Hadesphere';
-import {HectateSpeditions} from './HectateSpeditions';
+import {HecateSpeditions} from './HecateSpeditions';
 import {HenkeiGenetics} from './HenkeiGenetics';
 import {HiredRaiders} from './HiredRaiders';
 import {HyperspaceDrivePrototype} from './HyperspaceDrivePrototype';
 import {ImportedHeavyMachinery} from './ImportedHeavyMachinery';
-// import {InducedTremor} from './InducedTremor';
+import {InducedTremor} from './InducedTremor';
 import {InfrastructureOverload} from './InfrastructureOverload';
 import {InheritedFortune} from './InheritedFortune';
 // // import {IntellectualPropertyTheft} from './IntellectualPropertyTheft';
 import {InvestigativeJournalism} from './InvestigativeJournalism';
 import {InvestorPlaza} from './InvestorPlaza';
 import {JensonBoyleCo} from './JensonBoyleCo';
-// import {Keplertec} from './Keplertec';
+import {Keplertec} from './Keplertec';
 import {KingdomofTauraro} from './KingdomofTauraro';
 // import {LaborTrafficking} from './LaborTrafficking';
 import {LaggingRegulation} from './LaggingRegulation';
@@ -85,7 +85,7 @@ import {Nightclubs} from './Nightclubs';
 import {OffWorldTaxHaven} from './OffWorldTaxHaven';
 import {OldWorldMafia} from './OldWorldMafia';
 import {OrbitalLaserDrill} from './OrbitalLaserDrill';
-// import {PatentManipulation} from './PatentManipulation';
+import {PatentManipulation} from './PatentManipulation';
 import {PersonalSpacecruiser} from './PersonalSpacecruiser';
 import {PlanetaryRightsBuyout} from './PlanetaryRightsBuyout';
 import {PlantTax} from './PlantTax';
@@ -102,7 +102,7 @@ import {Scapegoat} from './Scapegoat';
 import {SearchforLifeUnderground} from './SearchforLifeUnderground';
 import {SecretResearch} from './SecretResearch';
 import {SeismicPredictions} from './SeismicPredictions';
-// import {ServerSabotage} from './ServerSabotage';
+import {ServerSabotage} from './ServerSabotage';
 // // import {SocialEngineering} from './SocialEngineering';
 import {SoilExport} from './SoilExport';
 import {SpacePrivateers} from './SpacePrivateers';
@@ -161,11 +161,11 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.SEARCH_FOR_LIFE_UNDERGROUND]: {Factory: SearchforLifeUnderground},
     [CardName.GEOTHERMAL_NETWORK]: {Factory: GeothermalNetwork},
     [CardName.GLOBAL_AUDIT]: {Factory: GlobalAudit},
-    // [CardName.PATENT_MANIPULATION]: {Factory: PatentManipulation}, // Just don't want to deal with it.
+    [CardName.PATENT_MANIPULATION]: {Factory: PatentManipulation}, // Just don't want to deal with it.
     [CardName.CAVE_CITY]: {Factory: CaveCity},
     // // 28-36
     [CardName.UNDERGROUND_SMUGGLING_RING]: {Factory: UndergroundSmugglingRing},
-    // [CardName.DEEPMINING]: {Factory: Deepmining}, // Don't want to deal with testing the robotic workforce assocaition.
+    [CardName.DEEPMINING]: {Factory: Deepmining},
     [CardName.BEHEMOTH_EXCAVATOR]: {Factory: BehemothExcavator},
     [CardName.LOBBYING_NETWORK]: {Factory: LobbyingNetwork},
     [CardName.CONCESSION_RIGHTS]: {Factory: ConcessionRights},
@@ -185,7 +185,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.ROBOT_MOLES]: {Factory: RobotMoles},
     // // 46-54
     [CardName.MINING_MARKET_INSIDER]: {Factory: MiningMarketInsider},
-    // [CardName.SERVER_SABOTAGE]: {Factory: ServerSabotage},
+    [CardName.SERVER_SABOTAGE]: {Factory: ServerSabotage},
     [CardName.SPACE_WARGAMES]: {Factory: SpaceWargames},
     [CardName.PRIVATE_MILITARY_CONTRACTOR]: {Factory: PrivateMilitaryContractor},
     [CardName.SPACE_PRIVATEERS]: {Factory: SpacePrivateers},
@@ -210,7 +210,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.PLANT_TAX]: {Factory: PlantTax},
     [CardName.INFRASTRUCTURE_OVERLOAD]: {Factory: InfrastructureOverload},
     [CardName.CRATER_SURVEY]: {Factory: CraterSurvey},
-    // [CardName.INDUCED_TREMOR]: {Factory: InducedTremor},
+    [CardName.INDUCED_TREMOR]: {Factory: InducedTremor},
     [CardName.UNDERGROUND_HABITAT]: {Factory: UndergroundHabitat},
     [CardName.UNDERGROUND_SHELTERS]: {Factory: UndergroundShelters},
     // // 73-81
@@ -254,11 +254,11 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.ARBORIST_COLLECTIVE]: {Factory: ArboristCollective},
     [CardName.KINGDOM_OF_TAURARO]: {Factory: KingdomofTauraro},
     [CardName.AERON_GENOMICS]: {Factory: AeronGenomics},
-    // [CardName.KEPLERTEC]: {Factory: Keplertec},
+    [CardName.KEPLERTEC]: {Factory: Keplertec},
     [CardName.VOLTAGON]: {Factory: Voltagon, compatibility: 'venus'},
     // // [CardName.ARES_MEDIA]: {Factory: AresMedia}, // Not another events are up card.
-    // [CardName.ANUBIS_SECURITIES]: {Factory: AnubisSecurities},
-    [CardName.HECTATE_SPEDITIONS]: {Factory: HectateSpeditions, compatibility: 'colonies'},
+    [CardName.ANUBIS_SECURITIES]: {Factory: AnubisSecurities},
+    [CardName.HECATE_SPEDITIONS]: {Factory: HecateSpeditions, compatibility: 'colonies'},
   },
 
   preludeCards: {
