@@ -34,7 +34,8 @@ export class SpacePrivateers extends Card implements IProjectCard, IActionCard {
           b.effect(
             'If 1 or more targets block this with corruption, remove 1 fighter from here.',
             (eb) => eb.corruptionShield().startEffect.minus().fighter()).br;
-          b.plainText('(Solo: Gain 2 M€ and remove 1 fighter from this card.)');
+          b.plainText('(Solo: Gain 2 M€ and remove 1 fighter from this card.)').br;
+          b.fighter(3);
         }),
         description: 'Requires 3 corruption. Put 3 fighter resources on this card.',
       },
@@ -62,7 +63,7 @@ export class SpacePrivateers extends Card implements IProjectCard, IActionCard {
     // TODO(kberg): devise a Mons Insurance solution.
     let blocked = false;
 
-    const targets = player.game.getPlayers().filter((p) => p !== player);
+    const targets = player.getOpponents();
     const waitingFor = new Set(targets);
     for (const target of targets) {
       target.maybeBlockAttack(player, (proceed) => {

@@ -92,12 +92,25 @@ export class UnderworldExpansion {
     };
   }
 
-  /** Return the spaces that have not yet been identified. The opposite of `identifiedSpaces`. */
-  public static identifiableSpaces(game: IGame): ReadonlyArray<Space> {
-    return game.board.spaces.filter((space) => space.spaceType !== SpaceType.COLONY && space.undergroundResources === undefined);
+  /**
+   * Return the spaces that have not yet been identified.
+   *
+   * For the most part, the opposite of `identifiedSpaces`.
+   */
+  public static identifiableSpaces(player: IPlayer): ReadonlyArray<Space> {
+    const spaces = player.game.board.spaces.filter((space) => space.spaceType !== SpaceType.COLONY);
+    if (player.cardIsInEffect(CardName.NEUTRINOGRAPH)) {
+      return spaces.filter((space) => space.excavator === undefined);
+    } else {
+      return spaces.filter((space) => space.undergroundResources === undefined);
+    }
   }
 
-  /** Return the spaces that not yet been identified. The opposite of `identifiableSpaces`. */
+  /**
+   * Return the spaces that not yet been identified.
+   *
+   * For the most part, the opposite of `identifiableSpaces`.
+   */
   public static identifiedSpaces(game: IGame): ReadonlyArray<Space> {
     return game.board.spaces.filter(
       (space) => space.undergroundResources !== undefined,
@@ -109,8 +122,14 @@ export class UnderworldExpansion {
     if (game.gameOptions.underworldExpansion !== true) {
       throw new Error('Underworld expansion not in this game');
     }
+
     if (space.undergroundResources !== undefined) {
-      return;
+      if (player?.cardIsInEffect(CardName.NEUTRINOGRAPH) && space.excavator === undefined) {
+        UnderworldExpansion.addTokens(game, [space.undergroundResources]);
+        space.undergroundResources = undefined;
+      } else {
+        return;
+      }
     }
     const undergroundResource = game.underworldData?.tokens.pop();
     if (undergroundResource === undefined) {
@@ -178,7 +197,8 @@ export class UnderworldExpansion {
   }
 
   public static excavate(player: IPlayer, space: Space) {
-    if (player.game.gameOptions.underworldExpansion !== true) {
+    const game = player.game;
+    if (game.gameOptions.underworldExpansion !== true) {
       throw new Error('Underworld expansion not in this game');
     }
 
@@ -198,7 +218,6 @@ export class UnderworldExpansion {
     player.tableau.forEach((card) => card.onExcavation?.(player, space));
 
     // TODO(kberg): The identification is supposed to be resolved after the benefit.
-    const game = player.game;
     game.board
       .getAdjacentSpaces(space)
       .forEach((s) => UnderworldExpansion.identify(game, s, player));
@@ -295,8 +314,9 @@ export class UnderworldExpansion {
     }
   }
 
+  // TODO(kberg): turn into a deferred action?
   public static maybeBlockAttack(target: IPlayer, perpetrator: IPlayer, cb: (proceed: boolean) => PlayerInput | undefined): PlayerInput | undefined {
-    if (target.game.gameOptions.underworldExpansion === false || target === perpetrator) {
+    if (target.game.gameOptions.underworldExpansion === false) {
       return cb(true);
     }
     const privateMilitaryContractor = target.playedCards.find((card) => card.name === CardName.PRIVATE_MILITARY_CONTRACTOR);

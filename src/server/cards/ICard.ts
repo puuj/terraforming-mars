@@ -19,6 +19,7 @@ import {OneOrArray} from '../../common/utils/types';
 import {JSONValue} from '../../common/Types';
 import {IStandardProjectCard} from './IStandardProjectCard';
 import {Warning} from '../../common/cards/Warning';
+import {Resource} from '../../common/Resource';
 
 /*
  * Represents a card which has an action that itself allows a player
@@ -56,6 +57,10 @@ export interface ICard {
    * Having descriptions this simple also makes it easier to render its discount in the UI.
    */
   cardDiscount?: OneOrArray<CardDiscount>;
+  /**
+   * Describes the M€ discount `player` could apply to playing `card`.
+   */
+  getStandardProjectDiscount?(player: IPlayer, card: IStandardProjectCard): number;
 
   /**
    * The +/- bonus applied to global parameter requirements, e.g. Adaptation Technology.
@@ -114,6 +119,7 @@ export interface ICard {
    */
   onExcavation?(player: IPlayer, space: Space): void;
 
+  onProductionGain?(player: IPlayer, resource: Resource, amount: number): void;
   onProductionPhase?(player: IPlayer): void;
 
   cost?: number; /** Used with IProjectCard and PreludeCard. */
@@ -131,6 +137,7 @@ export interface ICard {
   tr?: TRSource | DynamicTRSource;
   resourceCount: number;
   resourceType?: CardResource;
+  protectedResources?: boolean;
   /** Currently used for The Moon, but can be expanded to encompass other tile-placing cards. */
   tilesBuilt: ReadonlyArray<TileType>;
   isDisabled?: boolean; // For Pharmacy Union and CEO cards.

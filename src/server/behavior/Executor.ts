@@ -151,6 +151,11 @@ export class Executor implements BehaviorExecutor {
         if (game.board.getAvailableSpacesForType(player, behavior.city.on ?? 'city', canAffordOptions).length === 0) {
           return false;
         }
+      } else {
+        // Special case for Star Vegas. The space may already be occupied.
+        if (game.board.getSpace(behavior.city.space).tile !== undefined) {
+          return false;
+        }
       }
     }
 
@@ -239,6 +244,14 @@ export class Executor implements BehaviorExecutor {
       }
     }
 
+    if (behavior.underworld !== undefined) {
+      const underworld = behavior.underworld;
+      if (underworld.identify !== undefined) {
+        if (UnderworldExpansion.identifiableSpaces(player).length === 0) {
+          return false;
+        }
+      }
+    }
     return true;
   }
 
@@ -299,7 +312,7 @@ export class Executor implements BehaviorExecutor {
         player.removeResourceFrom(card, spend.resourcesHere);
       }
       if (spend.resourceFromAnyCard) {
-        player.game.defer(new RemoveResourcesFromCard(player, spend.resourceFromAnyCard.type, 1, {ownCardsOnly: true, blockable: false}))
+        player.game.defer(new RemoveResourcesFromCard(player, spend.resourceFromAnyCard.type, 1, {source: 'self', blockable: false}))
           .andThen(() => this.execute(remainder, player, card));
         // Exit early as the rest of handled by the deferred action.
         return;
@@ -446,6 +459,9 @@ export class Executor implements BehaviorExecutor {
       if (behavior.city.space !== undefined) {
         const space = player.game.board.getSpace(behavior.city.space);
         player.game.addCity(player, space);
+        if (space.tile !== undefined) { // Should never be undefined
+          space.tile.card = card.name;
+        }
       } else {
         player.game.defer(new PlaceCityTile(player, {on: behavior.city.on}));
       }

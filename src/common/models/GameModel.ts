@@ -17,27 +17,27 @@ import {GlobalParameter} from '../GlobalParameter';
 // Common data about a game not assocaited with a player (eg the temperature.)
 export type GameModel = {
   aresData: AresData | undefined;
-  awards: Array<FundedAwardModel>;
-  colonies: Array<ColonyModel>;
+  awards: ReadonlyArray<FundedAwardModel>;
+  colonies: ReadonlyArray<ColonyModel>;
   corporationsToDraft: Array<CardModel>;
-  discardedColonies: Array<ColonyName>;
+  discardedColonies: ReadonlyArray<ColonyName>;
   deckSize: number;
   expectedPurgeTimeMs: number;
   experimentalReset?: boolean;
   gameAge: number;
   gameOptions: GameOptionsModel;
   generation: number;
-  globalsPerGeneration: Array<Partial<Record<GlobalParameter, number>>>,
+  globalsPerGeneration: ReadonlyArray<Partial<Record<GlobalParameter, number>>>,
   isSoloModeWin: boolean;
   lastSoloGeneration: number,
-  milestones: Array<ClaimedMilestoneModel>;
+  milestones: ReadonlyArray<ClaimedMilestoneModel>;
   moon: MoonModel | undefined;
   oceans: number;
   oxygenLevel: number;
-  passedPlayers: Array<Color>;
+  passedPlayers: ReadonlyArray<Color>;
   pathfinders: PathfindersModel | undefined;
   phase: Phase;
-  spaces: Array<SpaceModel>;
+  spaces: ReadonlyArray<SpaceModel>;
   spectatorId?: SpectatorId;
   step: number;
   temperature: number;
