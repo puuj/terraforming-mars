@@ -418,13 +418,6 @@ export class Player implements IPlayer {
     return this.cardIsInEffect(CardName.LUNAR_SECURITY_STATIONS);
   }
 
-  public canReduceAnyProduction(resource: Resource, minQuantity: number = 1): boolean {
-    // in soloMode you don't have to decrease resources
-    const game = this.game;
-    if (game.isSoloMode()) return true;
-    return game.getPlayers().some((p) => p.canHaveProductionReduced(resource, minQuantity, this));
-  }
-
   public canHaveProductionReduced(resource: Resource, minQuantity: number, attacker: IPlayer) {
     const reducable = this.production[resource] + (resource === Resource.MEGACREDITS ? 5 : 0);
     if (reducable < minQuantity) return false;
@@ -716,9 +709,7 @@ export class Player implements IPlayer {
   }
 
   public dealForDraft(quantity: number, cards: Array<IProjectCard>): void {
-    for (let i = 0; i < quantity; i++) {
-      cards.push(this.game.projectDeck.drawLegacy(this.game, 'bottom'));
-    }
+    cards.push(...this.game.projectDeck.drawN(this.game, quantity, 'bottom'));
   }
 
 
@@ -880,7 +871,7 @@ export class Player implements IPlayer {
       auroraiData: card.type === CardType.STANDARD_PROJECT,
       graphene: card.tags.includes(Tag.CITY) || card.tags.includes(Tag.SPACE),
       kuiperAsteroids: card.name === CardName.AQUIFER_STANDARD_PROJECT || card.name === CardName.ASTEROID_STANDARD_PROJECT,
-      corruption: card.tags.includes(Tag.EARTH),
+      corruption: card.tags.includes(Tag.EARTH) && this.cardIsInEffect(CardName.FRIENDS_IN_HIGH_PLACES),
     };
   }
 
@@ -898,6 +889,15 @@ export class Player implements IPlayer {
         const cardsWithFloater = this.getCardsWithResources(CardResource.FLOATER);
         if (cardsWithFloater.length === 1) {
           throw new Error('Cannot spend all floaters to play Stratospheric Birds');
+        }
+      }
+    }
+
+    if (payment.microbes > 0) {
+      if (selectedCard.name === CardName.SOIL_ENRICHMENT && payment.microbes === this.getSpendable('microbes')) {
+        const cardsWithMicrobe = this.getCardsWithResources(CardResource.MICROBE);
+        if (cardsWithMicrobe.length === 1) {
+          throw new Error('Cannot spend all microbes to play Soil Enrichment');
         }
       }
     }

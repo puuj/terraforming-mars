@@ -521,6 +521,7 @@ export enum CardName {
   SOLAR_LOGISTICS = 'Solar Logistics',
   TESLARACT = 'Teslaract',
   ICY_IMPACTORS = 'Icy Impactors',
+  SOIL_ENRICHMENT = 'Soil Enrichment',
   // End of promo cards
 
   // Community corps
@@ -535,7 +536,6 @@ export enum CardName {
 
   // Community preludes
   VALUABLE_GASES = 'Valuable Gases',
-  VENUS_FIRST = 'Venus First',
   RESEARCH_GRANT = 'Research Grant',
   AEROSPACE_MISSION = 'Aerospace Mission',
   TRADE_ADVANCE = 'Trade Advance',
@@ -782,7 +782,7 @@ export enum CardName {
   CONTROLLED_BLOOM = 'Controlled Bloom',
   TERRAFORMING_ROBOTS = 'Terraforming Robots',
 
-  VENUS_FIRST_PATHFINDERS = 'Venus First:Pathfinders',
+  VENUS_FIRST = 'Venus First',
   VALUABLE_GASES_PATHFINDERS = 'Valuable Gases:Pathfinders',
   CO2_REDUCERS = 'CO² Reducers',
   HYDROGEN_BOMBARDMENT = 'Hydrogen Bombardment',

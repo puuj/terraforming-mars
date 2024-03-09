@@ -30,7 +30,6 @@ import {Uno} from './Uno';
 import {Windfall} from './Windfall';
 import {UnitedNationsMissionOne} from './UnitedNationsMissionOne';
 import {ValuableGases} from './ValuableGases';
-import {VenusFirst} from './VenusFirst';
 
 export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
   module: 'community',
@@ -61,8 +60,6 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
   preludeCards: {
     [CardName.RESEARCH_GRANT]: {Factory: ResearchGrant},
     [CardName.VALUABLE_GASES]: {Factory: ValuableGases, compatibility: 'venus'},
-    // TODO(kberg): remove by 2024-03-01
-    [CardName.VENUS_FIRST]: {Factory: VenusFirst, compatibility: 'venus', instantiate: false},
     [CardName.AEROSPACE_MISSION]: {Factory: AerospaceMission, compatibility: 'colonies'},
     [CardName.TRADE_ADVANCE]: {Factory: TradeAdvance, compatibility: 'colonies'},
     [CardName.POLITICAL_UPRISING]: {Factory: PoliticalUprising, compatibility: 'turmoil'},

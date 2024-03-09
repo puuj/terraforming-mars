@@ -147,7 +147,6 @@ export default (Vue as WithRefs<Refs>).extend({
       case CardName.APHRODITE:
         switch (prelude) {
         case CardName.VENUS_FIRST:
-        case CardName.VENUS_FIRST_PATHFINDERS:
           return 4;
         case CardName.HYDROGEN_BOMBARDMENT:
           return 2;

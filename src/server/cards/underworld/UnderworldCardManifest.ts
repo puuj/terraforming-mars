@@ -26,7 +26,7 @@ import {CutThroatBudgeting} from './CutThroatBudgeting';
 import {Deepmining} from './Deepmining';
 import {Deepnuking} from './Deepnuking';
 import {DeepwaterDome} from './DeepwaterDome';
-// import {DemetronLabs} from './DemetronLabs';
+import {DemetronLabs} from './DemetronLabs';
 import {EarthquakeMachine} from './EarthquakeMachine';
 import {ElectionSponsorship} from './ElectionSponsorship';
 import {ExcavateStandardProject} from './ExcavateStandardProject';
@@ -37,7 +37,7 @@ import {FabricatedScandal} from './FabricatedScandal';
 import {ForestTunnels} from './ForestTunnels';
 import {FreeTradePort} from './FreeTradePort';
 import {FriendsInHighPlaces} from './FriendsInHighPlaces';
-// // import {GaiaCity} from './GaiaCity';
+import {GaiaCity} from './GaiaCity';
 import {GanymedeTradingCompany} from './GanymedeTradingCompany';
 import {GeologicalExpertise} from './GeologicalExpertise';
 import {GeologicalSurvey} from './GeologicalSurvey';
@@ -138,7 +138,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.GEOSCAN_SATELLITE]: {Factory: GeoscanSatellite},
     [CardName.TUNNEL_BORING_MACHINE]: {Factory: TunnelBoringMachine},
     [CardName.UNDERGROUND_RAILWAY]: {Factory: UndergroundRailway},
-    // // [CardName.GAIA_CITY]: {Factory: GaiaCity}, // Figure out the rules first
+    [CardName.GAIA_CITY]: {Factory: GaiaCity},
     [CardName.DEEPNUKING]: {Factory: Deepnuking},
     [CardName.OLD_WORLD_MAFIA]: {Factory: OldWorldMafia},
     [CardName.NIGHTCLUBS]: {Factory: Nightclubs},
@@ -248,7 +248,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
 
   corporationCards: {
     [CardName.HADESPHERE]: {Factory: Hadesphere},
-    // [CardName.DEMETRON_LABS]: {Factory: DemetronLabs},
+    [CardName.DEMETRON_LABS]: {Factory: DemetronLabs},
     [CardName.JENSON_BOYLE_CO]: {Factory: JensonBoyleCo},
     [CardName.HENKEI_GENETICS]: {Factory: HenkeiGenetics},
     [CardName.ARBORIST_COLLECTIVE]: {Factory: ArboristCollective},

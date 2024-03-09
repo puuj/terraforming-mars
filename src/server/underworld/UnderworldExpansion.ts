@@ -3,7 +3,7 @@ import {IPlayer} from '../IPlayer';
 import {Space} from '../boards/Space';
 import {UnderworldData, UnderworldPlayerData} from './UnderworldData';
 import {Random} from '../../common/utils/Random';
-import {UndergroundResourceToken, undergroundResourcerTokenDescription} from '../../common/underworld/UndergroundResourceToken';
+import {UndergroundResourceToken, undergroundResourceTokenDescription} from '../../common/underworld/UndergroundResourceToken';
 import {inplaceShuffle} from '../utils/shuffle';
 import {Resource} from '../../common/Resource';
 import {AddResourcesToCard} from '../deferredActions/AddResourcesToCard';
@@ -16,10 +16,10 @@ import {PlayerInput} from '../PlayerInput';
 import {OrOptions} from '../inputs/OrOptions';
 import {SelectOption} from '../inputs/SelectOption';
 import {message} from '../logs/MessageBuilder';
-import {LogHelper} from '../LogHelper';
 import {SelectPaymentDeferred} from '../deferredActions/SelectPaymentDeferred';
 import {Phase} from '../../common/Phase';
 import {Units} from '../../common/Units';
+import {LogHelper} from '../LogHelper';
 
 export class UnderworldExpansion {
   private constructor() {}
@@ -118,7 +118,7 @@ export class UnderworldExpansion {
   }
 
   /** Identify the token at `space`, optionally trigger callbacks */
-  public static identify(game: IGame, space: Space, player: IPlayer | undefined): void {
+  public static identify(game: IGame, space: Space, player: IPlayer | undefined, fromExcavate: boolean = false): void {
     if (game.gameOptions.underworldExpansion !== true) {
       throw new Error('Underworld expansion not in this game');
     }
@@ -139,7 +139,7 @@ export class UnderworldExpansion {
     space.undergroundResources = undergroundResource;
     for (const p of game.getPlayersInGenerationOrder()) {
       for (const card of p.tableau) {
-        card.onIdentification?.(player, p, space);
+        card.onIdentification?.(player, p, space, fromExcavate);
       }
     }
   }
@@ -203,7 +203,7 @@ export class UnderworldExpansion {
     }
 
     if (space.undergroundResources === undefined) {
-      this.identify(player.game, space, player);
+      this.identify(player.game, space, player, /* fromExcavate= */ true);
     }
 
     const undergroundResource = space.undergroundResources;
@@ -211,8 +211,8 @@ export class UnderworldExpansion {
       throw new Error('No available identification tokens');
     }
 
+    LogHelper.logBoardTileAction(player, space, `${undergroundResourceTokenDescription[undergroundResource]}`, 'excavated');
     this.grant(player, undergroundResource);
-    LogHelper.logBoardTileAction(player, space, `(${undergroundResourcerTokenDescription[undergroundResource]})`, 'excavated');
 
     space.excavator = player;
     player.tableau.forEach((card) => card.onExcavation?.(player, space));
@@ -220,7 +220,7 @@ export class UnderworldExpansion {
     // TODO(kberg): The identification is supposed to be resolved after the benefit.
     game.board
       .getAdjacentSpaces(space)
-      .forEach((s) => UnderworldExpansion.identify(game, s, player));
+      .forEach((s) => UnderworldExpansion.identify(game, s, player, /* fromExcavate= */ true));
     const leaser = game.getCardPlayerOrUndefined(CardName.EXCAVATOR_LEASING);
     if (leaser !== undefined) {
       leaser.stock.add(Resource.MEGACREDITS, 1, {log: true});
@@ -305,9 +305,8 @@ export class UnderworldExpansion {
     case 'plant2pertemp':
     case 'steel2pertemp':
     case 'titanium1pertemp':
-      // TODO(kberg): viz
       player.underworldData.temperatureBonus = token;
-      player.game.log('For the rest of this generation, ${0} will gain ${1}', (b) => b.player(player).string(token));
+      player.game.log('For the rest of this generation, ${0} will gain ${1}', (b) => b.player(player).string(undergroundResourceTokenDescription[token]));
       break;
     default:
       throw new Error('Unknown reward: ' + token);

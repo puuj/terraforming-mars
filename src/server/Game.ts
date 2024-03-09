@@ -333,28 +333,19 @@ export class Game implements IGame, Logger {
         gameOptions.initialDraftVariant ||
         gameOptions.ceoExtension) {
 
+
         if (gameOptions.corporationsDraft === false) {
-          for (let i = 0; i < gameOptions.startingCorporations; i++) {
-            player.dealtCorporationCards.push(corporationDeck.drawLegacy(game));
-          }
+           player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
         }
 
         if (gameOptions.initialDraftVariant === false) {
-          for (let i = 0; i < 10; i++) {
-            player.dealtProjectCards.push(projectDeck.drawLegacy(game));
-          }
+          player.dealtProjectCards.push(...projectDeck.drawN(game, 10));
         }
         if (gameOptions.preludeExtension) {
-          for (let i = 0; i < constants.PRELUDE_CARDS_DEALT_PER_PLAYER; i++) {
-            const prelude = preludeDeck.drawLegacy(game);
-            player.dealtPreludeCards.push(prelude);
-          }
+          player.dealtPreludeCards.push(...preludeDeck.drawN(game, constants.PRELUDE_CARDS_DEALT_PER_PLAYER));
         }
         if (gameOptions.ceoExtension) {
-          for (let i = 0; i < gameOptions.startingCeos; i++) {
-            const ceoCard = ceoDeck.drawLegacy(game);
-            player.dealtCeoCards.push(ceoCard);
-          }
+          player.dealtCeoCards.push(...ceoDeck.drawN(game, gameOptions.startingCeos));
         }
       } else {
         game.playerHasPickedCorporationCard(player, new BeginnerCorporation());
@@ -1327,7 +1318,6 @@ export class Game implements IGame, Logger {
     TurmoilHandler.resolveTilePlacementCosts(player);
 
     // Part 3. Setup for bonuses
-    const arcadianCommunityBonus = space.player === player && player.isCorporation(CardName.ARCADIAN_COMMUNITIES);
     const initialTileTypeForAres = space.tile?.tileType;
     const coveringExistingTile = space.tile !== undefined;
 
@@ -1336,25 +1326,12 @@ export class Game implements IGame, Logger {
 
     // Part 5. Collect the bonuses
     if (this.phase !== Phase.SOLAR) {
-      if (!coveringExistingTile) {
-        this.grantSpaceBonuses(player, space);
-      }
+      this.grantPlacementBonuses(player, space, coveringExistingTile);
 
-      this.board.getAdjacentSpaces(space).forEach((adjacentSpace) => {
-        if (Board.isOceanSpace(adjacentSpace)) {
-          player.megaCredits += player.oceanBonus;
-        }
-      });
-
-      AresHandler.ifAres(this, (aresData) => {
-        const incrementMilestone = tile?.tileType !== TileType.MARS_NOMADS;
-        AresHandler.earnAdjacencyBonuses(aresData, player, space, {incrementMilestone});
-      });
-
-      TurmoilHandler.resolveTilePlacementBonuses(player, space.spaceType);
-
-      if (arcadianCommunityBonus) {
-        this.defer(new GainResources(player, Resource.MEGACREDITS, {count: 3}));
+      if (tile?.tileType !== TileType.MARS_NOMADS) {
+        AresHandler.ifAres(this, (aresData) => {
+          AresHandler.maybeIncrementMilestones(aresData, player, space);
+        });
       }
     } else {
       space.player = undefined;
@@ -1374,6 +1351,30 @@ export class Game implements IGame, Logger {
       if (space.spaceType !== SpaceType.COLONY && space.player === player) {
         UnderworldExpansion.identify(this, space, player);
       }
+    }
+  }
+
+  public grantPlacementBonuses(player: IPlayer, space: Space, coveringExistingTile: boolean) {
+    const arcadianCommunityBonus = space.player === player && player.isCorporation(CardName.ARCADIAN_COMMUNITIES);
+
+    if (!coveringExistingTile) {
+      this.grantSpaceBonuses(player, space);
+    }
+
+    this.board.getAdjacentSpaces(space).forEach((adjacentSpace) => {
+      if (Board.isOceanSpace(adjacentSpace)) {
+        player.megaCredits += player.oceanBonus;
+      }
+    });
+
+    AresHandler.ifAres(this, () => {
+      AresHandler.earnAdjacencyBonuses(player, space);
+    });
+
+    TurmoilHandler.resolveTilePlacementBonuses(player, space.spaceType);
+
+    if (arcadianCommunityBonus) {
+      this.defer(new GainResources(player, Resource.MEGACREDITS, {count: 3}));
     }
   }
 
@@ -1585,15 +1586,17 @@ export class Game implements IGame, Logger {
   }
 
   public discardForCost(cardCount: 1 | 2, toPlace: TileType) {
+    // This method uses drawOrThrow, which means if there are really no more cards, it breaks the game.
+    // I predict it will be an exceedingly rare problem.
     if (cardCount === 1) {
-      const card = this.projectDeck.drawLegacy(this);
+      const card = this.projectDeck.drawOrThrow(this);
       this.projectDeck.discard(card);
       this.log('Drew and discarded ${0} to place a ${1}', (b) => b.card(card, {cost: true}).tileType(toPlace));
       return card.cost;
     } else {
-      const card1 = this.projectDeck.drawLegacy(this);
+      const card1 = this.projectDeck.drawOrThrow(this);
       this.projectDeck.discard(card1);
-      const card2 = this.projectDeck.drawLegacy(this);
+      const card2 = this.projectDeck.drawOrThrow(this);
       this.projectDeck.discard(card2);
       this.log('Drew and discarded ${0} and ${1} to place a ${2}', (b) => b.card(card1, {cost: true}).card(card2, {cost: true}).tileType(toPlace));
       return card1.cost + card2.cost;
