@@ -55,7 +55,7 @@
 
         <div v-if="playerView.players.length > 1" class="player_home_block--milestones-and-awards">
           <Milestones :milestones="game.milestones" />
-          <Awards :awards="game.awards" show-scores/>
+          <Awards :awards="game.awards" show-scores />
         </div>
       </div>
 
@@ -423,6 +423,9 @@ export default Vue.extend({
         [KeyboardNavigation.HAND]: 'shortkey-hand',
         [KeyboardNavigation.COLONIES]: 'shortkey-colonies',
       };
+      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+      }
       const inputSource = event.target as Node;
       if (inputSource.nodeName.toLowerCase() !== 'input') {
         const id = ids[event.code];
