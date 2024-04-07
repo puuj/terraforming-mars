@@ -3,7 +3,7 @@ import {BoardName} from '../common/boards/BoardName';
 import {ElysiumBoard} from './boards/ElysiumBoard';
 import {IGame} from './IGame';
 import {GameOptions} from './game/GameOptions';
-import {GameId, PlayerId} from '../common/Types';
+import {GameId, isPlayerId, safeCast} from '../common/Types';
 import {HellasBoard} from './boards/HellasBoard';
 import {TharsisBoard} from './boards/TharsisBoard';
 import {IPlayer} from './IPlayer';
@@ -18,6 +18,8 @@ import {SerializedGame} from './SerializedGame';
 import {TerraCimmeriaBoard} from './boards/TerraCimmeriaBoard';
 import {AmazonisBoard} from './boards/AmazonisBoard';
 import {UnderworldExpansion} from './underworld/UnderworldExpansion';
+import {UtopiaPlanitiaBoard} from './boards/UtopiaPlanitiaBoard';
+import {VastitasBorealisNovusBoard} from './boards/VastitasBorealisNovusBoard';
 
 type BoardFactory = {
   newInstance: (gameOptions: GameOptions, rng: Random) => MarsBoard;
@@ -28,6 +30,8 @@ const boards: Record<BoardName, BoardFactory> = {
   [BoardName.THARSIS]: TharsisBoard,
   [BoardName.HELLAS]: HellasBoard,
   [BoardName.ELYSIUM]: ElysiumBoard,
+  [BoardName.UTOPIA_PLANITIA]: UtopiaPlanitiaBoard,
+  [BoardName.VASTITAS_BOREALIS_NOVUS]: VastitasBorealisNovusBoard,
   [BoardName.AMAZONIS]: AmazonisBoard,
   [BoardName.ARABIA_TERRA]: ArabiaTerraBoard,
   [BoardName.TERRA_CIMMERIA]: TerraCimmeriaBoard,
@@ -47,7 +51,7 @@ export class GameSetup {
   }
 
   public static neutralPlayerFor(gameId: GameId): IPlayer {
-    const playerId = 'p-' + gameId + '-neutral' as PlayerId;
+    const playerId = safeCast('p-' + gameId + '-neutral', isPlayerId);
     return new Player('neutral', Color.NEUTRAL, true, 0, playerId, undefined);
   }
 

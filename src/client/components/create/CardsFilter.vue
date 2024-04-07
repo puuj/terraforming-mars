@@ -1,6 +1,6 @@
 <template>
     <div class="cards-filter">
-        <h2 v-i18n>Cards to exclude from the game</h2>
+        <h2 v-i18n>{{ title }}</h2>
         <div class="cards-filter-results-cont" v-if="selectedCardNames.length">
             <div class="cards-filter-result" v-for="cardName in selectedCardNames" v-bind:key="cardName">
                 <label>{{ cardName }}
@@ -52,7 +52,12 @@ interface CardsFilterModel {
 
 export default Vue.extend({
   name: 'CardsFilter',
-  props: {},
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+  },
   data(): CardsFilterModel {
     return {
       selectedCardNames: [],

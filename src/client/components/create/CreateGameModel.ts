@@ -23,10 +23,12 @@ export interface CreateGameModel {
   colonies: boolean;
   turmoil: boolean;
   bannedCards: Array<CardName>;
+  includedCards: Array<CardName>;
   customColonies: Array<ColonyName>;
   customCorporations: Array<CardName>;
   customPreludes: Array<CardName>;
   showBannedCards: boolean;
+  showIncludedCards: boolean;
   showCorporationList: boolean;
   showColoniesList: boolean;
   showPreludesList: boolean;

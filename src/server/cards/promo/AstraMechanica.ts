@@ -18,10 +18,9 @@ export class AstraMechanica extends Card implements IProjectCard {
 
       metadata: {
         cardNumber: '',
+        hasExternalHelp: true,
         renderData: CardRenderer.builder((b) => {
           b.cards(2, {secondaryTag: Tag.EVENT}).asterix();
-          b.br;
-          b.plainText('Fan note: You may not choose cards that return cards to your hand.');
         }),
         description: 'RETURN UP TO 2 OF YOUR PLAYED EVENT CARDS TO YOUR HAND. THEY MAY NOT BE CARDS THAT PLACE SPECIAL TILES.',
       },
@@ -34,6 +33,9 @@ export class AstraMechanica extends Card implements IProjectCard {
         return false;
       }
       if (card.name === CardName.PATENT_MANIPULATION || card.name === CardName.RETURN_TO_ABANDONED_TECHNOLOGY) {
+        return false;
+      }
+      if (card.name === CardName.HOSTILE_TAKEOVER) {
         return false;
       }
       if (card.tilesBuilt.some(isSpecialTile)) {

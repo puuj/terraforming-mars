@@ -4,14 +4,14 @@ import {ICorporationCard} from './cards/corporation/ICorporationCard';
 import {IGame, isIGame} from './IGame';
 import {Payment, PaymentOptions} from '../common/inputs/Payment';
 import {SpendableCardResource} from '../common/inputs/Spendable';
-import {ICard, IActionCard, DynamicTRSource} from './cards/ICard';
+import {ICard, IActionCard} from './cards/ICard';
 import {TRSource} from '../common/cards/TRSource';
 import {IProjectCard} from './cards/IProjectCard';
 import {PlayerInput} from './PlayerInput';
 import {Resource} from '../common/Resource';
 import {CardResource} from '../common/CardResource';
 import {SelectCard} from './inputs/SelectCard';
-import {Priority} from './deferredActions/DeferredAction';
+import {Priority} from './deferredActions/Priority';
 import {RobotCard} from './cards/promo/SelfReplicatingRobots';
 import {SerializedPlayer} from './SerializedPlayer';
 import {Timer} from '../common/Timer';
@@ -38,7 +38,7 @@ export type ResourceSource = IPlayer | GlobalEventName | ICard;
 export type CanAffordOptions = Partial<PaymentOptions> & {
   cost: number,
   reserveUnits?: Units,
-  tr?: TRSource | DynamicTRSource,
+  tr?: TRSource,
 }
 
 /**
@@ -303,7 +303,6 @@ export interface IPlayer {
   takeActionForFinalGreenery(): void;
   getPlayableCards(): Array<PlayableCard>;
   canPlay(card: IProjectCard): boolean | YesAnd;
-  simpleCanPlay(card: IProjectCard, canAffordOptions?: CanAffordOptions): boolean | YesAnd;
   canSpend(payment: Payment, reserveUnits?: Units): boolean;
   payingAmount(payment: Payment, options?: Partial<PaymentOptions>): number;
   /**

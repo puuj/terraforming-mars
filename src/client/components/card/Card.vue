@@ -1,6 +1,6 @@
 <template>
   <div :class="getCardClasses(card)">
-      <div class="card-content-wrapper" v-i18n>
+      <div class="card-content-wrapper" v-i18n @mouseover="hovering = true" @mouseleave="hovering = false">
           <div v-if="!isStandardProject()" class="card-cost-and-tags">
               <CardCost :amount="getCost()" :newCost="getReducedCost()" />
               <card-help v-show="hasHelp" :name="card.name" />
@@ -35,17 +35,7 @@ import {Tag} from '@/common/cards/Tag';
 import {getPreferences} from '@/client/utils/PreferencesManager';
 import {CardResource} from '@/common/CardResource';
 import {getCardOrThrow} from '@/client/cards/ClientCardManifest';
-import {CardName} from '@/common/cards/CardName';
 import {CardRequirementDescriptor} from '@/common/cards/CardRequirementDescriptor';
-
-const CARDS_WITH_EXTERNAL_DOCUMENTATION = [
-  CardName.BOTANICAL_EXPERIENCE,
-  CardName.LUNA_ECUMENOPOLIS,
-  CardName.ROBOTIC_WORKFORCE,
-  CardName.THE_ARCHAIC_FOUNDATION_INSTITUTE,
-  CardName.SAGITTA_FRONTIER_SERVICES,
-  CardName.PRICE_WARS,
-];
 
 export default Vue.extend({
   name: 'Card',
@@ -80,6 +70,7 @@ export default Vue.extend({
 
     return {
       cardInstance: card,
+      hovering: false,
     };
   },
   methods: {
@@ -156,7 +147,7 @@ export default Vue.extend({
       return this.cardInstance.resourceType ?? CardResource.RESOURCE_CUBE;
     },
     hasHelp(): boolean {
-      return CARDS_WITH_EXTERNAL_DOCUMENTATION.includes(this.card.name) && getPreferences().experimental_ui;
+      return this.hovering && this.cardInstance.metadata.hasExternalHelp === true;
     },
   },
 });

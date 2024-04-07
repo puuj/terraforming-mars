@@ -12,7 +12,7 @@ import {Player} from '../Player';
 import {Server} from '../models/ServerModel';
 import {ServeAsset} from './ServeAsset';
 import {NewGameConfig} from '../../common/game/NewGameConfig';
-import {GameId, PlayerId, SpectatorId} from '../../common/Types';
+import {safeCast, isGameId, isSpectatorId, isPlayerId} from '../../common/Types';
 import {generateRandomId} from '../utils/server-ids';
 import {IGame} from '../IGame';
 import {Request} from '../Request';
@@ -20,33 +20,32 @@ import {Response} from '../Response';
 import {QuotaConfig, QuotaHandler} from '../server/QuotaHandler';
 import {durationToMilliseconds} from '../utils/durations';
 
-// TODO(kberg): Using zod might be the right approach.
 function get(): QuotaConfig {
   const defaultQuota = {limit: 1, perMs: 1}; // Effectively, no limit.
   const val = process.env.GAME_QUOTA;
   try {
-    if (val === undefined) {
-      throw new Error('Undefined quota');
+    if (val !== undefined) {
+      const struct = JSON.parse(val);
+      let {limit, per} = struct;
+      if (limit === undefined) {
+        throw new Error('limit is absent');
+      }
+      limit = Number.parseInt(limit);
+      if (isNaN(limit)) {
+        throw new Error('limit is invalid');
+      }
+      if (per === undefined) {
+        throw new Error('per is absent');
+      }
+      const perMs = durationToMilliseconds(per);
+      if (isNaN(perMs)) {
+        throw new Error('perMillis is invalid');
+      }
+      return {limit, perMs};
     }
-    const struct = JSON.parse(val);
-    let {limit, per} = struct;
-    if (limit === undefined) {
-      throw new Error('limit is absent');
-    }
-    limit = Number.parseInt(limit);
-    if (isNaN(limit)) {
-      throw new Error('limit is invalid');
-    }
-    if (per === undefined) {
-      throw new Error('per is absent');
-    }
-    const perMs = durationToMilliseconds(per);
-    if (isNaN(perMs)) {
-      throw new Error('perMillis is invalid');
-    }
-    return {limit, perMs};
+    return defaultQuota;
   } catch (e) {
-    console.log(e);
+    console.warn('While initialzing quota:', (e instanceof Error ? e.message : e));
     return defaultQuota;
   }
 }
@@ -98,9 +97,9 @@ export class GameHandler extends Handler {
       });
       req.once('end', async () => {
         try {
-          const gameReq: NewGameConfig = JSON.parse(body);
-          const gameId = generateRandomId('g') as GameId;
-          const spectatorId = generateRandomId('s') as SpectatorId;
+          const gameReq = JSON.parse(body) as NewGameConfig;
+          const gameId = safeCast(generateRandomId('g'), isGameId);
+          const spectatorId = safeCast(generateRandomId('s'), isSpectatorId);
           const players = gameReq.players.map((obj: any) => {
             const parts = obj.name.split('|');
             let email = undefined;
@@ -114,7 +113,7 @@ export class GameHandler extends Handler {
               obj.color,
               obj.beginner,
               Number(obj.handicap), // For some reason handicap is coming up a string.
-              generateRandomId('p') as PlayerId,
+              safeCast(generateRandomId('p'), isPlayerId),
               email,
             );
           });
@@ -165,6 +164,7 @@ export class GameHandler extends Handler {
             soloTR: gameReq.soloTR,
             customCorporationsList: gameReq.customCorporationsList,
             bannedCards: gameReq.bannedCards,
+            includedCards: gameReq.includedCards,
             customColoniesList: gameReq.customColoniesList,
             customPreludes: gameReq.customPreludes,
             requiresVenusTrackCompletion: gameReq.requiresVenusTrackCompletion,
@@ -202,3 +202,4 @@ export class GameHandler extends Handler {
     });
   }
 }
+

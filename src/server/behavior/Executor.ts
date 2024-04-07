@@ -154,7 +154,7 @@ export class Executor implements BehaviorExecutor {
         }
       } else {
         // Special case for Star Vegas. The space may already be occupied.
-        if (game.board.getSpace(behavior.city.space).tile !== undefined) {
+        if (game.board.getSpaceOrThrow(behavior.city.space).tile !== undefined) {
           return false;
         }
       }
@@ -465,7 +465,7 @@ export class Executor implements BehaviorExecutor {
     }
     if (behavior.city !== undefined) {
       if (behavior.city.space !== undefined) {
-        const space = player.game.board.getSpace(behavior.city.space);
+        const space = player.game.board.getSpaceOrThrow(behavior.city.space);
         player.game.addCity(player, space);
         if (space.tile !== undefined) { // Should never be undefined
           space.tile.card = card.name;
@@ -612,7 +612,7 @@ export class Executor implements BehaviorExecutor {
       temperature: behavior.global?.temperature,
       oxygen: (behavior.global?.oxygen ?? 0) + (behavior.greenery !== undefined ? 1 : 0),
       venus: behavior.global?.venus,
-      oceans: behavior.ocean !== undefined ? 1 : undefined,
+      oceans: behavior.ocean !== undefined ? (behavior.ocean.count ?? 1) : undefined,
 
       moonHabitat: (behavior.moon?.habitatRate ?? 0) + (behavior.moon?.habitatTile !== undefined ? 1 : 0),
       moonMining: (behavior.moon?.miningRate ?? 0) + (behavior.moon?.mineTile !== undefined ? 1 : 0),

@@ -5,7 +5,7 @@ import {Space} from '../../boards/Space';
 import {SelectAmount} from '../../inputs/SelectAmount';
 import {AndOptions} from '../../inputs/AndOptions';
 import {CardName} from '../../../common/cards/CardName';
-import {Priority} from '../../deferredActions/DeferredAction';
+import {Priority} from '../../deferredActions/Priority';
 import {CardRenderer} from '../render/CardRenderer';
 import {Size} from '../../../common/cards/render/Size';
 import {BoardType} from '../../boards/BoardType';
@@ -26,6 +26,7 @@ export class Philares extends CorporationCard {
 
       metadata: {
         cardNumber: 'R25',
+        hasExternalHelp: true,
         description: 'You start with 47 M€. As your first action, place a greenery tile and raise the oxygen 1 step.',
         renderData: CardRenderer.builder((b) => {
           b.megacredits(47).nbsp.greenery();
