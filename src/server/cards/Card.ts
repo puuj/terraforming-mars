@@ -311,7 +311,7 @@ export abstract class Card implements ICard {
     case CardRenderItemType.SCIENCE:
     case CardRenderItemType.CAMPS:
     case CardRenderItemType.CANDLE:
-      units = this.resourceCount ?? 0;
+      units = this.resourceCount;
       break;
 
     case CardRenderItemType.JOVIAN:

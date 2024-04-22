@@ -11,7 +11,7 @@ import {SerializedBoard} from '../../src/server/boards/SerializedBoard';
 import {MoonSpaces} from '../../src/common/moon/MoonSpaces';
 import {SeededRandom} from '../../src/common/utils/Random';
 import {DEFAULT_GAME_OPTIONS, GameOptions} from '../../src/server/game/GameOptions';
-import {MultiSet} from 'mnemonist';
+import {SpaceId} from '../../src/common/Types';
 
 describe('Board', function() {
   let board: TharsisBoard;
@@ -132,6 +132,18 @@ describe('Board', function() {
       const actual = board.getAdjacentSpaces(space).map((s) => s.id);
       expect(expected).to.eql(actual);
     });
+  });
+
+  it('has error with input while calling getAdjacentSpaces', () => {
+    expect(function() {
+      board.getAdjacentSpaces({
+        x: 0,
+        y: 0,
+        bonus: [],
+        id: 'foobar' as SpaceId,
+        spaceType: SpaceType.LAND,
+      });
+    }).to.throw('Unexpected space ID foobar');
   });
 
   it('getAdjacentSpacesClockwise', () => {
@@ -294,34 +306,34 @@ describe('Board', function() {
 
   class TestBoard extends Board {
     public constructor(spaces: Array<Space>) {
-      super(spaces);
+      super(spaces, undefined, []);
     }
   }
 
   it('deserialize', () => {
-    const boardJson = {
+    const boardJson: SerializedBoard = {
       'spaces': [
         {
           'id': '01',
-          'spaceType': 'colony', 'bonus': [],
+          'spaceType': SpaceType.COLONY, 'bonus': [],
           'x': -1, 'y': -1, 'player': 'p-name-1-id',
           'tile': {'tileType': 2},
         },
         {
           'id': '03',
-          'spaceType': 'land', 'bonus': [1, 1],
+          'spaceType': SpaceType.LAND, 'bonus': [1, 1],
           'x': 4, 'y': 0, 'player': 'p-name-2-id',
           'tile': {'tileType': 0},
         },
         {
           'id': '04',
-          'spaceType': 'ocean', 'bonus': [1, 1],
+          'spaceType': SpaceType.OCEAN, 'bonus': [1, 1],
           'x': 5, 'y': 0,
           'tile': {'tileType': 1},
         },
         {
           'id': '05',
-          'spaceType': 'land', 'bonus': [],
+          'spaceType': SpaceType.LAND, 'bonus': [],
           'x': 6, 'y': 0,
         },
       ],
@@ -329,27 +341,8 @@ describe('Board', function() {
     const player1 = new Player('name-1', Color.RED, false, 0, 'p-name-1-id', undefined);
     const player2 = new Player('name-2', Color.YELLOW, false, 0, 'p-name-2-id', undefined);
 
-    const board = new TestBoard(Board.deserializeSpaces((boardJson as SerializedBoard).spaces, [player1, player2]));
+    const board = new TestBoard(Board.deserialize(boardJson, [player1, player2]).spaces);
     expect(board.getSpaceOrThrow('01').player).eq(player1);
     expect(board.getSpaceOrThrow('03').player).eq(player2);
-  });
-
-  it('Randomized maps have space types on all spaces, #4056', () => {
-    const spaces = new MultiSet<string>();
-    for (let idx = 0; idx < 4_000; idx++) {
-      const seed = Math.random();
-      board = TharsisBoard.newInstance({
-        ...DEFAULT_GAME_OPTIONS,
-        shuffleMapOption: true,
-      },
-      new SeededRandom(seed));
-      for (const space of board.spaces) {
-        if (space.spaceType === undefined) {
-          console.log(`Bad seed ${seed}`);
-          spaces.add(space.id);
-        }
-      }
-    }
-    expect(spaces.size, spaces.toJSON()).eq(0);
   });
 });

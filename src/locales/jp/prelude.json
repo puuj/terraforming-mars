@@ -12,7 +12,7 @@
     "Draw 1 card and gain 1 standard resource.": "1ドローと1標準リソース獲得.",
 
     "Nobel Prize": "ノーベル賞",
-    "Gain 2 M€. Draw 2 cards with requirements.": "2MC獲得. 条件付きカード2枚入手.",
+    "Gain 2 M€. Draw 2 cards with requirements.": "2MC獲得. 条件付きカードを2枚入手.",
 
     "Old Mining Colony": "旧鉱業コロニー",
     "Increase your titanium production 1 step. Place 1 colony. Discard 1 card.": "チタン産出+1. コロニー1つ配置. 手札を1枚捨てる",
@@ -30,7 +30,7 @@
     "Double Down": "倍掛け",
     "Copy your other prelude's direct effect.": "自身のプレイ済みプレリュードをコピー(タグはコピーされない).",
 
-    "Giant Solar Collector": "",
+    "Giant Solar Collector": "巨大ソーラーコレクター",
     "Increase your energy production 2 steps. Raise Venus 1 step.": "電力産出+2. 金星+1段階.",
 
     "Head Start": "幸先の良いスタート",
@@ -73,7 +73,7 @@
     "Increase your plant production 1 step. Place a city tile.": "植物産出+1. 都市タイルを配置.",
 
     "Ecology Experts": "生態系のエキスパート",
-    "Increase your plant production 1 step. Play a card from hand, ignoring global requirements.": "植物産出+1. グローバルパラメーター参照の条件を無視してカード1枚をプレイ.",
+    "Increase your plant production 1 step. PLAY A CARD FROM HAND, IGNORING GLOBAL REQUIREMENTS.": "植物産出+1. グローバルパラメーター参照の条件を無視してカード1枚をプレイ.",
 
     "Eccentric Sponsor": "一風変わったスポンサー",
     "Play a card from hand, reducing its cost by 25 M€": "プレイコストを-25MCしてカード1枚をプレイ.",

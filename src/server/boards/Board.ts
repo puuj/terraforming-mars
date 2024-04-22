@@ -30,7 +30,10 @@ export abstract class Board {
   // stores adjacent spaces in clockwise order starting from the top left
   private readonly adjacentSpaces = new Map<SpaceId, ReadonlyArray<Space>>();
 
-  protected constructor(public spaces: ReadonlyArray<Space>) {
+  protected constructor(
+    public readonly spaces: ReadonlyArray<Space>,
+    public readonly noctisCitySpaceId: SpaceId | undefined,
+    public readonly volcanicSpaceIds: ReadonlyArray<SpaceId>) {
     this.maxX = Math.max(...spaces.map((s) => s.x));
     this.maxY = Math.max(...spaces.map((s) => s.y));
     spaces.forEach((space) => {
@@ -40,14 +43,6 @@ export abstract class Board {
       this.adjacentSpaces.set(space.id, filtered as ReadonlyArray<Space>);
       this.map.set(space.id, space);
     });
-  }
-
-  public getVolcanicSpaceIds(): ReadonlyArray<SpaceId> {
-    return [];
-  }
-
-  public getNoctisCitySpaceId(): SpaceId | undefined {
-    return undefined;
   }
 
   /* Returns the space given a Space ID. */
@@ -214,6 +209,10 @@ export abstract class Board {
         return false;
       }
 
+      if (space.id === this.noctisCitySpaceId) {
+        return false;
+      }
+
       const playableSpace = space.tile === undefined || (AresHandler.hasHazardTile(space) && space.tile?.protectedHazard !== true);
 
       if (!playableSpace) {
@@ -257,7 +256,7 @@ export abstract class Board {
   }
 
   public canPlaceTile(space: Space): boolean {
-    return space.tile === undefined && space.spaceType === SpaceType.LAND;
+    return space.tile === undefined && space.spaceType === SpaceType.LAND && space.id !== this.noctisCitySpaceId;
   }
 
   public static isCitySpace(space: Space): boolean {
@@ -355,8 +354,9 @@ export abstract class Board {
     return space;
   }
 
-  public static deserializeSpaces(spaces: ReadonlyArray<SerializedSpace>, players: ReadonlyArray<IPlayer>): Array<Space> {
-    return spaces.map((space) => Board.deserializeSpace(space, players));
+  public static deserialize(board: SerializedBoard, players: ReadonlyArray<IPlayer>): {spaces: Array<Space>} {
+    const spaces = board.spaces.map((space) => Board.deserializeSpace(space, players));
+    return {spaces};
   }
 }
 

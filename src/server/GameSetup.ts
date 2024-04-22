@@ -13,18 +13,17 @@ import {TileType} from '../common/TileType';
 import {Random} from '../common/utils/Random';
 import {ArabiaTerraBoard} from './boards/ArabiaTerraBoard';
 import {VastitasBorealisBoard} from './boards/VastitasBorealisBoard';
-import {SerializedBoard} from './boards/SerializedBoard';
 import {SerializedGame} from './SerializedGame';
 import {TerraCimmeriaBoard} from './boards/TerraCimmeriaBoard';
 import {AmazonisBoard} from './boards/AmazonisBoard';
 import {UnderworldExpansion} from './underworld/UnderworldExpansion';
 import {UtopiaPlanitiaBoard} from './boards/UtopiaPlanitiaBoard';
 import {VastitasBorealisNovusBoard} from './boards/VastitasBorealisNovusBoard';
+import {TerraCimmeriaNovusBoard} from './boards/TerraCimmeriaNovusBoard';
+import {Board} from './boards/Board';
+import {Space} from './boards/Space';
 
-type BoardFactory = {
-  newInstance: (gameOptions: GameOptions, rng: Random) => MarsBoard;
-  deserialize: (board: SerializedBoard, players: Array<IPlayer>) => MarsBoard;
-};
+type BoardFactory = (new (spaces: ReadonlyArray<Space>) => MarsBoard) & {newInstance: (gameOptions: GameOptions, rng: Random) => MarsBoard};
 
 const boards: Record<BoardName, BoardFactory> = {
   [BoardName.THARSIS]: TharsisBoard,
@@ -32,6 +31,7 @@ const boards: Record<BoardName, BoardFactory> = {
   [BoardName.ELYSIUM]: ElysiumBoard,
   [BoardName.UTOPIA_PLANITIA]: UtopiaPlanitiaBoard,
   [BoardName.VASTITAS_BOREALIS_NOVUS]: VastitasBorealisNovusBoard,
+  [BoardName.TERRA_CIMMERIA_NOVUS]: TerraCimmeriaNovusBoard,
   [BoardName.AMAZONIS]: AmazonisBoard,
   [BoardName.ARABIA_TERRA]: ArabiaTerraBoard,
   [BoardName.TERRA_CIMMERIA]: TerraCimmeriaBoard,
@@ -46,8 +46,9 @@ export class GameSetup {
 
   public static deserializeBoard(players: Array<IPlayer>, gameOptions: GameOptions, d: SerializedGame) {
     const playersForBoard = players.length !== 1 ? players : [players[0], GameSetup.neutralPlayerFor(d.id)];
-    const factory: BoardFactory = boards[gameOptions.boardName];
-    return factory.deserialize(d.board, playersForBoard);
+    const deserialized = Board.deserialize(d.board, playersForBoard).spaces;
+    const Factory: BoardFactory = boards[gameOptions.boardName];
+    return new Factory(deserialized);
   }
 
   public static neutralPlayerFor(gameId: GameId): IPlayer {
