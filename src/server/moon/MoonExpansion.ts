@@ -332,6 +332,7 @@ export class MoonExpansion {
     const reserveUnits: Units = card.reserveUnits || Units.EMPTY;
 
     const heat = reserveUnits.heat || 0;
+    const plants = reserveUnits.plants || 0;
     let steel = reserveUnits.steel || 0;
     let titanium = reserveUnits.titanium || 0;
 
@@ -362,7 +363,7 @@ export class MoonExpansion {
 
     steel = Math.max(steel, 0);
     titanium = Math.max(titanium, 0);
-    return Units.of({steel, titanium, heat});
+    return Units.of({steel, titanium, heat, plants});
   }
 
   public static calculateVictoryPoints(player: IPlayer, vpb: VictoryPointsBreakdown): void {
