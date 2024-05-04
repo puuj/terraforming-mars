@@ -1191,11 +1191,8 @@ export default (Vue as WithRefs<Refs>).extend({
         soloTR,
         clonedGamedId,
         initialDraft,
-<<<<<<< HEAD
         corporationsDraft,
-=======
         preludeDraftVariant: this.preludeDraftVariant ?? false,
->>>>>>> upstream/main
         randomMA,
         shuffleMapOption,
         // beginnerOption,

@@ -7,26 +7,9 @@ import {BoardNameType, NewPlayerModel} from '@/common/game/NewGameConfig';
 
 export interface CreateGameModel {
   allOfficialExpansions: boolean;
-<<<<<<< HEAD
-  firstIndex: number;
-  playersCount: number;
-  players: Array<NewPlayerModel>;
-  corporateEra: boolean;
-  prelude: boolean;
-  prelude2Expansion: boolean;
-  draftVariant: boolean;
-  initialDraft: boolean;
-  corporationsDraft: boolean;
-  randomMA: RandomMAOptionType;
-  randomFirstPlayer: boolean;
-  showOtherPlayersVP: boolean;
-  venusNext: boolean;
-  colonies: boolean;
-  turmoil: boolean;
-=======
+
   altVenusBoard: boolean;
   aresExtension: boolean;
->>>>>>> upstream/main
   bannedCards: Array<CardName>;
   board: BoardNameType;
   boards: Array<BoardNameType>;
@@ -35,6 +18,7 @@ export interface CreateGameModel {
   colonies: boolean;
   communityCardsOption: boolean;
   corporateEra: boolean;
+  corporationsDraft: boolean;
   customCeos: Array<CardName>;
   customColonies: Array<ColonyName>;
   customCorporations: Array<CardName>;

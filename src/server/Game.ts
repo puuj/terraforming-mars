@@ -336,20 +336,14 @@ export class Game implements IGame, Logger {
         gameOptions.coloniesExtension ||
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant ||
-<<<<<<< HEAD
-        gameOptions.ceoExtension) {
-
+	gameOptions.preludeDraftVariant ||
+        gameOptions.underworldExpansion ||
+        gameOptions.moonExpansion) {
 
         if (gameOptions.corporationsDraft === false) {
            player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
         }
 
-=======
-        gameOptions.preludeDraftVariant ||
-        gameOptions.underworldExpansion ||
-        gameOptions.moonExpansion) {
-        player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
->>>>>>> upstream/main
         if (gameOptions.initialDraftVariant === false) {
           player.dealtProjectCards.push(...projectDeck.drawN(game, 10));
         }
