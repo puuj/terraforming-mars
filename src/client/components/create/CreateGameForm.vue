@@ -156,7 +156,7 @@
                             <input type="checkbox" name="ceo" id="underworld-checkbox" v-model="underworldExpansion">
                             <label for="underworld-checkbox" class="expansion-button">
                                 <div class="create-game-expansion-icon expansion-icon-underworld"></div>
-                                <span v-i18n>Underworld (β)</span><span> 🆕</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Underworld" class="tooltip" target="_blank">&#9432;</a>
+                                <span v-i18n>Underworld</span><span> 🆕</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Underworld" class="tooltip" target="_blank">&#9432;</a>
                             </label>
                         </div>
 
@@ -324,6 +324,13 @@
                                 <input type="checkbox" name="initialDraft" v-model="initialDraft" id="initialDraft-checkbox">
                                 <label for="initialDraft-checkbox">
                                     <span v-i18n>Initial Draft variant</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Variants#initial-draft" class="tooltip" target="_blank">&#9432;</a>
+                                </label>
+                                </div>
+
+                                <div v-if="initialDraft && prelude">
+                                <input type="checkbox" name="preludeDraft" v-model="preludeDraftVariant" id="preludeDraft-checkbox">
+                                <label for="preludeDraft-checkbox">
+                                    <span v-i18n>Prelude Draft variant</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Variants#initial-draft" class="tooltip" target="_blank">&#9432;</a>
                                 </label>
                                 </div>
                             </div>
@@ -634,6 +641,7 @@ export default (Vue as WithRefs<Refs>).extend({
       startingCeos: 3,
       starWarsExpansion: false,
       underworldExpansion: false,
+      preludeDraftVariant: undefined,
     };
   },
   components: {
@@ -660,6 +668,16 @@ export default (Vue as WithRefs<Refs>).extend({
     turmoil(value: boolean) {
       if (value === false) {
         this.politicalAgendasExtension = AgendaStyle.STANDARD;
+      }
+    },
+    initialDraft(value: boolean) {
+      if (value === true && this.preludeDraftVariant === undefined) {
+        this.preludeDraftVariant = true;
+      }
+    },
+    prelude(value: boolean) {
+      if (value === true && this.preludeDraftVariant === undefined) {
+        this.preludeDraftVariant = true;
       }
     },
     playersCount(value: number) {
@@ -1173,7 +1191,11 @@ export default (Vue as WithRefs<Refs>).extend({
         soloTR,
         clonedGamedId,
         initialDraft,
+<<<<<<< HEAD
         corporationsDraft,
+=======
+        preludeDraftVariant: this.preludeDraftVariant ?? false,
+>>>>>>> upstream/main
         randomMA,
         shuffleMapOption,
         // beginnerOption,

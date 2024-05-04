@@ -40,6 +40,7 @@ export type GameOptions = {
   // Variants
   draftVariant: boolean;
   initialDraftVariant: boolean;
+  preludeDraftVariant: boolean;
   corporationsDraft: boolean;
   startingCorporations: number;
   shuffleMapOption: boolean;
@@ -96,6 +97,7 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   moonStandardProjectVariant: false,
   pathfindersExpansion: false,
   politicalAgendasExtension: AgendaStyle.STANDARD,
+  preludeDraftVariant: false,
   preludeExtension: false,
   prelude2Expansion: false,
   promoCardsOption: false,

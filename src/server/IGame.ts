@@ -13,7 +13,7 @@ import {Space} from './boards/Space';
 import {LogMessageBuilder} from './logs/LogMessageBuilder';
 import {LogMessage} from '../common/logs/LogMessage';
 import {Phase} from '../common/Phase';
-import {IPlayer} from './IPlayer';
+import {DraftType, IPlayer} from './IPlayer';
 import {PlayerId, GameId, SpectatorId, SpaceId, isGameId} from '../common/Types';
 import {CardResource} from '../common/CardResource';
 import {AndThen, DeferredAction} from './deferredActions/DeferredAction';
@@ -129,7 +129,7 @@ export interface IGame extends Logger {
   playerHasPassed(player: IPlayer): void;
   hasResearched(player: IPlayer): boolean;
   playerIsFinishedWithResearchPhase(player: IPlayer): void;
-  playerIsFinishedWithDraftingPhase(initialDraft: boolean, player: IPlayer, cards : Array<IProjectCard>): void;
+  playerIsFinishedWithDraftingPhase(type: DraftType, player: IPlayer, cards : Array<IProjectCard>): void;
   playerIsFinishedWithDraftingCorporationPhase(player: IPlayer, cards : Array<ICorporationCard>): void;
   playerIsFinishedTakingActions(): void;
   // Part of final greenery placement.
