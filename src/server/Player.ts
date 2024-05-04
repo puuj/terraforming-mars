@@ -174,6 +174,7 @@ export class Player implements IPlayer {
   public ceoCardsInHand: Array<IProjectCard> = [];
   public playedCards: Array<IProjectCard> = [];
   public draftedCards: Array<IProjectCard> = [];
+  public draftedCorporations: Array<ICorporationCard> = [];
   public cardCost: number = constants.CARD_COST;
   public needsToDraft?: boolean;
   public passingTo: string = '';
@@ -785,7 +786,6 @@ export class Player implements IPlayer {
           return undefined;
         }),
     );
-         
   }
 
   /**

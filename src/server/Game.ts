@@ -339,9 +339,8 @@ export class Game implements IGame, Logger {
 	gameOptions.preludeDraftVariant ||
         gameOptions.underworldExpansion ||
         gameOptions.moonExpansion) {
-
         if (gameOptions.corporationsDraft === false) {
-           player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
+          player.dealtCorporationCards.push(...corporationDeck.drawN(game, gameOptions.startingCorporations));
         }
 
         if (gameOptions.initialDraftVariant === false) {
