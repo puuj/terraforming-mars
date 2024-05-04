@@ -336,7 +336,7 @@ export class Game implements IGame, Logger {
         gameOptions.coloniesExtension ||
         gameOptions.turmoilExtension ||
         gameOptions.initialDraftVariant ||
-	gameOptions.preludeDraftVariant ||
+        gameOptions.preludeDraftVariant ||
         gameOptions.underworldExpansion ||
         gameOptions.moonExpansion) {
         if (gameOptions.corporationsDraft === false) {
