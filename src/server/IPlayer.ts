@@ -263,7 +263,7 @@ export interface IPlayer {
   runProductionPhase(): void;
   finishProductionPhase(): void;
   worldGovernmentTerraforming(): void;
-  dealForDraft(quantity: number, cards: Array<IProjectCard>): void;
+//  dealForDraft(quantity: number, cards: Array<IProjectCard>): void;
   runDraftCorporationPhase(playerName: string, passedCards: Array<ICorporationCard>): void;
 
   /**

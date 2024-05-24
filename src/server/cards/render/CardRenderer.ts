@@ -609,6 +609,14 @@ abstract class Builder<T> {
     return this._appendToRow(CardRenderSymbol.empty());
   }
 
+  public bracketOpen(): this {
+    return this._appendToRow(CardRenderSymbol.bracketOpen());
+  }
+
+  public bracketClose(): this {
+    return this._appendToRow(CardRenderSymbol.bracketClose());
+  }
+
   public plate(text: string, options?: ItemOptions | undefined): this {
     const item = new CardRenderItem(CardRenderItemType.PLATE, 1, options);
     item.text = text;
