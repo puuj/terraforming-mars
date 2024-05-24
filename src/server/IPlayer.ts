@@ -266,7 +266,6 @@ export interface IPlayer {
   dealForDraft(quantity: number, cards: Array<IProjectCard>): void;
   runDraftCorporationPhase(playerName: string, passedCards: Array<ICorporationCard>): void;
 
-
   /**
    * Ask the player to draft from a set of cards.
    *
