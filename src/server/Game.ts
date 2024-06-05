@@ -340,7 +340,7 @@ export class Game implements IGame, Logger {
         if (gameOptions.initialDraftVariant === false) {
           player.dealtProjectCards.push(...projectDeck.drawN(game, 10));
         }
-        if (gameOptions.preludeExtension) {
+        if (gameOptions.preludeExtension || gameOptions.prelude2Expansion) {
           player.dealtPreludeCards.push(...preludeDeck.drawN(game, constants.PRELUDE_CARDS_DEALT_PER_PLAYER));
         }
         if (gameOptions.ceoExtension) {
