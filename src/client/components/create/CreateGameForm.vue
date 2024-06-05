@@ -334,10 +334,6 @@
                                 </label>
                                 </div>
                             </div>
-                            <input type="checkbox" v-model="corporationsDraft" id="corporationsDraft-checkbox">
-                            <label for="corporationsDraft-checkbox">
-                                <span v-i18n>Corporations Draft</span>
-                            </label>
                             <input type="checkbox" v-model="randomFirstPlayer" id="randomFirstPlayer-checkbox">
                             <label for="randomFirstPlayer-checkbox">
                                 <span v-i18n>Random first player</span>
@@ -573,7 +569,6 @@ export default (Vue as WithRefs<Refs>).extend({
       prelude2Expansion: false,
       draftVariant: true,
       initialDraft: false,
-      corporationsDraft: false,
       randomMA: RandomMAOptionType.NONE,
       randomFirstPlayer: true,
       showOtherPlayersVP: false,
@@ -723,6 +718,10 @@ export default (Vue as WithRefs<Refs>).extend({
             const validationErrors = validatePlayers(players);
             if (validationErrors.length > 0) {
               throw new Error(validationErrors.join('\n'));
+            }
+
+            if (results.corporationsDraft !== undefined) {
+              warnings.push('Corporations draft is no longer available. Future versions might just raise an error, so edit your JSON file.');
             }
 
             const customCorporations = results[json_constants.CUSTOM_CORPORATIONS] || results[json_constants.OLD_CUSTOM_CORPORATIONS] || [];
@@ -998,7 +997,6 @@ export default (Vue as WithRefs<Refs>).extend({
       const prelude2Expansion = this.prelude2Expansion;
       const draftVariant = this.draftVariant;
       const initialDraft = this.initialDraft;
-      const corporationsDraft = this.corporationsDraft;
       const randomMA = this.randomMA;
       const showOtherPlayersVP = this.showOtherPlayersVP;
       const venusNext = this.venusNext;
@@ -1191,7 +1189,6 @@ export default (Vue as WithRefs<Refs>).extend({
         soloTR,
         clonedGamedId,
         initialDraft,
-        corporationsDraft,
         preludeDraftVariant: this.preludeDraftVariant ?? false,
         randomMA,
         shuffleMapOption,

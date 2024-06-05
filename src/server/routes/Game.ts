@@ -139,7 +139,6 @@ export class GameHandler extends Handler {
             coloniesExtension: gameReq.colonies,
             communityCardsOption: gameReq.communityCardsOption,
             corporateEra: gameReq.corporateEra,
-            corporationsDraft: gameReq.corporationsDraft,
             customCeos: gameReq.customCeos,
             customColoniesList: gameReq.customColoniesList,
             customCorporationsList: gameReq.customCorporationsList,

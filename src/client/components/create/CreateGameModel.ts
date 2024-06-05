@@ -18,7 +18,6 @@ export interface CreateGameModel {
   colonies: boolean;
   communityCardsOption: boolean;
   corporateEra: boolean;
-  corporationsDraft: boolean;
   customCeos: Array<CardName>;
   customColonies: Array<ColonyName>;
   customCorporations: Array<CardName>;

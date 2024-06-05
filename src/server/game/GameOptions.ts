@@ -41,7 +41,6 @@ export type GameOptions = {
   draftVariant: boolean;
   initialDraftVariant: boolean;
   preludeDraftVariant: boolean;
-  corporationsDraft: boolean;
   startingCorporations: number;
   shuffleMapOption: boolean;
   randomMA: RandomMAOptionType;
@@ -78,7 +77,6 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   coloniesExtension: false,
   communityCardsOption: false,
   corporateEra: true,
-  corporationsDraft: false,
   customCeos: [],
   customColoniesList: [],
   customCorporationsList: [],

@@ -31,6 +31,8 @@ import {Color} from '../common/Color';
 import {OrOptions} from './inputs/OrOptions';
 import {Stock} from './player/Stock';
 import {UnderworldPlayerData} from './underworld/UnderworldData';
+import {AlliedParty} from './turmoil/AlliedParty';
+import {IParty} from './turmoil/parties/IParty';
 
 export type ResourceSource = IPlayer | GlobalEventName | ICard;
 
@@ -40,8 +42,6 @@ export type CanAffordOptions = Partial<PaymentOptions> & {
   tr?: TRSource,
 }
 
-export type DraftType = 'initial' | 'prelude' | 'standard';
-
 /**
  * Behavior when playing a card:
  *   add it to the tableau
@@ -49,7 +49,7 @@ export type DraftType = 'initial' | 'prelude' | 'standard';
  *   only play the card (used for replaying a card)
  *   or do nothing.
  */
-export type CardAction ='add' | 'discard' | 'nothing' | 'action-only';
+export type CardAction = 'add' | 'discard' | 'nothing' | 'action-only';
 
 export interface IPlayer {
   readonly id: PlayerId;
@@ -105,9 +105,14 @@ export interface IPlayer {
   preludeCardsInHand: Array<IProjectCard>;
   ceoCardsInHand: Array<IProjectCard>;
   playedCards: Array<IProjectCard>;
-  draftedCards: Array<IProjectCard>;
-  draftedCorporations: Array<ICorporationCard>;
+
   cardCost: number;
+
+  /** Cards this player has in their draft hand. Player chooses from them, and passes them to the next player */
+  draftHand: Array<IProjectCard>;
+  /** Cards this player has already chosen during this draft round */
+  draftedCards: Array<IProjectCard>;
+  /** true when this player is drafting, false when player is not, undefined when there is no draft phase. */
   needsToDraft?: boolean;
   passingTo: string;
 
@@ -145,6 +150,7 @@ export interface IPlayer {
   totalDelegatesPlaced: number;
 
   underworldData: UnderworldPlayerData;
+  readonly alliedParty?: AlliedParty;
 
   tearDown(): void;
   tableau: Array<ICorporationCard | IProjectCard>;
@@ -263,20 +269,8 @@ export interface IPlayer {
   runProductionPhase(): void;
   finishProductionPhase(): void;
   worldGovernmentTerraforming(): void;
-//  dealForDraft(quantity: number, cards: Array<IProjectCard>): void;
-  runDraftCorporationPhase(playerName: string, passedCards: Array<ICorporationCard>): void;
 
-  /**
-   * Ask the player to draft from a set of cards.
-   *
-   * @param type the type of draft being asked for.
-   * @param passTo  The player _this_ player passes remaining cards to.
-   * @param passedCards The cards received from the draw, or from the prior player. If empty, it's the first
-   *   step in the draft, and this function will deal cards.
-   */
-
-  askPlayerToDraft(type: DraftType, passTo: IPlayer, passedCards?: Array<IProjectCard>): void;
-  runResearchPhase(draftVariant: boolean): void;
+  runResearchPhase(): void;
   getCardCost(card: IProjectCard): number;
 
   /** The number of resources on this card for this player, or 0 if the player does not have this card. */
@@ -298,6 +292,8 @@ export interface IPlayer {
   discardPlayedCard(card: IProjectCard): void;
   discardCardFromHand(card: IProjectCard, options?: {log?: boolean}): void;
 
+  /** Player has prestated they want to pass on their next turn */
+  autopass: boolean;
   /** Player is done taking actions this generation. */
   pass(): void;
   takeActionForFinalGreenery(): void;
@@ -324,6 +320,7 @@ export interface IPlayer {
   serialize(): SerializedPlayer;
   /** Shorthand for deferring evaluating a PlayerInput */
   defer(input: PlayerInput | undefined | void | (() => PlayerInput | undefined | void), priority?: Priority): void;
+  setAlliedParty(party: IParty): void;
 }
 
 export function isIPlayer(object: any): object is IPlayer {
