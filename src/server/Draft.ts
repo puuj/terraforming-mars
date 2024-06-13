@@ -105,7 +105,7 @@ export abstract class Draft {
   private askPlayerToDraft(player: IPlayer): void {
     const giveTo = this.givingTo(player);
     const cardsToKeep = this.cardsToKeep(player);
-    player.passingTo = giveTo;
+    player.passingTo = giveTo.name;
 
     const messageTitle = cardsToKeep === 1 ?
       'Select a card to keep and pass the rest to ${0}' :
