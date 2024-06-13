@@ -47,7 +47,7 @@ export default Vue.extend({
       if (this.item.tag === undefined) {
         return '';
       }
-      return 'card-tag-' + this.item.tag.toLowerCase().replaceAll(' ', '-');
+      return 'card-resource-' + this.item.tag.toLowerCase().replaceAll(' ', '-');
     },
     componentClasses(): ReadonlyArray<string> {
       const classes: Array<string> = [];
