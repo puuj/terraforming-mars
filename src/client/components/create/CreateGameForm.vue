@@ -98,9 +98,14 @@
                                   <span v-i18n>Mandatory Moon Terraforming</span>
                               </label>
 
-                              <input type="checkbox" v-model="moonStandardProjectVariant" id="moonStandardProjectVariant-checkbox">
-                              <label for="moonStandardProjectVariant-checkbox">
-                                  <span v-i18n>Standard Project Variant</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Variants#moon-standard-project-variant" class="tooltip" target="_blank">&#9432;</a>
+                              <input type="checkbox" v-model="moonStandardProjectVariant" id="moonStandardProjectVariant2-checkbox">
+                              <label for="moonStandardProjectVariant2-checkbox">
+                                  <span v-i18n>Standard Project Variant #2</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Variants#moon-standard-project-variant" class="tooltip" target="_blank">&#9432;</a>
+                              </label>
+
+                              <input type="checkbox" v-model="moonStandardProjectVariant1" id="moonStandardProjectVariant1-checkbox">
+                              <label for="moonStandardProjectVariant1-checkbox">
+                                  <span v-i18n>Standard Project Variant #1</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Variants#moon-standard-project-variant" class="tooltip" target="_blank">&#9432;</a>
                               </label>
                             </template>
 
@@ -547,11 +552,15 @@ type Refs = {
   file: HTMLInputElement,
 }
 
+type FormModel = {
+  preludeToggled: boolean;
+  uploading: boolean;
+};
+
 export default (Vue as WithRefs<Refs>).extend({
   name: 'CreateGameForm',
-  data(): CreateGameModel & {constants: typeof constants} {
+  data(): CreateGameModel & FormModel {
     return {
-      constants,
       firstIndex: 1,
       playersCount: 1,
       players: [
@@ -624,6 +633,7 @@ export default (Vue as WithRefs<Refs>).extend({
       requiresVenusTrackCompletion: false,
       requiresMoonTrackCompletion: false,
       moonStandardProjectVariant: false,
+      moonStandardProjectVariant1: false,
       altVenusBoard: false,
       escapeVelocityMode: false,
       escapeVelocityThreshold: constants.DEFAULT_ESCAPE_VELOCITY_THRESHOLD,
@@ -637,6 +647,9 @@ export default (Vue as WithRefs<Refs>).extend({
       starWarsExpansion: false,
       underworldExpansion: false,
       preludeDraftVariant: undefined,
+
+      preludeToggled: false,
+      uploading: false,
     };
   },
   components: {
@@ -675,6 +688,12 @@ export default (Vue as WithRefs<Refs>).extend({
         this.preludeDraftVariant = true;
       }
     },
+    prelude2Expansion(value: boolean) {
+      if (value === true && this.preludeToggled === false && this.uploading === false) {
+        this.prelude = true;
+        this.preludeToggled = true;
+      }
+    },
     playersCount(value: number) {
       if (value === 1) {
         this.corporateEra = true;
@@ -687,6 +706,9 @@ export default (Vue as WithRefs<Refs>).extend({
     },
     RandomMAOptionType(): typeof RandomMAOptionType {
       return RandomMAOptionType;
+    },
+    constants(): typeof constants {
+      return constants;
     },
   },
   methods: {
@@ -707,11 +729,12 @@ export default (Vue as WithRefs<Refs>).extend({
       const reader = new FileReader();
       const component: CreateGameModel = this;
 
-      reader.addEventListener('load', function() {
+      reader.addEventListener('load', () => {
         const warnings = [];
         try {
           const readerResults = reader.result;
           if (typeof(readerResults) === 'string') {
+            this.uploading = true;
             const results = JSON.parse(readerResults);
 
             const players = results['players'];
@@ -776,6 +799,7 @@ export default (Vue as WithRefs<Refs>).extend({
                 if (!component.seededGame) component.seed = Math.random();
                 // set to alter after any watched properties
                 component.solarPhaseOption = Boolean(capturedSolarPhaseOption);
+                this.uploading = false;
               } catch (e) {
                 window.alert('Error reading JSON ' + e);
               }
@@ -874,6 +898,7 @@ export default (Vue as WithRefs<Refs>).extend({
       if (this.moonExpansion === false) {
         this.requiresMoonTrackCompletion = false;
         this.moonStandardProjectVariant = false;
+        this.moonStandardProjectVariant1 = false;
       }
     },
     getBoardColorClass(boardName: BoardName | BoardNameType): string {
@@ -1197,6 +1222,7 @@ export default (Vue as WithRefs<Refs>).extend({
         requiresVenusTrackCompletion,
         requiresMoonTrackCompletion: this.requiresMoonTrackCompletion,
         moonStandardProjectVariant: this.moonStandardProjectVariant,
+        moonStandardProjectVariant1: this.moonStandardProjectVariant1,
         altVenusBoard: this.altVenusBoard,
         escapeVelocityMode,
         escapeVelocityThreshold,

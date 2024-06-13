@@ -25,7 +25,7 @@ export class HappyBirthday extends Card implements IProjectCard {
         cardNumber: 'J33',
         description: 'Add 1 candle resource to this card per year of your life.',
         renderData: CardRenderer.builder((b) => {
-          b.candle().slash().text('year');
+          b.resource(CardResource.CANDLE).slash().text('year');
           b.br;
           b.vpText('1 VP per candle resource on this card.');
         }),

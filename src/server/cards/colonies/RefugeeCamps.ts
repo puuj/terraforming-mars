@@ -25,8 +25,9 @@ export class RefugeeCamps extends ActionCard implements IProjectCard {
         cardNumber: 'C33',
         renderData: CardRenderer.builder((b) => {
           b.action('Decrease your M€ production 1 step to add a camp resource to this card.', (eb) => {
+
             eb.production((pb) => pb.minus().megacredits(1));
-            eb.startAction.camps();
+            eb.startAction.resource(CardResource.CAMP);
           }).br;
           b.vpText('1 VP for each camp resource on this card.');
         }),

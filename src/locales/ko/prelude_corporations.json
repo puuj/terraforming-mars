@@ -20,13 +20,16 @@
     "Palladin Shipping": "",
     "You start with 36 M€ and 5 titanium.": "36 M€, 티타늄 자원 5개.",
     "Effect: When you play a space event, gain 1 titanium.": "지속 효과: 우주사건형 카드를 사용할 때마다, 티타늄 자원 1개 획득.",
-    "Action: Spend 2 titanium to raise the temperature 1 step.": "행동: 티타늄 자원 2개를 제거하고, 온도 1단계 상승.",
+    "Action: Spend 2 titanium to raise the temperature 1 step.": "행동: 티타늄 자원 2개를 제거하고, 기온 1단계 상승.",
 
     "NIGRAL ENTERPRISES": "",
     "Nigral Enterprises": "",
     "You start with 33 M€. Raise your energy, plant, and steel production 1 step each.": "33 M€, 에너지 생산력 1, 식물 생산력 1, 강철 생산력 1.",
-    "AWARDS AND MILESTONES ALWAYS COST 0 M€ FOR YOU.": "지속 효과: 자신의 업적 달성과 기업상 제정 행동의 비용은 항상 0 M€.",
+    "Effect: AWARDS and MILESTONES ALWAYS COST 0 M€ FOR YOU.": "지속 효과: 자신의 업적 달성과 기업상 제정 행동의 비용은 항상 0 M€.",
+    "Awards and Milestones": "업적 달성 및 기업상 제정",
     
+    "&nbsp;Cheung Shing ": "&nbsp;쳉 싱 ",
+    " ■■MARS■■ ": " 　마스　 ",
     "Cheung Shing": "쳉 싱",
     "■■MARS■■": "　마스　",
     "Cheung Sing Mars": "쳉 싱 마스",
