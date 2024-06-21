@@ -207,6 +207,7 @@ import {$t, translateTextWithParams, translateMessage} from '@/client/directives
 import {Message} from '@/common/logs/Message';
 import {LogMessageDataType} from '@/common/logs/LogMessageDataType';
 import {MADetail} from '@/common/game/IVictoryPointsBreakdown';
+import {AwardName} from '@/common/ma/AwardName';
 
 function getViewModel(playerView: ViewModel | undefined, spectator: ViewModel | undefined): ViewModel {
   if (playerView !== undefined) return playerView;
@@ -272,7 +273,7 @@ export default Vue.extend({
     isSoloGame(): boolean {
       return this.players.length === 1;
     },
-    vpDataset(): Array<DataSet> {
+    vpDataset(): ReadonlyArray<DataSet> {
       return this.players.map((player) => {
         return {
           label: player.name,
@@ -281,11 +282,11 @@ export default Vue.extend({
         };
       });
     },
-    globalsDataset(): Array<DataSet> {
+    globalsDataset(): ReadonlyArray<DataSet> {
       const dataset = [];
 
       const gpg = this.game.globalsPerGeneration;
-      function getValues(param: GlobalParameter, min: number, max: number): Array<number> {
+      function getValues(param: GlobalParameter, min: number, max: number): ReadonlyArray<number> {
         return gpg.map((entry) => {
           const val = entry[param] ?? min;
           return 100 * (val - min) / (max - min);
@@ -358,11 +359,11 @@ export default Vue.extend({
           },
           {
             type: LogMessageDataType.AWARD,
-            value: data.messageArgs[1],
+            value: data.messageArgs[1] as AwardName,
           },
           {
             type: LogMessageDataType.PLAYER,
-            value: data.messageArgs[2],
+            value: data.messageArgs[2] as Color,
           },
         ],
       };

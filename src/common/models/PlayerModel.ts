@@ -32,7 +32,7 @@ export type Protection = 'off' | 'on' | 'half';
 /** The public information about a player */
 export type PublicPlayerModel = {
   actionsTakenThisRound: number;
-  actionsThisGeneration: Array<string /* CardName */>;
+  actionsThisGeneration: ReadonlyArray<CardName>;
   actionsTakenThisGame: number;
   availableBlueCardActionCount: number;
   cardCost: number;
@@ -62,12 +62,12 @@ export type PublicPlayerModel = {
   plantProduction: number;
   protectedResources: Record<Resource, Protection>;
   protectedProduction: Record<Resource, Protection>;
-  tableau: Array<CardModel>;
+  tableau: ReadonlyArray<CardModel>;
   selfReplicatingRobotsCards: Array<CardModel>;
   steel: number;
   steelProduction: number;
   steelValue: number;
-  tags: Array<TagCount>;
+  tags: ReadonlyArray<TagCount>;
   terraformRating: number;
   timer: TimerModel;
   titanium: number;
@@ -75,24 +75,24 @@ export type PublicPlayerModel = {
   titaniumValue: number;
   tradesThisGeneration: number;
   victoryPointsBreakdown: IVictoryPointsBreakdown;
-  victoryPointsByGeneration: Array<number>;
+  victoryPointsByGeneration: ReadonlyArray<number>;
   alliedParty?: AlliedPartyModel;
 }
 
 /** A player's view of the game, including their secret information. */
 export interface PlayerViewModel extends ViewModel {
   autopass: boolean;
-  cardsInHand: Array<CardModel>;
-  dealtCorporationCards: Array<CardModel>;
-  dealtPreludeCards: Array<CardModel>;
-  dealtProjectCards: Array<CardModel>;
-  dealtCeoCards: Array<CardModel>;
-  draftedCards: Array<CardModel>;
+  cardsInHand: ReadonlyArray<CardModel>;
+  dealtCorporationCards: ReadonlyArray<CardModel>;
+  dealtPreludeCards: ReadonlyArray<CardModel>;
+  dealtProjectCards: ReadonlyArray<CardModel>;
+  dealtCeoCards: ReadonlyArray<CardModel>;
+  draftedCards: ReadonlyArray<CardModel>;
   id: PlayerId;
   passingTo: string;
-  ceoCardsInHand: Array<CardModel>;
-  pickedCorporationCard: Array<CardModel>; // Why Array?
-  preludeCardsInHand: Array<CardModel>;
+  ceoCardsInHand: ReadonlyArray<CardModel>;
+  pickedCorporationCard: ReadonlyArray<CardModel>; // Why Array?
+  preludeCardsInHand: ReadonlyArray<CardModel>;
   thisPlayer: PublicPlayerModel;
   waitingFor: PlayerInputModel | undefined;
 }
