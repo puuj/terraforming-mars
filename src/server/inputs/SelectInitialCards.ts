@@ -108,6 +108,7 @@ export class SelectInitialCards extends OptionsInput<undefined> {
 
   public process(input: InputResponse, player: IPlayer) {
     if (!isSelectInitialCardsResponse(input)) {
+      console.log(input);
       throw new InputError('Not a valid SelectInitialCardsResponse');
     }
     if (input.responses.length !== this.options.length) {
