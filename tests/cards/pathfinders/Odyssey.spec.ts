@@ -36,14 +36,14 @@ describe('Odyssey', () => {
   beforeEach(() => {
     odyssey = new Odyssey();
     [game, player] = testGame(1);
-    player.setCorporationForTest(odyssey);
+    player.corporations.push(odyssey);
   });
 
   it('events count for tags', () => {
     const event = fakeCard({type: CardType.EVENT, tags: [Tag.JOVIAN]});
     player.playedCards.push(event);
     expect(player.tags.count(Tag.JOVIAN)).eq(1);
-    player.setCorporationForTest(undefined);
+    player.corporations = [];
     expect(player.tags.count(Tag.JOVIAN)).eq(0);
   });
 
@@ -220,7 +220,7 @@ describe('Odyssey', () => {
     expect(player.megaCredits).to.eq(0);
 
     // Now there will be enough tags, with the event.
-    player.setCorporationForTest(odyssey);
+    player.corporations.push(odyssey);
     diversity.resolve(game, turmoil);
 
     expect(player.megaCredits).to.eq(10);

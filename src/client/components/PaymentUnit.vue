@@ -1,6 +1,6 @@
 <template>
   <div class="payments_type input-group" :data-test="unit">
-    <i class="resource_icon payments_type_icon" :class="iconClass"  :title="$t('Pay with ' + description)"></i>
+    <i class="resource_icon payments_type_icon" :class="iconClass" @click="$emit('plus')" :title="$t('Pay with ' + description)"></i>
     <AppButton type="minus" @click="$emit('minus')" />
     <input
       class="form-input form-inline payments_input"
@@ -8,7 +8,7 @@
       v-on:input="$emit('input', $event.target.value)"
     />
     <AppButton type="plus" @click="$emit('plus')" />
-    <AppButton type="max" @click="$emit('max')" title="MAX" />
+    <AppButton type="max" @click="$emit('max')" title="MAX" v-if="showMax" />
   </div>
 </template>
 
@@ -29,6 +29,11 @@ export default Vue.extend({
     },
     description: {
       type: String,
+    },
+    showMax: {
+      type: Boolean,
+      default: true,
+      required: false,
     },
   },
   components: {

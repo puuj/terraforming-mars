@@ -36,6 +36,7 @@ import {RemoveResourcesFromCard} from '../deferredActions/RemoveResourcesFromCar
 import {isIProjectCard} from '../cards/IProjectCard';
 import {MAXIMUM_HABITAT_RATE, MAXIMUM_LOGISTICS_RATE, MAXIMUM_MINING_RATE, MAX_OCEAN_TILES, MAX_OXYGEN_LEVEL, MAX_TEMPERATURE, MAX_VENUS_SCALE} from '../../common/constants';
 import {CardName} from '../../common/cards/CardName';
+import {asArray} from '../../common/utils/utils';
 
 export class Executor implements BehaviorExecutor {
   public canExecute(behavior: Behavior, player: IPlayer, card: ICard, canAffordOptions?: CanAffordOptions) {
@@ -340,19 +341,18 @@ export class Executor implements BehaviorExecutor {
     if (behavior.standardResource) {
       const entry = behavior.standardResource;
       const count = typeof(entry) === 'number' ? entry : entry.count;
-      const same = typeof(entry) === 'number' ? false : entry.same ?? false;
+      const same = typeof(entry) === 'number' ? true : entry.same ?? true;
       if (same === false) {
         player.defer(
-          new SelectResources(
-            player,
-            count,
-            message('Gain ${0} standard resources', (b) => b.number(count))));
+          new SelectResources(message('Gain ${0} standard resources', (b) => b.number(count)), count)
+            .andThen((units) => {
+              player.stock.addUnits(units, {log: true});
+              return undefined;
+            }));
       } else {
         player.defer(
-          new SelectResource(
-            message('Gain ${0} units of a standard resource', (b) => b.number(count)),
-            Units.keys,
-            (unit) => {
+          new SelectResource(message('Gain ${0} units of a standard resource', (b) => b.number(count)))
+            .andThen((unit) => {
               player.stock.add(Units.ResourceMap[unit], count, {log: true});
               return undefined;
             }));
@@ -408,7 +408,7 @@ export class Executor implements BehaviorExecutor {
     }
 
     if (behavior.addResourcesToAnyCard) {
-      const array = Array.isArray(behavior.addResourcesToAnyCard) ? behavior.addResourcesToAnyCard : [behavior.addResourcesToAnyCard];
+      const array = asArray(behavior.addResourcesToAnyCard);
       for (const arctac of array) {
         const count = ctx.count(arctac.count);
         if (count > 0) {

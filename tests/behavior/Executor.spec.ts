@@ -434,22 +434,30 @@ describe('Executor', () => {
     executor.execute({standardResource: 2}, player, fake);
     runAllActions(game);
 
-    const selectResources = cast(player.popWaitingFor(), SelectResources);
-    selectResources.options[2].cb(1);
-    selectResources.options[3].cb(1);
-    selectResources.cb(undefined);
+    const selectResource = cast(player.popWaitingFor(), SelectResource);
+    selectResource.cb('titanium');
 
-    expect(player.stock.asUnits()).deep.eq(Units.of({titanium: 1, plants: 1}));
+    expect(player.stock.asUnits()).deep.eq(Units.of({titanium: 2}));
   });
 
   it('standard resource, same', () => {
-    executor.execute({standardResource: {count: 3, same: true}}, player, fake);
+    executor.execute({standardResource: {count: 3}}, player, fake);
     runAllActions(game);
 
-    const selectResources = cast(player.popWaitingFor(), SelectResource);
-    selectResources.options[5].cb();
+    const selectResource = cast(player.popWaitingFor(), SelectResource);
+    selectResource.cb('heat');
 
     expect(player.stock.asUnits()).deep.eq(Units.of({heat: 3}));
+  });
+
+  it('standard resource, different', () => {
+    executor.execute({standardResource: {count: 3, same: false}}, player, fake);
+    runAllActions(game);
+
+    const selectResources = cast(player.popWaitingFor(), SelectResources);
+    selectResources.cb(Units.of({titanium: 2, plants: 1}));
+
+    expect(player.stock.asUnits()).deep.eq(Units.of({titanium: 2, plants: 1}));
   });
 
   it('spend - steel', () => {
@@ -510,7 +518,7 @@ describe('Executor', () => {
 
   it('spend - heat - Stormcraft', () => {
     const stormcraft = new StormCraftIncorporated();
-    player.setCorporationForTest(stormcraft);
+    player.corporations.push(stormcraft);
     const behavior = {spend: {heat: 3}};
     expect(executor.canExecute(behavior, player, fake)).is.false;
     stormcraft.resourceCount = 1;

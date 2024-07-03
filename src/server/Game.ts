@@ -905,8 +905,6 @@ export class Game implements IGame, Logger {
     const gameLoader = GameLoader.getInstance();
     await gameLoader.saveGame(this);
     gameLoader.completeGame(this);
-    gameLoader.mark(this.id);
-    gameLoader.maintenance();
   }
 
   // Part of final greenery placement.

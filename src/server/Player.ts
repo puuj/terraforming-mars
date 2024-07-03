@@ -1614,7 +1614,7 @@ export class Player implements IPlayer {
             game.log('${0} took the first action of ${1} corporation', (b) => b.player(this).card(corp)),
 
             this.deferInitialAction(corp);
-            this.pendingInitialActions.splice(this.pendingInitialActions.indexOf(corp), 1);
+            inplaceRemove(this.pendingInitialActions, corp);
             return undefined;
           });
         orOptions.options.push(option);
@@ -1625,8 +1625,10 @@ export class Player implements IPlayer {
       }
 
       this.setWaitingFor(orOptions, () => {
-        this.actionsTakenThisRound++;
-        this.actionsTakenThisGame++;
+        if (this.pendingInitialActions.length === 0) {
+          this.actionsTakenThisRound++;
+          this.actionsTakenThisGame++;
+        }
         this.timer.rebate(constants.BONUS_SECONDS_PER_ACTION * 1000);
         this.takeAction();
       });

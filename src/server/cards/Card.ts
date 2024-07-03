@@ -1,4 +1,4 @@
-import {ICardMetadata} from '../../common/cards/ICardMetadata';
+import {CardMetadata} from '../../common/cards/CardMetadata';
 import {CardName} from '../../common/cards/CardName';
 import {CardType} from '../../common/cards/CardType';
 import {CardDiscount, GlobalParameterRequirementBonus} from '../../common/cards/Types';
@@ -51,7 +51,7 @@ type SharedProperties = {
   initialActionText?: string;
   firstAction?: Behavior & {text: string};
   globalParameterRequirementBonus?: GlobalParameterRequirementBonus;
-  metadata: ICardMetadata;
+  metadata: CardMetadata;
   requirements?: CardRequirementsDescriptor;
   name: CardName;
   resourceType?: CardResource;
@@ -395,7 +395,7 @@ export abstract class Card implements ICard {
       return 0;
     }
     let sum = 0;
-    const discounts = Array.isArray(this.cardDiscount) ? this.cardDiscount : [this.cardDiscount];
+    const discounts = asArray(this.cardDiscount);
     for (const discount of discounts) {
       if (discount.tag === undefined) {
         sum += discount.amount;

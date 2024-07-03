@@ -2,7 +2,7 @@ import {CardType} from '../../common/cards/CardType';
 import {IPlayer} from '../IPlayer';
 import {TRSource} from '../../common/cards/TRSource';
 import {PlayerInput} from '../PlayerInput';
-import {ICardMetadata} from '../../common/cards/ICardMetadata';
+import {CardMetadata} from '../../common/cards/CardMetadata';
 import {CardName} from '../../common/cards/CardName';
 import {SelectPaymentDeferred} from '../deferredActions/SelectPaymentDeferred';
 import {Card} from './Card';
@@ -15,7 +15,7 @@ import {sum} from '../../common/utils/utils';
 type StaticStandardProjectCardProperties = {
   name: CardName,
   cost: number,
-  metadata: ICardMetadata,
+  metadata: CardMetadata,
   reserveUnits?: Partial<Units>,
   tr?: TRSource,
 }
@@ -75,7 +75,6 @@ export abstract class StandardProjectCard extends Card implements IStandardProje
     return player.canAfford(this.canPlayOptions(player));
   }
 
-  // TODO(kberg): Replace with abstract method.
   public canPayWith(_player: IPlayer): StandardProjectCanPayWith {
     return {};
   }
