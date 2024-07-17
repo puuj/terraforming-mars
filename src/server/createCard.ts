@@ -12,6 +12,8 @@ const CARD_RENAMES = new Map<string, CardName>([
   // And remember to add a test in spec.ts.
 
   // TODO(yournamehere): remove after 2021-04-05
+  // TODO(kberg): remove after 2024-09-01
+  ['Space Corridors', CardName.SPACE_LANES],
 ]);
 
 function _createCard<T extends ICard>(cardName: CardName, cardManifestNames: Array<keyof ModuleManifest>): T | undefined {
@@ -90,7 +92,7 @@ export function ceosFromJSON(cards: Array<CardName>): Array<ICeoCard> {
 
 export function cardsFromJSON(cards: Array<CardName>): Array<IProjectCard> {
   if (cards === undefined) {
-    console.warn('missing cards calling cardsFromJSON');
+    console.warn('parameter of array of cards is undefined when calling cardsFromJSON');
     return [];
   }
   const result: Array<IProjectCard> = [];

@@ -53,7 +53,7 @@ export class Tags {
    * Excludes Clone tags.
    */
   public countAllTags(): Array<TagCount> {
-    const counts = Tags.COUNTED_TAGS.map((tag) => {
+    const counts: Array<TagCount> = Tags.COUNTED_TAGS.map((tag) => {
       return {tag, count: this.count(tag, 'raw')};
     }).filter((tag) => tag.count > 0);
     counts.push({tag: Tag.EVENT, count: this.player.getPlayedEventsCount()});
@@ -110,6 +110,9 @@ export class Tags {
    * Returns true if `card` has `tag`. This does not include wild tags, but it includes
    * Habitat Marte and Earth Embassy exceptions.
    */
+  // TODO(kberg): this performs the same if the card is drawn or played, and that's not
+  // always correct, specifically for Earth Embassy. For instance, you should not be able to
+  // draw a card with an Earth tag and get a card with a Moon card (and no Earth tags.)
   public cardHasTag(card: ICard, target: Tag): boolean {
     for (const tag of card.tags) {
       if (tag === target) return true;
