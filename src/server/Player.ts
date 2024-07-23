@@ -1,7 +1,7 @@
 import * as constants from '../common/constants';
 import {PlayerId} from '../common/Types';
 import {MILESTONE_COST, REDS_RULING_POLICY_COST} from '../common/constants';
-import {cardsFromJSON, ceosFromJSON, corporationCardsFromJSON, newCorporationCard} from './createCard';
+import {cardsFromJSON, ceosFromJSON, corporationCardsFromJSON, newCorporationCard, preludesFromJSON} from './createCard';
 import {CardName} from '../common/cards/CardName';
 import {CardType} from '../common/cards/CardType';
 import {Color} from '../common/Color';
@@ -186,7 +186,7 @@ export class Player implements IPlayer {
 
   // Cards
   public dealtCorporationCards: Array<ICorporationCard> = [];
-  public dealtPreludeCards: Array<IProjectCard> = [];
+  public dealtPreludeCards: Array<IPreludeCard> = [];
   public dealtCeoCards: Array<ICeoCard> = [];
   public dealtProjectCards: Array<IProjectCard> = [];
   public cardsInHand: Array<IProjectCard> = [];
@@ -1547,7 +1547,9 @@ export class Player implements IPlayer {
       return;
     }
 
-    if (this.actionsTakenThisRound === 0 || game.gameOptions.undoOption) game.save();
+    if (this.actionsTakenThisRound === 0 || game.gameOptions.undoOption) {
+      game.save();
+    }
     // if (saveBeforeTakingAction) game.save();
 
     if (this.autopass) {
@@ -2024,7 +2026,7 @@ export class Player implements IPlayer {
 
     player.pendingInitialActions = corporationCardsFromJSON(d.pendingInitialActions ?? []);
     player.dealtCorporationCards = corporationCardsFromJSON(d.dealtCorporationCards);
-    player.dealtPreludeCards = cardsFromJSON(d.dealtPreludeCards);
+    player.dealtPreludeCards = preludesFromJSON(d.dealtPreludeCards);
     player.dealtCeoCards = ceosFromJSON(d.dealtCeoCards);
     player.dealtProjectCards = cardsFromJSON(d.dealtProjectCards);
     player.cardsInHand = cardsFromJSON(d.cardsInHand);

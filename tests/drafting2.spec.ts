@@ -9,7 +9,7 @@ import {SelectCard} from '../src/server/inputs/SelectCard';
 import {SerializedGame} from '../src/server/SerializedGame';
 import {testGame} from './TestGame';
 import {InMemoryDatabase} from './testing/InMemoryDatabase';
-import {cast, finishGeneration} from './TestingUtils';
+import {cast, finishGeneration, toName} from './TestingUtils';
 import {restoreTestDatabase, setTestDatabase} from './utils/setup';
 
 // Tests for deserializing a game at the start of the drafting phase.
@@ -34,11 +34,11 @@ describe('drafting and serialization', () => {
     expect(game.draftRound).eq(1);
     expect(p1w.cards).has.length(4);
     expect(p2w.cards).has.length(4);
-    expect(p1w.cards.map((c) => c.name)).to.have.members([CardName.FISH, CardName.MINE, CardName.OPTIMAL_AEROBRAKING, CardName.SABOTAGE]);
-    expect(p2w.cards.map((c) => c.name)).to.have.members([CardName.COMMERCIAL_DISTRICT, CardName.BIOMASS_COMBUSTORS, CardName.DOMED_CRATER, CardName.BUSINESS_CONTACTS]);
+    expect(p1w.cards.map(toName)).to.have.members([CardName.FISH, CardName.MINE, CardName.OPTIMAL_AEROBRAKING, CardName.SABOTAGE]);
+    expect(p2w.cards.map(toName)).to.have.members([CardName.COMMERCIAL_DISTRICT, CardName.BIOMASS_COMBUSTORS, CardName.DOMED_CRATER, CardName.BUSINESS_CONTACTS]);
   });
 
-  it('2 player - project draft - server reset between phases', async () => {
+  it('2 player - project draft - server after partial draft', async () => {
     const [game, player1, player2] = testGame(2, {draftVariant: true});
 
     game.generation = 1;
@@ -57,6 +57,28 @@ describe('drafting and serialization', () => {
 
     expect(game2.phase).eq(Phase.DRAFTING);
     expect(game2.draftRound).eq(2);
+  });
+
+  it('2 player - project draft - server reset during first draft round', async () => {
+    const [game] = testGame(2, {draftVariant: true});
+
+    game.generation = 1;
+    // This moves into draft phase
+    finishGeneration(game);
+
+    expect(game.draftRound).eq(1);
+
+    const serializedGame = await Database.getInstance().getGameVersion(game.id, game.lastSaveId - 1);
+    const game2 = Game.deserialize(serializedGame);
+
+    expect(game2.phase).eq(Phase.DRAFTING);
+    expect(game2.draftRound).eq(1);
+    const players2 = game2.getPlayers();
+
+    const selectCard = cast(players2[0].getWaitingFor(), SelectCard);
+    selectCard.process({type: 'card', cards: [selectCard.cards[0].name]});
+    const selectCard2 = cast(players2[1].getWaitingFor(), SelectCard);
+    selectCard2.process({type: 'card', cards: [selectCard2.cards[0].name]});
   });
 });
 
