@@ -17,7 +17,7 @@ export class MooncrateBlockFactory extends Card implements IProjectCard {
       // Behavior is in MoonHabitatStandardProject, MoonMineStandardProject and MoonRoadStandardProject.
 
       metadata: {
-        description: 'Requires 1 mine on The Moon.',
+        description: 'Requires that you own 1 mine on The Moon.',
         cardNumber: 'M38',
         renderData: CardRenderer.builder((b) => {
           b.effect('When you pay for a Lunar standard project, you spend 4M€ less.', (eb) => {
