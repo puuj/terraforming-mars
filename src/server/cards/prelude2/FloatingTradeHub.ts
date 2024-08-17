@@ -20,9 +20,9 @@ export class FloatingTradeHub extends PreludeCard implements IActionCard {
       resourceType: CardResource.FLOATER,
 
       metadata: {
-        cardNumber: '',
+        cardNumber: 'P49',
         renderData: CardRenderer.builder((b) => {
-          b.action('Add 2 floaters to ANY card', (ab) => ab.startAction.resource(CardResource.FLOATER, 2).asterix()).br;
+          b.action('Add 2 floaters to ANY card.', (ab) => ab.startAction.resource(CardResource.FLOATER, 2).asterix()).br;
           b.action('Remove any number of floaters here to gain that many of one standard resource.', (ab) => {
             ab.text('X').resource(CardResource.FLOATER).startAction.text('X').wild(1);
           }).br;
@@ -36,13 +36,14 @@ export class FloatingTradeHub extends PreludeCard implements IActionCard {
   }
 
   public action(player: IPlayer) {
-    const add2Floaters = new SelectCard('', undefined, player.getResourceCards(CardResource.FLOATER)).andThen(([card]) => {
+    const add2Floaters = new SelectCard('Select card to gain 2 floaters', undefined, player.getResourceCards(CardResource.FLOATER)).andThen(([card]) => {
       player.addResourceTo(card, {qty: 2, log: true});
       return undefined;
     });
     const selectResource = new SelectResource('Select resource to gain');
     const selectAmount = new SelectAmount('Select amount of floaters to remove', undefined, 1, this.resourceCount, true);
     const removeFloaters = new AndOptions(selectAmount, selectResource);
+    removeFloaters.title = 'Convert floaters to standard resources';
     removeFloaters.andThen(() => {
       // TODO(kberg): Add a better log message.
       player.removeResourceFrom(this, selectAmount.selected, {log: true});

@@ -76,6 +76,10 @@ import {SpaceType} from '../common/boards/SpaceType';
 import {SendDelegateToArea} from './deferredActions/SendDelegateToArea';
 import {BuildColony} from './deferredActions/BuildColony';
 import {newInitialDraft, newPreludeDraft, newStandardDraft} from './Draft';
+import {toName} from '../common/utils/utils';
+import {OrOptions} from './inputs/OrOptions';
+import {SelectOption} from './inputs/SelectOption';
+import {SelectSpace} from './inputs/SelectSpace';
 
 // Can be overridden by tests
 
@@ -402,7 +406,7 @@ export class Game implements IGame, Logger {
   public serialize(): SerializedGame {
     const result: SerializedGame = {
       activePlayer: this.activePlayer,
-      awards: this.awards.map((a) => a.name),
+      awards: this.awards.map(toName),
       beholdTheEmperor: this.beholdTheEmperor,
       board: this.board.serialize(),
       claimedMilestones: serializeClaimedMilestones(this.claimedMilestones),
@@ -427,7 +431,7 @@ export class Game implements IGame, Logger {
       id: this.id,
       initialDraftIteration: this.initialDraftIteration,
       lastSaveId: this.lastSaveId,
-      milestones: this.milestones.map((m) => m.name),
+      milestones: this.milestones.map(toName),
       moonData: MoonData.serialize(this.moonData),
       oxygenLevel: this.oxygenLevel,
       passedPlayers: Array.from(this.passedPlayers),
@@ -782,6 +786,9 @@ export class Game implements IGame, Logger {
 
     this.players.forEach((player) => {
       player.hasIncreasedTerraformRatingThisGeneration = false;
+      if (player.cardIsInEffect(CardName.PRESERVATION_PROGRAM)) {
+        player.preservationProgram = true;
+      }
     });
 
     if (this.gameOptions.draftVariant) {
@@ -792,7 +799,88 @@ export class Game implements IGame, Logger {
   }
 
   private gotoWorldGovernmentTerraforming() {
-    this.first.worldGovernmentTerraforming();
+    this.worldGovernmentTerraforming(this.first);
+  }
+
+  public worldGovernmentTerraformingInput(player: IPlayer): OrOptions {
+    const orOptions = new OrOptions();
+    orOptions.title = 'Select action for World Government Terraforming';
+    orOptions.buttonLabel = 'Confirm';
+    if (this.getTemperature() < constants.MAX_TEMPERATURE) {
+      orOptions.options.push(
+        new SelectOption('Increase temperature', 'Increase').andThen(() => {
+          this.increaseTemperature(player, 1);
+          this.log('${0} acted as World Government and increased temperature', (b) => b.player(player));
+          return undefined;
+        }),
+      );
+    }
+    if (this.getOxygenLevel() < constants.MAX_OXYGEN_LEVEL) {
+      orOptions.options.push(
+        new SelectOption('Increase oxygen', 'Increase').andThen(() => {
+          this.increaseOxygenLevel(player, 1);
+          this.log('${0} acted as World Government and increased oxygen level', (b) => b.player(player));
+          return undefined;
+        }),
+      );
+    }
+    if (this.canAddOcean()) {
+      orOptions.options.push(
+        new SelectSpace('Add an ocean', this.board.getAvailableSpacesForOcean(player))
+          .andThen((space) => {
+            this.addOcean(player, space);
+            this.log('${0} acted as World Government and placed an ocean', (b) => b.player(player));
+            return undefined;
+          }),
+      );
+    }
+    if (this.getVenusScaleLevel() < constants.MAX_VENUS_SCALE && this.gameOptions.venusNextExtension) {
+      orOptions.options.push(
+        new SelectOption('Increase Venus scale', 'Increase').andThen(() => {
+          this.increaseVenusScaleLevel(player, 1);
+          this.log('${0} acted as World Government and increased Venus scale', (b) => b.player(player));
+          return undefined;
+        }),
+      );
+    }
+
+    MoonExpansion.ifMoon(this, (moonData) => {
+      if (moonData.habitatRate < constants.MAXIMUM_HABITAT_RATE) {
+        orOptions.options.push(
+          new SelectOption('Increase the Moon habitat rate', 'Increase').andThen(() => {
+            MoonExpansion.raiseHabitatRate(player, 1);
+            return undefined;
+          }),
+        );
+      }
+
+      if (moonData.miningRate < constants.MAXIMUM_MINING_RATE) {
+        orOptions.options.push(
+          new SelectOption('Increase the Moon mining rate', 'Increase').andThen(() => {
+            MoonExpansion.raiseMiningRate(player, 1);
+            return undefined;
+          }),
+        );
+      }
+
+      if (moonData.logisticRate < constants.MAXIMUM_LOGISTICS_RATE) {
+        orOptions.options.push(
+          new SelectOption('Increase the Moon logistics rate', 'Increase').andThen(() => {
+            MoonExpansion.raiseLogisticRate(player, 1);
+            return undefined;
+          }),
+        );
+      }
+    });
+
+    return orOptions;
+  }
+
+  public worldGovernmentTerraforming(player: IPlayer): void {
+    player.defer(this.worldGovernmentTerraformingInput(player).andThen(() => {
+      this.doneWorldGovernmentTerraforming();
+      return undefined;
+    }));
   }
 
   public doneWorldGovernmentTerraforming() {
@@ -888,7 +976,7 @@ export class Game implements IGame, Logger {
     const scores: Array<Score> = [];
     let score_msg: string = '';
     this.players.forEach((player) => {
-      const corporation = player.corporations.map((c) => c.name).join('|');
+      const corporation = player.corporations.map(toName).join('|');
       const vpb = player.getVictoryPoints();
       scores.push({corporation: corporation, playerScore: vpb.total});
       score_msg += `${player.name}: ${vpb.total} points`;
@@ -1036,6 +1124,7 @@ export class Game implements IGame, Logger {
           this.defer(new GrantVenusAltTrackBonusDeferred(player, standardResourcesGranted, grantWildResource));
         }
       }
+      player.playedCards.forEach((card) => card.onGlobalParameterIncrease?.(player, GlobalParameter.VENUS, steps));
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.VENUS, steps);
       player.increaseTerraformRating(steps);
     }
@@ -1194,7 +1283,7 @@ export class Game implements IGame, Logger {
     }
   }
 
-  public grantPlacementBonuses(player: IPlayer, space: Space, coveringExistingTile: boolean, arcadianCommunityBonus: boolean = false) {
+  public grantPlacementBonuses(player: IPlayer, space: Space, coveringExistingTile: boolean = false, arcadianCommunityBonus: boolean = false) {
     if (!coveringExistingTile) {
       this.grantSpaceBonuses(player, space);
     }
@@ -1205,6 +1294,8 @@ export class Game implements IGame, Logger {
       }
     });
 
+    // TODO(kberg): these might not apply for some bonuses, e.g. Frontier Town.
+    // https://boardgamegeek.com/thread/3344366/article/44658730#44658730
     if (space.tile !== undefined) {
       AresHandler.ifAres(this, () => {
         AresHandler.earnAdjacencyBonuses(player, space);

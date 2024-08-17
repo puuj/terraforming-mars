@@ -9,7 +9,6 @@ import {SelectCard} from '../../inputs/SelectCard';
 import {message} from '../../logs/MessageBuilder';
 import {PreludesExpansion} from '../../preludes/PreludesExpansion';
 import {SelectPaymentDeferred} from '../../deferredActions/SelectPaymentDeferred';
-import {LogHelper} from '../../LogHelper';
 import {IPreludeCard} from '../prelude/IPreludeCard';
 
 export class BoardOfDirectors extends PreludeCard implements IActionCard {
@@ -24,7 +23,7 @@ export class BoardOfDirectors extends PreludeCard implements IActionCard {
       },
 
       metadata: {
-        cardNumber: '',
+        cardNumber: 'P45',
         renderData: CardRenderer.builder((b) => {
           b.plainText('ACTION: ').arrow().br;
           b.plainText('DRAW 1 PRELUDE CARD: EITHER DISCARD IT, OR PAY 12 M€ AND REMOVE 1 DIRECTOR RESOURCE HERE TO PLAY IT.').br;
@@ -51,8 +50,6 @@ export class BoardOfDirectors extends PreludeCard implements IActionCard {
   public action(player: IPlayer) {
     const game = player.game;
     const prelude = game.preludeDeck.drawOrThrow(player.game);
-
-    LogHelper.logDrawnCards(player, [prelude], true);
 
     if (player.canAfford(12)) {
       return new SelectCard(

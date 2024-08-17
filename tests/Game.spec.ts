@@ -1,14 +1,14 @@
+import * as constants from '../src/common/constants';
 import {expect} from 'chai';
 import {Game} from '../src/server/Game';
 import {SpaceName} from '../src/server/SpaceName';
 import {Mayor} from '../src/server/milestones/Mayor';
 import {Banker} from '../src/server/awards/Banker';
 import {Thermalist} from '../src/server/awards/Thermalist';
-import * as constants from '../src/common/constants';
 import {Birds} from '../src/server/cards/base/Birds';
 import {WaterImportFromEuropa} from '../src/server/cards/base/WaterImportFromEuropa';
 import {Phase} from '../src/common/Phase';
-import {addCity, addGreenery, addOcean, cast, forceGenerationEnd, maxOutOceans, runAllActions, setOxygenLevel, setTemperature, setVenusScaleLevel} from './TestingUtils';
+import {addCity, addGreenery, addOcean, cast, forceGenerationEnd, maxOutOceans, runAllActions, setOxygenLevel, setTemperature, setVenusScaleLevel, toName} from './TestingUtils';
 import {TestPlayer} from './TestPlayer';
 import {SaturnSystems} from '../src/server/cards/corporation/SaturnSystems';
 import {Resource} from '../src/common/Resource';
@@ -29,6 +29,7 @@ import {IColony} from '../src/server/colonies/IColony';
 import {IAward} from '../src/server/awards/IAward';
 import {SerializedGame} from '../src/server/SerializedGame';
 import {SelectInitialCards} from '../src/server/inputs/SelectInitialCards';
+import {GlobalParameter} from '../src/common/GlobalParameter';
 
 describe('Game', () => {
   it('should initialize with right defaults', () => {
@@ -277,7 +278,6 @@ describe('Game', () => {
   it('Solo player should place final greeneries if victory condition met', () => {
     const player = TestPlayer.BLUE.newPlayer();
     const game = Game.newInstance('game-solo2', [player], player);
-    /* Removes SelectInitialCards. The cast verifies that it's popping the right thing. */
     cast(player.popWaitingFor(), SelectInitialCards);
 
     // Set up end-game conditions
@@ -318,7 +318,6 @@ describe('Game', () => {
   it('Solo player should place final greeneries in TR 63 mode if victory condition is met', () => {
     const player = TestPlayer.BLUE.newPlayer();
     const game = Game.newInstance('game-solo2', [player], player, {soloTR: true});
-    /* Removes SelectInitialCards. The cast verifies that it's popping the right thing. */
     cast(player.popWaitingFor(), SelectInitialCards);
 
     // Set up end-game conditions
@@ -500,19 +499,19 @@ describe('Game', () => {
 
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player3);
 
-    expect(game.getPlayersInGenerationOrder().map((p) => p.name)).deep.eq(['p3', 'p4', 'p1', 'p2']);
+    expect(game.getPlayersInGenerationOrder().map(toName)).deep.eq(['p3', 'p4', 'p1', 'p2']);
 
     game.incrementFirstPlayer();
-    expect(game.getPlayersInGenerationOrder().map((p) => p.name)).deep.eq(['p4', 'p1', 'p2', 'p3']);
+    expect(game.getPlayersInGenerationOrder().map(toName)).deep.eq(['p4', 'p1', 'p2', 'p3']);
 
     game.incrementFirstPlayer();
-    expect(game.getPlayersInGenerationOrder().map((p) => p.name)).deep.eq(['p1', 'p2', 'p3', 'p4']);
+    expect(game.getPlayersInGenerationOrder().map(toName)).deep.eq(['p1', 'p2', 'p3', 'p4']);
 
     game.incrementFirstPlayer();
-    expect(game.getPlayersInGenerationOrder().map((p) => p.name)).deep.eq(['p2', 'p3', 'p4', 'p1']);
+    expect(game.getPlayersInGenerationOrder().map(toName)).deep.eq(['p2', 'p3', 'p4', 'p1']);
 
     game.incrementFirstPlayer();
-    expect(game.getPlayersInGenerationOrder().map((p) => p.name)).deep.eq(['p3', 'p4', 'p1', 'p2']);
+    expect(game.getPlayersInGenerationOrder().map(toName)).deep.eq(['p3', 'p4', 'p1', 'p2']);
   });
 
   it('Gets card player for corporation card', () => {
@@ -552,13 +551,13 @@ describe('Game', () => {
     const gameOptions = {boardName: BoardName.HELLAS, randomMA: RandomMAOptionType.UNLIMITED};
     const game = Game.newInstance('gameid', [player, player2], player, gameOptions);
 
-    const prevMilestones = game.milestones.map((m) => m.name).sort();
-    const prevAwards = game.awards.map((a) => a.name).sort();
+    const prevMilestones = game.milestones.map(toName).sort();
+    const prevAwards = game.awards.map(toName).sort();
 
     const game2 = Game.newInstance('game-foobar2', [player, player2], player, gameOptions);
 
-    const milestones = game2.milestones.map((m) => m.name).sort();
-    const awards = game2.awards.map((a) => a.name).sort();
+    const milestones = game2.milestones.map(toName).sort();
+    const awards = game2.awards.map(toName).sort();
 
     expect(prevMilestones).to.not.eq(milestones);
     expect(prevAwards).to.not.eq(awards);
@@ -620,7 +619,7 @@ describe('Game', () => {
     Game.newInstance('gameid', [player, player2], player, gameOptions);
 
     const corpsAssignedToPlayers =
-            [...player.dealtCorporationCards, ...player2.dealtCorporationCards].map((c) => c.name);
+            [...player.dealtCorporationCards, ...player2.dealtCorporationCards].map(toName);
 
     expect(corpsAssignedToPlayers).has.members(corpsFromTurmoil);
   });
@@ -642,7 +641,7 @@ describe('Game', () => {
     Game.newInstance('gameid', [player, player2], player, gameOptions);
 
     const assignedPreludes =
-            [...player.dealtPreludeCards, ...player2.dealtPreludeCards].map((c) => c.name);
+            [...player.dealtPreludeCards, ...player2.dealtPreludeCards].map(toName);
 
     expect(assignedPreludes).has.members(customPreludes);
   });
@@ -876,6 +875,50 @@ describe('Game', () => {
     expect(deserialized.colonies.map(toName)).has.members(colonyNames);
     expect(deserialized.discardedColonies.map(toName)).has.members(discardedColonyNames);
   });
+
+  it('wgt includes all parameters at the game start', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('gameid', [player], player, {venusNextExtension: false});
+    cast(player.popWaitingFor(), SelectInitialCards);
+    game.worldGovernmentTerraforming(player);
+    runAllActions(game);
+    const parameters = waitingForGlobalParameters(player);
+    expect(parameters).to.have.members([
+      GlobalParameter.OXYGEN,
+      GlobalParameter.TEMPERATURE,
+      GlobalParameter.OCEANS]);
+  });
+
+  it('wgt includes all parameters at the game start, with Venus', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('gameid', [player], player, {venusNextExtension: true});
+    cast(player.popWaitingFor(), SelectInitialCards);
+    game.worldGovernmentTerraforming(player);
+    runAllActions(game);
+    const parameters = waitingForGlobalParameters(player);
+    expect(parameters).to.have.members([
+      GlobalParameter.OXYGEN,
+      GlobalParameter.TEMPERATURE,
+      GlobalParameter.OCEANS,
+      GlobalParameter.VENUS]);
+  });
+
+  it('wgt includes all parameters at the game start, with The Moon', () => {
+    const player = TestPlayer.BLUE.newPlayer();
+    const game = Game.newInstance('gameid', [player], player, {venusNextExtension: false, moonExpansion: true});
+    cast(player.popWaitingFor(), SelectInitialCards);
+
+    game.worldGovernmentTerraforming(player);
+    runAllActions(game);
+    const parameters = waitingForGlobalParameters(player);
+    expect(parameters).to.have.members([
+      GlobalParameter.OXYGEN,
+      GlobalParameter.TEMPERATURE,
+      GlobalParameter.OCEANS,
+      GlobalParameter.MOON_MINING_RATE,
+      GlobalParameter.MOON_HABITAT_RATE,
+      GlobalParameter.MOON_LOGISTICS_RATE]);
+  });
 });
 
 function assertIsJSON(serialized: any) {
@@ -890,4 +933,32 @@ function assertIsJSON(serialized: any) {
       }
     }
   }
+}
+
+function waitingForGlobalParameters(player: Player): Array<GlobalParameter> {
+  function titlesToGlobalParameter(title: string): GlobalParameter {
+    if (title.includes('temperature')) {
+      return GlobalParameter.TEMPERATURE;
+    }
+    if (title.includes('ocean')) {
+      return GlobalParameter.OCEANS;
+    }
+    if (title.includes('oxygen')) {
+      return GlobalParameter.OXYGEN;
+    }
+    if (title.includes('Venus')) {
+      return GlobalParameter.VENUS;
+    }
+    if (title.includes('habitat')) {
+      return GlobalParameter.MOON_HABITAT_RATE;
+    }
+    if (title.includes('mining')) {
+      return GlobalParameter.MOON_MINING_RATE;
+    }
+    if (title.includes('logistics')) {
+      return GlobalParameter.MOON_LOGISTICS_RATE;
+    }
+    throw new Error('title does not match any description: ' + title);
+  }
+  return cast(player.getWaitingFor(), OrOptions).options.map((o) => o.title as string).map(titlesToGlobalParameter);
 }
