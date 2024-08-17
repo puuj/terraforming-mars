@@ -40,7 +40,7 @@
       </div>
   </a>
 
-  <language-icon></language-icon>
+<!--  <language-icon></language-icon> -->
 
   <div class="sidebar_item sidebar_item--info" :title="$t('Information panel')">
     <i class="sidebar_icon sidebar_icon--info"
