@@ -398,7 +398,6 @@ export class Game implements IGame, Logger {
     GameLoader.getInstance().saveGame(this);
   }
 
-
   public toJSON(): string {
     return JSON.stringify(this.serialize());
   }
@@ -877,10 +876,10 @@ export class Game implements IGame, Logger {
   }
 
   public worldGovernmentTerraforming(player: IPlayer): void {
-    player.defer(this.worldGovernmentTerraformingInput(player).andThen(() => {
+    const input = this.worldGovernmentTerraformingInput(player);
+    player.setWaitingFor(input, () => {
       this.doneWorldGovernmentTerraforming();
-      return undefined;
-    }));
+    });
   }
 
   public doneWorldGovernmentTerraforming() {
