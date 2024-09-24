@@ -71,7 +71,7 @@
               <div class="setup-item" v-i18n>Draft:</div>
               <div v-if="gameOptions.initialDraftVariant" class="game-config generic" v-i18n>Initial</div>
               <div v-else class="game-config exception" v-i18n>NO Initial Draft</div>
-              <div v-if="gameOptions.preludeDraftVariant">Prelude</div>
+              <div v-if="gameOptions.preludeDraftVariant" class="game-config generic">Prelude</div>
               <div v-else class="game-config exception" v-i18n>NO Prelude Draft</div>
               <div v-if="gameOptions.draftVariant" class="game-config generic" v-i18n>Research phase</div>
               <div v-else class="game-config exception" v-i18n>NO Research Draft</div>
@@ -85,7 +85,7 @@
 
             <li v-if="gameOptions.turmoilExtension && gameOptions.removeNegativeGlobalEvents">
               <div class="setup-item" v-i18n>Turmoil:</div>
-              <div class="game-config generic" v-i18n>No negative Turmoil event</div>
+              <div class="game-config exception" v-i18n>No negative Turmoil event</div>
             </li>
 
             <li v-if="playerNumber === 1">
@@ -100,7 +100,7 @@
               <div v-if="gameOptions.showTimers" class="game-config timer" v-i18n>timer</div>
               <div v-if="gameOptions.showOtherPlayersVP" class="game-config realtime-vp" v-i18n>real-time vp</div>
               <div v-if="gameOptions.undoOption" class="game-config undo" v-i18n>undo</div>
-              <div v-if="gameOptions.twoCorpsVariant" class="game-config generic" v-i18n>Merger</div>
+              <div v-if="gameOptions.twoCorpsVariant" class="game-config alternative" v-i18n>Merger</div>
             </li>
             <li v-if="gameOptions.bannedCards.length > 0"><div class="setup-item" v-i18n>Banned cards:</div>{{ gameOptions.bannedCards.join(', ') }}</li>
           </ul>
