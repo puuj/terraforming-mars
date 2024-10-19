@@ -187,17 +187,17 @@ export class Game implements IGame, Logger {
     this.players = players;
     const playerIds = players.map((p) => p.id);
     if (playerIds.includes(first.id) === false) {
-      throw new Error('Cannot find first player ' + first.id + ' in ' + playerIds);
+      throw new Error('Cannot find first player ' + first.id + ' in [' + playerIds + ']');
     }
     if (playerIds.includes(activePlayer) === false) {
-      throw new Error('Cannot find active player ' + activePlayer + ' in ' + playerIds);
+      throw new Error('Cannot find active player ' + activePlayer + ' in [' + playerIds + ']');
     }
     if (new Set(playerIds).size !== players.length) {
-      throw new Error('Duplicate player found: ' + playerIds);
+      throw new Error('Duplicate player found: [' + playerIds + ']');
     }
     const colors = players.map((p) => p.color);
     if (new Set(colors).size !== players.length) {
-      throw new Error('Duplicate color found: ' + colors);
+      throw new Error('Duplicate color found: [' + colors + ']');
     }
 
     this.activePlayer = activePlayer;
@@ -354,11 +354,12 @@ export class Game implements IGame, Logger {
         }
 
         if (gameOptions.preludeExtension || gameOptions.prelude2Expansion) {
-          if (gameOptions.startingPreludes !== undefined) {
-            player.dealtPreludeCards.push(...preludeDeck.drawN(game, gameOptions.startingPreludes));
-          }
+          gameOptions.startingPreludes = Math.max(gameOptions.startingPreludes ?? 0, constants.PRELUDE_CARDS_DEALT_PER_PLAYER);
+          player.dealtPreludeCards.push(...preludeDeck.drawN(game, gameOptions.startingPreludes));
         }
+
         if (gameOptions.ceoExtension) {
+          gameOptions.startingCeos = Math.max(gameOptions.startingCeos ?? 0, constants.CEO_CARDS_DEALT_PER_PLAYER);
           player.dealtCeoCards.push(...ceoDeck.drawN(game, gameOptions.startingCeos));
         }
       } else {
@@ -731,6 +732,11 @@ export class Game implements IGame, Logger {
   }
 
   private gotoEndGeneration() {
+    if (this.deferredActions.length > 0) {
+      this.deferredActions.runAll(() => this.gotoEndGeneration());
+      return;
+    }
+
     this.endGenerationForColonies();
 
     Turmoil.ifTurmoil(this, (turmoil) => {
@@ -797,7 +803,7 @@ export class Game implements IGame, Logger {
   }
 
   private gotoWorldGovernmentTerraforming() {
-    this.worldGovernmentTerraforming(this.first);
+    this.worldGovernmentTerraforming();
   }
 
   public worldGovernmentTerraformingInput(player: IPlayer): OrOptions {
@@ -874,16 +880,12 @@ export class Game implements IGame, Logger {
     return orOptions;
   }
 
-  public worldGovernmentTerraforming(player: IPlayer): void {
+  public worldGovernmentTerraforming(): void {
+    const player = this.first;
     const input = this.worldGovernmentTerraformingInput(player);
     player.setWaitingFor(input, () => {
-      this.doneWorldGovernmentTerraforming();
+      this.gotoEndGeneration();
     });
-  }
-
-  public doneWorldGovernmentTerraforming() {
-    // Carry on to next phase
-    this.gotoEndGeneration();
   }
 
   private allPlayersHavePassed(): boolean {
