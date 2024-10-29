@@ -105,6 +105,9 @@ export interface IGame extends Logger {
   /** True when Behold The Emperor is in effect this coming Turmoil phase */
   beholdTheEmperor: boolean;
 
+  /* Double Down: tracking when an action is due to double down. Does not need to be serialized. */
+  inDoubleDown: boolean;
+
   /** The set of tags available in this game. */
   readonly tags: ReadonlyArray<Tag>;
   // Function use to properly start the game: with project draft or with research phase
@@ -205,7 +208,7 @@ export interface IGame extends Logger {
   addOcean(player: IPlayer, space: Space): void;
   removeTile(spaceId: string): void;
   getPlayers(): ReadonlyArray<IPlayer>;
-  // Players returned in play order starting with first player this generation.
+  /* Players returned in play order starting with first player this generation. */
   getPlayersInGenerationOrder(): ReadonlyArray<IPlayer>;
   /**
    * Returns the Player holding this card, or throws.
