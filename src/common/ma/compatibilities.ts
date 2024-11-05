@@ -5,8 +5,12 @@ import {BoardName} from '../boards/BoardName';
 import {OneOrArray} from '../utils/types';
 
 export type Details = {
+  /* Components this MA needs to fucntion*/
   compatibility?: GameModule,
+  /* Map or maps this is assigned to */
   map?: OneOrArray<BoardName>,
+  /* If true, this is a modular MA. */
+  modular?: boolean,
 };
 
 export const MACompatibility: Record<AwardName | MilestoneName, Details> = {
@@ -37,10 +41,10 @@ export const MACompatibility: Record<AwardName | MilestoneName, Details> = {
   'Cosmic Settler': {map: BoardName.ARABIA_TERRA},
   'Botanist': {map: BoardName.ARABIA_TERRA},
   'Zoologist': {map: BoardName.ARABIA_TERRA},
-  'Manufacturer': {map: BoardName.ARABIA_TERRA},
+  'A. Manufacturer': {map: BoardName.ARABIA_TERRA},
   'Biologist': {map: BoardName.TERRA_CIMMERIA},
   'T. Economizer': {map: BoardName.TERRA_CIMMERIA},
-  'Politician': {map: BoardName.TERRA_CIMMERIA},
+  'T. Politician': {map: BoardName.TERRA_CIMMERIA},
   'Urbanist': {map: BoardName.TERRA_CIMMERIA},
   'Warmonger': {map: BoardName.TERRA_CIMMERIA},
   'Adapter': {map: BoardName.VASTITAS_BOREALIS},
@@ -79,16 +83,26 @@ export const MACompatibility: Record<AwardName | MilestoneName, Details> = {
   'Land Specialist': {map: BoardName.ARABIA_TERRA},
   'Martian': {map: BoardName.ARABIA_TERRA},
   'Businessperson': {map: BoardName.ARABIA_TERRA},
-  'Collector': {map: BoardName.TERRA_CIMMERIA},
+  'T. Collector': {map: BoardName.TERRA_CIMMERIA},
   'Firestarter': {map: BoardName.TERRA_CIMMERIA},
   'Terra Pioneer': {map: BoardName.TERRA_CIMMERIA},
   'Spacefarer': {map: BoardName.TERRA_CIMMERIA},
   'Gambler': {map: BoardName.TERRA_CIMMERIA},
-  'Electrician': {map: BoardName.VASTITAS_BOREALIS},
+  'V. Electrician': {map: BoardName.VASTITAS_BOREALIS},
   'Smith': {map: BoardName.VASTITAS_BOREALIS},
   'Tradesman': {map: BoardName.VASTITAS_BOREALIS},
   'Irrigator': {map: BoardName.VASTITAS_BOREALIS},
   'Capitalist': {map: BoardName.VASTITAS_BOREALIS},
   'Tunneler': {compatibility: 'underworld'},
   'Risktaker': {compatibility: 'underworld'},
+  'Administrator': {modular: true},
+  'Constructor': {modular: true},
+  'Investor': {modular: true},
+  'Mogul': {modular: true},
+  'Traveller': {modular: true},
+  'Fundraiser': {modular: true},
+  'Philantropist': {modular: true},
+  'Producer': {modular: true},
+  'Researcher': {modular: true},
+  'Sponsor': {modular: true},
 };
