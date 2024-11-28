@@ -238,6 +238,15 @@ export class Player implements IPlayer {
   public actionsTakenThisGame: number = 0;
   public victoryPointsByGeneration: Array<number> = [];
   public totalDelegatesPlaced: number = 0;
+  public globalParameterSteps: Record<GlobalParameter, number> = {
+    [GlobalParameter.OCEANS]: 0,
+    [GlobalParameter.OXYGEN]: 0,
+    [GlobalParameter.TEMPERATURE]: 0,
+    [GlobalParameter.VENUS]: 0,
+    [GlobalParameter.MOON_HABITAT_RATE]: 0,
+    [GlobalParameter.MOON_MINING_RATE]: 0,
+    [GlobalParameter.MOON_LOGISTICS_RATE]: 0,
+  };
 
   constructor(
     public name: string,
@@ -528,6 +537,10 @@ export class Player implements IPlayer {
     }
 
     return requirementsBonus;
+  }
+
+  public onGlobalParameterIncrease(parameter: GlobalParameter, steps: number): void {
+    this.globalParameterSteps[parameter] += steps;
   }
 
   public removeResourceFrom(card: ICard, count: number = 1, options?: {removingPlayer? : IPlayer, log?: boolean}): void {
@@ -1870,6 +1883,7 @@ export class Player implements IPlayer {
       alliedParty: this._alliedParty,
       draftHand: this.draftHand.map(toName),
       autoPass: this.autopass,
+      globalParameterSteps: this.globalParameterSteps,
     };
 
     if (this.lastCardPlayed !== undefined) {
@@ -1977,6 +1991,7 @@ export class Player implements IPlayer {
     }
 
     player.draftHand = cardsFromJSON(d.draftHand);
+    player.globalParameterSteps = d.globalParameterSteps;
 
     return player;
   }

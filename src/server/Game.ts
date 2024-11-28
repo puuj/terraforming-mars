@@ -1080,6 +1080,7 @@ export class Game implements IGame, Logger {
 
     if (this.phase !== Phase.SOLAR) {
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.OXYGEN, steps);
+      player.onGlobalParameterIncrease(GlobalParameter.OXYGEN, steps);
       player.increaseTerraformRating(steps);
     }
     if (this.oxygenLevel < constants.OXYGEN_LEVEL_FOR_TEMPERATURE_BONUS &&
@@ -1139,6 +1140,7 @@ export class Game implements IGame, Logger {
       }
       player.playedCards.forEach((card) => card.onGlobalParameterIncrease?.(player, GlobalParameter.VENUS, steps));
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.VENUS, steps);
+      player.onGlobalParameterIncrease(GlobalParameter.VENUS, steps);
       player.increaseTerraformRating(steps);
     }
 
@@ -1186,6 +1188,7 @@ export class Game implements IGame, Logger {
       }
 
       player.playedCards.forEach((card) => card.onGlobalParameterIncrease?.(player, GlobalParameter.TEMPERATURE, steps));
+      player.onGlobalParameterIncrease(GlobalParameter.TEMPERATURE, steps);
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.TEMPERATURE, steps);
       player.increaseTerraformRating(steps);
     }
@@ -1449,6 +1452,7 @@ export class Game implements IGame, Logger {
     });
     if (this.phase !== Phase.SOLAR) {
       TurmoilHandler.onGlobalParameterIncrease(player, GlobalParameter.OCEANS);
+      player.onGlobalParameterIncrease(GlobalParameter.OCEANS, 1);
       player.increaseTerraformRating();
     }
     if (this.marsIsTerraformed()) {

@@ -5,6 +5,7 @@ import {SerializedCard} from './SerializedCard';
 import {SerializedTimer} from '../common/SerializedTimer';
 import {UnderworldPlayerData} from './underworld/UnderworldData';
 import {AlliedParty} from './turmoil/AlliedParty';
+import {GlobalParameter} from '../common/GlobalParameter';
 
 interface DeprecatedFields {
 }
@@ -78,4 +79,5 @@ export interface SerializedPlayer extends DeprecatedFields{
     turmoilPolicyActionUsed: boolean;
     underworldData: UnderworldPlayerData;
     victoryPointsByGeneration: Array<number>;
+    globalParameterSteps: Record<GlobalParameter, number>;
 }
