@@ -20,9 +20,9 @@ import {Tile} from './Tile';
 import {LogMessageBuilder} from './logs/LogMessageBuilder';
 import {LogHelper} from './LogHelper';
 import {LogMessage} from '../common/logs/LogMessage';
-import {ALL_MILESTONES} from './milestones/Milestones';
-import {ALL_AWARDS} from './awards/Awards';
 import {Notifier} from './Notifier';
+import {getMilestoneByName} from './milestones/Milestones';
+import {getAwardByName} from './awards/Awards';
 import {PartyHooks} from './turmoil/parties/PartyHooks';
 import {Phase} from '../common/Phase';
 import {IPlayer} from './IPlayer';
@@ -1616,9 +1616,9 @@ export class Game implements IGame, Logger {
     const milestones: Array<IMilestone> = [];
     d.milestones.forEach((milestoneName) => {
       milestoneName = maybeRenamedMilestone(milestoneName);
-      const foundMilestone = ALL_MILESTONES.find((milestone) => milestone.name === milestoneName);
-      if (foundMilestone !== undefined) {
-        milestones.push(foundMilestone);
+      const milestone = getMilestoneByName(milestoneName);
+      if (milestone !== undefined) {
+        milestones.push(milestone);
       }
     });
 
@@ -1628,9 +1628,9 @@ export class Game implements IGame, Logger {
     const awards: Array<IAward> = [];
     d.awards.forEach((awardName) => {
       awardName = maybeRenamedAward(awardName);
-      const foundAward = ALL_AWARDS.find((award) => award.name === awardName);
-      if (foundAward !== undefined) {
-        awards.push(foundAward);
+      const award = getAwardByName(awardName);
+      if (award !== undefined) {
+        awards.push(award);
       }
     });
 
