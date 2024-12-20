@@ -44,15 +44,21 @@
             </li>
 
 
-            <li v-if="gameOptions.venusNextExtension">
+            <li v-if="gameOptions.expansion.venus">
             <div class="setup-item" v-i18n>Venus Terraforming:</div>
               <div v-if="gameOptions.requiresVenusTrackCompletion" class="game-config exception">Mandatory</div>
               <div v-else class="game-config generic" v-i18n>Optional</div>
             </li>
-            <li v-if="gameOptions.moonExpansion">
+            <li v-if="gameOptions.expansion.moon">
             <div class="setup-item" v-i18n>Moon Terraforming:</div>
               <div v-if="gameOptions.requiresMoonTrackCompletion" class="game-config exception">Mandatory</div>
               <div v-else class="game-config generic" v-i18n>Optional</div>
+            </li>
+
+	    <li v-if="gameOptions.expansion.ares">
+            <div class="setup-item" v-i18n>Ares:</div>
+              <div v-if="gameOptions.aresExtremeVariant" class="game-config exception">Extreme</div>
+              <div v-else class="game-config generic" v-i18n>Original</div>
             </li>
 
             <li v-if="playerNumber > 1">
