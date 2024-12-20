@@ -35,15 +35,14 @@ export const MILESTONE_COMPATIBILITY: Record<MilestoneName, CompatibilityDetails
   'One Giant Step': {compatibility: 'moon'},
   'Lunarchitect': {compatibility: 'moon'},
   'Colonizer': {map: BoardName.AMAZONIS, compatibility: 'colonies'},
-  'Farmer': {map: BoardName.AMAZONIS},
+  'Forester': {map: BoardName.AMAZONIS, modular: true},
   'Minimalist': {map: BoardName.AMAZONIS},
-  'Terran': {map: BoardName.AMAZONIS},
+  'Terran': {map: [BoardName.AMAZONIS, BoardName.ARABIA_TERRA]},
   'Tropicalist': {map: BoardName.AMAZONIS},
   'Economizer': {map: BoardName.ARABIA_TERRA},
   'Pioneer': {map: BoardName.ARABIA_TERRA, compatibility: 'colonies'},
   'Land Specialist': {map: BoardName.ARABIA_TERRA},
   'Martian': {map: BoardName.ARABIA_TERRA, compatibility: 'pathfinders'},
-  'Businessperson': {map: BoardName.ARABIA_TERRA},
   'T. Collector': {map: BoardName.TERRA_CIMMERIA},
   'Firestarter': {map: BoardName.TERRA_CIMMERIA},
   'Terra Pioneer': {map: BoardName.TERRA_CIMMERIA},
@@ -71,6 +70,7 @@ export const MILESTONE_COMPATIBILITY: Record<MilestoneName, CompatibilityDetails
   'ThermoEngineer': {modular: true},
   'Hydrologist': {modular: true},
   'Thawer': {modular: true},
+  'Purifier': {compatibility: 'ares'},
 };
 
 export const AWARD_COMPATIBILITY: Record<AwardName, CompatibilityDetails> = {
@@ -128,4 +128,5 @@ export const AWARD_COMPATIBILITY: Record<AwardName, CompatibilityDetails> = {
   'Electrician': {modular: true},
   'Manufacturer': {modular: true},
   'Politician': {compatibility: 'turmoil', modular: true},
+  'Rugged': {compatibility: 'ares'},
 };

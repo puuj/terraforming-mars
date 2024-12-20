@@ -2,35 +2,33 @@
         <div id="game-setup-detail" class="game-setup-detail-container">
           <ul>
             <li><div class="setup-item" v-i18n>Expansion:</div>
-
-
-              <div v-if="gameOptions.corporateEra" class="create-game-expansion-icon expansion-icon-CE" title="Corporate Era"></div>
+              <div v-if="gameOptions.expansions.corpera" class="create-game-expansion-icon expansion-icon-CE" title="Corporate Era"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-CE expansion-disabled" title="Corporate Era disabled"></div>
-              <div v-if="gameOptions.venusNextExtension" class="create-game-expansion-icon expansion-icon-venus" title="Venus"></div>
+              <div v-if="gameOptions.expansions.venus" class="create-game-expansion-icon expansion-icon-venus" title="Venus"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-venus expansion-disabled" title="Venus disabled"></div>
-              <div v-if="gameOptions.preludeExtension" class="create-game-expansion-icon expansion-icon-prelude" title="Preludes"></div>
+              <div v-if="gameOptions.expansions.prelude" class="create-game-expansion-icon expansion-icon-prelude" title="Preludes"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-prelude expansion-disabled" title="Preludes disabled"></div>
-              <div v-if="gameOptions.prelude2Expansion" class="create-game-expansion-icon expansion-icon-prelude2" title="Preludes 2"></div>
+              <div v-if="gameOptions.expansions.prelude2" class="create-game-expansion-icon expansion-icon-prelude2" title="Preludes 2"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-prelude2 expansion-disabled" title="Preludes 2 disabled"></div>
-              <div v-if="gameOptions.coloniesExtension" class="create-game-expansion-icon expansion-icon-colony" title="Colonies"></div>
+              <div v-if="gameOptions.expansions.colonies" class="create-game-expansion-icon expansion-icon-colony" title="Colonies"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-colony expansion-disabled" title="Colonies disabled"></div>
-              <div v-if="gameOptions.turmoilExtension" class="create-game-expansion-icon expansion-icon-turmoil" title="Turmoil"></div>
+              <div v-if="gameOptions.expansions.turmoil" class="create-game-expansion-icon expansion-icon-turmoil" title="Turmoil"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-turmoil expansion-disabled" title="Turmoil disabled"></div>
-              <div v-if="gameOptions.promoCardsOption" class="create-game-expansion-icon expansion-icon-promo" title="Promos"></div>
+              <div v-if="gameOptions.expansions.promo" class="create-game-expansion-icon expansion-icon-promo" title="Promos"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-promo expansion-disabled" title="Promos disabled"></div>
-              <div v-if="gameOptions.aresExtension" class="create-game-expansion-icon expansion-icon-ares" title="Ares"></div>
+              <div v-if="gameOptions.expansions.ares" class="create-game-expansion-icon expansion-icon-ares title="Ares""></div>
               <div v-else class="create-game-expansion-icon expansion-icon-ares expansion-disabled" title="Ares disabled"></div>
-              <div v-if="gameOptions.moonExpansion" class="create-game-expansion-icon expansion-icon-themoon" title="The Moon"></div>
+              <div v-if="gameOptions.expansions.moon" class="create-game-expansion-icon expansion-icon-themoon" title="The Moon"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-themoon expansion-disabled" title="The Moon disabled"></div>
-              <div v-if="gameOptions.pathfindersExpansion" class="create-game-expansion-icon expansion-icon-pathfinders" title="Pathfinders"></div>
+              <div v-if="gameOptions.expansions.pathfinders" class="create-game-expansion-icon expansion-icon-pathfinders" title="Pathfinders"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-pathfinders expansion-disabled" title="Pathfinders disabled"></div>
-              <div v-if="gameOptions.communityCardsOption" class="create-game-expansion-icon expansion-icon-community" title="Community"></div>
+              <div v-if="gameOptions.expansions.community" class="create-game-expansion-icon expansion-icon-community" title="Community"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-community expansion-disabled" title="Community disabled"></div>
               <div v-if="isPoliticalAgendasOn" class="create-game-expansion-icon expansion-icon-agendas" title="Turmoil Agendas"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-agendas expansion-disabled" title="Turmoil Agendas disabled"></div>
-              <div v-if="gameOptions.ceoExtension" class="create-game-expansion-icon expansion-icon-ceo" title="CEOs"></div>
+              <div v-if="gameOptions.expansions.ceo" class="create-game-expansion-icon expansion-icon-ceo" title="CEOs"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-ceo expansion-disabled" title="CEOs disabled"></div>
-              <div v-if="gameOptions.underworldExpansion" class="create-game-expansion-icon expansion-icon-underworld" title="Underworld"></div>
+              <div v-if="gameOptions.expansions.underworld" class="create-game-expansion-icon expansion-icon-underworld" title="Underworld"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-underworld expansion-disabled" title="Underworld disabled"></div>
             </li>
 
@@ -63,7 +61,6 @@
               <div v-if="gameOptions.randomMA === RandomMAOptionType.NONE" class="game-config generic" v-i18n>Board-defined</div>
               <div v-if="gameOptions.randomMA === RandomMAOptionType.LIMITED" class="game-config generic" v-i18n>Randomized with limited synergy</div>
               <div v-if="gameOptions.randomMA === RandomMAOptionType.UNLIMITED" class="game-config generic" v-i18n>Full randomized</div>
-              <div v-if="gameOptions.venusNextExtension && gameOptions.includeVenusMA" class="game-config generic" v-i18n>Venus Milestone/Award</div>
               <div v-if="gameOptions.randomMA !== RandomMAOptionType.NONE && gameOptions.includeFanMA" class="game-config generic" v-i18n>Include fan Milestones/Awards</div>
             </li>
 
@@ -83,7 +80,7 @@
               <span>{{escapeVelocityDescription}}</span>
             </li>
 
-            <li v-if="gameOptions.turmoilExtension && gameOptions.removeNegativeGlobalEvents">
+            <li v-if="gameOptions.expansions.venus && gameOptions.removeNegativeGlobalEvents">
               <div class="setup-item" v-i18n>Turmoil:</div>
               <div class="game-config exception" v-i18n>No negative Turmoil event</div>
             </li>

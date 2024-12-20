@@ -35,7 +35,6 @@ import {inplaceShuffle} from '../utils/shuffle';
 import {UnseededRandom} from '../../common/utils/Random';
 import {MilestoneName, milestoneNames} from '../../common/ma/MilestoneName';
 import {AwardName, awardNames} from '../../common/ma/AwardName';
-import {inplaceRemove} from '../../common/utils/utils';
 import {synergies} from './MilestoneAwardSynergies';
 import {AWARD_COMPATIBILITY, CompatibilityDetails, MILESTONE_COMPATIBILITY} from '../../common/ma/compatibilities';
 import {Expansion, EXPANSIONS} from '../../common/cards/GameModule';
@@ -93,8 +92,7 @@ export function chooseMilestonesAndAwards(gameOptions: GameOptions): DrawnMilest
     drawnMilestonesAndAwards.awards.push(...awards);
   }
 
-  const includeVenus = gameOptions.venusNextExtension && gameOptions.includeVenusMA;
-  const requiredQty = includeVenus ? 6 : 5;
+  const requiredQty = gameOptions.venusNextExtension ? 6 : 5;
 
   switch (gameOptions.randomMA) {
   case RandomMAOptionType.NONE:
@@ -126,7 +124,7 @@ export function chooseMilestonesAndAwards(gameOptions: GameOptions): DrawnMilest
       // There's no need to add more milestones and awards for these boards, so it returns.
       return getRandomMilestonesAndAwards(gameOptions, requiredQty, LIMITED_SYNERGY);
     }
-    if (includeVenus) {
+    if (gameOptions.venusNextExtension) {
       push(VENUS_MILESTONES, VENUS_AWARDS);
     }
     if (gameOptions.aresExtension) {
@@ -209,11 +207,6 @@ export function getCandidates(gameOptions: GameOptions): [Array<MilestoneName>, 
   }
   const candidateMilestones: Array<MilestoneName> = milestoneNames.filter((name) => include(MILESTONE_COMPATIBILITY[name]));
   const candidateAwards: Array<AwardName> = awardNames.filter((name) => include(AWARD_COMPATIBILITY[name]));
-
-  // Special-case Terran and Businessperson, which are exactly the same.
-  if (candidateMilestones.includes('Terran') && candidateMilestones.includes('Businessperson')) {
-    inplaceRemove(candidateMilestones, 'Terran');
-  }
 
   return [candidateMilestones, candidateAwards];
 }

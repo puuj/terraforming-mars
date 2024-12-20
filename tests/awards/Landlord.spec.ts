@@ -3,8 +3,8 @@ import {Landlord} from '../../src/server/awards/Landlord';
 import {SpaceName} from '../../src/server/SpaceName';
 import {MoonExpansion} from '../../src/server/moon/MoonExpansion';
 import {MoonSpaces} from '../../src/common/moon/MoonSpaces';
-import {EmptyBoard} from '../ares/EmptyBoard';
-import {_AresHazardPlacement} from '../../src/server/ares/AresHazards';
+import {EmptyBoard} from '../testing/EmptyBoard';
+import {AresHazards} from '../../src/server/ares/AresHazards';
 import {TileType} from '../../src/common/TileType';
 import {LandClaim} from '../../src/server/cards/base/LandClaim';
 import {addCity, addGreenery, cast, testGame} from '../TestingUtils';
@@ -45,7 +45,7 @@ describe('Landlord', () => {
     const [game, player/* , player2 */] = testGame(2, {aresExtension: true});
 
     const firstSpace = game.board.getAvailableSpacesOnLand(player)[0];
-    _AresHazardPlacement.putHazardAt(firstSpace, TileType.DUST_STORM_MILD);
+    AresHazards.putHazardAt(firstSpace, TileType.DUST_STORM_MILD);
 
     expect(award.getScore(player)).to.eq(0);
 

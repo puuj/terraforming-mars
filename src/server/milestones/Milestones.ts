@@ -22,14 +22,12 @@ import {Economizer} from './arabiaTerra/Economizer';
 import {Pioneer} from './arabiaTerra/Pioneer';
 import {LandSpecialist} from './arabiaTerra/LandSpecialist';
 import {Martian} from './arabiaTerra/Martian';
-import {Businessperson} from './arabiaTerra/Businessperson';
 import {Capitalist} from './Capitalist';
 import {VElectrician} from './VElectrician';
 import {Irrigator} from './Irrigator';
 import {Smith} from './Smith';
 import {Tradesman} from './Tradesman';
 import {Colonizer} from './amazonisPlanitia/Colonizer';
-import {Farmer} from './amazonisPlanitia/Farmer';
 import {Minimalist} from './amazonisPlanitia/Minimalist';
 import {Terran} from './amazonisPlanitia/Terran';
 import {Tropicalist} from './amazonisPlanitia/Tropicalist';
@@ -40,6 +38,7 @@ import {Spacefarer} from './terraCimmeria/Spacefarer';
 import {TerraPioneer} from './terraCimmeria/TerraPioneer';
 import {Risktaker} from './underworld/Risktaker';
 import {Tunneler} from './underworld/Tunneler';
+import {Forester} from './modular/Forester';
 import {Fundraiser} from './modular/Fundraiser';
 import {Geologist} from './modular/Geologist';
 import {Landshaper} from './modular/Landshaper';
@@ -54,6 +53,7 @@ import {Breeder} from './modular/Breeder';
 import {ThermoEngineer} from './modular/ThermoEngineer';
 import {Hydrologist} from './modular/Hydrologist';
 import {Thawer} from './modular/Thawer';
+import {Purifier} from './Purifier';
 // import {Merchant} from './modular/Merchant';
 
 export const THARSIS_MILESTONES = [
@@ -94,6 +94,7 @@ export const HELLAS_MILESTONES = [
 
 export const ARES_MILESTONES = [
   new Networker(),
+  new Purifier(),
 ];
 
 export const MOON_MILESTONES = [
@@ -103,7 +104,7 @@ export const MOON_MILESTONES = [
 
 export const AMAZONIS_PLANITIA_MILESTONES = [
   new Colonizer(),
-  new Farmer(),
+  new Forester(),
   new Minimalist(),
   new Terran(),
   new Tropicalist(),
@@ -114,7 +115,7 @@ export const ARABIA_TERRA_MILESTONES = [
   new Pioneer(),
   new LandSpecialist(),
   new Martian(),
-  new Businessperson(),
+  new Terran(), // Duplicate of Amazonis Planitia
 ];
 
 export const TERRA_CIMMERIA_MILESTONES = [
