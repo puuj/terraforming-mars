@@ -16,7 +16,7 @@
               <div v-else class="create-game-expansion-icon expansion-icon-turmoil expansion-disabled" title="Turmoil disabled"></div>
               <div v-if="gameOptions.expansions.promo" class="create-game-expansion-icon expansion-icon-promo" title="Promos"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-promo expansion-disabled" title="Promos disabled"></div>
-              <div v-if="gameOptions.expansions.ares" class="create-game-expansion-icon expansion-icon-ares title="Ares""></div>
+              <div v-if="gameOptions.expansions.ares" class="create-game-expansion-icon expansion-icon-ares title="Ares"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-ares expansion-disabled" title="Ares disabled"></div>
               <div v-if="gameOptions.expansions.moon" class="create-game-expansion-icon expansion-icon-themoon" title="The Moon"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-themoon expansion-disabled" title="The Moon disabled"></div>
