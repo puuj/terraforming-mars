@@ -134,9 +134,9 @@ export class ServeAsset extends Handler {
   }
 
   private toServiceWorkerFile(urlPath: string): { file?: string, encoding?: Encoding } {
-    const file = `build/src/client/${urlPath}`;
-
-    return {file};
+    return {
+      file: `build/${urlPath}`,
+    };
   }
 
   private toFile(urlPath: string, encodings: Set<Encoding>): { file?: string, encoding?: Encoding } {
@@ -162,6 +162,7 @@ export class ServeAsset extends Handler {
       return this.toMainFile(urlPath, encodings);
 
     case 'sw.js':
+    case '/sw.js':
       return this.toServiceWorkerFile(urlPath);
 
     case 'apple-touch-icon.png':

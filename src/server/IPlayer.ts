@@ -35,6 +35,7 @@ import {UnderworldPlayerData} from './underworld/UnderworldData';
 import {AlliedParty} from './turmoil/AlliedParty';
 import {IParty} from './turmoil/parties/IParty';
 import {Message} from '../common/logs/Message';
+import {DiscordId} from './server/auth/discord';
 
 export type ResourceSource = IPlayer | GlobalEventName | ICard;
 
@@ -109,6 +110,7 @@ export interface IPlayer {
   playedCards: Array<IProjectCard>;
 
   cardCost: number;
+  tableau: Array<ICorporationCard | IProjectCard>;
 
   /** Cards this player has in their draft hand. Player chooses from them, and passes them to the next player */
   draftHand: Array<IProjectCard>;
@@ -162,7 +164,9 @@ export interface IPlayer {
   readonly alliedParty?: AlliedParty;
 
   tearDown(): void;
-  tableau: Array<ICorporationCard | IProjectCard>;
+
+  // When set, this player can only be accessed by the user.
+  user?: DiscordId;
 
   /**
    * Return `true` if this player has played the supplied corporation card.
