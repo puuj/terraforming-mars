@@ -7,9 +7,10 @@ import {IProjectCard} from '../../src/server/cards/IProjectCard';
 import {CardName} from '../../src/common/cards/CardName';
 import {Payment} from '../../src/common/inputs/Payment';
 import {testGame} from '../TestGame';
-import {toName} from '../TestingUtils';
+import {toName} from '../../src/common/utils/utils';
 
-describe('SelectProjectCardToPlay', function() {
+
+describe('SelectProjectCardToPlay', () => {
   let player: TestPlayer;
   let aquiferPumping: IProjectCard;
   let ioMiningIndustries: IProjectCard;
@@ -26,7 +27,7 @@ describe('SelectProjectCardToPlay', function() {
     called = false;
   });
 
-  it('Simple', function() {
+  it('Simple', () => {
     const selectProjectCardToPlay = new SelectProjectCardToPlay(
       player,
       [

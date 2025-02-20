@@ -159,10 +159,11 @@
 import Vue from 'vue';
 import {CardType} from '@/common/cards/CardType';
 import {CardName} from '@/common/cards/CardName';
+import {toName} from '@/common/utils/utils';
 import {getPreferences} from '@/client/utils/PreferencesManager';
 import {GlobalEventName} from '@/common/turmoil/globalEvents/GlobalEventName';
 import {allGlobalEventNames, getGlobalEvent} from '@/client/turmoil/ClientGlobalEventManifest';
-import {byType, getCard, getCards, toName} from '@/client/cards/ClientCardManifest';
+import {byType, getCard, getCards} from '@/client/cards/ClientCardManifest';
 import {COMMUNITY_COLONY_NAMES, OFFICIAL_COLONY_NAMES, PATHFINDERS_COLONY_NAMES} from '@/common/colonies/AllColonies';
 import {ColonyModel} from '@/common/models/ColonyModel';
 import {ColonyName} from '@/common/colonies/ColonyName';
@@ -182,8 +183,8 @@ import GlobalEvent from '@/client/components/turmoil/GlobalEvent.vue';
 import PreferencesIcon from '@/client/components/PreferencesIcon.vue';
 import Milestone from '@/client/components/Milestone.vue';
 import Award from '@/client/components/Award.vue';
-import {AWARD_COMPATIBILITY, CompatibilityDetails, MILESTONE_COMPATIBILITY} from '@/common/ma/compatibilities';
 import {TypeOption, CardListModel, hashToModel, modelToHash} from '@/client/components/cardlist/CardListModel';
+import {getAward, getMilestone} from '@/client/MilestoneAwardManifest';
 
 type Refs = {
   filter: HTMLInputElement,
@@ -354,23 +355,22 @@ export default (Vue as WithRefs<Refs>).extend({
       const colony = getColony(name);
       return colony !== undefined && this.expansions[colony.module ?? 'base'] === true;
     },
-    isCompatible(compatibility: CompatibilityDetails): boolean {
-      if (compatibility.modular === true) {
-        return true;
-      }
-      return this.expansions[compatibility.compatibility ?? 'base'] === true;
-    },
+    // isCompatible(mile): boolean {
+    //   if (compatibility.modular === true) {
+    //   }
+    //   return
+    // },
     showMilestone(name: MilestoneName): boolean {
       if (!this.include(name, 'ma')) {
         return false;
       }
-      return this.isCompatible(MILESTONE_COMPATIBILITY[name]);
+      return this.expansions[getMilestone(name).requirements ?? 'base'] === true;
     },
     showAward(name: AwardName): boolean {
       if (!this.include(name, 'ma')) {
         return false;
       }
-      return this.isCompatible(AWARD_COMPATIBILITY[name]);
+      return this.expansions[getAward(name).requirements ?? 'base'] === true;
     },
     getLanguageCssClass() {
       const language = getPreferences().lang;
@@ -385,21 +385,11 @@ export default (Vue as WithRefs<Refs>).extend({
         visitor: undefined,
       };
     },
-    milestoneModel(milestoneName: MilestoneName): ClaimedMilestoneModel {
-      return {
-        name: milestoneName,
-        playerName: '',
-        playerColor: '',
-        scores: [],
-      };
+    milestoneModel(name: MilestoneName): ClaimedMilestoneModel {
+      return {name, playerName: undefined, playerColor: undefined, scores: []};
     },
-    awardModel(awardName: AwardName): FundedAwardModel {
-      return {
-        name: awardName,
-        playerName: '',
-        playerColor: '',
-        scores: [],
-      };
+    awardModel(name: AwardName): FundedAwardModel {
+      return {name, playerName: undefined, playerColor: undefined, scores: []};
     },
     // experimentalUI might not be used at the moment, but it's fine to just leave it here.
     experimentalUI(): boolean {

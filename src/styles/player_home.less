@@ -263,10 +263,21 @@
 
 .tag-tr {
     background-image: url(./assets/resources/tr.png);
-    background-image: url(./assets/resources/tr.png);
     background-size: 49px 38px !important;
     background-position: -4px -2px !important;
 }
+.tag-handicap {
+    background-image: url(./assets/resources/handicap.png);
+    background-size: 42px 35px !important;
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: unset;
+    filter: drop-shadow(.5px .5px 0 black)
+        drop-shadow(-.5px .5px 0 black)
+        drop-shadow(.5px -.5px 0 black)
+        drop-shadow(-.5px -.5px 0 black);
+}
+
 .tag-escape {
     background-image: url(./assets/expansion_icons/expansion_icon_escapeVelocity.png);
     background-size: 56px;
@@ -597,6 +608,8 @@
           forecaster, edgedancer, visionary, naturalist, voyager,
 
           rugged, purifier,
+
+          agronomist, engineer, farmer,
           ;
         each(@ma-name, {
           .ma-name--@{value} {
@@ -607,10 +620,11 @@
         /* TODO(kberg): move these files up a level. */
         @ma-name-fanmade:
           colonizer, minimalist, terran, tropicalist,
-          curator, tourist, engineer, a-zoologist,
+          curator, tourist, a-engineer, a-zoologist,
 
           t-collector, firestarter, terra-pioneer, spacefarer, gambler,
           biologist, t-economizer, t-politician, urbanist, warmonger,
+          incorporator, manufacturer, politician,
         ;
         each(@ma-name-fanmade, {
           .ma-name--@{value} {
@@ -623,7 +637,7 @@
           landscaper, metropolist, mogul, thawer, traveller,
 
           collector, electrician, fundraiser, geologist, landshaper, lobbyist, philantropist,
-          planetologist, producer, researcher, sponsor, forester
+          planetologist, producer, researcher, sponsor, forester, breeder, thermoengineer,
         ;
         each(@ma-name-modular, {
           .ma-name--@{value} {
@@ -671,13 +685,6 @@
             line-height: 15px;
             text-align: center;
 
-        }
-    }
-
-    .pwned-item {
-        .ma-name,
-        .ma-description {
-            opacity: 1;
         }
     }
 }

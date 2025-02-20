@@ -14,10 +14,7 @@ import {SpaceHighlight, SpaceModel} from '../../common/models/SpaceModel';
 import {TileType} from '../../common/TileType';
 import {Phase} from '../../common/Phase';
 import {Resource} from '../../common/Resource';
-import {
-  ClaimedMilestoneModel,
-  MilestoneScore,
-} from '../../common/models/ClaimedMilestoneModel';
+import {ClaimedMilestoneModel, MilestoneScore} from '../../common/models/ClaimedMilestoneModel';
 import {FundedAwardModel, AwardScore} from '../../common/models/FundedAwardModel';
 import {getTurmoilModel} from '../models/TurmoilModel';
 import {SpectatorModel} from '../../common/models/SpectatorModel';
@@ -33,6 +30,7 @@ import {cardsToModel, coloniesToModel} from './ModelUtils';
 import {runId} from '../utils/server-ids';
 import {UnderworldExpansion} from '../underworld/UnderworldExpansion';
 import {toName} from '../../common/utils/utils';
+import {MAX_AWARDS, MAX_MILESTONES} from '../../common/constants';
 
 export class Server {
   public static getSimpleGameModel(game: IGame): SimpleGameModel {
@@ -90,6 +88,7 @@ export class Server {
     const game = player.game;
 
     const players: Array<PublicPlayerModel> = game.getPlayersInGenerationOrder().map(this.getPlayer);
+
     const thisPlayerIndex = players.findIndex((p) => p.color === player.color);
     const thisPlayer: PublicPlayerModel = players[thisPlayerIndex];
 
@@ -117,7 +116,7 @@ export class Server {
 
   public static getSpectatorModel(game: IGame): SpectatorModel {
     return {
-      color: Color.NEUTRAL,
+      color: 'neutral',
       id: game.spectatorId,
       game: this.getGameModel(game),
       players: game.getPlayersInGenerationOrder().map(this.getPlayer),
@@ -148,7 +147,7 @@ export class Server {
         (m) => m.milestone.name === milestone.name,
       );
       let scores: Array<MilestoneScore> = [];
-      if (claimed === undefined && claimedMilestones.length < 3) {
+      if (claimed === undefined && claimedMilestones.length < MAX_MILESTONES) {
         scores = game.getPlayers().map((player) => ({
           playerColor: player.color,
           playerScore: milestone.getScore(player),
@@ -156,8 +155,8 @@ export class Server {
       }
 
       milestoneModels.push({
-        playerName: claimed === undefined ? '' : claimed.player.name,
-        playerColor: claimed === undefined ? '' : claimed.player.color,
+        playerName: claimed?.player.name,
+        playerColor: claimed?.player.color,
         name: milestone.name,
         scores,
       });
@@ -174,7 +173,7 @@ export class Server {
       const funded = fundedAwards.find((a) => a.award.name === award.name);
       const scorer = new AwardScorer(game, award);
       let scores: Array<AwardScore> = [];
-      if (fundedAwards.length < 3 || funded !== undefined) {
+      if (fundedAwards.length < MAX_AWARDS || funded !== undefined) {
         scores = game.getPlayers().map((player) => ({
           playerColor: player.color,
           playerScore: scorer.get(player),
@@ -182,8 +181,8 @@ export class Server {
       }
 
       awardModels.push({
-        playerName: funded === undefined ? '' : funded.player.name,
-        playerColor: funded === undefined ? '' : funded.player.color,
+        playerName: funded?.player.name,
+        playerColor: funded?.player.color,
         name: award.name,
         scores: scores,
       });
@@ -208,6 +207,7 @@ export class Server {
 
   public static getPlayer(player: IPlayer): PublicPlayerModel {
     const game = player.game;
+    const useHandicap = game.getPlayers().some((p) => p.handicap !== 0);
     return {
       actionsTakenThisRound: player.actionsTakenThisRound,
       actionsTakenThisGame: player.actionsTakenThisGame,
@@ -222,6 +222,7 @@ export class Server {
       energy: player.energy,
       energyProduction: player.production.energy,
       fleetSize: player.colonies.getFleetSize(),
+      handicap: useHandicap ? player.handicap : undefined,
       heat: player.heat,
       heatProduction: player.production.heat,
       id: game.phase === Phase.END ? player.id : undefined,
@@ -311,7 +312,7 @@ export class Server {
       return space.player.color;
     }
     if (space.tile?.protectedHazard === true) {
-      return Color.BRONZE;
+      return 'bronze';
     }
     return undefined;
   }

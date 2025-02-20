@@ -546,6 +546,7 @@ import {DEFAULT_EXPANSIONS, Expansion} from '@/common/cards/GameModule';
 import {BoardNameType, NewGameConfig, NewPlayerModel} from '@/common/game/NewGameConfig';
 import {vueRoot} from '@/client/components/vueRoot';
 import {CreateGameModel} from './CreateGameModel';
+import {paths} from '@/common/app/paths';
 
 const REVISED_COUNT_ALGORITHM = false;
 
@@ -570,14 +571,14 @@ export default (Vue as WithRefs<Refs>).extend({
       firstIndex: 1,
       playersCount: 1,
       players: [
-        {name: '', color: Color.RED, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.GREEN, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.YELLOW, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.BLUE, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.BLACK, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.PURPLE, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.ORANGE, beginner: false, handicap: 0, first: false},
-        {name: '', color: Color.PINK, beginner: false, handicap: 0, first: false},
+        {name: '', color: 'red', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'green', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'yellow', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'blue', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'black', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'purple', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'orange', beginner: false, handicap: 0, first: false},
+        {name: '', color: 'pink', beginner: false, handicap: 0, first: false},
       ],
       expansions: {...DEFAULT_EXPANSIONS},
       draftVariant: true,
@@ -1249,7 +1250,7 @@ export default (Vue as WithRefs<Refs>).extend({
         }
       };
 
-      fetch('game', {'method': 'PUT', 'body': dataToSend, 'headers': {'Content-Type': 'application/json'}})
+      fetch(paths.API_CREATEGAME, {'method': 'PUT', 'body': dataToSend, 'headers': {'Content-Type': 'application/json'}})
         .then((response) => response.text())
         .then((text) => {
           try {

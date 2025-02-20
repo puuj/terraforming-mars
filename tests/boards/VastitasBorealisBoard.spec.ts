@@ -5,22 +5,22 @@ import {TileType} from '../../src/common/TileType';
 import {TestPlayer} from '../TestPlayer';
 import {cast, runAllActions} from '../TestingUtils';
 import {BoardName} from '../../src/common/boards/BoardName';
-import {SpaceName} from '../../src/server/SpaceName';
+import {SpaceName} from '../../src/common/boards/SpaceName';
 import {testGame} from '../TestGame';
 import {DEFAULT_GAME_OPTIONS} from '../../src/server/game/GameOptions';
 import {SeededRandom} from '../../src/common/utils/Random';
 
-describe('VastitasBorealisBoard', function() {
+describe('VastitasBorealisBoard', () => {
   let board: VastitasBorealisBoard;
   let game: IGame;
   let player: TestPlayer;
 
-  beforeEach(function() {
+  beforeEach(() => {
     [game, player] = testGame(2, {boardName: BoardName.VASTITAS_BOREALIS});
     board = cast(game.board, VastitasBorealisBoard);
   });
 
-  it('sanity test', function() {
+  it('sanity test', () => {
     const board = VastitasBorealisBoard.newInstance(DEFAULT_GAME_OPTIONS, new SeededRandom(0));
     expect(board.spaces).to.deep.eq([
       {'id': '01', 'spaceType': 'colony', 'x': -1, 'y': -1, 'bonus': []},
@@ -86,7 +86,6 @@ describe('VastitasBorealisBoard', function() {
       {'id': '61', 'spaceType': 'land', 'x': 6, 'y': 8, 'bonus': [2]},
       {'id': '62', 'spaceType': 'land', 'x': 7, 'y': 8, 'bonus': [2, 2]},
       {'id': '63', 'spaceType': 'land', 'x': 8, 'y': 8, 'bonus': [1, 2]},
-      {'id': '69', 'spaceType': 'colony', 'x': -1, 'y': -1, 'bonus': []},
     ]);
   });
 

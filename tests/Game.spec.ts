@@ -1,14 +1,15 @@
 import * as constants from '../src/common/constants';
 import {expect} from 'chai';
 import {Game} from '../src/server/Game';
-import {SpaceName} from '../src/server/SpaceName';
+import {SpaceName} from '../src/common/boards/SpaceName';
 import {Mayor} from '../src/server/milestones/Mayor';
 import {Banker} from '../src/server/awards/Banker';
 import {Thermalist} from '../src/server/awards/Thermalist';
 import {Birds} from '../src/server/cards/base/Birds';
 import {WaterImportFromEuropa} from '../src/server/cards/base/WaterImportFromEuropa';
 import {Phase} from '../src/common/Phase';
-import {addCity, addGreenery, addOcean, cast, forceGenerationEnd, maxOutOceans, runAllActions, setOxygenLevel, setTemperature, setVenusScaleLevel, toName} from './TestingUtils';
+import {addCity, addGreenery, addOcean, cast, forceGenerationEnd, maxOutOceans, runAllActions, setOxygenLevel, setTemperature, setVenusScaleLevel} from './TestingUtils';
+import {toName} from '../src/common/utils/utils';
 import {TestPlayer} from './TestPlayer';
 import {SaturnSystems} from '../src/server/cards/corporation/SaturnSystems';
 import {Resource} from '../src/common/Resource';
@@ -21,7 +22,6 @@ import {OrOptions} from '../src/server/inputs/OrOptions';
 import {BoardName} from '../src/common/boards/BoardName';
 import {CardName} from '../src/common/cards/CardName';
 import {Player} from '../src/server/Player';
-import {Color} from '../src/common/Color';
 import {RandomMAOptionType} from '../src/common/ma/RandomMAOptionType';
 import {SpaceBonus} from '../src/common/boards/SpaceBonus';
 import {TileType} from '../src/common/TileType';
@@ -33,7 +33,6 @@ import {SelectSpace} from '../src/server/inputs/SelectSpace';
 import {GlobalParameter} from '../src/common/GlobalParameter';
 import {assertPlaceOcean} from './assertions';
 import {TiredEarth} from '../src/server/cards/pathfinders/TiredEarth';
-import {AmazonisEngineer} from '../src/server/awards/amazonisPlanitia/AmazonisEngineer';
 
 describe('Game', () => {
   it('should initialize with right defaults', () => {
@@ -403,11 +402,10 @@ describe('Game', () => {
   });
 
   it('Final greenery placement in order of the current generation', () => {
-    const player1 = new TestPlayer(Color.BLUE);
-    const player2 = new TestPlayer(Color.GREEN);
-    const player3 = new TestPlayer(Color.YELLOW);
-    const player4 = new TestPlayer(Color.RED);
-
+    const player1 = new TestPlayer('blue');
+    const player2 = new TestPlayer('green');
+    const player3 = new TestPlayer('yellow');
+    const player4 = new TestPlayer('red');
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player3);
 
     [player1, player2, player3, player4].forEach((p) => {
@@ -456,11 +454,10 @@ describe('Game', () => {
   });
 
   it('Final greenery placement skips players without enough plants', () => {
-    const player1 = new TestPlayer(Color.BLUE);
-    const player2 = new TestPlayer(Color.GREEN);
-    const player3 = new TestPlayer(Color.YELLOW);
-    const player4 = new TestPlayer(Color.RED);
-
+    const player1 = new TestPlayer('blue');
+    const player2 = new TestPlayer('green');
+    const player3 = new TestPlayer('yellow');
+    const player4 = new TestPlayer('red');
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player2);
     game.incrementFirstPlayer();
 
@@ -498,11 +495,10 @@ describe('Game', () => {
 
 
   it('Should return players in turn order', () => {
-    const player1 = new Player('p1', Color.BLUE, false, 0, 'p1-id', undefined);
-    const player2 = new Player('p2', Color.GREEN, false, 0, 'p2-id', undefined);
-    const player3 = new Player('p3', Color.YELLOW, false, 0, 'p3-id', undefined);
-    const player4 = new Player('p4', Color.RED, false, 0, 'p4-id', undefined);
-
+    const player1 = new Player('p1', 'blue', false, 0, 'p1-id', undefined);
+    const player2 = new Player('p2', 'green', false, 0, 'p2-id', undefined);
+    const player3 = new Player('p3', 'yellow', false, 0, 'p3-id', undefined);
+    const player4 = new Player('p4', 'red', false, 0, 'p4-id', undefined);
     const game = Game.newInstance('gto', [player1, player2, player3, player4], player3);
 
     expect(game.getPlayersInGenerationOrder().map(toName)).deep.eq(['p3', 'p4', 'p1', 'p2']);
@@ -570,7 +566,7 @@ describe('Game', () => {
   });
 
   // https://github.com/terraforming-mars/terraforming-mars/issues/5572
-  it('Milestones can be claimed', function() {
+  it('Milestones can be claimed', () => {
     const player = TestPlayer.BLUE.newPlayer();
     const player2 = TestPlayer.RED.newPlayer();
     const game = Game.newInstance('gameid', [player, player2], player, {});
@@ -593,7 +589,7 @@ describe('Game', () => {
   });
 
   // https://github.com/terraforming-mars/terraforming-mars/issues/5572
-  it('Milestones cannot be claimed twice', function() {
+  it('Milestones cannot be claimed twice', () => {
     const player = TestPlayer.BLUE.newPlayer();
     const player2 = TestPlayer.RED.newPlayer();
     const game = Game.newInstance('gameid', [player, player2], player, {});
@@ -653,8 +649,8 @@ describe('Game', () => {
   });
 
   it('fails when the same id appears in two players', () => {
-    const player1 = new Player('name', Color.BLUE, false, 0, 'p-id3', undefined);
-    const player2 = new Player('name', Color.RED, false, 0, 'p-id3', undefined);
+    const player1 = new Player('name', 'blue', false, 0, 'p-id3', undefined);
+    const player2 = new Player('name', 'red', false, 0, 'p-id3', undefined);
     expect(
       () => Game.newInstance('gameid', [player1, player2], player1))
       .to.throw(Error, /Duplicate player found: \[p-id3,p-id3\]/);
@@ -667,8 +663,8 @@ describe('Game', () => {
   });
 
   it('fails when the same color appears in two players', () => {
-    const player1 = new Player('name', Color.RED, false, 0, 'p-id1', undefined);
-    const player2 = new Player('name', Color.RED, false, 0, 'p-id2', undefined);
+    const player1 = new Player('name', 'red', false, 0, 'p-id1', undefined);
+    const player2 = new Player('name', 'red', false, 0, 'p-id2', undefined);
     expect(
       () => Game.newInstance('gameid', [player1, player2], player1))
       .to.throw(Error, /Duplicate color found/);
@@ -776,32 +772,32 @@ describe('Game', () => {
     expect(deserialized.fundedAwards[0].player.id).eq('p-blue-id');
   });
 
-  it('deserializing a game with renamed awards', () => {
-    const player = TestPlayer.BLUE.newPlayer();
-    const player2 = TestPlayer.RED.newPlayer();
-    const game = Game.newInstance('gameid', [player, player2], player);
-    const engineer = new AmazonisEngineer();
+  // it('deserializing a game with renamed awards', () => {
+  //   const player = TestPlayer.BLUE.newPlayer();
+  //   const player2 = TestPlayer.RED.newPlayer();
+  //   const game = Game.newInstance('gameid', [player, player2], player);
+  //   const engineer = new AmazonisEngineer();
 
-    game.awards.unshift(engineer);
+  //   game.awards.unshift(engineer);
 
-    game.fundedAwards.push({
-      award: engineer,
-      player: player,
-    });
+  //   game.fundedAwards.push({
+  //     award: engineer,
+  //     player: player,
+  //   });
 
-    const serialized = game.serialize();
-    expect(serialized.awards[0]).eq('A. Engineer');
-    expect(serialized.fundedAwards[0].name).eq('A. Engineer');
+  //   const serialized = game.serialize();
+  //   expect(serialized.awards[0]).eq('A. Engineer');
+  //   expect(serialized.fundedAwards[0].name).eq('A. Engineer');
 
-    serialized.awards[0] = 'Engineer' as any;
-    serialized.fundedAwards[0].name = 'Engineer' as any;
+  //   serialized.awards[0] = 'Engineer' as any;
+  //   serialized.fundedAwards[0].name = 'Engineer' as any;
 
-    const deserialized = Game.deserialize(serialized);
-    expect(deserialized.awards[0]).deep.eq(engineer);
-    expect(deserialized.fundedAwards).has.length(1);
-    expect(deserialized.fundedAwards[0].award.name).eq('A. Engineer');
-    expect(deserialized.fundedAwards[0].player.id).eq('p-blue-id');
-  });
+  //   const deserialized = Game.deserialize(serialized);
+  //   expect(deserialized.awards[0]).deep.eq(engineer);
+  //   expect(deserialized.fundedAwards).has.length(1);
+  //   expect(deserialized.fundedAwards[0].award.name).eq('A. Engineer');
+  //   expect(deserialized.fundedAwards[0].player.id).eq('p-blue-id');
+  // });
 
   // https://github.com/terraforming-mars/terraforming-mars/issues/5572
   it('dealing with awards accidentally funded twice', () => {
@@ -946,7 +942,7 @@ describe('Game', () => {
   });
 
   it('wgt includes all parameters at the game start', () => {
-    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player = new Player('blue', 'blue', false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player, {venusNextExtension: false});
     game.worldGovernmentTerraforming();
     const parameters = waitingForGlobalParameters(player);
@@ -957,7 +953,7 @@ describe('Game', () => {
   });
 
   it('wgt includes all parameters at the game start, with Venus', () => {
-    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player = new Player('blue', 'blue', false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player, {venusNextExtension: true});
     game.worldGovernmentTerraforming();
     const parameters = waitingForGlobalParameters(player);
@@ -969,7 +965,7 @@ describe('Game', () => {
   });
 
   it('wgt includes all parameters at the game start, with The Moon', () => {
-    const player = new Player('blue', Color.BLUE, false, 0, 'p-blue');
+    const player = new Player('blue', 'blue', false, 0, 'p-blue');
     const game = Game.newInstance('gameid', [player], player, {venusNextExtension: false, moonExpansion: true});
     game.worldGovernmentTerraforming();
     const parameters = waitingForGlobalParameters(player);

@@ -6,8 +6,10 @@ import {isIDescription} from '@/common/cards/render/ICardRenderDescription';
 import {isICardRenderCorpBoxAction, isICardRenderCorpBoxEffect, isICardRenderEffect, isICardRenderItem, isICardRenderProductionBox, isICardRenderRoot} from '@/common/cards/render/Types';
 import {CardRenderItemType} from '@/common/cards/render/CardRenderItemType';
 import {translateText} from '@/client/directives/i18n';
-import {allMaNames, getMilestoneAwardDescription} from '../../MilestoneAwardManifest';
+import {getAward, getMilestone} from '../../MilestoneAwardManifest';
 import {copyAndClear} from '@/common/utils/utils';
+import {awardNames} from '@/common/ma/AwardName';
+import {milestoneNames} from '@/common/ma/MilestoneName';
 
 export class CardListSearchIndex {
   private searchIndex: Map<string, Array<string>>;
@@ -46,10 +48,16 @@ export class CardListSearchIndex {
       this.store('globalEvent', globalEvent.name);
     }
 
-    for (const maName of allMaNames()) {
-      this.add(maName);
-      this.add(getMilestoneAwardDescription(maName));
-      this.store('ma', maName);
+    for (const milestoneName of milestoneNames) {
+      this.add(milestoneName);
+      this.add(getMilestone(milestoneName).description);
+      this.store('ma', milestoneName);
+    }
+
+    for (const awardName of awardNames) {
+      this.add(awardName);
+      this.add(getAward(awardName).description);
+      this.store('ma', awardName);
     }
   }
 

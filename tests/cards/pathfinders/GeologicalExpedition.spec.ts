@@ -11,10 +11,10 @@ import {addCity, cast, fakeCard, runAllActions} from '../../TestingUtils';
 import {CardResource} from '../../../src/common/CardResource';
 import {Units} from '../../../src/common/Units';
 import {OrOptions} from '../../../src/server/inputs/OrOptions';
-import {SpaceName} from '../../../src/server/SpaceName';
+import {SpaceName} from '../../../src/common/boards/SpaceName';
 import {TileType} from '../../../src/common/TileType';
 
-describe('GeologicalExpedition', function() {
+describe('GeologicalExpedition', () => {
   let card: GeologicalExpedition;
   let player: TestPlayer;
   let game: IGame;
@@ -22,7 +22,7 @@ describe('GeologicalExpedition', function() {
   let microbeCard: IProjectCard;
   let scienceCard: IProjectCard;
 
-  beforeEach(function() {
+  beforeEach(() => {
     card = new GeologicalExpedition();
     [game, player] = testGame(1);
     game.board = EmptyBoard.newInstance();

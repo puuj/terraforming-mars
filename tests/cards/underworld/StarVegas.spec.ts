@@ -3,12 +3,12 @@ import {addCity, cast, runAllActions} from '../../TestingUtils';
 import {StarVegas} from '../../../src/server/cards/underworld/StarVegas';
 import {testGame} from '../../TestGame';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
-import {SpaceName} from '../../../src/server/SpaceName';
+import {SpaceName} from '../../../src/common/boards/SpaceName';
 import {TileType} from '../../../src/common/TileType';
 import {CardName} from '../../../src/common/cards/CardName';
 import {GanymedeColony} from '../../../src/server/cards/base/GanymedeColony';
 
-describe('StarVegas', function() {
+describe('StarVegas', () => {
   it('canPlay', () => {
     const card = new StarVegas();
     const [/* game */, player/* , player2 */] = testGame(2);
@@ -38,7 +38,6 @@ describe('StarVegas', function() {
     expect(selectSpace.spaces.map((space) => space.id)).to.have.members([
       SpaceName.GANYMEDE_COLONY,
       SpaceName.PHOBOS_SPACE_HAVEN,
-      SpaceName.STANFORD_TORUS,
     ]);
     const space = selectSpace.spaces[0];
 
@@ -64,7 +63,6 @@ describe('StarVegas', function() {
     expect(selectSpace.spaces.map((space) => space.id)).to.have.members([
       SpaceName.GANYMEDE_COLONY,
       SpaceName.PHOBOS_SPACE_HAVEN,
-      SpaceName.STANFORD_TORUS,
       SpaceName.LUNA_METROPOLIS,
       SpaceName.DAWN_CITY,
       SpaceName.STRATOPOLIS,
@@ -84,7 +82,6 @@ describe('StarVegas', function() {
     expect(selectSpace.spaces.map((space) => space.id)).to.have.members([
       SpaceName.GANYMEDE_COLONY,
       SpaceName.PHOBOS_SPACE_HAVEN,
-      SpaceName.STANFORD_TORUS,
       SpaceName.CERES_SPACEPORT,
       SpaceName.DYSON_SCREENS,
       SpaceName.LUNAR_EMBASSY,
@@ -103,7 +100,6 @@ describe('StarVegas', function() {
 
     expect(selectSpace.spaces.map((space) => space.id)).to.have.members([
       SpaceName.PHOBOS_SPACE_HAVEN,
-      SpaceName.STANFORD_TORUS,
     ]);
   });
 

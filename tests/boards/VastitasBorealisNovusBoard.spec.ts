@@ -9,8 +9,8 @@ import {DEFAULT_GAME_OPTIONS} from '../../src/server/game/GameOptions';
 import {SeededRandom} from '../../src/common/utils/Random';
 import {TileType} from '../../src/common/TileType';
 
-describe('VastitasBorealisNovusBoard', function() {
-  it('sanity test', function() {
+describe('VastitasBorealisNovusBoard', () => {
+  it('sanity test', () => {
     const board = VastitasBorealisNovusBoard.newInstance(DEFAULT_GAME_OPTIONS, new SeededRandom(0));
     expect(board.spaces).to.deep.eq([
       {'id': '01', 'spaceType': 'colony', 'x': -1, 'y': -1, 'bonus': []},
@@ -76,7 +76,6 @@ describe('VastitasBorealisNovusBoard', function() {
       {'id': '61', 'spaceType': 'land', 'x': 6, 'y': 8, 'bonus': [3]},
       {'id': '62', 'spaceType': 'land', 'x': 7, 'y': 8, 'bonus': [1]},
       {'id': '63', 'spaceType': 'land', 'x': 8, 'y': 8, 'bonus': [0]},
-      {'id': '69', 'spaceType': 'colony', 'x': -1, 'y': -1, 'bonus': []},
     ]);
   });
 
