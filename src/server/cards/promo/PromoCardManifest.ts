@@ -13,7 +13,7 @@ import {BactoviralResearch} from './BactoviralResearch';
 import {BioPrintingFacility} from './BioPrintingFacility';
 import {CarbonNanosystems} from './CarbonNanosystems';
 import {Casinos} from './Casinos';
-import {CityPark} from './CityPark';
+import {CityParks} from './CityParks';
 import {CometAiming} from './CometAiming';
 import {CorporateArchives} from './CorporateArchives';
 import {CrashSiteCleanup} from './CrashSiteCleanup';
@@ -62,6 +62,7 @@ import {PharmacyUnion} from './PharmacyUnion';
 import {Philares} from './Philares';
 import {Potatoes} from './Potatoes';
 import {ProjectInspection} from './ProjectInspection';
+import {ProtectedGrowth} from './ProtectedGrowth';
 import {Psyche} from './16Psyche';
 import {PublicBaths} from './PublicBaths';
 import {Recyclon} from './Recyclon';
@@ -151,11 +152,12 @@ export const PROMO_CARD_MANIFEST = new ModuleManifest({
     [CardName.DIRECTED_HEAT_USAGE]: {Factory: DirectedHeatUsage},
     [CardName.ICY_IMPACTORS]: {Factory: IcyImpactors},
     [CardName.SOIL_ENRICHMENT]: {Factory: SoilEnrichment},
-    [CardName.CITY_PARK]: {Factory: CityPark},
+    [CardName.CITY_PARKS]: {Factory: CityParks},
     [CardName.SUPERMARKETS]: {Factory: Supermarkets},
     [CardName.HOSPITALS]: {Factory: Hospitals},
     [CardName.CASINOS]: {Factory: Casinos},
     [CardName.PUBLIC_BATHS]: {Factory: PublicBaths},
+    [CardName.PROTECTED_GROWTH]: {Factory: ProtectedGrowth},
   },
 
   preludeCards: {
