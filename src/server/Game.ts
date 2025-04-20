@@ -77,7 +77,7 @@ import {SpaceType} from '../common/boards/SpaceType';
 import {SendDelegateToArea} from './deferredActions/SendDelegateToArea';
 import {BuildColony} from './deferredActions/BuildColony';
 import {newInitialDraft, newPreludeDraft, newStandardDraft} from './Draft';
-import {toName} from '../common/utils/utils';
+import {toID, toName} from '../common/utils/utils';
 import {OrOptions} from './inputs/OrOptions';
 import {SelectOption} from './inputs/SelectOption';
 import {SelectSpace} from './inputs/SelectSpace';
@@ -196,11 +196,12 @@ export class Game implements IGame, Logger {
     projectDeck: ProjectDeck,
     corporationDeck: CorporationDeck,
     preludeDeck: PreludeDeck,
-    ceoDeck: CeoDeck) {
+    ceoDeck: CeoDeck,
+    tags: ReadonlyArray<Tag>) {
     this.id = id;
     this.gameOptions = {...gameOptions};
     this.players = players;
-    const playerIds = players.map((p) => p.id);
+    const playerIds = players.map(toID);
     if (playerIds.includes(first.id) === false) {
       throw new Error('Cannot find first player ' + first.id + ' in [' + playerIds + ']');
     }
@@ -229,13 +230,17 @@ export class Game implements IGame, Logger {
       if (player.isCorporation(CardName.MONS_INSURANCE)) this.monsInsuranceOwner = player.id;
     });
 
-    this.tags = ALL_TAGS.filter((tag) => {
-      if (tag === Tag.VENUS) return gameOptions.venusNextExtension;
-      if (tag === Tag.MOON) return gameOptions.moonExpansion;
-      if (tag === Tag.MARS) return gameOptions.pathfindersExpansion;
-      if (tag === Tag.CLONE) return gameOptions.pathfindersExpansion;
-      return true;
-    });
+    this.tags = tags;
+    // TODO(kberg): Remove this count by 2025-06-01
+    if (this.tags.length === 0) {
+      this.tags = ALL_TAGS.filter((tag) => {
+        if (tag === Tag.VENUS) return gameOptions.venusNextExtension;
+        if (tag === Tag.MOON) return gameOptions.moonExpansion;
+        if (tag === Tag.MARS) return gameOptions.pathfindersExpansion;
+        if (tag === Tag.CLONE) return gameOptions.pathfindersExpansion;
+        return true;
+      });
+    }
   }
 
   public static newInstance(id: GameId,
@@ -267,6 +272,15 @@ export class Game implements IGame, Logger {
 
     const activePlayer = firstPlayer.id;
 
+    const tags = new Set<Tag>();
+    for (const deck of [projectDeck, corporationDeck, preludeDeck, ceoDeck]) {
+      for (const card of deck.drawPile) {
+        for (const tag of card.tags) {
+          tags.add(tag);
+        }
+      }
+    }
+
     if (players.length === 1) {
       gameOptions.draftVariant = false;
       gameOptions.initialDraftVariant = false;
@@ -277,7 +291,7 @@ export class Game implements IGame, Logger {
       players[0].setTerraformRating(14);
     }
 
-    const game = new Game(id, players, firstPlayer, activePlayer, gameOptions, rng, board, projectDeck, corporationDeck, preludeDeck, ceoDeck);
+    const game = new Game(id, players, firstPlayer, activePlayer, gameOptions, rng, board, projectDeck, corporationDeck, preludeDeck, ceoDeck, Array.from(tags));
     game.spectatorId = spectatorId;
     // This evaluation of created time doesn't match what's stored in the database, but that's fine.
     game.createdTime = new Date();
@@ -459,6 +473,7 @@ export class Game implements IGame, Logger {
       someoneHasRemovedOtherPlayersPlants: this.someoneHasRemovedOtherPlayersPlants,
       spectatorId: this.spectatorId,
       syndicatePirateRaider: this.syndicatePirateRaider,
+      tags: this.tags,
       temperature: this.temperature,
       tradeEmbargo: this.tradeEmbargo,
       underworldData: this.underworldData,
@@ -646,7 +661,7 @@ export class Game implements IGame, Logger {
 
   // Public for testing.
   public incrementFirstPlayer(): void {
-    let firstIndex = this.players.map((x) => x.id).indexOf(this.first.id);
+    let firstIndex = this.players.map(toID).indexOf(this.first.id);
     if (firstIndex === -1) {
       throw new Error('Didn\'t even find player');
     }
@@ -1648,7 +1663,8 @@ export class Game implements IGame, Logger {
 
     const ceoDeck = CeoDeck.deserialize(d.ceoDeck, rng);
 
-    const game = new Game(d.id, players, first, d.activePlayer, gameOptions, rng, board, projectDeck, corporationDeck, preludeDeck, ceoDeck);
+    // TODO(kberg): remove || [] after 2025-06-01
+    const game = new Game(d.id, players, first, d.activePlayer, gameOptions, rng, board, projectDeck, corporationDeck, preludeDeck, ceoDeck, d.tags || []);
     game.resettable = true;
     game.spectatorId = d.spectatorId;
     game.createdTime = new Date(d.createdTimeMs);

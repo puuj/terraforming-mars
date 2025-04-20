@@ -31,7 +31,7 @@
 "Requires 1 corruption. Target a player that has at least 2 corruption. Unless that player pays you 10 M€, they lose 2 corruption.": "Benötigt 1 Korruption. Visiere einen Spieler, der mindestens 2 Korruption hat. Wenn dieser Spieler nicht 10 M€ an dich zahlt, verliert er 2 Korruptionspunkte.",
 
 "Corporate Theft": "Unternehmensdiebstahl",
-"Requires 2 corruption. Remove 1 resource from a card belonging to a different player. Then, if you have a card that can hold it, put it on such a card. If the target blocked this, you gain 1 corruption. NOTE: Do not use in single player games.": "Benötigt 2 Korruption. Entferne 1 Ressource von einer Karte, die einem anderen Spieler gehört. Wenn du dann eine Karte hast, die sie aufnehmen kann, lege sie auf eine solche Karte. Wenn das Ziel dies blockiert, erhältst du 1 Korruption. HINWEIS: Nicht im Solo-Modus verwenden.",
+"Requires 2 corruption. Remove 1 resource from a card belonging to a different player. Then, if you have a card that can hold it, put it on such a card. If the target blocked this, you gain 1 corruption. IF SOLO: gain 1 corruption.": "Benötigt 2 Korruption. Entferne 1 Ressource von einer Karte, die einem anderen Spieler gehört. Wenn du dann eine Karte hast, die sie aufnehmen kann, lege sie auf eine solche Karte. Wenn das Ziel dies blockiert, erhältst du 1 Korruption. WENN ALLEIN: 1 Korruption erhalten.",
 
 "Crater Survey": "Krater Vermessung",
 "Add 2 data resources to ANOTHER card. Identify 4 underground resources.": "Füge 2 Daten einer ANDEREN Karte hinzu. Identifiziere 4 unterirdische Ressourcen.",
@@ -40,7 +40,7 @@
 "Requires 1 corruption. Increase your M€, steel, and energy production 1 step each.": "Benötigt 1 Korruption. Erhöhe deine M€-, Stahl- und Energieproduktion um jeweils 1.",
 
 "Deepmining": "Tiefbohrung",
-"Excavate an IDENTIFIED underground resource ANYWHERE ON MARS with a steel or titanium placement bonus. Increase that production 1 step.": "Grabe eine IDENTIFIZIERTE unterirdische Ressource ÜBERALL AUF DEM MARS mit einem Stahl- oder Titan-Platzierungsbonus aus. Erhöhe diese Produktion um 1 Stufe.",
+"Excavate an underground resource that depicts steel or titanium ANYWHERE ON THE BOARD. Increase your production of that resource 1 step.": "Grabe eine IDENTIFIZIERTE unterirdische Ressource ÜBERALL AUF DEM MARS mit einem Stahl- oder Titan-Platzierungsbonus aus. Erhöhe diese Produktion um 1 Stufe.",
 
 "Deepnuking": "Tiefschürfen",
 "Excavate 2 underground resources. Remove up to 3 plants from any player.": "Grabe 2 unterirdische Ressourcen aus. Entferne bis zu 3 Pflanzen von einem beliebigen Spieler.",
@@ -120,6 +120,7 @@
 
 "Labor Trafficking": "Arbeitskräftehandel",
 "FIRST": "ERSTE",
+"1ST": "1.",
 "Effect: The first standard project action you take each generation, except selling patents, costs 6 M€ less.": "EFFEKT: Die erste Standard-Projekt-Aktion, die Du pro Generation durchführst, außer dem Verkauf von Patenten, kostet 6 M€ weniger.",
 
 "Landfill": "Mülldeponie",
@@ -204,6 +205,7 @@
 "Requires 3 oceans. Reduce your heat production 1 step. At the end of this generation only, during the production phase, gain 12 M€ and 1 corruption.": "Benötigt 3 Ozeane. Verringere deine Wärme-Produktion um 1. Nur am Ende dieser Generation, während der Produktionsphase, erhalte 12 M€ und 1 Korruption.",
 
 "Public Spaceline": "Öffentliche Raumfahrtlinie",
+"Increase your M€ production 2 steps": "Erhöhe deine M€-Produktion um 2.",
 "Requires 5 space tags. This card has 2 Earth tags, 2 Jovian tags, 2 Venus tags, and 2 Mars tags.": "Benötigt 5 Weltraum-Symbole. Diese Karte hat 2 Erd-, 2 Jupiter-, 2 Venus- und 2 Mars-Symbole.",
 
 "Reckless Detonation": "Rücksichtslose Sprengung",
@@ -272,7 +274,7 @@
 "Action: Spend 1 tool resource on this card to excavate an underground resource.": "AKTION: Bezahle 1 Werkzeugressource von dieser Karte, um eine unterirdische Ressource auszugraben.",
 
 "Tunnel Boring Machine": "Tunnelbohrmaschine",
-"Action: Pay 3 energy to excavate 2 underground resources": "AKTION: Bezahle 3 Energie, um 2 unterirdische Ressourcen auszugraben.",
+"Action: Pay 3 energy to excavate 2 underground resources.": "AKTION: Bezahle 3 Energie, um 2 unterirdische Ressourcen auszugraben.",
 
 "Tunneling Subcontractor": "Tunnelbau Subunternehmer",
 "Gain 1 corruption. Excavate an underground resource.": "Erhalte 1 Korruption. Grabe eine unterirdische Ressource aus.",

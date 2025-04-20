@@ -198,8 +198,8 @@ export interface IPlayer {
   setTerraformRating(value: number): void;
   logUnitDelta(resource: Resource, amount: number, unitType: 'production' | 'amount', from: ResourceSource | undefined, stealing?: boolean): void;
 
-  getActionsThisGeneration(): Set<CardName>;
-  addActionThisGeneration(cardName: CardName): void;
+  // The action cards used this generation.
+  actionsThisGeneration: Set<CardName>;
   getVictoryPoints(): VictoryPointsBreakdown;
   /* A card is in effect if it is played. This does not apply to corporations. It could. */
   cardIsInEffect(cardName: CardName): boolean;
@@ -268,7 +268,7 @@ export interface IPlayer {
   addResourceTo(card: ICard, options?: number | {qty?: number, log: boolean, logZero?: boolean}): void;
 
   /**
-   * Returns the set of played cards that have actual resources on them.
+   * Returns the set of cards in play that have actual resources on them.
    *
    * If `resource` is absent, include cards that collect any resource.
    */
