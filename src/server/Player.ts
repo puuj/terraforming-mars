@@ -274,17 +274,6 @@ export class Player implements IPlayer {
     this.stock = new Stock(this);
   }
 
-  public static initialize(
-    name: string,
-    color: Color,
-    beginner: boolean,
-    handicap: number = 0,
-    id: PlayerId,
-    email: string | undefined): Player {
-    const player = new Player(name, color, beginner, handicap, id, email);
-    return player;
-  }
-
   public tearDown() {
     this.game = undefined as unknown as Game;
   }
@@ -479,6 +468,12 @@ export class Player implements IPlayer {
   }
 
   public attack(perpetrator: IPlayer, resource: Resource, count: number, options?: {log?: boolean, stealing?: boolean}): void {
+    if (count === 0) {
+      return;
+    }
+    if (count < 0) {
+      throw new Error('Unexpected attack count is less than 0 ' + count);
+    }
     const msg = message('Lose ${0} ${1}', (b) => b.number(count).string(resource));
     this.maybeBlockAttack(perpetrator, msg, (proceed) => {
       if (proceed) {
