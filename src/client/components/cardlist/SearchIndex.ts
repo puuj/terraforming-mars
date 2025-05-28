@@ -11,13 +11,19 @@ import {copyAndClear} from '@/common/utils/utils';
 import {awardNames} from '@/common/ma/AwardName';
 import {milestoneNames} from '@/common/ma/MilestoneName';
 
-export class CardListSearchIndex {
+export class SearchIndex {
   private searchIndex: Map<string, Array<string>>;
   private entries: Array<string>;
 
-  constructor() {
+  private constructor() {
     this.searchIndex = new Map();
     this.entries = [];
+  }
+
+  public static create() {
+    const instance = new SearchIndex();
+    instance.build();
+    return instance;
   }
 
   build() {
