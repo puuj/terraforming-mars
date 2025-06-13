@@ -10,8 +10,9 @@ import {IProjectCard} from '../IProjectCard';
 import {MAX_OXYGEN_LEVEL, MAX_VENUS_SCALE} from '../../../common/constants';
 import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
+import {ICorporationCard} from '../corporation/ICorporationCard';
 
-export class RobinHaulings extends CorporationCard {
+export class RobinHaulings extends CorporationCard implements ICorporationCard {
   constructor() {
     super({
       name: CardName.ROBIN_HAULINGS,
@@ -29,7 +30,7 @@ export class RobinHaulings extends CorporationCard {
         renderData: CardRenderer.builder((b) => {
           b.megacredits(39).br;
           b.effect('Whenever you play a card with a Venus tag add 1 floater to ANY card.', (eb) => {
-            eb.tag(Tag.VENUS).startEffect.resource(CardResource.FLOATER).asterix();
+            eb.tag(Tag.VENUS).asterix().startEffect.resource(CardResource.FLOATER).asterix();
           });
           b.br;
           b.action('Remove 3 floaters from this card to raise Venus 1 step or raise oxygen 1 step', (ab) => {

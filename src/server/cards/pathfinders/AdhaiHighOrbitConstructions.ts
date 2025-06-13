@@ -9,8 +9,9 @@ import {isPlanetaryTag} from '../../pathfinders/PathfindersData';
 import {Size} from '../../../common/cards/render/Size';
 import {AltSecondaryTag} from '../../../common/cards/render/AltSecondaryTag';
 import {IStandardProjectCard} from '../IStandardProjectCard';
+import {ICorporationCard} from '../corporation/ICorporationCard';
 
-export class AdhaiHighOrbitConstructions extends CorporationCard {
+export class AdhaiHighOrbitConstructions extends CorporationCard implements ICorporationCard {
   constructor() {
     super({
       name: CardName.ADHAI_HIGH_ORBIT_CONSTRUCTIONS,
@@ -31,7 +32,7 @@ export class AdhaiHighOrbitConstructions extends CorporationCard {
           b.text('(Effect: Whenever you play a card with a space tag BUT NO PLANETARY TAG (including this) add 1 orbital on this card.)', Size.SMALL, false, false);
           b.br;
           b.effect('For every 2 orbitals on this card, cards with a space tag but with no planetary tag or the STANDARD COLONY PROJECT or TRADE ACTION costs 1M€ less.', (eb) => {
-            eb.tag(Tag.SPACE, {secondaryTag: AltSecondaryTag.NO_PLANETARY_TAG}).slash(Size.SMALL).colonies(1, {size: Size.SMALL}).slash(Size.SMALL).trade({size: Size.SMALL})
+            eb.tag(Tag.SPACE, {secondaryTag: AltSecondaryTag.NO_PLANETARY_TAG}).slash(Size.SMALL).asterix().colonies(1, {size: Size.SMALL}).slash(Size.SMALL).trade({size: Size.SMALL})
               .startEffect
               .minus().megacredits(1).text('/2').resource(CardResource.ORBITAL);
           });

@@ -158,7 +158,6 @@ export class Player implements IPlayer {
 
   // Custom cards
   // Community Leavitt Station and Pathfinders Leavitt Station
-  // TODO(kberg): move scienceTagCount to Tags?
   public scienceTagCount: number = 0;
   // PoliticalAgendas Scientists P41
   public hasTurmoilScienceTagBonus: boolean = false;
@@ -569,6 +568,10 @@ export class Player implements IPlayer {
       if (removingPlayer !== undefined && removingPlayer !== this && this.removingPlayers.includes(removingPlayer.id) === false) {
         this.removingPlayers.push(removingPlayer.id);
       }
+      // Vermin hook (1 of 2)
+      if (card.name === CardName.VERMIN) {
+        this.game.verminInEffect = card.resourceCount >= 10;
+      }
     }
   }
 
@@ -589,6 +592,11 @@ export class Player implements IPlayer {
       for (const playedCard of this.tableau) {
         playedCard.onResourceAdded?.(this, card, count);
       }
+    }
+
+    // Vermin hook (2 of 2)
+    if (card.name === CardName.VERMIN) {
+      this.game.verminInEffect = card.resourceCount >= 10;
     }
   }
 
@@ -1053,6 +1061,7 @@ export class Player implements IPlayer {
     }
     this.game.projectDeck.discard(card);
     card.onDiscard?.(this);
+    card.resourceCount = 0;
     this.game.log('${0} discarded ${1}', (b) => b.player(this).card(card));
   }
 
@@ -1182,9 +1191,9 @@ export class Player implements IPlayer {
     }
 
     if (this.game.canPlaceGreenery(this)) {
-      const action = new OrOptions();
-      action.title = 'Place any final greenery from plants';
-      action.buttonLabel = 'Confirm';
+      const action = new OrOptions()
+        .setTitle('Place any final greenery from plants')
+        .setButtonLabel('Confirm');
       action.options.push(
         new SelectSpace(
           'Select space for greenery tile',
@@ -1578,16 +1587,14 @@ export class Player implements IPlayer {
   }
 
   public getActions() {
-    const action = new OrOptions();
-    action.title = this.actionsTakenThisRound === 0 ?
-      'Take your first action' : 'Take your next action';
-    action.buttonLabel = 'Take action';
+    const action = new OrOptions()
+      .setTitle(this.actionsTakenThisRound === 0 ? 'Take your first action' : 'Take your next action')
+      .setButtonLabel('Take action');
 
     // VanAllen can claim milestones for free:
     const claimableMilestones = this.claimableMilestones();
     if (claimableMilestones.length > 0) {
-      const milestoneOption = new OrOptions();
-      milestoneOption.title = 'Claim a milestone';
+      const milestoneOption = new OrOptions().setTitle('Claim a milestone');
       milestoneOption.options = claimableMilestones.map(
         (milestone) => new SelectOption(milestone.name, 'Claim - ' + '('+ milestone.name + ')').andThen(() => {
           this.claimMilestone(milestone);
@@ -1664,9 +1671,9 @@ export class Player implements IPlayer {
     // Fund award
     const fundingCost = this.awardFundingCost();
     if (this.canAfford(fundingCost) && !this.game.allAwardsFunded()) {
-      const remainingAwards = new OrOptions();
-      remainingAwards.title = message('Fund an award (${0} M€)', (b) => b.number(fundingCost)),
-      remainingAwards.buttonLabel = 'Confirm';
+      const remainingAwards = new OrOptions()
+        .setTitle(message('Fund an award (${0} M€)', (b) => b.number(fundingCost)))
+        .setButtonLabel('Confirm');
       remainingAwards.options = this.game.awards
         .filter((award: IAward) => this.game.hasBeenFunded(award) === false)
         .map((award: IAward) => this.fundAward(award));
@@ -1820,7 +1827,6 @@ export class Player implements IPlayer {
       cardDiscount: this.colonies.cardDiscount,
 
       // Colonies
-      // TODO(kberg): consider a ColoniesSerializer or something.
       fleetSize: this.colonies.getFleetSize(),
       tradesThisGeneration: this.colonies.tradesThisGeneration,
       colonyTradeOffset: this.colonies.tradeOffset,

@@ -44,7 +44,6 @@ export enum CardResource {
   // Underworld
   TOOL = 'Tool',
   WARE = 'Ware',
-  SCOOP = 'Scoop',
   JOURNALISM = 'Journalism',
   ACTIVIST = 'Activist',
   SUPPLY_CHAIN = 'Supply Chain',

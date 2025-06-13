@@ -9,8 +9,9 @@ import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {Resource} from '../../../common/Resource';
 import {message} from '../../logs/MessageBuilder';
+import {ICorporationCard} from '../corporation/ICorporationCard';
 
-export class Vitor extends CorporationCard {
+export class Vitor extends CorporationCard implements ICorporationCard {
   constructor() {
     super({
       name: CardName.VITOR,
@@ -47,9 +48,7 @@ export class Vitor extends CorporationCard {
     // Awards are disabled for 1 player games
     if (game.isSoloMode()) return;
 
-    const freeAward = new OrOptions();
-    freeAward.title = 'Select award to fund';
-    freeAward.buttonLabel = 'Confirm';
+    const freeAward = new OrOptions().setTitle('Select award to fund').setButtonLabel('Confirm');
 
     // If Vitor isn't going first and someone else funds awards, filter them out.
     const availableAwards = game.awards.filter((award) => !game.fundedAwards.map((fa) => fa.award).includes(award));
