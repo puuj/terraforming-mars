@@ -40,18 +40,16 @@ export class Spies extends Card implements IProjectCard {
 
   public action(player: IPlayer) {
     if (player.game.isSoloMode()) return undefined;
-    const availablePlayerTargets = player.game.getPlayersInGenerationOrder().filter((p) => p.id !== player.id);
     const availableActions = new OrOptions();
 
-    availablePlayerTargets.forEach((target) => {
+    player.opponents.forEach((target) => {
       if (target.stock.megacredits > 0) {
         const amountStolen = Math.min(1, target.stock.megacredits);
         const optionTitle = 'Steal ' + amountStolen + ' MC from ' + target.name;
 
         availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
-          player.stock.add(Resource.MEGACREDITS, amountStolen);
-          target.stock.deduct(Resource.MEGACREDITS, amountStolen, {log: true, from: player, stealing: true});
+          target.attack(player, Resource.MEGACREDITS, amountStolen, {log: true, stealing: true});
           return undefined;
         }));
       }
@@ -60,10 +58,9 @@ export class Spies extends Card implements IProjectCard {
         const amountStolen = Math.min(1, target.stock.steel);
         const optionTitle = 'Steal ' + amountStolen + ' steel from ' + target.name;
 
-        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
+        availableActions.options.push(new SelectOption(optionTitle).andThen(() => {	
           player.stock.deduct(Resource.MEGACREDITS, 1);
-          player.stock.add(Resource.STEEL, amountStolen);
-          target.stock.deduct(Resource.STEEL, amountStolen, {log: true, from: player, stealing: true});
+          target.attack(player, Resource.STEEL, amountStolen, {log: true, stealing: true});
           return undefined;
         }));
       }
@@ -74,8 +71,7 @@ export class Spies extends Card implements IProjectCard {
 
         availableActions.options.push(new SelectOption(optionTitle).andThen( () => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
-          player.stock.add(Resource.TITANIUM, amountStolen);
-          target.stock.deduct(Resource.TITANIUM, amountStolen, {log: true, from: player, stealing: true});
+          target.attack(player, Resource.TITANIUM, amountStolen, {log: true, stealing: true});	  
           return undefined;
         }));
       }
@@ -86,8 +82,7 @@ export class Spies extends Card implements IProjectCard {
 
         availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
-          player.stock.add(Resource.PLANTS, amountStolen);
-          target.stock.deduct(Resource.PLANTS, amountStolen, {log: true, from: player, stealing: true});
+          target.attack(player, Resource.PLANTS, amountStolen, {log: true, stealing: true});	  
           return undefined;
         }));
       }
@@ -98,8 +93,7 @@ export class Spies extends Card implements IProjectCard {
 
         availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
-          player.stock.add(Resource.ENERGY, amountStolen);
-          target.stock.deduct(Resource.ENERGY, amountStolen, {log: true, from: player, stealing: true});
+          target.attack(player, Resource.ENERGY, amountStolen, {log: true, stealing: true});
           return undefined;
         }));
       }
@@ -110,8 +104,7 @@ export class Spies extends Card implements IProjectCard {
 
         availableActions.options.push(new SelectOption(optionTitle).andThen(() => {
           player.stock.deduct(Resource.MEGACREDITS, 1);
-          player.stock.add(Resource.HEAT, amountStolen);
-          target.stock.deduct(Resource.HEAT, amountStolen, {log: true, from: player, stealing: true});
+          target.attack(player, Resource.HEAT, amountStolen, {log: true, stealing: true});
           return undefined;
         }));
       }

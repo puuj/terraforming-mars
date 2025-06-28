@@ -44,6 +44,8 @@ export type GameOptions = {
   draftVariant: boolean;
   initialDraftVariant: boolean;
   preludeDraftVariant: boolean;
+  ceosDraftVariant: boolean;
+  // corporationsDraft: boolean;
   startingCorporations: number;
   shuffleMapOption: boolean;
   randomMA: RandomMAOptionType;
@@ -125,6 +127,7 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   pathfindersExpansion: false,
   politicalAgendasExtension: 'Standard',
   preludeDraftVariant: false,
+  ceosDraftVariant: false,
   preludeExtension: false,
   prelude2Expansion: false,
   promoCardsOption: false,

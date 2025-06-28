@@ -32,7 +32,7 @@ export class LawSuit extends Card implements IProjectCard {
   }
 
   private targets(player: IPlayer) {
-    return player.game.getPlayersById(player.removingPlayers);
+    return player.removingPlayers.map((id) => player.game.getPlayerById(id));
   }
 
   public override bespokeCanPlay(player: IPlayer) {
@@ -49,7 +49,7 @@ export class LawSuit extends Card implements IProjectCard {
         suedPlayer.playedCards.push(this);
         suedPlayer.maybeBlockAttack(player, 'lose 3 M€', (proceed) => {
           if (proceed) {
-            suedPlayer.stock.deduct(Resource.MEGACREDITS, amount, {log: true, from: player, stealing: true});
+            suedPlayer.stock.deduct(Resource.MEGACREDITS, amount, {log: true, from: {player}, stealing: true});
           }
           player.stock.add(Resource.MEGACREDITS, amount);
           return undefined;

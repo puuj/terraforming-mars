@@ -45,7 +45,7 @@ export class AnubisSecurities extends CorporationCard implements ICorporationCar
     return 0;
   }
 
-  public initialAction(player: IPlayer) {
+  public override initialAction(player: IPlayer) {
     this.inInitialAction = true;
     player.game.defer(new PlayProjectCard(player).andThen(() => {
       this.inInitialAction = false;
@@ -53,7 +53,7 @@ export class AnubisSecurities extends CorporationCard implements ICorporationCar
     return undefined;
   }
 
-  public onIncreaseTerraformRating(player: IPlayer, _cardOwner: IPlayer, steps: number) {
+  public onIncreaseTerraformRatingByAnyPlayer(_cardOwner: IPlayer, player: IPlayer, steps: number) {
     const money = steps * 2;
     player.stock.add(Resource.MEGACREDITS, money);
     player.game.log('${0} gained ${1} M€ from the ${2} corp effect', (b) => b.player(player).number(money).card(this));
@@ -70,7 +70,7 @@ export class AnubisSecurities extends CorporationCard implements ICorporationCar
       }
 
       let anyCorruptOpponents = false;
-      for (const opponent of player.game.getPlayersInGenerationOrder()) {
+      for (const opponent of player.game.playersInGenerationOrder) {
         if (opponent === player) {
           continue;
         }

@@ -1,7 +1,7 @@
 import {Tag} from '../../../common/cards/Tag';
 import {IPlayer} from '../../IPlayer';
 import {CorporationCard} from '../corporation/CorporationCard';
-import {IProjectCard} from '../IProjectCard';
+import {ICard} from '../ICard';
 import {OrOptions} from '../../inputs/OrOptions';
 import {SelectOption} from '../../inputs/SelectOption';
 import {IAward} from '../../awards/IAward';
@@ -42,7 +42,7 @@ export class Vitor extends CorporationCard implements ICorporationCard {
     });
   }
 
-  public initialAction(player: IPlayer) {
+  public override initialAction(player: IPlayer) {
     const game = player.game;
 
     // Awards are disabled for 1 player games
@@ -57,10 +57,7 @@ export class Vitor extends CorporationCard implements ICorporationCard {
     return freeAward;
   }
 
-  public onCardPlayed(player: IPlayer, card: IProjectCard) {
-    if (!player.isCorporation(this.name)) {
-      return;
-    }
+  public onCardPlayedForCorps(player: IPlayer, card: ICard) {
     const victoryPoints = card.metadata.victoryPoints;
     if (victoryPoints === undefined) return;
     if (typeof(victoryPoints) === 'number') {
@@ -70,6 +67,6 @@ export class Vitor extends CorporationCard implements ICorporationCard {
       if (victoryPoints.points <= 0) return;
     }
 
-    player.stock.add(Resource.MEGACREDITS, 3, {log: true, from: this});
+    player.stock.add(Resource.MEGACREDITS, 3, {log: true, from: {card: this}});
   }
 }
