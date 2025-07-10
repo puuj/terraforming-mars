@@ -20,7 +20,7 @@ import {ChemicalFactory} from './ChemicalFactory';
 import {ClassActionLawsuit} from './ClassActionLawsuit';
 import {CloudVortexOutpost} from './CloudVortexOutpost';
 import {CollusionStandardProject} from './CollusionStandardProject';
-import {ConcessionRights} from './ConcessionRights';
+import {TunnelingLoophole} from './TunnelingLoophole';
 import {CorporateBlackmail} from './CorporateBlackmail';
 import {CorporateTheft} from './CorporateTheft';
 import {CraterSurvey} from './CraterSurvey';
@@ -28,6 +28,7 @@ import {CutThroatBudgeting} from './CutThroatBudgeting';
 import {Deepmining} from './Deepmining';
 import {Deepnuking} from './Deepnuking';
 import {DeepwaterDome} from './DeepwaterDome';
+import {DeepFoundations} from './DeepFoundations';
 import {DemetronLabs} from './DemetronLabs';
 import {DetectiveTVSeries} from './DetectiveTVSeries';
 import {EarthquakeMachine} from './EarthquakeMachine';
@@ -177,7 +178,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.DEEPMINING]: {Factory: Deepmining},
     [CardName.BEHEMOTH_EXCAVATOR]: {Factory: BehemothExcavator},
     [CardName.LOBBYING_NETWORK]: {Factory: LobbyingNetwork},
-    [CardName.CONCESSION_RIGHTS]: {Factory: ConcessionRights},
+    [CardName.TUNNELING_LOOPHOLE]: {Factory: TunnelingLoophole},
     [CardName.ORBITAL_LASER_DRILL]: {Factory: OrbitalLaserDrill},
     [CardName.GREY_MARKET_EXPLOITATION]: {Factory: GreyMarketExploitation},
     [CardName.EXCAVATOR_LEASING]: {Factory: ExcavatorLeasing},
@@ -242,6 +243,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.WHALES]: {Factory: Whales},
     [CardName.GUERILLA_ECOLOGISTS]: {Factory: GuerillaEcologists},
     [CardName.THIOLAVA_VENTS]: {Factory: ThiolavaVents},
+    // 91-100
     [CardName.DETECTIVE_TV_SERIES]: {Factory: DetectiveTVSeries},
     [CardName.RACKETEERING]: {Factory: Racketeering},
     [CardName.GAS_TRUST]: {Factory: GasTrust},
@@ -251,6 +253,7 @@ export const UNDERWORLD_CARD_MANIFEST = new ModuleManifest({
     [CardName.EXPORT_CONVOY]: {Factory: ExportConvoy},
     [CardName.ACIDIZING]: {Factory: Acidizing, compatibility: 'venus'},
     [CardName.EXPLOITATION_OF_VENUS]: {Factory: ExploitationOfVenus, compatibility: 'venus'},
+    [CardName.DEEP_FOUNDATIONS]: {Factory: DeepFoundations},
 
     // // Replacements
     [CardName.STANDARD_TECHNOLOGY_UNDERWORLD]: {Factory: StandardTechnology},

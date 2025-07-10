@@ -117,8 +117,6 @@ export class Player implements IPlayer {
   public canUsePlantsAsMegacredits: boolean = false;
   // Luna Trade Federation
   public canUseTitaniumAsMegacredits: boolean = false;
-  // Friends in High Places
-  public canUseCorruptionAsMegacredits: boolean = false;
 
   // This generation / this round
   public actionsTakenThisRound: number = 0;
@@ -152,8 +150,6 @@ export class Player implements IPlayer {
   public oceanBonus: number = constants.OCEAN_BONUS;
 
   // Custom cards
-  // Community Leavitt Station and Pathfinders Leavitt Station
-  public scienceTagCount: number = 0;
   // PoliticalAgendas Scientists P41
   public hasTurmoilScienceTagBonus: boolean = false;
   // Ecoline
@@ -386,6 +382,17 @@ export class Player implements IPlayer {
     return this.playedCards.has(CardName.LUNAR_SECURITY_STATIONS);
   }
 
+  public isProtected(resource: Resource) {
+    switch (resource) {
+    case Resource.PLANTS:
+      return this.plantsAreProtected();
+    case Resource.STEEL:
+    case Resource.TITANIUM:
+      return this.alloysAreProtected();
+    }
+    return false;
+  }
+
   public canHaveProductionReduced(resource: Resource, minQuantity: number, attacker: IPlayer) {
     const reducable = this.production[resource] + (resource === Resource.MEGACREDITS ? 5 : 0);
     if (reducable < minQuantity) return false;
@@ -475,6 +482,8 @@ export class Player implements IPlayer {
     if (PartyHooks.shouldApplyPolicy(this, PartyName.SCIENTISTS, 'sp02')) {
       requirementsBonus += 2;
     }
+
+    requirementsBonus += UnderworldExpansion.getGlobalParameterRequirementBonus(this, parameter);
 
     return requirementsBonus;
   }
@@ -725,7 +734,6 @@ export class Player implements IPlayer {
       auroraiData: card.type === CardType.STANDARD_PROJECT,
       graphene: card.tags.includes(Tag.CITY) || card.tags.includes(Tag.SPACE),
       kuiperAsteroids: card.name === CardName.AQUIFER_STANDARD_PROJECT || card.name === CardName.ASTEROID_STANDARD_PROJECT,
-      corruption: card.tags.includes(Tag.EARTH) && this.playedCards.has(CardName.FRIENDS_IN_HIGH_PLACES),
     };
   }
 
@@ -806,9 +814,6 @@ export class Player implements IPlayer {
     removeResourcesOnCard(CardName.SOYLENT_SEEDLING_SYSTEMS, payment.seeds);
     removeResourcesOnCard(CardName.AURORAI, payment.auroraiData);
     removeResourcesOnCard(CardName.KUIPER_COOPERATIVE, payment.kuiperAsteroids);
-    if (payment.corruption > 0) {
-      UnderworldExpansion.loseCorruption(this, payment.corruption);
-    }
 
     if (payment.megaCredits > 0 || payment.steel > 0 || payment.titanium > 0) {
       PathfindersExpansion.addToSolBank(this);
@@ -1215,7 +1220,7 @@ export class Player implements IPlayer {
   public canPlay(card: IProjectCard): boolean {
     card.additionalProjectCosts = undefined;
     const options = this.affordOptionsForCard(card);
-    const canAfford = this.newCanAfford(options);
+    const canAfford = this.canAffordInternal(options);
     if (!canAfford.canAfford) {
       return false;
     }
@@ -1251,7 +1256,6 @@ export class Player implements IPlayer {
       auroraiData: this.getSpendable('auroraiData'),
       graphene: this.getSpendable('graphene'),
       kuiperAsteroids: this.getSpendable('kuiperAsteroids'),
-      corruption: this.underworldData.corruption,
     };
   }
 
@@ -1293,7 +1297,6 @@ export class Player implements IPlayer {
       auroraiData: options?.auroraiData ?? false,
       graphene: options?.graphene ?? false,
       kuiperAsteroids: options?.kuiperAsteroids ?? false,
-      corruption: options?.corruption ?? false,
     };
 
     // HOOK: Luna Trade Federation
@@ -1315,9 +1318,7 @@ export class Player implements IPlayer {
   /**
    * Returns information about whether a player can afford to spend money with other costs and ways to pay taken into account.
    */
-  public newCanAfford(o: number | CanAffordOptions): {redsCost: number, canAfford: boolean} {
-    const options: CanAffordOptions = typeof(o) === 'number' ? {cost: o} : {...o};
-
+  private canAffordInternal(options: CanAffordOptions): {redsCost: number, canAfford: boolean} {
     // TODO(kberg): These are set both here and in SelectPayment. Consolidate, perhaps.
     options.heat = this.canUseHeatAsMegaCredits;
     options.lunaTradeFederationTitanium = this.canUseTitaniumAsMegacredits;
@@ -1358,7 +1359,8 @@ export class Player implements IPlayer {
    * and additionally pay the reserveUnits (no replaces here)
    */
   public canAfford(o: number | CanAffordOptions): boolean {
-    return this.newCanAfford(o).canAfford;
+    const options: CanAffordOptions = typeof(o) === 'number' ? {cost: o} : {...o};
+    return this.canAffordInternal(options).canAfford;
   }
 
   public getStandardProjectOption(): SelectCard<IStandardProjectCard> {
@@ -1725,8 +1727,6 @@ export class Player implements IPlayer {
       canUsePlantsAsMegaCredits: this.canUsePlantsAsMegacredits,
       // Luna Trade Federation
       canUseTitaniumAsMegacredits: this.canUseTitaniumAsMegacredits,
-      // This generation / this round
-      canUseCorruptionAsMegacredits: this.canUseCorruptionAsMegacredits,
       preservationProgram: this.preservationProgram,
       // This generation / this round
       actionsTakenThisRound: this.actionsTakenThisRound,
@@ -1761,7 +1761,8 @@ export class Player implements IPlayer {
       oceanBonus: this.oceanBonus,
       // Custom cards
       // Leavitt Station.
-      scienceTagCount: this.scienceTagCount,
+      scienceTagCount: this.tags.extraScienceTags,
+      plantTagCount: this.tags.extraPlantTags,
       // Ecoline
       plantsNeededForGreenery: this.plantsNeededForGreenery,
       // Lawsuit
@@ -1803,7 +1804,6 @@ export class Player implements IPlayer {
     player.canUseHeatAsMegaCredits = d.canUseHeatAsMegaCredits;
     player.canUsePlantsAsMegacredits = d.canUsePlantsAsMegaCredits;
     player.canUseTitaniumAsMegacredits = d.canUseTitaniumAsMegacredits;
-    player.canUseCorruptionAsMegacredits = d.canUseCorruptionAsMegacredits;
     player.cardCost = d.cardCost;
     player.colonies.cardDiscount = d.cardDiscount;
     player.colonies.tradeDiscount = d.colonyTradeDiscount;
@@ -1833,7 +1833,8 @@ export class Player implements IPlayer {
       titanium: d.titaniumProduction,
     }));
     player.removingPlayers = d.removingPlayers;
-    player.scienceTagCount = d.scienceTagCount;
+    player.tags.extraScienceTags = d.scienceTagCount;
+    player.tags.extraPlantTags = d.plantTagCount ?? 0;
     player.steel = d.steel;
     player.steelValue = d.steelValue;
     player.terraformRating = d.terraformRating;
@@ -1878,7 +1879,13 @@ export class Player implements IPlayer {
     player.timer = Timer.deserialize(d.timer);
 
     if (d.underworldData !== undefined) {
-      player.underworldData = d.underworldData;
+      const dunerworldData = d.underworldData;
+      // TODO(kberg): Remove the wrapper by 2025-10-01
+      player.underworldData = {
+        tokens: dunerworldData.tokens ?? [],
+        corruption: dunerworldData.corruption,
+        activeBonus: dunerworldData.temperatureBonus ?? dunerworldData.activeBonus,
+      };
     }
     if (d.alliedParty !== undefined) {
       // TODO(kberg): Remove after 2025-08-01

@@ -155,7 +155,8 @@
   "Tycoon": "Магнат",
   "Have 15 project cards in play (not events.)": "Мати 15 проектних карт у грі (не подій)",
   "Tunneler": "Тунельник",
-  "Have at least 7 excavation markers": "Мати щонайменше 7 маркерів розкопок",
+  "// Have at least 7 excavation markers": "Мати щонайменше 7 маркерів розкопок",
+  "Have at least 7 underground tokens": "",
   "Risktaker": "Ризикований",
   "Have at least 3 NEGATIVE VPs among your cards. (Event cards count.)": "Мати щонайменше 3 НЕГАТИВНІ ПО на ваших картах (подійні карти враховуються)",
 
@@ -1073,7 +1074,6 @@
   "Warning: this will remove your own plants": "Попередження: це призведе до видалення ваших власних рослин",
   "You will only be able to build the colony on Luna.": "Ви зможете побудувати колонію тільки на Місяці.",
   "This prelude is not playable, so you will discard it and gain 15 M€.": "Цей прелюдія не може бути використана, тому ви відкинете її і отримаєте 15 M€.",
-  "You will be limited to excavating a space that gives 1 energy production.": "Ви будете обмежені в розкопках простору, який дає 1 виробництво енергії.",
   "There are not enough cards to complete this action. You will draw fewer cards than expected.": "Недостатньо карток для завершення цієї дії. Ви будете тягти менше карток, ніж очікувалося.",
 
   "Cards List": "Список карт",

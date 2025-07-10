@@ -95,8 +95,6 @@ export interface IPlayer {
   canUseTitaniumAsMegacredits: boolean;
   // Martian Lumber Corp
   canUsePlantsAsMegacredits: boolean;
-  // Friends in High Places
-  canUseCorruptionAsMegacredits: boolean;
 
   // This generation / this round
   actionsTakenThisRound: number;
@@ -134,9 +132,6 @@ export interface IPlayer {
   oceanBonus: number;
 
   // Custom cards
-  // Community Leavitt Station and Pathfinders Leavitt Station
-  // Additional science tags (currently only granted from placing colonies)
-  scienceTagCount: number;
   // PoliticalAgendas Scientists P41
   hasTurmoilScienceTagBonus: boolean;
   // Ecoline
@@ -202,6 +197,7 @@ export interface IPlayer {
   getVictoryPoints(): VictoryPointsBreakdown;
   plantsAreProtected(): boolean;
   alloysAreProtected(): boolean;
+  isProtected(resource: Resource): boolean;
   /**
    * Returns true when this player can lose |minQuantity| units of production.
    *
@@ -277,12 +273,16 @@ export interface IPlayer {
   /**
    * Returns the set of cards in play that have actual resources on them.
    *
+   * Use |getResourceCards| to return all cards, even without resources on them.
+   *
    * If `resource` is absent, include cards that collect any resource.
    */
   getCardsWithResources(resource?: CardResource): Array<ICard>;
 
   /**
-   * Return the cards that collect `resource`.
+   * Return the cards that collect `resource`, even if they have none on the card.
+   *
+   * Use |getCardsWithResources| to return only cards with resources on them.
    *
    * If `resource` is absent, return the cards that collect any resource.
    */

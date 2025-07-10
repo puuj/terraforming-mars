@@ -130,8 +130,14 @@ export abstract class Board {
     return this.spaces.find((space) => space.tile?.card === cardName);
   }
 
-  public getSpaces(spaceType: SpaceType, _player: IPlayer): ReadonlyArray<Space> {
-    return this.spaces.filter((space) => space.spaceType === spaceType);
+  public getSpaces(spaceType: SpaceType): ReadonlyArray<Space> {
+    // TODO(kberg): How to make this not bother with the special case when
+    // Underworld is not in play? It's not very expensive.
+    if (spaceType !== SpaceType.OCEAN) {
+      return this.spaces.filter((space) => space.spaceType === spaceType);
+    } else {
+      return this.spaces.filter((space) => space.spaceType === spaceType || space.undergroundResources === 'volcanicoceanspace');
+    }
   }
 
   /**
@@ -201,6 +207,10 @@ export abstract class Board {
       plan.cost += additionalCosts.megacredits;
       plan.tr = additionalCosts.tr;
 
+      if (space.undergroundResources === 'place6mc') {
+        plan.cost -= 6;
+      }
+
       const afford = player.canAfford(plan);
       if (afford === false) {
         return false;
@@ -216,7 +226,7 @@ export abstract class Board {
 
   public getAvailableSpacesOnLand(player: IPlayer, canAffordOptions?: CanAffordOptions): ReadonlyArray<Space> {
     // Does this also apply to cove spaces?
-    const landSpaces = this.getSpaces(SpaceType.LAND, player).filter((space) => {
+    const landSpaces = this.getSpaces(SpaceType.LAND).filter((space) => {
       // A space is available if it doesn't have a player marker on it, or it belongs to |player|
       if (space.player !== undefined && space.player !== player) {
         return false;
@@ -391,6 +401,7 @@ export function isSpecialTile(tileType: TileType | undefined): boolean {
   case TileType.EROSION_SEVERE:
   case TileType.DUST_STORM_MILD:
   case TileType.DUST_STORM_SEVERE:
+  case TileType.REY_SKYWALKER:
   case undefined:
     return false;
   default:

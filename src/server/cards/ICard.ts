@@ -42,9 +42,6 @@ export function isIHasCheckLoops(object: any): object is IHasCheckLoops {
 /** Defines how ICard.getVictoryPoints works. */
 export type GetVictoryPointsContext = 'default' | 'projectWorkshop';
 
-// TODO(kberg): Move this out of ICard.
-export type IdentificationTrigger = 'normal' | 'excavation' | 'tile';
-
 export interface ICard {
   readonly name: CardName;
   readonly tags: ReadonlyArray<Tag>;
@@ -117,18 +114,17 @@ export interface ICard {
    * @param identifyingPlayer the player performing the identification action,
    *        or undefined if it is the neutral player (game setup or global event.)
    * @param space the space that was just identified.
-   * @param trigger what triggered the identification.
    */
-  onIdentificationByAnyPlayer?(cardOwner: IPlayer, identifyingPlayer: IPlayer | undefined, space: Space, trigger: IdentificationTrigger): void;
+  onIdentificationByAnyPlayer?(cardOwner: IPlayer, identifyingPlayer: IPlayer | undefined, space: Space): void;
   onIdentification?: never;
 
   /**
-   * Optional callback when this card owner player excavates a space.
+   * Optional callback when this card owner claims an underground resource.
    *
-   * @param player the player performing the excavation action
-   * @param space the space that was just excavated.
+   * @param player the player performing the claim.
+   * @param space the space that was excavated.
    */
-  onExcavation?(player: IPlayer, space: Space): void;
+  onClaim?(player: IPlayer, isExcavate: boolean, space: Space | undefined): void;
 
   /**
    * Callback when `player` gains (or loses) production.
@@ -152,8 +148,7 @@ export interface ICard {
   onColonyAddedByAnyPlayer?(cardOwner: IPlayer, colonyOwner: IPlayer): void;
   onColonyAdded?: never;
 
-  /** Callback when THIS player adds a colony to Leavitt. */
-  onColonyAddedToLeavitt?(player: IPlayer): void;
+  onNonCardTagAdded?(player: IPlayer, tag: Tag): void;
 
   readonly cost?: number; /** Used with IProjectCard and PreludeCard. */
   readonly type: CardType;

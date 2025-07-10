@@ -28,14 +28,13 @@ import {AwardScorer} from '../awards/AwardScorer';
 import {SpaceId} from '../../common/Types';
 import {cardsToModel, coloniesToModel} from './ModelUtils';
 import {runId} from '../utils/server-ids';
-import {UnderworldExpansion} from '../underworld/UnderworldExpansion';
 import {toName} from '../../common/utils/utils';
 import {MAX_AWARDS, MAX_MILESTONES} from '../../common/constants';
 
 export class Server {
   public static getSimpleGameModel(game: IGame): SimpleGameModel {
     return {
-      activePlayer: game.getPlayerById(game.activePlayer).color,
+      activePlayer: game.activePlayer.color,
       id: game.id,
       phase: game.phase,
       players: game.playersInGenerationOrder.map((player) => ({
@@ -213,6 +212,7 @@ export class Server {
       actionsTakenThisRound: player.actionsTakenThisRound,
       actionsTakenThisGame: player.actionsTakenThisGame,
       actionsThisGeneration: Array.from(player.actionsThisGeneration),
+      alliedParty: player.alliedParty,
       availableBlueCardActionCount: player.getAvailableBlueActionCount(),
       cardCost: player.cardCost,
       cardDiscount: player.colonies.cardDiscount,
@@ -220,6 +220,7 @@ export class Server {
       citiesCount: game.board.getCities(player).length,
       coloniesCount: player.getColoniesCount(),
       color: player.color,
+      corruption: player.underworldData.corruption,
       energy: player.energy,
       energyProduction: player.production.energy,
       fleetSize: player.colonies.getFleetSize(),
@@ -228,7 +229,7 @@ export class Server {
       heatProduction: player.production.heat,
       id: game.phase === Phase.END ? player.id : undefined,
       influence: Turmoil.ifTurmoilElse(game, (turmoil) => turmoil.getInfluence(player), () => 0),
-      isActive: player.id === game.activePlayer,
+      isActive: player.id === game.activePlayer.id,
       lastCardPlayed: player.lastCardPlayed,
       megaCredits: player.megaCredits,
       megaCreditProduction: player.production.megacredits,
@@ -252,7 +253,7 @@ export class Server {
       titaniumProduction: player.production.titanium,
       titaniumValue: player.getTitaniumValue(),
       tradesThisGeneration: player.colonies.tradesThisGeneration,
-      corruption: player.underworldData.corruption,
+      undergroundTokens: player.underworldData.tokens.length,
       victoryPointsBreakdown: {
         terraformRating: 0,
         milestones: 0,
@@ -273,8 +274,6 @@ export class Server {
         negativeVP: 0,
       },
       victoryPointsByGeneration: [],
-      excavations: UnderworldExpansion.excavationMarkerCount(player),
-      alliedParty: player.alliedParty,
     };
 
     if (game.phase === Phase.END || game.isSoloMode() || game.gameOptions.showOtherPlayersVP === true) {

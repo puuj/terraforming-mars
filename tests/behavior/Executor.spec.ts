@@ -28,7 +28,6 @@ import {OrOptions} from '../../src/server/inputs/OrOptions';
 import {StormCraftIncorporated} from '../../src/server/cards/colonies/StormCraftIncorporated';
 import {AndOptions} from '../../src/server/inputs/AndOptions';
 import {SelectSpace} from '../../src/server/inputs/SelectSpace';
-import {UnderworldExpansion} from '../../src/server/underworld/UnderworldExpansion';
 import {SelectResources} from '../../src/server/inputs/SelectResources';
 import {SelectResource} from '../../src/server/inputs/SelectResource';
 import {MicroMills} from '../../src/server/cards/base/MicroMills';
@@ -623,6 +622,30 @@ describe('Executor', () => {
     expect(fake.resourceCount).eq(0);
   });
 
+  it('spend - resource on card - Reds in power', () => {
+    const behavior = {spend: {resourcesHere: 1}, tr: 1};
+    expect(executor.canExecute(behavior, player, fake)).is.false;
+    fake.resourceCount = 1;
+    expect(executor.canExecute(behavior, player, fake)).is.true;
+
+    setRulingParty(game, PartyName.REDS);
+
+    expect(executor.canExecute(behavior, player, fake)).is.false;
+
+    player.megaCredits = 3;
+
+    expect(executor.canExecute(behavior, player, fake)).is.true;
+
+    executor.execute(behavior, player, fake);
+    runAllActions(game);
+
+    expect(player.megaCredits).eq(0);
+    expect(player.terraformRating).eq(21);
+    expect(fake.resourceCount).eq(0);
+    expect(fake.resourceCount).eq(0);
+  });
+
+
   it('spend - cards', () => {
     const behavior = {spend: {cards: 2}};
     player.cardsInHand.push(fake);
@@ -705,11 +728,47 @@ describe('Executor', () => {
   it('underworld, identify', () => {
     executor.execute({underworld: {identify: 1}}, player, fake);
     runAllActions(game);
-    expect(UnderworldExpansion.identifiedSpaces(game)).has.length(0);
+
+    expect(game.board.spaces.filter((space) => space.undergroundResources)).has.length(0);
     const selectSpace = cast(player.popWaitingFor(), SelectSpace);
     selectSpace.cb(selectSpace.spaces[0]);
-    expect(UnderworldExpansion.identifiedSpaces(game)).has.length(1);
+    expect(game.board.spaces.filter((space) => space.undergroundResources)).has.length(1);
   });
+
+  it('underworld, identify and claim', () => {
+    executor.execute({underworld: {identify: {count: 3, claim: 2}}}, player, fake);
+    runAllActions(game);
+    expect(game.board.spaces.filter((space) => space.undergroundResources)).has.length(0);
+
+    const selectSpace = cast(player.popWaitingFor(), SelectSpace);
+    selectSpace.cb(selectSpace.spaces[0]);
+    expect(game.board.spaces.filter((space) => space.undergroundResources)).has.length(1);
+    runAllActions(game);
+
+    const selectSpace2 = cast(player.popWaitingFor(), SelectSpace);
+    selectSpace2.cb(selectSpace2.spaces[0]);
+    expect(game.board.spaces.filter((space) => space.undergroundResources)).has.length(2);
+    runAllActions(game);
+
+    const selectSpace3 = cast(player.popWaitingFor(), SelectSpace);
+    selectSpace3.cb(selectSpace3.spaces[0]);
+    expect(game.board.spaces.filter((space) => space.undergroundResources)).has.length(3);
+    runAllActions(game);
+
+    const excavateSpace1 = cast(player.popWaitingFor(), SelectSpace);
+    expect(excavateSpace1.spaces).deep.eq(game.board.spaces.filter((space) => space.undergroundResources));
+    excavateSpace1.cb(excavateSpace1.spaces[0]);
+    expect(excavateSpace1.spaces[0].excavator).is.undefined;
+    runAllActions(game);
+
+    const excavateSpace2 = cast(player.popWaitingFor(), SelectSpace);
+    cast(excavateSpace2.cb(excavateSpace2.spaces[0]), undefined);
+    expect(excavateSpace2.spaces[0].excavator).is.undefined;
+    runAllActions(game);
+
+    cast(player.popWaitingFor(), undefined);
+  });
+
 
   it('underworld, corruption', () => {
     player.underworldData.corruption = 0;
@@ -717,7 +776,7 @@ describe('Executor', () => {
     expect(player.underworldData.corruption).eq(2);
   });
 
-  it('underworkd spend corruption', () => {
+  it('underworld spend corruption', () => {
     player.underworldData.corruption = 1;
     expect(executor.canExecute({spend: {corruption: 2}}, player, fake)).is.false;
 
