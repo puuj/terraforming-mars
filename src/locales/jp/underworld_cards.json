@@ -160,7 +160,7 @@
     "Action: Spend 4 data resources on this card to draw a card.": "アクション：このカード上から4データ除去し、1ドロー.",
 
     "Monopoly": "独占",
-    "Requires 3 corruption. Choose a standard production type. Steal up to 1 unit of that production from EACH OTHER player. They can block this with corruption.": "条件：汚職3つ以上. 産出を1つ選ぶ. 他の全プレイヤーはその産出-1し、その合計数分産出+1. これは汚職で防ぐことができる.",
+    "// Requires 3 corruption. Choose a standard production type. Steal up to 1 unit of that production from EACH OTHER player. They can block this with corruption.": "条件：汚職3つ以上. 産出を1つ選ぶ. 他の全プレイヤーはその産出-1し、その合計数分産出+1. これは汚職で防ぐことができる.",
 
     "Nanofoundry": "極小鋳物工場",
     "Requires 2 science tags. Reduce your energy production 5 steps. Draw 1 card for every power tag you have, including this.": "条件：科学タグ2つ以上. 電力産出-5. 電力タグの数分、1ドロー.",
@@ -243,10 +243,10 @@
     "// At the end of this generation only, during the production phase, gain 12 M€.": "次の生産フェイズで12MC獲得.",
 
     "Space Privateers": "宇宙私掠船",
-    "Action: If there is at least 1 fighter on this card, steal 2 M€ from EACH OTHER player.": "アクション：このカード上に戦闘機がある場合、他の全プレイヤーから2MC盗む.",
+    "// Action: If there is at least 1 fighter on this card, steal 2 M€ from EACH OTHER player.": "アクション：このカード上に戦闘機がある場合、他の全プレイヤーから2MC盗む.",
     "Effect: If 1 or more targets block this with corruption, remove 1 fighter from here.": "効果：このカードのアクションが1人以上から防がれた時、このカード上から1戦闘機を除去.",
     "Solo: Gain 2 M€ and remove 1 fighter from this card.": "ソロ：2MC獲得し、1戦闘機を除去.",
-    "Requires 3 corruption. Put 3 fighter resources on this card.": "条件：汚職3つ以上. このカード上に3戦闘機追加.",
+    "// Requires 3 corruption. Put 3 fighter resources on this card.": "条件：汚職3つ以上. このカード上に3戦闘機追加.",
 
     "Space Wargames": "宇宙戦争ゲーム",
     "Action: Spend 1 titanium to gain 1 fighter resource to this card.": "アクション：1チタンを支払い、このカード上に1戦闘機追加.",
