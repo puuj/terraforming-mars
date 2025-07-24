@@ -142,6 +142,7 @@ export function hashToModel(windowLocationHash: string): CardListModel {
       [CardResource.SCIENCE]: true,
       [CardResource.FLOATER]: true,
       [CardResource.ASTEROID]: true,
+      [CardResource.CANDLE]: true,
       [CardResource.CAMP]: true,
       [CardResource.PRESERVATION]: true,
       [CardResource.DIRECTOR]: true,
