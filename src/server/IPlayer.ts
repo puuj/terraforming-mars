@@ -28,7 +28,7 @@ import {VictoryPointsBreakdown} from '../common/game/VictoryPointsBreakdown';
 import {Color} from '../common/Color';
 import {OrOptions} from './inputs/OrOptions';
 import {Stock} from './player/Stock';
-import {UnderworldPlayerData} from './underworld/UnderworldData';
+import {UnderworldPlayerData} from '../common/underworld/UnderworldPlayerData';
 import {AlliedParty} from '../common/turmoil/Types';
 import {IParty} from './turmoil/parties/IParty';
 import {Message} from '../common/logs/Message';
@@ -295,8 +295,6 @@ export interface IPlayer {
    * Count all the resources of a given type in the tableau.
    */
   getResourceCount(resource: CardResource): number;
-  runInput(input: InputResponse, pi: PlayerInput): void;
-  getAvailableBlueActionCount(): number;
   getPlayableActionCards(): Array<ICard & IActionCard>;
   runProductionPhase(): void;
   finishProductionPhase(): void;
@@ -346,6 +344,7 @@ export interface IPlayer {
   setWaitingFor(input: PlayerInput, cb?: () => void): void;
   setWaitingForSafely(input: PlayerInput, cb?: () => void): void;
   serialize(): SerializedPlayer;
+
   /** Shorthand for deferring evaluating a PlayerInput */
   defer(input: PlayerInput | undefined | void | (() => PlayerInput | undefined | void), priority?: Priority): void;
   setAlliedParty(party: IParty): void;

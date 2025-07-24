@@ -7,6 +7,7 @@ import {Tag} from '../../../common/cards/Tag';
 import {IPlayer} from '../../IPlayer';
 import {CardResource} from '../../../common/CardResource';
 import {AddResourcesToCard} from '../../deferredActions/AddResourcesToCard';
+import {Priority} from '../../deferredActions/Priority';
 
 export class HyperspaceDrivePrototype extends Card implements IProjectCard {
   constructor() {
@@ -19,7 +20,7 @@ export class HyperspaceDrivePrototype extends Card implements IProjectCard {
       requirements: {tag: Tag.SCIENCE, count: 3},
 
       metadata: {
-        cardNumber: 'U52',
+        cardNumber: 'U052',
         renderData: CardRenderer.builder((b) => {
           b.resource(CardResource.FIGHTER).or().titanium(1).asterix().br;
           b.resource(CardResource.SCIENCE).or().tr(1).asterix().br;
@@ -39,10 +40,9 @@ export class HyperspaceDrivePrototype extends Card implements IProjectCard {
       player.game.log('${0} has no fighter resource cards and gained 1 titanium.', (b) => b.player(player));
       player.stock.titanium += 1;
     }
-    // TODO(kberg): If the player has olympus conference, its effect should take place after this gets a resource on it.
     const scienceCards = player.getResourceCards(CardResource.SCIENCE);
     if (scienceCards.length > 0) {
-      player.game.defer(new AddResourcesToCard(player, CardResource.SCIENCE));
+      player.game.defer(new AddResourcesToCard(player, CardResource.SCIENCE), Priority.HYPERSPACE_DRIVE_PROTOTYPE);
     } else {
       player.game.log('${0} has no science cards and gained 1 TR.', (b) => b.player(player));
       player.increaseTerraformRating();
