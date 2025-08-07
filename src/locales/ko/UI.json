@@ -244,8 +244,8 @@
     "Have the most Jovian tags in play": "자기 소유의 목성 태그가 제일 많은 플레이어.",
     "Kingpin": "배후기업상",
     "// Play the highest number of cards with a corruption requirement of at least 1. (Event cards count)": "추진 조건으로 corruption 1 이상인 카드(사건형 카드 포함)를 제일 많이 추진한 플레이어.",
-    "EdgeLord": "허세기업상",
-    "Have the highest number of excavation markers on the edges of the board.": "지도의 가장자리에 배치한 발굴 마커가 제일 많은 플레이어.",
+    "// EdgeLord": "허세기업상",
+    "// Have the highest number of excavation markers on the edges of the board.": "지도의 가장자리에 배치한 발굴 마커가 제일 많은 플레이어.",
 
     "Actions": "행동",
     "Hide active cards": "활동형 카드 숨기기",
@@ -873,7 +873,7 @@
     "Orient Crashlanding": "",
     "Leave as it is": "그대로 두기",
     "Rotate Crashlanding": "",
-    "Playing ${0} consumes ${1} data from ${2}": "",
+    "Playing ${0} consumes ${1} ${2} from ${3}": "",
 
     "Search for ${0} tags": "${0} 태그가 있는 카드 찾기",
     "Spend 1 M€ to gain 1 standard resource.": "1 M€을 소비하여 기본 자원 1개 획득.",

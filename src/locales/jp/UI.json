@@ -234,8 +234,8 @@
     "Have the most Jovian tags in play": "木星タグ数",
     "Kingpin": "汚職王",
     "// Play the highest number of cards with a corruption requirement of at least 1. (Event cards count)": "汚職を所有する条件のカードの枚数(イベント含む)",
-    "EdgeLord": "外堀王",
-    "Have the highest number of excavation markers on the edges of the board.": "マップの外周1マスの地下採掘数",
+    "// EdgeLord": "外堀王",
+    "// Have the highest number of excavation markers on the edges of the board.": "マップの外周1マスの地下採掘数",
 
     "Actions": "アクション",
     "Hide active cards": "アクティブカードを非表示",
@@ -761,7 +761,7 @@
     "Orient Crashlanding": "タイルの回転",
     "Leave as it is": "何もしない",
     "Rotate Crashlanding": "回転する",
-    "Playing ${0} consumes ${1} data from ${2}": "${2}から${1}データを消費することで${0}をプレイ可能",
+    "Playing ${0} consumes ${1} ${2} from ${3}": "",
 
     "Choose your resource bonus": "ボーナスを選択",
     "Choose your wild resource bonus, after which you will gain ${0} more distinct standard resources.": "",
