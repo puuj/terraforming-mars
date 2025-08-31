@@ -131,13 +131,7 @@ export abstract class Board {
   }
 
   public getSpaces(spaceType: SpaceType): ReadonlyArray<Space> {
-    // TODO(kberg): How to make this not bother with the special case when
-    // Underworld is not in play? It's not very expensive.
-    if (spaceType !== SpaceType.OCEAN) {
-      return this.spaces.filter((space) => space.spaceType === spaceType);
-    } else {
-      return this.spaces.filter((space) => space.spaceType === spaceType || space.undergroundResources === 'volcanicoceanspace');
-    }
+    return this.spaces.filter((space) => space.spaceType === spaceType);
   }
 
   /**
@@ -309,8 +303,12 @@ export abstract class Board {
     return Board.ownedBy(player)(space);
   }
 
-  public getHazards(): ReadonlyArray<Space> {
-    return this.spaces.filter((space) => space.tile && HAZARD_TILES.has(space.tile.tileType));
+  public getHazards(includeProtected: boolean = false): ReadonlyArray<Space> {
+    const spaces = this.spaces.filter((space) => AresHandler.hasHazardTile(space));
+    if (includeProtected === false) {
+      return spaces.filter((space) => space.tile?.protectedHazard !== true);
+    }
+    return spaces;
   }
 
   /** Hazard tiles don't really count as tiles. */

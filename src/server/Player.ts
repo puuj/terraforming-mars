@@ -73,7 +73,7 @@ import {IParty} from './turmoil/parties/IParty';
 import {newStandardDraft} from './Draft';
 import {Message} from '../common/logs/Message';
 import {DiscordId} from './server/auth/discord';
-import {AlliedParty, PolicyId} from '../common/turmoil/Types';
+import {AlliedParty} from '../common/turmoil/Types';
 import {PlayedCards} from './cards/PlayedCards';
 import {deserializeCorporationCard} from './cards/cardSerialization';
 
@@ -1816,8 +1816,7 @@ export class Player implements IPlayer {
     player.hasTurmoilScienceTagBonus = d.hasTurmoilScienceTagBonus;
     player.heat = d.heat;
     player.lastCardPlayed = d.lastCardPlayed;
-    // TODO(kberg): Remove ?? [] by 2025-08-01
-    player.standardProjectsThisGeneration = new Set(d.standardProjectsThisGeneration ?? []);
+    player.standardProjectsThisGeneration = new Set(d.standardProjectsThisGeneration);
     player.megaCredits = d.megaCredits;
     player.needsToDraft = d.needsToDraft;
     player.oceanBonus = d.oceanBonus;
@@ -1834,7 +1833,7 @@ export class Player implements IPlayer {
     }));
     player.removingPlayers = d.removingPlayers;
     player.tags.extraScienceTags = d.scienceTagCount;
-    player.tags.extraPlantTags = d.plantTagCount ?? 0;
+    player.tags.extraPlantTags = d.plantTagCount;
     player.steel = d.steel;
     player.steelValue = d.steelValue;
     player.terraformRating = d.terraformRating;
@@ -1888,11 +1887,6 @@ export class Player implements IPlayer {
       };
     }
     if (d.alliedParty !== undefined) {
-      // TODO(kberg): Remove after 2025-08-01
-      const agenda = d.alliedParty.agenda;
-      if (agenda.policyId.startsWith('mfp')) {
-        agenda.policyId = (agenda.policyId.slice(0, 1) + agenda.policyId.slice(2)) as PolicyId;
-      }
       player._alliedParty = d.alliedParty;
     }
 

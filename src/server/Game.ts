@@ -41,7 +41,7 @@ import {TileType} from '../common/TileType';
 import {Turmoil} from './turmoil/Turmoil';
 import {RandomMAOptionType} from '../common/ma/RandomMAOptionType';
 import {AresHandler} from './ares/AresHandler';
-import {AresData, deserializeAresData} from '../common/ares/AresData';
+import {AresData} from '../common/ares/AresData';
 import {GameSetup} from './GameSetup';
 import {GameCards} from './GameCards';
 import {GlobalParameter} from '../common/GlobalParameter';
@@ -77,7 +77,6 @@ import {SelectOption} from './inputs/SelectOption';
 import {SelectSpace} from './inputs/SelectSpace';
 import {maybeRenamedMilestone} from '../common/ma/MilestoneName';
 import {maybeRenamedAward} from '../common/ma/AwardName';
-import {Eris} from './cards/community/Eris';
 import {AresHazards} from './ares/AresHazards';
 import {hazardSeverity} from '../common/AresTileType';
 import {IStandardProjectCard} from './cards/IStandardProjectCard';
@@ -596,8 +595,9 @@ export class Game implements IGame, Logger {
 
     // Ares Extreme: Solo player must remove all unprotected hazards to win
     if (this.gameOptions.aresExtension && this.gameOptions.aresExtremeVariant) {
-      const unprotectedHazardsRemaining = Eris.getAllUnprotectedHazardSpaces(this);
-      if (unprotectedHazardsRemaining.length > 0) return false;
+      if (this.board.getHazards(/* includeProtected= */ false).length > 0) {
+        return false;
+      }
     }
 
     // This last conditional doesn't make much sense to me. It's only ever really used
@@ -923,8 +923,8 @@ export class Game implements IGame, Logger {
     }
 
     if (this.gameOptions.aresExtension && this.gameOptions.aresExtremeVariant && this.isSoloMode()) {
-      // TODO(kberg): move the eris method elsewhere
-      const unprotectedHazardSpaces = Eris.getAllUnprotectedHazardSpaces(this);
+      const unprotectedHazardSpaces = this.board.getHazards(/* includeProtected= */ false);
+
 
       if (unprotectedHazardSpaces.length > 0) {
         orOptions.options.push(
@@ -1641,11 +1641,6 @@ export class Game implements IGame, Logger {
     f?.(builder);
     const logMessage = builder.build();
     logMessage.playerId = options?.reservedFor?.id;
-    if (!message || !logMessage) {
-      // TODO(kberg): throw
-      console.error('Log message is undefined. Message: ' + message);
-      return;
-    }
     this.gameLog.push(logMessage);
     this.gameAge++;
   }
@@ -1677,25 +1672,6 @@ export class Game implements IGame, Logger {
   }
 
   public static deserialize(d: SerializedGame): Game {
-    // TODO(kberg): Remove by 2025-08-01
-    if (d.gameOptions.expansions === undefined) {
-      d.gameOptions.expansions = {
-        corpera: d.gameOptions.corporateEra,
-        venus: d.gameOptions.venusNextExtension,
-        colonies: d.gameOptions.coloniesExtension,
-        prelude: d.gameOptions.preludeExtension,
-        prelude2: d.gameOptions.prelude2Expansion,
-        turmoil: d.gameOptions.turmoilExtension,
-        promo: d.gameOptions.promoCardsOption,
-        community: d.gameOptions.communityCardsOption,
-        ares: d.gameOptions.aresExtension,
-        moon: d.gameOptions.moonExpansion,
-        pathfinders: d.gameOptions.pathfindersExpansion,
-        ceo: d.gameOptions.ceoExtension,
-        starwars: d.gameOptions.starWarsExpansion,
-        underworld: d.gameOptions.underworldExpansion,
-      };
-    }
     const gameOptions = d.gameOptions;
 
     const players = d.players.map((element) => Player.deserialize(element));
@@ -1744,7 +1720,7 @@ export class Game implements IGame, Logger {
     game.fundedAwards = deserializeFundedAwards(d.fundedAwards, players, awards);
 
     if (gameOptions.aresExtension) {
-      game.aresData = deserializeAresData(d.aresData);
+      game.aresData = d.aresData;
     }
     // Reload colonies elements if needed
     if (gameOptions.coloniesExtension) {
@@ -1796,8 +1772,8 @@ export class Game implements IGame, Logger {
     game.tradeEmbargo = d.tradeEmbargo ?? false;
     game.beholdTheEmperor = d.beholdTheEmperor ?? false;
     game.globalsPerGeneration = d.globalsPerGeneration;
-    game.verminInEffect = d.verminInEffect ?? false; // TODO(kberg): remove ?? false by 2025-08-01
-    game.exploitationOfVenusInEffect = d.exploitationOfVenusInEffect ?? false; // TODO(kberg): remove ?? false by 2025-08-01
+    game.verminInEffect = d.verminInEffect;
+    game.exploitationOfVenusInEffect = d.exploitationOfVenusInEffect;
     // Still in Draft or Research of generation 1
     if (game.generation === 1 && players.some((p) => p.playedCards.filter(isICorporationCard).length === 0)) {
       if (game.phase === Phase.INITIALDRAFTING) {

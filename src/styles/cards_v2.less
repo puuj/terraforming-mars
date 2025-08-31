@@ -835,12 +835,42 @@
             margin-top: 10px;
         }
         .card-crescent-research-association-logo {
-            background-image: url(./assets/moon/corp-logo-crescent-research.png);
-            height: 50px;
-            width: 150px;
-            background-size: 150px 50px;
-            margin-top: 10px;
+          display: flex;
+          .crescent-research-association-image {
+              background-image: url(./assets/moon/corp-logo-crescent-research.png);
+              height: 50px;
+              width: 52px;
+              background-size: 52px 50px;
+              margin-top: 10px;
+          }
+          .crescent-research-association-title {
+            margin-left: 2px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+            text-shadow:
+              .5px .5px 0 black,
+              -.5px .5px 0 black,
+              .5px -.5px 0 black,
+              -.5px -.5px 0 black;
+            margin-top: 25px;
+            font-size: 7.5px;
+            font-weight: bold;
+            transform: scaleY(1.6);
+            line-height: .4rem;
+            text-align: left;
+          }
+          .crescent-research-association-row1 {
+            transform: scaleY(1.6);
+          }
+          hr {
+            border-color: white;
+            border-width: 0.5px;
+          }
+          .crescent-research-association-row2 {
+            transform: scaleY(1.6);
+          }
         }
+
         .card-luna-first-incorporated-logo {
             background-image: url(./assets/moon/corp-logo-luna-first.png);
             height: 50px;
@@ -1149,8 +1179,20 @@
             font-size: 12px;
           }
         }
-        // .card-kingdom-of-tauraro-logo {
-        // }
+        .card-kingdom-of-tauraro-logo {
+          display: flex;
+          margin-top: 10px;
+          padding-left: 10px;
+          text-align: left;
+          .kingdom-of-tauraro-svg-logo {
+            width: 72px;
+          }
+          .kingdom-of-tauraro-title {
+            color: #075412ff;
+            font-size: 20px;
+            line-height: 113%;
+          }
+        }
         .card-aeron-genomics-logo {
           display: flex;
           .aeron-genomics-svg-logo {
@@ -1229,9 +1271,25 @@
 
           display: flex;
         }
-        // .card-hecate-speditions-logo {
-        // }
-
+        .card-hecate-speditions-logo {
+          margin-top: 10px;
+          padding-left: 10px;
+          width: 82px;
+          background-color: black;
+          text-align: left;
+          color: white;
+          .row1 {
+            font-size: 20px;
+            margin-bottom: -13px;
+          }
+          .hecate-speditions-svg-logo {
+            width: 72px;
+          }
+          .row2 {
+            font-size: 13px;
+            margin-top: -16px;
+          }
+        }
         .card-poldertech-1-logo {
             color: rgb(27, 86, 158);
             text-shadow: 0 0 1px black;
