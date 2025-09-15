@@ -76,6 +76,7 @@ import {DiscordId} from './server/auth/discord';
 import {AlliedParty} from '../common/turmoil/Types';
 import {PlayedCards} from './cards/PlayedCards';
 import {deserializeCorporationCard} from './cards/cardSerialization';
+import {From} from './logs/From';
 
 const THROW_STATE_ERRORS = Boolean(process.env.THROW_STATE_ERRORS);
 const DEFAULT_GLOBAL_PARAMETER_STEPS = {
@@ -321,7 +322,7 @@ export class Player implements IPlayer {
     return this.terraformRating;
   }
 
-  public increaseTerraformRating(steps: number = 1, opts: {log?: boolean} = {}) {
+  public increaseTerraformRating(steps: number = 1, opts: {log?: boolean, from?: From} = {}) {
     if (this.preservationProgram === true && this.game.phase === Phase.ACTION) {
       steps--;
       this.game.log('${0} for ${1} is blocking 1 TR', (b) => b.cardName(CardName.PRESERVATION_PROGRAM).player(this));
@@ -335,7 +336,12 @@ export class Player implements IPlayer {
       this.hasIncreasedTerraformRatingThisGeneration = true;
 
       if (opts.log === true) {
-        this.game.log('${0} gained ${1} TR', (b) => b.player(this).number(steps));
+        if (opts.from !== undefined) {
+          const from = opts.from;
+          this.game.log('${0} gained ${1} TR from ${2}', (b) => b.player(this).number(steps).from(from));
+        } else {
+          this.game.log('${0} gained ${1} TR', (b) => b.player(this).number(steps));
+        }
       }
       for (const cardOwner of this.game.playersInGenerationOrder) {
         for (const card of cardOwner.tableau) {
@@ -969,6 +975,9 @@ export class Player implements IPlayer {
     if (additionalCorp === false && corporationCard.name !== CardName.BEGINNER_CORPORATION) {
       const diff = this.cardsInHand.length * this.cardCost;
       this.stock.deduct(Resource.MEGACREDITS, diff);
+      if (diff > 0) {
+        PathfindersExpansion.addToSolBank(this);
+      }
     }
     this.game.log('${0} played ${1}', (b) => b.player(this).card(corporationCard));
     // Calculating this before playing the corporation card, which might change the player's hand size.
