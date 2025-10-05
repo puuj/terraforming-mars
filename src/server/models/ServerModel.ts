@@ -95,7 +95,7 @@ export class Server {
 
     const rv: PlayerViewModel = {
       cardsInHand: cardsToModel(player, player.cardsInHand, {showCalculatedCost: true}),
-      ceoCardsInHand: cardsToModel(player, player.ceoCardsInHand),
+      ceoCardsInHand: cardsToModel(player, Array.from(player.ceoCardsInHand)),
       dealtCorporationCards: cardsToModel(player, player.dealtCorporationCards),
       dealtPreludeCards: cardsToModel(player, player.dealtPreludeCards),
       dealtCeoCards: cardsToModel(player, player.dealtCeoCards),
@@ -252,7 +252,7 @@ export class Server {
       titanium: player.titanium,
       titaniumProduction: player.production.titanium,
       titaniumValue: player.getTitaniumValue(),
-      tradesThisGeneration: player.colonies.tradesThisGeneration,
+      tradesThisGeneration: player.colonies.usedTradeFleets,
       underworldData: player.underworldData,
       victoryPointsBreakdown: {
         terraformRating: 0,
@@ -410,11 +410,7 @@ export class Server {
       boardName: options.boardName,
       bannedCards: options.bannedCards,
       draftVariant: options.draftVariant,
-      escapeVelocityMode: options.escapeVelocityMode,
-      escapeVelocityThreshold: options.escapeVelocityThreshold,
-      escapeVelocityBonusSeconds: options.escapeVelocityBonusSeconds,
-      escapeVelocityPeriod: options.escapeVelocityPeriod,
-      escapeVelocityPenalty: options.escapeVelocityPenalty,
+      escapeVelocity: options.escapeVelocity,
       expansions: {
         corpera: options.corporateEra,
         promo: options.promoCardsOption,

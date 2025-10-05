@@ -58,6 +58,7 @@ export class Warmonger implements IAward {
     CardName.THE_DARKSIDE_OF_THE_MOON_SYNDICATE,
     // Pathfinders
     CardName.DUST_STORM,
+    CardName.PUBLIC_SPONSORED_GRANT,
     CardName.SMALL_COMET,
     CardName.SOLAR_STORM,
     // CEOs
@@ -75,7 +76,6 @@ export class Warmonger implements IAward {
     CardName.MONOPOLY,
     CardName.PLANT_TAX,
     CardName.RECKLESS_DETONATION,
-    CardName.SERVER_SABOTAGE,
     CardName.SPACE_PRIVATEERS,
     // Prelude 2
     CardName.RECESSION,

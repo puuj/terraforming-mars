@@ -11,6 +11,8 @@ import Vue from 'vue';
 import {Warning} from '@/common/cards/Warning';
 
 const descriptions: Record<Warning, string> = {
+  'pass': 'You will not take any more actions this generation.',
+  'undoBestEffort': 'Undo is best effort only. Please do not report any bugs if it is broken.',
   'maxtemp': 'Note: the temperature is already at its goal.',
   'maxoxygen': 'Note: the oxygen level is already at its goal.',
   'maxoceans': 'Note: all oceans are already on the board.',

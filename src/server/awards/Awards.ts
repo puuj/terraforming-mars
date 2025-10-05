@@ -56,6 +56,7 @@ import {Rugged} from './Rugged';
 import {BoardName} from '../../common/boards/BoardName';
 import {AwardName} from '../../common/ma/AwardName';
 import {MAManifest} from '../ma/MAManifest';
+import {Suburbian} from './modular/Suburbian';
 
 export const awardManifest: MAManifest<AwardName, IAward> = {
   all: {
@@ -112,6 +113,7 @@ export const awardManifest: MAManifest<AwardName, IAward> = {
     'Electrician': {Factory: Electrician},
     'Manufacturer': {Factory: Manufacturer},
     'Politician': {Factory: Politician, compatibility: 'turmoil'},
+    'Suburbian': {Factory: Suburbian},
     'Rugged': {Factory: Rugged, compatibility: 'ares'},
   },
   boards: {
@@ -125,6 +127,7 @@ export const awardManifest: MAManifest<AwardName, IAward> = {
     [BoardName.UTOPIA_PLANITIA]: [/* 'Suburbian', 'Investor', 'Botanist', 'Incorporator', 'Metropolist' */],
     [BoardName.VASTITAS_BOREALIS_NOVUS]: ['Traveller', 'Landscaper', 'Highlander', 'Promoter', 'Manufacturer'],
     [BoardName.TERRA_CIMMERIA_NOVUS]: [],
+    [BoardName.HOLLANDIA]: [],
   },
   expansions: {
     venus: ['Venuphile'],
@@ -146,6 +149,7 @@ export const awardManifest: MAManifest<AwardName, IAward> = {
     'Metropolist',
     'Mogul',
     'Politician',
+    'Suburbian',
     'Traveller',
   ],
   create: (name: string) => {

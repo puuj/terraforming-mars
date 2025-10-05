@@ -167,7 +167,7 @@
                             <input type="checkbox" name="ceo" id="underworld-checkbox" v-model="expansions.underworld">
                             <label for="underworld-checkbox" class="expansion-button">
                                 <div class="create-game-expansion-icon expansion-icon-underworld"></div>
-                                <span v-i18n>Underworld 2 (beta)</span><span></span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Underworld" class="tooltip" target="_blank">&#9432;</a>
+                                <span v-i18n>Underworld 2</span><span></span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Underworld" class="tooltip" target="_blank">&#9432;</a>
                             </label>
                         </div>
 
@@ -232,7 +232,12 @@
                             <label for="undo-checkbox">
                                 <span v-i18n>Allow undo</span>&nbsp;<a href="https://github.com/terraforming-mars/terraforming-mars/wiki/Variants#allow-undo" class="tooltip" target="_blank">&#9432;</a>
                             </label>
-
+                            <div v-if="undoOption">
+                              <span v-i18n>Undo is now in best effort support.</span>
+                              <a href="https://github.com/terraforming-mars/terraforming-mars/discussions/7647" target="_blank">&#9432;</a>
+                              <br/>
+                              <span v-i18n>No effort will be spent to fix it.</span>
+                            </div>
                             <input type="checkbox" v-model="showTimers" id="timer-checkbox">
                             <label for="timer-checkbox">
                                 <span v-i18n>Show timers</span>
@@ -530,7 +535,6 @@
 
 <script lang="ts">
 import * as constants from '@/common/constants';
-import * as json_constants from '@/client/components/create/json';
 
 import Vue from 'vue';
 import {WithRefs} from 'vue-typed-refs';
@@ -551,11 +555,12 @@ import {GameId} from '@/common/Types';
 import {AgendaStyle} from '@/common/turmoil/Types';
 import PreferencesIcon from '@/client/components/PreferencesIcon.vue';
 import {getCard} from '@/client/cards/ClientCardManifest';
-import {DEFAULT_EXPANSIONS, Expansion} from '@/common/cards/GameModule';
 import {BoardNameType, NewGameConfig, NewPlayerModel} from '@/common/game/NewGameConfig';
 import {vueRoot} from '@/client/components/vueRoot';
 import {CreateGameModel} from './CreateGameModel';
 import {paths} from '@/common/app/paths';
+import {JSONProcessor} from './JSONProcessor';
+import {defaultCreateGameModel} from './defaultCreateGameModel';
 
 const REVISED_COUNT_ALGORITHM = false;
 
@@ -577,82 +582,7 @@ export default (Vue as WithRefs<Refs>).extend({
   name: 'CreateGameForm',
   data(): CreateGameModel & FormModel {
     return {
-      firstIndex: 1,
-      playersCount: 1,
-      players: [
-        {name: '', color: 'red', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'green', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'yellow', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'blue', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'black', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'purple', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'orange', beginner: false, handicap: 0, first: false},
-        {name: '', color: 'pink', beginner: false, handicap: 0, first: false},
-      ],
-      expansions: {...DEFAULT_EXPANSIONS},
-      draftVariant: true,
-      initialDraft: false,
-      randomMA: RandomMAOptionType.NONE,
-      modularMA: false,
-      randomFirstPlayer: true,
-      showOtherPlayersVP: false,
-      // beginnerOption: false,
-      showColoniesList: false,
-      showCorporationList: false,
-      showPreludesList: false,
-      showBannedCards: false,
-      showIncludedCards: false,
-      customColonies: [],
-      customCorporations: [],
-      customPreludes: [],
-      bannedCards: [],
-      includedCards: [],
-      board: BoardName.THARSIS,
-      boards: [
-        BoardName.THARSIS,
-        BoardName.HELLAS,
-        BoardName.ELYSIUM,
-        RandomBoardOption.OFFICIAL,
-        BoardName.UTOPIA_PLANITIA,
-        BoardName.VASTITAS_BOREALIS_NOVUS,
-        BoardName.TERRA_CIMMERIA_NOVUS,
-        BoardName.ARABIA_TERRA,
-        BoardName.AMAZONIS,
-        BoardName.TERRA_CIMMERIA,
-        BoardName.VASTITAS_BOREALIS,
-        RandomBoardOption.ALL,
-      ],
-      seed: Math.random(),
-      seededGame: false,
-      solarPhaseOption: false,
-      shuffleMapOption: false,
-      aresExtremeVariant: false,
-      politicalAgendasExtension: 'Standard',
-      undoOption: false,
-      showTimers: true,
-      fastModeOption: false,
-      removeNegativeGlobalEventsOption: false,
-      includeFanMA: false,
-      startingCorporations: 2,
-      soloTR: false,
-      clonedGameId: undefined,
-      allOfficialExpansions: false,
-      requiresVenusTrackCompletion: false,
-      requiresMoonTrackCompletion: false,
-      moonStandardProjectVariant: false,
-      moonStandardProjectVariant1: false,
-      altVenusBoard: false,
-      escapeVelocityMode: false,
-      escapeVelocityThreshold: constants.DEFAULT_ESCAPE_VELOCITY_THRESHOLD,
-      escapeVelocityBonusSeconds: constants.DEFAULT_ESCAPE_VELOCITY_BONUS_SECONDS,
-      escapeVelocityPeriod: constants.DEFAULT_ESCAPE_VELOCITY_PERIOD,
-      escapeVelocityPenalty: constants.DEFAULT_ESCAPE_VELOCITY_PENALTY,
-      twoCorpsVariant: false,
-      customCeos: [],
-      startingCeos: 3,
-      startingPreludes: 4,
-      preludeDraftVariant: undefined,
-      ceosDraftVariant: undefined,
+      ...defaultCreateGameModel(),
       preludeToggled: false,
       uploading: false,
     };
@@ -710,18 +640,6 @@ export default (Vue as WithRefs<Refs>).extend({
     },
   },
   computed: {
-    venusNext() {
-      return this.expansions.venus;
-    },
-    turmoil() {
-      return this.expansions.turmoil;
-    },
-    prelude() {
-      return this.expansions.prelude;
-    },
-    prelude2Expansion() {
-      return this.expansions.prelude2;
-    },
     RandomBoardOption(): typeof RandomBoardOption {
       return RandomBoardOption;
     },
@@ -733,6 +651,23 @@ export default (Vue as WithRefs<Refs>).extend({
     },
     PLAYER_COLORS(): typeof PLAYER_COLORS {
       return PLAYER_COLORS;
+    },
+    boards() {
+      return [
+        BoardName.THARSIS,
+        BoardName.HELLAS,
+        BoardName.ELYSIUM,
+        RandomBoardOption.OFFICIAL,
+        BoardName.UTOPIA_PLANITIA,
+        BoardName.VASTITAS_BOREALIS_NOVUS,
+        BoardName.TERRA_CIMMERIA_NOVUS,
+        BoardName.ARABIA_TERRA,
+        BoardName.AMAZONIS,
+        BoardName.TERRA_CIMMERIA,
+        BoardName.VASTITAS_BOREALIS,
+        BoardName.HOLLANDIA,
+        RandomBoardOption.ALL,
+      ];
     },
   },
   methods: {
@@ -757,98 +692,22 @@ export default (Vue as WithRefs<Refs>).extend({
         const warnings = [];
         try {
           const readerResults = reader.result;
+          const processor = new JSONProcessor(component);
           if (typeof(readerResults) === 'string') {
             this.uploading = true;
             const results = JSON.parse(readerResults);
-
-            const players = results['players'];
-            const validationErrors = validatePlayers(players);
-            if (validationErrors.length > 0) {
-              throw new Error(validationErrors.join('\n'));
-            }
-
-            if (results.corporationsDraft !== undefined) {
-              warnings.push('Corporations draft is no longer available. Future versions might just raise an error, so edit your JSON file.');
-            }
-
-            const customCorporations = results[json_constants.CUSTOM_CORPORATIONS] || results[json_constants.OLD_CUSTOM_CORPORATIONS] || [];
-            const customColonies = results[json_constants.CUSTOM_COLONIES] || results[json_constants.OLD_CUSTOM_COLONIES] || [];
-            const bannedCards = results[json_constants.BANNED_CARDS] || results[json_constants.OLD_BANNED_CARDS] || [];
-            const includedCards = results[json_constants.INCLUDED_CARDS] || [];
-            const customPreludes = results[json_constants.CUSTOM_PRELUDES] || [];
-
-            component.playersCount = players.length;
-            component.showCorporationList = customCorporations.length > 0;
-            component.showColoniesList = customColonies.length > 0;
-            component.showBannedCards = bannedCards.length > 0;
-            component.showIncludedCards = includedCards.length > 0;
-            component.showPreludesList = customPreludes.length > 0;
-
-            const oldFields: Record<Expansion, string> = {
-              corpera: json_constants.CORPORATEERA,
-              promo: json_constants.PROMOCARDSOPTION,
-              venus: json_constants.VENUSNEXT,
-              colonies: json_constants.COLONIES,
-              prelude: json_constants.PRELUDE,
-              prelude2: json_constants.PRELUDE2EXPANSION,
-              turmoil: json_constants.TURMOIL,
-              community: json_constants.COMMUNITYCARDSOPTION,
-              ares: json_constants.ARESEXTENSION,
-              moon: json_constants.MOONEXPANSION,
-              pathfinders: json_constants.PATHFINDERSEXPANSION,
-              ceo: json_constants.CEOEXTENSION,
-              starwars: json_constants.STARWARSEXPANSION,
-              underworld: json_constants.UNDERWORLDEXPANSION,
-            } as const;
-            for (const expansion of Object.keys(oldFields)) {
-              const x = oldFields[expansion as Expansion];
-              const val = results[x];
-              if (val !== undefined) {
-                component.expansions[expansion as Expansion] = val;
-              }
-            }
-
-
-            // Capture the solar phase option since several of the other results will change
-            // it via the watch mechanism.
-            const capturedSolarPhaseOption = results.solarPhaseOption;
-
-            const specialFields = [
-              json_constants.CUSTOM_CORPORATIONS,
-              json_constants.OLD_CUSTOM_CORPORATIONS,
-              json_constants.CUSTOM_COLONIES,
-              json_constants.OLD_CUSTOM_COLONIES,
-              json_constants.CUSTOM_PRELUDES,
-              json_constants.BANNED_CARDS,
-              json_constants.INCLUDED_CARDS,
-              json_constants.OLD_BANNED_CARDS,
-              ...Object.values(oldFields),
-              'players',
-              'solarPhaseOption',
-              'constants'];
-            for (const k in results) {
-              if (specialFields.includes(k)) continue;
-              if (!Object.prototype.hasOwnProperty.call(component, k)) {
-                warnings.push('Unknown property: ' + k);
-              }
-              // This is safe because of the hasOwnProperty check, above. hasOwnProperty doesn't help with type declarations.
-              (component as any)[k] = results[k];
-            }
-
-            for (let i = 0; i < players.length; i++) {
-              component.players[i] = players[i];
-            }
+            processor.applyJSON(results);
 
             Vue.nextTick(() => {
               try {
-                if (component.showColoniesList) refs.coloniesFilter.updateColoniesByNames(customColonies);
-                if (component.showCorporationList) refs.corporationsFilter.selectedCorporations = customCorporations;
-                if (component.showPreludesList) refs.preludesFilter.updatePreludes(customPreludes);
-                if (component.showBannedCards) refs.cardsFilter.selected = bannedCards;
-                if (component.showIncludedCards) refs.cardsFilter2.selected = includedCards;
+                if (component.showColoniesList) refs.coloniesFilter.updateColoniesByNames(processor.colonies);
+                if (component.showCorporationList) refs.corporationsFilter.selectedCorporations = processor.corporations;
+                if (component.showPreludesList) refs.preludesFilter.updatePreludes(processor.preludes);
+                if (component.showBannedCards) refs.cardsFilter.selected = processor.bannedCards;
+                if (component.showIncludedCards) refs.cardsFilter2.selected = processor.includedCards;
                 if (!component.seededGame) component.seed = Math.random();
                 // set to alter after any watched properties
-                component.solarPhaseOption = Boolean(capturedSolarPhaseOption);
+                component.solarPhaseOption = Boolean(processor.solarPhaseOption);
                 this.uploading = false;
               } catch (e) {
                 window.alert('Error reading JSON ' + e);
@@ -856,7 +715,7 @@ export default (Vue as WithRefs<Refs>).extend({
             });
           }
           if (warnings.length > 0) {
-            window.alert('Settings loaded, with these warnings: \n' + warnings.join('\n'));
+            window.alert('Settings loaded, with these warnings: \n' + processor.warnings.join('\n'));
           } else {
             window.alert('Settings loaded.');
           }
@@ -971,6 +830,8 @@ export default (Vue as WithRefs<Refs>).extend({
         return 'create-game-board-hexagon create-game-terra-cimmeria';
       case BoardName.VASTITAS_BOREALIS:
         return 'create-game-board-hexagon create-game-vastitas-borealis';
+      case BoardName.HOLLANDIA:
+        return 'create-game-board-hexagon create-game-hollandia';
       default:
         return 'create-game-board-hexagon create-game-random';
       }
@@ -980,10 +841,6 @@ export default (Vue as WithRefs<Refs>).extend({
     },
     getPlayerContainerColorClass(color: Color): string {
       return playerColorClass(color, 'bg_transparent');
-    },
-    isEnabled(expansion: Expansion): boolean {
-      const model: CreateGameModel = this;
-      return model.expansions[expansion];
     },
     boardHref(boardName: BoardName | RandomBoardOption) {
       const options: Record<BoardName | RandomBoardOption, string> = {
@@ -997,6 +854,7 @@ export default (Vue as WithRefs<Refs>).extend({
         [BoardName.AMAZONIS]: 'amazonis-planatia',
         [BoardName.TERRA_CIMMERIA]: 'terra-cimmeria',
         [BoardName.TERRA_CIMMERIA_NOVUS]: 'terra-cimmeria-novus',
+        [BoardName.HOLLANDIA]: 'hollandia',
         [RandomBoardOption.OFFICIAL]: '',
         [RandomBoardOption.ALL]: '',
       };
@@ -1074,11 +932,6 @@ export default (Vue as WithRefs<Refs>).extend({
       // const beginnerOption = this.beginnerOption;
       const randomFirstPlayer = this.randomFirstPlayer;
       const requiresVenusTrackCompletion = this.requiresVenusTrackCompletion;
-      const escapeVelocityMode = this.escapeVelocityMode;
-      const escapeVelocityThreshold = this.escapeVelocityMode ? this.escapeVelocityThreshold : undefined;
-      const escapeVelocityBonusSeconds = this.escapeVelocityBonusSeconds ? this.escapeVelocityBonusSeconds : undefined;
-      const escapeVelocityPeriod = this.escapeVelocityMode ? this.escapeVelocityPeriod : undefined;
-      const escapeVelocityPenalty = this.escapeVelocityMode ? this.escapeVelocityPenalty : undefined;
       const twoCorpsVariant = this.twoCorpsVariant;
       const customCeos = this.customCeos;
       const startingCeos = this.startingCeos;
@@ -1164,7 +1017,7 @@ export default (Vue as WithRefs<Refs>).extend({
         for (const corp of customCorporations) {
           const card = getCard(corp);
           for (const module of card?.compatibility ?? []) {
-            if (!this.isEnabled(module)) {
+            if (!this.expansions[module]) {
               valid = false;
             }
           }
@@ -1190,7 +1043,7 @@ export default (Vue as WithRefs<Refs>).extend({
         for (const prelude of customPreludes) {
           const card = getCard(prelude);
           for (const module of card?.compatibility ?? []) {
-            if (!this.isEnabled(module)) {
+            if (!this.expansions[module]) {
               valid = false;
             }
           }
@@ -1271,11 +1124,13 @@ export default (Vue as WithRefs<Refs>).extend({
         moonStandardProjectVariant: this.moonStandardProjectVariant,
         moonStandardProjectVariant1: this.moonStandardProjectVariant1,
         altVenusBoard: this.altVenusBoard,
-        escapeVelocityMode,
-        escapeVelocityThreshold,
-        escapeVelocityBonusSeconds,
-        escapeVelocityPeriod,
-        escapeVelocityPenalty,
+        escapeVelocity: this.escapeVelocityMode ?
+          {
+            thresholdMinutes: this.escapeVelocityThreshold,
+            bonusSectionsPerAction: this.escapeVelocityBonusSeconds,
+            penaltyPeriodMinutes: this.escapeVelocityPeriod,
+            penaltyVPPerPeriod: this.escapeVelocityPenalty,
+          } : undefined,
         twoCorpsVariant,
         customCeos,
         startingCeos,
@@ -1314,22 +1169,5 @@ export default (Vue as WithRefs<Refs>).extend({
     },
   },
 });
-
-function validatePlayers(players: Array<NewPlayerModel>): Array<string> {
-  const errors = [];
-
-  // Ensure colors are valid and distinct
-  const colors = new Set(players.map((p) => p.color));
-  for (const color of colors) {
-    // `as any` is OK here since this just validates `color`.
-    if (PLAYER_COLORS.indexOf(color as any) === -1) {
-      errors.push(color + ' is not a color');
-    }
-  }
-  if (colors.size !== players.length) {
-    errors.push('Colors are duplicated');
-  }
-  return errors;
-}
 
 </script>

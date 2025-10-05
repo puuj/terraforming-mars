@@ -3,7 +3,7 @@ import {Board} from '../boards/Board';
 import {Space} from '../boards/Space';
 import {UnderworldData} from './UnderworldData';
 import {Random} from '../../common/utils/Random';
-import {TemporaryBonusToken, UndergroundResourceToken, undergroundResourceTokenDescription} from '../../common/underworld/UndergroundResourceToken';
+import {TemporaryBonusToken, UndergroundResourceToken} from '../../common/underworld/UndergroundResourceToken';
 import {inplaceShuffle} from '../utils/shuffle';
 import {Resource} from '../../common/Resource';
 import {AddResourcesToCard} from '../deferredActions/AddResourcesToCard';
@@ -17,9 +17,7 @@ import {OrOptions} from '../inputs/OrOptions';
 import {SelectOption} from '../inputs/SelectOption';
 import {message} from '../logs/MessageBuilder';
 import {SelectPaymentDeferred} from '../deferredActions/SelectPaymentDeferred';
-import {Phase} from '../../common/Phase';
 import {Units} from '../../common/Units';
-import {LogHelper} from '../LogHelper';
 import {Message} from '../../common/logs/Message';
 import {GlobalParameter} from '../../common/GlobalParameter';
 import {Tag} from '../../common/cards/Tag';
@@ -123,21 +121,22 @@ export class UnderworldExpansion {
 
   /**
    * Return the spaces that have not yet been identified.
+   *
+   * This doesn't take into account that there may not be available tokens in the supply.
+   * But canIdentifyN supports that.
    */
   public static identifiableSpaces(player: IPlayer): ReadonlyArray<Space> {
-    const spaces = player.game.board.spaces.filter(UnderworldExpansion.canIdentify);
-    return spaces;
+    return player.game.board.spaces.filter(UnderworldExpansion.canIdentify);
   }
 
   public static canIdentifyN(player: IPlayer, count: number): boolean {
     const tokens = player.game.underworldData.tokens.length;
-    // Optimization
     if (tokens >= count) {
       return true;
     }
 
     const spaces = this.identifiableSpaces(player).length;
-    return tokens + spaces >= count;
+    return spaces >= count;
   }
 
   /**
@@ -264,7 +263,8 @@ export class UnderworldExpansion {
       throw new Error('No available identification tokens');
     }
 
-    LogHelper.logBoardTileAction(player, space, `${undergroundResourceTokenDescription[undergroundResource]}`, 'excavated');
+    player.game.log('${0} excavated ${1} at ${2}', (b) =>
+      b.player(player).undergroundToken(undergroundResource).space(space));
 
     space.excavator = player;
     space.undergroundResources = undefined;
@@ -305,9 +305,10 @@ export class UnderworldExpansion {
 
   public static claimToken(player: IPlayer, token: UndergroundResourceToken, isExcavate: boolean, space: Space | undefined) {
     if (space) {
-      LogHelper.logBoardTileAction(player, space, `${undergroundResourceTokenDescription[token]}`, 'claimed');
+      player.game.log('${0} claimed ${1} at ${2}', (b) =>
+        b.player(player).undergroundToken(token).space(space));
     } else {
-      player.game.log('${0} claimed ${1}', (b) => b.player(player).string(undergroundResourceTokenDescription[token]));
+      player.game.log('${0} claimed ${1}', (b) => b.player(player).undergroundToken(token));
     }
 
     validateUnderworldExpansion(player.game);
@@ -394,11 +395,18 @@ export class UnderworldExpansion {
       player.increaseTerraformRating();
       break;
     case 'ocean':
-      if (player.canAfford({cost: 4, tr: {oceans: 1}})) {
-        if (player.game.canAddOcean() || player.tableau.has(CardName.WHALES)) {
+      const canAddOcean = player.game.canAddOcean();
+      const canAfford = player.canAfford({cost: 4, tr: {oceans: 1}});
+      const hasWhales = player.tableau.has(CardName.WHALES);
+      if (canAddOcean || hasWhales) {
+        if (canAfford) {
           player.game.defer(new SelectPaymentDeferred(player, 4, {title: message('Select how to pay 4 M€ for ocean bonus')}))
             .andThen(() => player.game.defer(new PlaceOceanTile(player)));
+        } else {
+          player.game.log('${0} cannot afford to place an ocean', (b) => b.player(player));
         }
+      } else {
+        player.game.log('There is no room to place an ocean');
       }
       break;
     case 'data1pertemp':
@@ -442,13 +450,10 @@ export class UnderworldExpansion {
     player.underworldData.activeBonus = token;
     if (activeBonus !== undefined) {
       player.game.log('For the rest of this generation, ${0} will gain ${1}, replacing ${2}',
-        (b) => b.player(player)
-          .string(undergroundResourceTokenDescription[token])
-          .string(undergroundResourceTokenDescription[activeBonus]));
+        (b) => b.player(player).undergroundToken(token).undergroundToken(activeBonus));
     } else {
       player.game.log('For the rest of this generation, ${0} will gain ${1}',
-        (b) => b.player(player)
-          .string(undergroundResourceTokenDescription[token]));
+        (b) => b.player(player).undergroundToken(token));
     }
     player.underworldData.activeBonus = token;
   }
@@ -563,9 +568,6 @@ export class UnderworldExpansion {
 
   //   // TODOc(kberg): add viz for temperature bonus.
   static onTemperatureChange(game: IGame, steps: number) {
-    if (game.phase !== Phase.ACTION) {
-      return;
-    }
     game.playersInGenerationOrder.forEach((player) => {
       switch (player.underworldData.activeBonus) {
       case 'data1pertemp':

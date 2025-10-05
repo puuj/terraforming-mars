@@ -20,6 +20,7 @@ import {VastitasBorealisNovusBoard} from './boards/VastitasBorealisNovusBoard';
 import {TerraCimmeriaNovusBoard} from './boards/TerraCimmeriaNovusBoard';
 import {Board} from './boards/Board';
 import {Space} from './boards/Space';
+import {Hollandia} from './boards/Hollandia';
 
 type BoardFactory = (new (spaces: ReadonlyArray<Space>) => MarsBoard) & {newInstance: (gameOptions: GameOptions, rng: Random) => MarsBoard};
 
@@ -34,6 +35,7 @@ const boards: Record<BoardName, BoardFactory> = {
   [BoardName.ARABIA_TERRA]: ArabiaTerraBoard,
   [BoardName.TERRA_CIMMERIA]: TerraCimmeriaBoard,
   [BoardName.VASTITAS_BOREALIS]: VastitasBorealisBoard,
+  [BoardName.HOLLANDIA]: Hollandia,
 };
 
 export class GameSetup {
@@ -45,6 +47,10 @@ export class GameSetup {
   public static deserializeBoard(players: Array<IPlayer>, gameOptions: GameOptions, d: SerializedGame) {
     const playersForBoard = players.length !== 1 ? players : [players[0], GameSetup.neutralPlayerFor(d.id)];
     const deserialized = Board.deserialize(d.board, playersForBoard).spaces;
+    // TODO(kberg): Remove after 2025-10-25
+    if (gameOptions.boardName === 'Hollandia regels' as any) {
+      gameOptions.boardName = BoardName.HOLLANDIA;
+    }
     const Factory: BoardFactory = boards[gameOptions.boardName];
     return new Factory(deserialized);
   }

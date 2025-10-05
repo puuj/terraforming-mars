@@ -1,5 +1,5 @@
 <template>
-  <div v-if="space !== undefined" :class="getMainClass()" :data_space_id="space.id">
+  <div v-if="space !== undefined" :class="mainClass" :data_space_id="space.id">
     <board-space-tile
       :space="space"
       :aresExtension="aresExtension"
@@ -8,7 +8,7 @@
     <div class="board-space-text" v-if="text" v-i18n>{{ text }}</div>
     <bonus :bonus="space.bonus" v-if="showBonus"></bonus>
     <template v-if="tileView === 'coords'">
-      <div class="board-space-coords">({{ space.y }}, {{ space.x }}) ({{ space.id }})</div>
+      <div class="board-space-coords">{{  getSpaceName(space.id) }}</div>
     </template>
     <template v-if="tileView === 'show'">
       <div :class="playerColorCss" v-if="space.color !== undefined"></div>
@@ -24,7 +24,9 @@
       </template>
       <underground-token v-if="claimedToken !== undefined" :token="claimedToken" location="board"></underground-token>
       <div v-if="space.excavator !== undefined" class="underground-excavator" :class="'underground-excavator--' + space.excavator"></div>
+      <div v-if="space.spaceType === SpaceType.DEFLECTION_ZONE" class="board-space-type-deflection-zone"></div>
     </template>
+    <div class="board-log-highlight" :data_log_highlight_id="space.id"></div>
     </div>
 </template>
 
@@ -38,7 +40,8 @@ import {TileView} from '@/client/components/board/TileView';
 import {SpaceModel} from '@/common/models/SpaceModel';
 import {getPreferences} from '../utils/PreferencesManager';
 import {ClaimedToken} from '@/common/underworld/UnderworldPlayerData';
-
+import {getSpaceName} from '@/common/boards/spaces';
+import {SpaceType} from '@/common/boards/SpaceType';
 export default Vue.extend({
   name: 'board-space',
   props: {
@@ -63,14 +66,12 @@ export default Vue.extend({
     'board-space-tile': BoardSpaceTile,
     'underground-token': UndergroundToken,
   },
-  methods: {
-    getMainClass(): string {
+  computed: {
+    mainClass(): string {
       let css = 'board-space board-space-' + this.space?.id.toString();
       css += ' board-space-selectable';
       return css;
     },
-  },
-  computed: {
     showBonus(): boolean {
       return this.space.tileType === undefined || this.tileView === 'hide';
     },
@@ -86,6 +87,13 @@ export default Vue.extend({
         return undefined;
       }
       return {token: this.space.undergroundResource, shelter: false, active: false};
+    },
+
+    getSpaceName(): typeof getSpaceName {
+      return getSpaceName;
+    },
+    SpaceType(): typeof SpaceType {
+      return SpaceType;
     },
   },
 });

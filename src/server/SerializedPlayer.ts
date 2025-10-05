@@ -28,7 +28,6 @@ export interface SerializedPlayer extends DeprecatedFields{
   colonyTradeOffset: number;
   colonyVictoryPoints: number;
   color: Color;
-  corporations?: Array<SerializedCard>;
   dealtCorporationCards: Array<CardName>;
   dealtCeoCards: Array<CardName>;
   dealtPreludeCards: Array<CardName>;
@@ -39,6 +38,7 @@ export interface SerializedPlayer extends DeprecatedFields{
   energy: number;
   energyProduction: number;
   fleetSize: number;
+  globalParameterSteps: Record<GlobalParameter, number>;
   handicap: number;
   hasIncreasedTerraformRatingThisGeneration: boolean;
   hasTurmoilScienceTagBonus: boolean;
@@ -80,6 +80,6 @@ export interface SerializedPlayer extends DeprecatedFields{
   turmoilPolicyActionUsed: boolean;
   underworldData: SerializedUnderworldPlayerData;
   victoryPointsByGeneration: Array<number>;
-  globalParameterSteps: Record<GlobalParameter, number>;
   user?: DiscordId;
+  withinDeflectionZone: boolean;
 }

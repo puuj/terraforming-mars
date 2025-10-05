@@ -37,6 +37,7 @@ describe('ApiCreateGame', () => {
       BoardName.VASTITAS_BOREALIS,
       BoardName.AMAZONIS,
       BoardName.TERRA_CIMMERIA,
+      BoardName.HOLLANDIA,
     ]);
   });
 
@@ -105,11 +106,7 @@ describe('ApiCreateGame', () => {
         moonStandardProjectVariant: false,
         moonStandardProjectVariant1: false,
         altVenusBoard: false,
-        escapeVelocityMode: false,
-        escapeVelocityThreshold: undefined,
-        escapeVelocityBonusSeconds: undefined,
-        escapeVelocityPeriod: undefined,
-        escapeVelocityPenalty: undefined,
+        escapeVelocity: undefined,
         twoCorpsVariant: false,
         customCeos: [],
         startingCeos: 0,
