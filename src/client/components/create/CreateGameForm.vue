@@ -494,24 +494,30 @@
             <CorporationsFilter
                 ref="corporationsFilter"
                 v-show="showCorporationList"
+                v-if="showCorporationList"
                 v-on:corporation-list-changed="updateCustomCorporations"
                 v-bind:expansions="expansions"
+                v-bind:selected="customCorporations"
                 @close="showCorporationList = false"
             ></CorporationsFilter>
 
             <PreludesFilter
                 ref="preludesFilter"
                 v-show="showPreludesList"
+                v-if="showPreludesList"
                 v-on:prelude-list-changed="updateCustomPreludes"
                 v-bind:expansions="expansions"
+                v-bind:selected="customPreludes"
                 @close="showPreludesList = false"
             ></PreludesFilter>
 
             <ColoniesFilter
                 ref="coloniesFilter"
                 v-show="showColoniesList"
+                v-if="showColoniesList"
                 v-on:colonies-list-changed="updateCustomColonies"
                 v-bind:expansions="expansions"
+                v-bind:selected="customColonies"
                 @close="showColoniesList = false"
             ></ColoniesFilter>
 
@@ -609,10 +615,10 @@ export default (Vue as WithRefs<Refs>).extend({
       this.expansions.promo = value;
       this.solarPhaseOption = value;
     },
-    venusNext(value: boolean) {
+    'expansions.venus': function(value: boolean) {
       this.solarPhaseOption = value;
     },
-    turmoil(value: boolean) {
+    'expansions.turmoil': function(value: boolean) {
       if (value === false) {
         this.politicalAgendasExtension = 'Standard';
       }
@@ -625,12 +631,12 @@ export default (Vue as WithRefs<Refs>).extend({
         this.ceosDraftVariant = true;
       }
     },
-    prelude(value: boolean) {
+    'expansions.prelude': function(value: boolean) {
       if (value === true && this.preludeDraftVariant === undefined) {
         this.preludeDraftVariant = true;
       }
     },
-    prelude2Expansion(value: boolean) {
+    'expansions.prelude2': function(value: boolean) {
       if (value === true && this.preludeToggled === false && this.uploading === false) {
         this.expansions.prelude = true;
         this.preludeToggled = true;
@@ -690,9 +696,10 @@ export default (Vue as WithRefs<Refs>).extend({
       const file = refs.file.files !== null ? refs.file.files[0] : undefined;
       const reader = new FileReader();
       const component: CreateGameModel = this;
+      const root = vueRoot(this);
+
 
       reader.addEventListener('load', () => {
-        const warnings = [];
         try {
           const readerResults = reader.result;
           const processor = new JSONProcessor(component);
@@ -703,9 +710,6 @@ export default (Vue as WithRefs<Refs>).extend({
 
             Vue.nextTick(() => {
               try {
-                if (processor.colonies.length > 0) refs.coloniesFilter.updateColoniesByNames(processor.colonies);
-                if (processor.corporations.length > 0) refs.corporationsFilter.selectedCorporations = processor.corporations;
-                if (processor.preludes.length > 0) refs.preludesFilter.updatePreludes(processor.preludes);
                 if (component.showBannedCards) refs.cardsFilter.selected = processor.bannedCards;
                 if (component.showIncludedCards) refs.cardsFilter2.selected = processor.includedCards;
                 if (!component.seededGame) component.seed = Math.random();
@@ -713,17 +717,17 @@ export default (Vue as WithRefs<Refs>).extend({
                 component.solarPhaseOption = Boolean(processor.solarPhaseOption);
                 this.uploading = false;
               } catch (e) {
-                window.alert('Error reading JSON ' + e);
+                root.showAlert('Upload settings', 'Error reading JSON ' + e);
               }
             });
           }
-          if (warnings.length > 0) {
-            window.alert('Settings loaded, with these warnings: \n' + processor.warnings.join('\n'));
+          if (processor.warnings.length > 0) {
+            root.showAlert('Upload settings', 'Settings loaded with these warnings: \n' + processor.warnings.join('\n'));
           } else {
-            window.alert('Settings loaded.');
+            root.showAlert('Upload settings', 'Settings loaded.');
           }
         } catch (e) {
-          window.alert('Error loading settings ' + e);
+          root.showAlert('Upload settings', 'Error loading settings ' + e);
         }
       }, false);
       if (file) {
@@ -932,7 +936,6 @@ export default (Vue as WithRefs<Refs>).extend({
       const includeFanMA = this.includeFanMA;
       const startingCorporations = this.startingCorporations;
       const soloTR = this.soloTR;
-      // const beginnerOption = this.beginnerOption;
       const randomFirstPlayer = this.randomFirstPlayer;
       const requiresVenusTrackCompletion = this.requiresVenusTrackCompletion;
       const twoCorpsVariant = this.twoCorpsVariant;

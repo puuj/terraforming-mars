@@ -54,6 +54,8 @@ type DataModel = {
   savedPlayerView: PlayerViewModel | undefined;
 }
 
+const CANNOT_CONTACT_SERVER = 'Unable to reach the server. It may be restarting or down for maintenance.';
+
 export default Vue.extend({
   name: 'waiting-for',
   props: {
@@ -111,7 +113,7 @@ export default Vue.extend({
       };
       xhr.send(JSON.stringify({runId: this.playerView.runId, ...out}));
       xhr.onerror = function() {
-        // todo(kberg): Report error to caller
+        root.showAlert('Error sending input,', CANNOT_CONTACT_SERVER);
         root.isServerSideRequestInProgress = false;
       };
     },
@@ -145,9 +147,9 @@ export default Vue.extend({
         if (xhr.response.id === INVALID_RUN_ID) {
           cb = () => setTimeout(() => window.location.reload(), 100);
         }
-        showAlert(xhr.response.message, cb);
+        showAlert('Error with input', xhr.response.message, cb);
       } else {
-        showAlert('Unexpected response from server. Please try again.');
+        showAlert('Error processing response', 'Unexpected response from server. Please try again.');
       }
       root.isServerSideRequestInProgress = false;
     },
@@ -174,7 +176,7 @@ export default Vue.extend({
         const xhr = new XMLHttpRequest();
         xhr.open('GET', paths.API_WAITING_FOR + window.location.search + '&gameAge=' + this.playerView.game.gameAge + '&undoCount=' + this.playerView.game.undoCount);
         xhr.onerror = function() {
-          root.showAlert('Unable to reach the server. The server may be restarting or down for maintenance.', () => vueApp.waitForUpdate());
+          root.showAlert('Error fetching state', CANNOT_CONTACT_SERVER, () => vueApp.waitForUpdate());
         };
         xhr.onload = () => {
           if (xhr.status === statusCode.ok) {
@@ -198,7 +200,7 @@ export default Vue.extend({
             }
             vueApp.waitForUpdate();
           } else {
-            root.showAlert(`Received unexpected response from server (${xhr.status}). This is often due to the server restarting.`, () => vueApp.waitForUpdate());
+            root.showAlert('Error with input', `Received unexpected response from server (${xhr.status}). This is often due to the server restarting.`, () => vueApp.waitForUpdate());
           }
         };
         xhr.responseType = 'json';

@@ -4,7 +4,6 @@ import {JSONObject, JSONValue} from '../../../common/Types';
 import {CreateGameModel} from './CreateGameModel';
 import {PLAYER_COLORS} from '@/common/Color';
 import {NewPlayerModel} from '@/common/game/NewGameConfig';
-import {ColonyName} from '@/common/colonies/ColonyName';
 import {CardName} from '@/common/cards/CardName';
 import {cast} from '@/common/utils/utils';
 
@@ -19,9 +18,6 @@ export class JSONProcessor {
   public model: CreateGameModel;
   public warnings: Array<string>;
   public solarPhaseOption: boolean = false;
-  public corporations: Array<CardName> = [];
-  public preludes: Array<CardName> = [];
-  public colonies: Array<ColonyName> = [];
   public bannedCards: Array<CardName> = [];
   public includedCards: Array<CardName> = [];
 
@@ -55,16 +51,21 @@ export class JSONProcessor {
     initializeArrayFieldWithBackup(json_constants.OLD_CUSTOM_CORPORATIONS, json_constants.CUSTOM_CORPORATIONS);
     initializeArrayFieldWithBackup(json_constants.OLD_CUSTOM_COLONIES, json_constants.CUSTOM_COLONIES);
     initializeArrayFieldWithBackup(json_constants.OLD_BANNED_CARDS, json_constants.BANNED_CARDS);
+    const ev = json.escapeVelocity as JSONObject;
+    if (ev !== undefined && typeof ev === 'object') {
+      json.escapeVelocityMode = true;
+      json.escapeVelocityBonusSeconds = ev['bonusSectionsPerAction'];
+      json.escapeVelocityPenalty = ev['penaltyVPPerPeriod'];
+      json.escapeVelocityPeriod = ev['penaltyPeriodMinutes'];
+      json.escapeVelocityThreshold = Number.parseInt(ev['thresholdMinutes'] as string ?? '');
+    }
 
     function set<T>(field: string): Array<T> {
       return cast(json[field] ?? [], Array) as Array<T>;
     }
 
-    this.corporations = set(json_constants.CUSTOM_CORPORATIONS);
-    this.colonies = set(json_constants.CUSTOM_COLONIES);
     this.bannedCards = set(json_constants.BANNED_CARDS);
     this.includedCards = set(json_constants.INCLUDED_CARDS);
-    this.preludes = set(json_constants.CUSTOM_PRELUDES);
 
     this.model.playersCount = players.length;
     this.model.showBannedCards = this.bannedCards.length > 0;
@@ -109,6 +110,7 @@ export class JSONProcessor {
       json_constants.OLD_CUSTOM_COLONIES,
       json_constants.OLD_CUSTOM_CORPORATIONS,
       ...Object.values(oldExpansionFields),
+      'escapeVelocity',
       'players',
       'solarPhaseOption',
       'constants'];
