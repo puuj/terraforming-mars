@@ -374,7 +374,7 @@ export class Server {
       if (color !== undefined) {
         model.color = color;
       }
-      if (highlight === undefined) {
+      if (highlight !== undefined) {
         model.highlight = highlight;
       }
       if (space.tile?.rotated === true) {

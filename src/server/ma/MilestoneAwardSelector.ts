@@ -8,7 +8,7 @@ import {UnseededRandom} from '../../common/utils/Random';
 import {MilestoneName, milestoneNames} from '../../common/ma/MilestoneName';
 import {AwardName, awardNames} from '../../common/ma/AwardName';
 import {synergies} from './MilestoneAwardSynergies';
-import {MAManifest, isCompatible} from './MAManifest';
+import {isCompatible, MAManifest} from './MAManifest';
 import {intersection} from '../../common/utils/utils';
 
 type DrawnMilestonesAndAwards = {
@@ -72,9 +72,11 @@ export function chooseMilestonesAndAwards(gameOptions: GameOptions): DrawnMilest
     case BoardName.THARSIS:
     case BoardName.HELLAS:
     case BoardName.ELYSIUM:
+    case BoardName.UTOPIA_PLANITIA:
     case BoardName.ARABIA_TERRA:
     case BoardName.AMAZONIS:
     case BoardName.TERRA_CIMMERIA:
+    case BoardName.TERRA_CIMMERIA_NOVUS:
     case BoardName.VASTITAS_BOREALIS:
     case BoardName.VASTITAS_BOREALIS_NOVUS:
       push(milestoneManifest.boards[boardName], awardManifest.boards[gameOptions.boardName]);
@@ -123,6 +125,12 @@ export function getCandidates(gameOptions: GameOptions): [Array<MilestoneName>, 
     // When using modular, don't include non-modular MAs.
     if (gameOptions.modularMA) {
       throw new Error('Not supporting modular awards yet.');
+    }
+
+    // Never include deprecated MAs in random candidates.  They generally have "more official" versions that will be
+    // considered for inclusion.
+    if (manifest.all[name].deprecated) {
+      return false;
     }
 
     if (!gameOptions.modularMA) {
