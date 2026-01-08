@@ -613,6 +613,13 @@
             border-radius: 10px 10px 0 0;
         }
 
+        .claimable {
+          border: 1px solid #b0b040;
+        }
+        .not-claimable {
+          border: 0px solid;
+        }
+
         @ma-name:
           terraformer, mayor, gardener, builder, planner,
           landlord, banker, scientist, thermalist, miner,
@@ -655,6 +662,9 @@
           kingpin, excavator, tunneler, risktaker,
 
           architect, c-forester, coastguard,
+
+          builder7, legend4, pioneer4, metallurgist, spacefarer4, tactician4,
+          terraformer29, terran5, trader, tycoon10, suburbian, briber,
         ;
         each(@ma-name, {
           .ma-name--@{value} {

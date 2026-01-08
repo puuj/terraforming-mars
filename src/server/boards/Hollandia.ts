@@ -6,9 +6,10 @@ import {BoardBuilder} from './BoardBuilder';
 import {Space} from './Space';
 import {MarsBoard} from './MarsBoard';
 
+// TODO(kberg): Rename to HollandiaBoard.
 export class Hollandia extends MarsBoard {
   public static newInstance(gameOptions: GameOptions, rng: Random): Hollandia {
-    const builder = new BoardBuilder(gameOptions);
+    const builder = new BoardBuilder(gameOptions, rng);
 
     const PLANT = SpaceBonus.PLANT;
     const STEEL = SpaceBonus.STEEL;
@@ -42,10 +43,6 @@ export class Hollandia extends MarsBoard {
 
     const spaces = builder.build();
     return new Hollandia(spaces);
-  }
-
-  public constructor(spaces: ReadonlyArray<Space>) {
-    super(spaces, undefined, []);
   }
 
   public override getSpaces(spaceType: SpaceType): Array<Space> {
