@@ -30,7 +30,7 @@
               <div v-else class="create-game-expansion-icon expansion-icon-ceo expansion-disabled" title="CEOs disabled"></div>
               <div v-if="gameOptions.expansions.underworld" class="create-game-expansion-icon expansion-icon-underworld" title="Underworld"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-underworld expansion-disabled" title="Underworld disabled"></div>
-              <div v-if="gameOptions.expansions.starwars" class="create-game-expansion-icon expansion-icon-starwars" title="Star Wars></div>
+              <div v-if="gameOptions.expansions.starwars" class="create-game-expansion-icon expansion-icon-starwars" title="Star Wars"></div>
 	      <div v-else class="create-game-expansion-icon expansion-icon-starwars expansion-disabled" title="Star Wars disabled"></div>
             </li>
 
