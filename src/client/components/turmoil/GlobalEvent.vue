@@ -1,6 +1,6 @@
 <template>
-  <div :class="getClass()">
-    <div class="card-container">
+  <div :class="klass">
+    <div class="card-container global-event-container">
       <div class="card-content-wrapper" v-i18n>
         <CardParty class="card-party--revealed" :party="revealed" />
         <CardParty class="card-party--current" :party="current" />
@@ -9,8 +9,9 @@
           <CardRenderData v-if="renderData !== undefined" :renderData="renderData" />
           <CardDescription :item='description' />
         </div>
-     </div>
+      </div>
     </div>
+    <span v-if="showDistance" class="global-event-distance" i18-n>{{ this.type }}</span>
     <slot/>
   </div>
 </template>
@@ -21,7 +22,6 @@ import Vue from 'vue';
 import CardRenderData from '@/client/components/card/CardRenderData.vue';
 import CardParty from '@/client/components/card/CardParty.vue';
 import {IClientGlobalEvent} from '@/common/turmoil/IClientGlobalEvent';
-import {CardComponent} from '@/common/cards/render/CardComponent';
 import {getGlobalEvent} from '@/client/turmoil/ClientGlobalEventManifest';
 import CardDescription from '@/client/components/card/CardDescription.vue';
 import {GlobalEventName} from '@/common/turmoil/globalEvents/GlobalEventName';
@@ -51,6 +51,10 @@ export default Vue.extend({
     type: {
       type: String as () => RenderType,
     },
+    showDistance: {
+      type: Boolean,
+      default: false,
+    },
   },
   data(): DataModel {
     const globalEvent: IClientGlobalEvent | undefined = getGlobalEvent(this.globalEventName);
@@ -65,26 +69,13 @@ export default Vue.extend({
       description: globalEvent.description,
     };
   },
-  methods: {
-    getCardRenderer(): CardComponent | undefined {
-      return this.renderData;
-    },
-    partyNameClass(partyName: string): string {
-      if (partyName === undefined) {
-        return '';
+  computed: {
+    klass(): string {
+      const common = 'global-event global-event--' + this.type;
+      if (this.showDistance) {
+        return common + ' global-event--show-distance';
       }
-      return 'event-party--' + partyName.toLowerCase().split(' ').join('_');
-    },
-    getClass(): string {
-      const common = 'global-event';
-      switch (this.type) {
-      case 'coming':
-        return common + ' global-event--coming';
-      case 'current':
-        return common + ' global-event--current';
-      default:
-        return common;
-      }
+      return common;
     },
   },
 });
