@@ -86,6 +86,12 @@ export default (Vue as WithRefs<Refs>).extend({
       required: false,
       default: 'neutral',
     },
+    // When true, the card is automatically sized regardless of hover.
+    autoTall: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const cardName = this.card.name;
@@ -200,27 +206,57 @@ export default (Vue as WithRefs<Refs>).extend({
       return `board-cube board-cube--${this.cubeColor}`;
     },
   },
-  mounted() {
-    this.customHeight = this.$refs.content.$el.scrollHeight;
-  },
-  watch: {
-    hovering(val: boolean) {
-      if (!getPreferences().experimental_ui) {
-        return;
-      }
+  methods: {
+    makeFullSize() {
       if (!this.isProjectCard) {
         return;
+      }
+      // Was not initialized with a custom height, probably because it was not visible.
+      if (this.customHeight === 0) {
+        this.customHeight = this.$refs.content.$el.scrollHeight;
+        // If for some reason it still doesn't have a custom height, don't resize it.
+        if (this.customHeight === 0) {
+          return;
+        }
       }
       const content = this.$refs.content.$el as HTMLElement;
       if (content.scrollHeight <= 236) {
         return;
       }
+      this.$refs.container.style.height = (this.customHeight + 90) + 'px';
+      content.style.height = this.customHeight + 'px';
+    },
+    unmakeFullSize() {
+      if (!this.isProjectCard) {
+        return;
+      }
+      if (this.customHeight === 0) {
+        return;
+      }
+      const content = this.$refs.content.$el as HTMLElement;
+      this.$refs.container.style.removeProperty('height');
+      content.style.removeProperty('height');
+    },
+  },
+  mounted() {
+    this.customHeight = this.$refs.content.$el.scrollHeight;
+  },
+  beforeUpdate() {
+    if (this.autoTall === true) {
+      this.makeFullSize();
+    } else {
+      this.unmakeFullSize();
+    }
+  },
+  watch: {
+    hovering(val: boolean) {
+      if (this.autoTall || !getPreferences().experimental_ui) {
+        return;
+      }
       if (val) {
-        this.$refs.container.style.height = (this.customHeight + 90) + 'px';
-        content.style.height = this.customHeight + 'px';
+        this.makeFullSize();
       } else {
-        this.$refs.container.style.removeProperty('height');
-        content.style.removeProperty('height');
+        this.unmakeFullSize();
       }
     },
   },
