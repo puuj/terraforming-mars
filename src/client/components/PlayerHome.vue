@@ -308,6 +308,7 @@ import {getCardsByType, isCardActivated} from '@/client/utils/CardUtils';
 import {sortActiveCards} from '@/client/utils/ActiveCardsSortingOrder';
 import {CardModel} from '@/common/models/CardModel';
 import {getCardOrThrow} from '../cards/ClientCardManifest';
+import {APP_NAME} from '@/common/constants';
 
 export interface PlayerHomeModel {
   showHand: boolean;
@@ -556,6 +557,9 @@ export default Vue.extend({
     window.removeEventListener('keydown', this.navigatePage);
   },
   mounted() {
+    const playerCount = this.playerView.players.length;
+    const gameType = playerCount === 1 ? 'Solo Game' : `${playerCount} Player Game`;
+    document.title = `${gameType} | ${APP_NAME}`;
     window.addEventListener('keydown', this.navigatePage);
     if (this.game.isTerraformed && TerraformedAlertDialog.shouldAlert && getPreferences().show_alerts) {
       alert('Mars is Terraformed!');

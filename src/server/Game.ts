@@ -1131,6 +1131,7 @@ export class Game implements IGame, Logger {
 
       if (this.canPlaceGreenery(player)) {
         this.activePlayer = player;
+        this.save();
         player.takeActionForFinalGreenery();
         return;
       } else if (player.getWaitingFor() !== undefined) {
@@ -1814,6 +1815,10 @@ export class Game implements IGame, Logger {
       newStandardDraft(game).restoreDraft();
     } else if (game.phase === Phase.RESEARCH) {
       game.gotoResearchPhase();
+    } else if (game.phase === Phase.PRODUCTION) {
+      if (game.gameIsOver() && game.isDoneWithFinalProduction()) {
+        game.takeNextFinalGreeneryAction();
+      }
     } else if (game.phase === Phase.END) {
       // There's nowhere that we need to go for end game.
     } else {
