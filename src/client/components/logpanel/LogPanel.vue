@@ -26,7 +26,7 @@
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import {paths} from '@/common/app/paths';
 import {LogMessage} from '@/common/logs/LogMessage';
 import {PublicPlayerModel, ViewModel} from '@/common/models/PlayerModel';
@@ -47,14 +47,16 @@ type LogPanelModel = {
   selectedMessage: LogMessage | undefined,
 };
 
-export default Vue.extend({
+export default defineComponent({
   name: 'log-panel',
   props: {
     viewModel: {
       type: Object as () => ViewModel,
+      required: true,
     },
     color: {
       type: String as () => Color,
+      required: true,
     },
     step: {
       type: Number,

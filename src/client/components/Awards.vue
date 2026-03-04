@@ -47,18 +47,18 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import Award from '@/client/components/Award.vue';
 import {AWARD_COSTS} from '@/common/constants';
 import {FundedAwardModel} from '@/common/models/FundedAwardModel';
 import {Preferences, PreferencesManager} from '@/client/utils/PreferencesManager';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'Awards',
   components: {Award},
   props: {
     awards: {
-      type: Array as () => Array<FundedAwardModel>,
+      type: Array as () => ReadonlyArray<FundedAwardModel>,
       required: true,
     },
     showScores: {
@@ -91,7 +91,7 @@ export default Vue.extend({
       const isFunded = (award: FundedAwardModel) => !!award.playerName;
       return this.awards.filter(isFunded);
     },
-    availableAwardSpots(): Number[] {
+    availableAwardSpots(): number[] {
       return AWARD_COSTS.slice(this.fundedAwards.length);
     },
     isLearnerModeOn(): boolean {

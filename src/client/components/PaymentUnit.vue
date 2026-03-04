@@ -4,8 +4,8 @@
     <AppButton type="minus" @click="$emit('minus')" />
     <input
       class="form-input form-inline payments_input"
-      v-bind:value="value"
-      v-on:input="$emit('input', $event.target.value)"
+      v-bind:value="modelValue"
+      v-on:input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
     <AppButton type="plus" @click="$emit('plus')" />
     <AppButton type="max" @click="$emit('max')" title="MAX" v-if="showMax" />
@@ -13,22 +13,25 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import {PaymentWidgetMixin} from '@/client/mixins/PaymentWidgetMixin';
 import AppButton from '@/client/components/common/AppButton.vue';
 import {SpendableResource} from '@/common/inputs/Spendable';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'PaymentUnitComponent',
   props: {
-    value: {
+    modelValue: {
       type: Number,
+      required: true,
     },
     unit: {
       type: String as () => SpendableResource,
+      required: true,
     },
     description: {
       type: String,
+      required: true,
     },
     showMax: {
       type: Boolean,

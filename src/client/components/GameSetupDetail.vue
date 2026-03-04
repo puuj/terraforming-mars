@@ -95,7 +95,7 @@
 
             <li v-if="playerNumber === 1">
               <div class="setup-item" v-i18n>Solo:</div>
-              <div class="game-config generic" v-i18n>{{ this.lastSoloGeneration }} Gens</div>
+              <div class="game-config generic" v-i18n>{{ lastSoloGeneration }} Gens</div>
               <div v-if="gameOptions.soloTR" class="game-config generic" v-i18n>63 TR</div>
               <div v-else class="game-config generic" v-i18n>TR all</div>
             </li>
@@ -114,7 +114,7 @@
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import {GameOptionsModel} from '@/common/models/GameOptionsModel';
 import {BoardName} from '@/common/boards/BoardName';
 import {RandomMAOptionType} from '@/common/ma/RandomMAOptionType';
@@ -134,17 +134,20 @@ const boardColorClass: Record<BoardName, string> = {
   [BoardName.HOLLANDIA]: 'game-config board-hollandia map',
 };
 
-export default Vue.extend({
+export default defineComponent({
   name: 'game-setup-detail',
   props: {
     playerNumber: {
       type: Number,
+      required: true,
     },
     gameOptions: {
       type: Object as () => GameOptionsModel,
+      required: true,
     },
     lastSoloGeneration: {
       type: Number,
+      required: true,
     },
   },
   computed: {

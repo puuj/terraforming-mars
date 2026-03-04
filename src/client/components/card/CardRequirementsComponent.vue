@@ -8,15 +8,15 @@
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import CardRequirementComponent from './CardRequirementComponent.vue';
 import {CardRequirementDescriptor} from '@/common/cards/CardRequirementDescriptor';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'CardRequirementsComponent',
   props: {
     requirements: {
-      type: Array<CardRequirementDescriptor>,
+      type: Array as () => ReadonlyArray<CardRequirementDescriptor>,
       required: true,
     },
   },

@@ -11,14 +11,14 @@
         </div>
       </div>
     </div>
-    <span v-if="showDistance" class="global-event-distance" v-i18n>{{ this.type }}</span>
+    <span v-if="showDistance" class="global-event-distance" v-i18n>{{ type }}</span>
     <slot/>
   </div>
 </template>
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import CardRenderData from '@/client/components/card/CardRenderData.vue';
 import CardParty from '@/client/components/card/CardParty.vue';
 import {IClientGlobalEvent} from '@/common/turmoil/IClientGlobalEvent';
@@ -28,7 +28,7 @@ import {GlobalEventName} from '@/common/turmoil/globalEvents/GlobalEventName';
 import {ICardRenderRoot} from '@/common/cards/render/Types';
 import {PartyName} from '@/common/turmoil/PartyName';
 
-export type RenderType = 'coming' | 'current' | 'distant';
+export type RenderType = 'coming' | 'current' | 'distant' | 'prior';
 
 type DataModel = {
   renderData: ICardRenderRoot;
@@ -37,7 +37,7 @@ type DataModel = {
   current: PartyName;
 };
 
-export default Vue.extend({
+export default defineComponent({
   name: 'global-event',
   components: {
     CardRenderData,
@@ -47,9 +47,11 @@ export default Vue.extend({
   props: {
     globalEventName: {
       type: String as () => GlobalEventName,
+      required: true,
     },
     type: {
       type: String as () => RenderType,
+      required: true,
     },
     showDistance: {
       type: Boolean,

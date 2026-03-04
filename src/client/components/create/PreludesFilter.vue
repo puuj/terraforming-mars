@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 
 import PopupPanel from '../common/PopupPanel.vue';
 import {CardName} from '@/common/cards/CardName';
@@ -64,14 +64,20 @@ getCards(byType(CardType.PRELUDE)).forEach((card) => {
 });
 GAME_MODULES.forEach((module) => ALL_CARDS_BY_MODULE[module].sort());
 
-export default Vue.extend({
+export default defineComponent({
   name: 'PreludesFilter',
   components: {
     PopupPanel,
   },
   props: {
-    expansions: Object as () => Record<Expansion, boolean>,
-    selected: Object as () => Array<CardName>,
+    expansions: {
+      type: Object as () => Record<Expansion, boolean>,
+      required: true,
+    },
+    selected: {
+      type: Object as () => Array<CardName>,
+      required: true,
+    },
   },
   data() {
     return {

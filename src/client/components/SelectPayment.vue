@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import {defineComponent, nextTick} from 'vue';
 import {Payment} from '@/common/inputs/Payment';
 import {SpendableResource, SPENDABLE_RESOURCES} from '@/common/inputs/Spendable';
 import {PaymentWidgetMixin, SelectPaymentDataModel} from '@/client/mixins/PaymentWidgetMixin';
@@ -40,17 +40,20 @@ import AppButton from '@/client/components/common/AppButton.vue';
 import {SelectPaymentResponse} from '@/common/inputs/InputResponse';
 import PaymentUnitComponent from '@/client/components/PaymentUnit.vue';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'SelectPayment',
   props: {
     playerView: {
       type: Object as () => PlayerViewModel,
+      required: true,
     },
     playerinput: {
       type: Object as () => SelectPaymentModel,
+      required: true,
     },
     onsave: {
       type: Function as unknown as () => (out: SelectPaymentResponse) => void,
+      required: true,
     },
     showsave: {
       type: Boolean,
@@ -89,7 +92,7 @@ export default Vue.extend({
     };
   },
   mounted() {
-    Vue.nextTick(() => {
+    nextTick(() => {
       this.setInitialCost();
       this.payment.megaCredits = this.getMegaCreditsMax();
       this.setDefaultValues();
@@ -140,7 +143,7 @@ export default Vue.extend({
       const megaCredits = this.getAvailableUnits('megaCredits');
 
       let amountCovered = reserveMegacredits ? megaCredits : 0;
-      for (const unit of ['seeds', 'auroraiData', 'steel', 'titanium', 'heat', 'spireScience'] as const) {
+      for (const unit of ['seeds', 'auroraiData', 'steel', 'titanium', 'heat', 'spireScience', 'kuiperAsteroids'] as const) {
         amountCovered += this.setDefaultValue(amountCovered, unit);
       }
       if (!reserveMegacredits) {

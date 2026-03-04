@@ -5,7 +5,7 @@ import {cardsFromJSON, ceosFromJSON, corporationCardsFromJSON, newCorporationCar
 import {CardName} from '../common/cards/CardName';
 import {CardType} from '../common/cards/CardType';
 import {Color} from '../common/Color';
-import {ICorporationCard, isICorporationCard} from './cards/corporation/ICorporationCard';
+import {ICorporationCard} from './cards/corporation/ICorporationCard';
 import {IGame} from './IGame';
 import {Game} from './Game';
 import {Payment, PaymentOptions, DEFAULT_PAYMENT_VALUES} from '../common/inputs/Payment';
@@ -510,7 +510,7 @@ export class Player implements IPlayer {
 
       if (removingPlayer !== undefined && removingPlayer !== this) this.resolveInsurance();
 
-      if (options?.log ?? true === true) {
+      if (options?.log ?? true) {
         this.game.log('${0} removed ${1} resource(s) from ${2}\'s ${3}', (b) =>
           b.player(options?.removingPlayer ?? this)
             .number(amountRemoved)
@@ -833,6 +833,13 @@ export class Player implements IPlayer {
       this.pay(payment);
     }
 
+    const selfReplicatingRobots = this.tableau.get(CardName.SELF_REPLICATING_ROBOTS);
+    if (selfReplicatingRobots instanceof SelfReplicatingRobots) {
+      if (inplaceRemove(selfReplicatingRobots.targetCards, selectedCard)) {
+        selectedCard.resourceCount = 0;
+      }
+    }
+
     ColoniesHandler.maybeActivateColonies(this.game, selectedCard);
 
     if (selectedCard.type !== CardType.PROXY) {
@@ -866,13 +873,6 @@ export class Player implements IPlayer {
         this.cardsInHand.splice(projectCardIndex, 1);
       } else if (preludeCardIndex !== -1) {
         this.preludeCardsInHand.splice(preludeCardIndex, 1);
-      }
-
-      const selfReplicatingRobots = this.tableau.get(CardName.SELF_REPLICATING_ROBOTS);
-      if (selfReplicatingRobots instanceof SelfReplicatingRobots) {
-        if (inplaceRemove(selfReplicatingRobots.targetCards, selectedCard)) {
-          selectedCard.resourceCount = 0;
-        }
       }
     }
 
@@ -911,11 +911,7 @@ export class Player implements IPlayer {
 
     /* A player responding to their own cards played. */
     for (const effectCard of this.playedCards) {
-      if (isICorporationCard(effectCard)) {
-        this.defer(effectCard.onCardPlayedForCorps?.(this, card));
-      } else {
-        this.defer(effectCard.onCardPlayed?.(this, card));
-      }
+      this.defer(effectCard.onCardPlayed?.(this, card));
     }
 
     TurmoilHandler.applyOnCardPlayedEffect(this, card);

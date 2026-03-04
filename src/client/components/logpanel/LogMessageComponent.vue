@@ -1,9 +1,9 @@
 <template>
    <li v-if="message !== undefined && message.data !== undefined && message.message !== undefined" v-on:click.prevent="$emit('click')">
     <span v-if="message.type !== LogMessageType.NEW_GENERATION" :title="when" v-html="icon"></span>
-    <template v-for="(data, idx) of entries">
-      <span class="log-plain-text" v-if="typeof(data) === 'string'" v-bind:key="idx">{{ data }}</span>
-      <span v-else v-bind:key="idx">
+    <template v-for="(data, idx) of entries" :key="idx">
+      <span class="log-plain-text" v-if="typeof(data) === 'string'">{{ data }}</span>
+      <span v-else>
         <span v-if="data.type === undefined || data.value === undefined"></span>
         <span v-else-if="data.type === LogMessageDataType.PLAYER" class="log-player" :class="'player_bg_color_' + data.value"> {{ getPlayerName(data.value) }} </span>
         <span v-else-if="data.type === LogMessageDataType.CARD" v-html="cardToHtml(data)"></span>
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import {Color} from '@/common/Color';
 import {CardName} from '@/common/cards/CardName';
 import {CardType} from '@/common/cards/CardType';
@@ -61,14 +61,16 @@ const cardTypeToCss: Record<CardType, string | undefined> = {
   proxy: undefined,
 };
 
-export default Vue.extend({
+export default defineComponent({
   name: 'LogMessageComponent',
   props: {
     message: {
       type: Object as () => LogMessage,
+      required: true,
     },
     viewModel: {
       type: Object as () => ViewModel,
+      required: true,
     },
   },
   methods: {

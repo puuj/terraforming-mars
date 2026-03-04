@@ -25,7 +25,7 @@
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import AppButton from '@/client/components/common/AppButton.vue';
 import WarningsComponent from '@/client/components/WarningsComponent.vue';
 import {Color} from '@/common/Color';
@@ -54,17 +54,20 @@ type WidgetDataModel = {
   owners: Map<CardName, Owner>,
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: 'SelectCard',
   props: {
     playerView: {
       type: Object as () => PlayerViewModel,
+      required: true,
     },
     playerinput: {
       type: Object as () => SelectCardModel,
+      required: true,
     },
     onsave: {
       type: Function as unknown as () => (out: SelectCardResponse) => void,
+      required: true,
     },
     showsave: {
       type: Boolean,

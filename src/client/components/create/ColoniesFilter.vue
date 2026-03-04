@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import PopupPanel from '../common/PopupPanel.vue';
 import {ColonyName} from '@/common/colonies/ColonyName';
 import {COLONY_DESCRIPTIONS} from '@/common/colonies/ColonyDescription';
@@ -51,14 +51,20 @@ type Data = {
 type ColonyModule = 'colonies' | 'community' | 'pathfinders';
 type Group = ColonyModule | 'All';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ColoniesFilter',
   components: {
     PopupPanel,
   },
   props: {
-    expansions: Object as () => Record<Expansion, boolean>,
-    selected: Array as () => Array<ColonyName>,
+    expansions: {
+      type: Object as () => Record<Expansion, boolean>,
+      required: true,
+    },
+    selected: {
+      type: Array as () => Array<ColonyName>,
+      required: true,
+    },
   },
   data() {
     const officialColonies = [...OFFICIAL_COLONY_NAMES].sort();

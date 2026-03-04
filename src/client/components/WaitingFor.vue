@@ -27,7 +27,7 @@
 <script lang="ts">
 /* global RequestInit */
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import * as constants from '@/common/constants';
 import * as raw_settings from '@/genfiles/settings.json';
 import {vueRoot} from '@/client/components/vueRoot';
@@ -57,20 +57,24 @@ type DataModel = {
 
 const CANNOT_CONTACT_SERVER = 'Unable to reach the server. It may be restarting or down for maintenance.';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'waiting-for',
   props: {
     playerView: {
       type: Object as () => PlayerViewModel,
+      required: true,
     },
     players: {
       type: Array as () => Array<PublicPlayerModel>,
+      required: true,
     },
     settings: {
       type: Object as () => typeof raw_settings,
+      required: true,
     },
     waitingfor: {
       type: Object as () => PlayerInputModel | undefined,
+      default: undefined,
     },
   },
   data(): DataModel {
@@ -156,7 +160,7 @@ export default Vue.extend({
         root.playerkey++;
         root.screen = 'player-home';
         if (this.playerView.game.phase === 'end' && window.location.pathname !== paths.THE_END) {
-          window.location = window.location as any as (string & Location); // eslint-disable-line no-self-assign
+          window.location = window.location as any as (string & Location);
         }
         this.savedPlayerView = undefined;
       } else {

@@ -30,17 +30,18 @@
 
 <script lang="ts">
 
-import Vue from 'vue';
+import {defineComponent} from '@/client/vue3-compat';
 import {MAX_MILESTONES, MILESTONE_COST} from '@/common/constants';
 import Milestone from '@/client/components/Milestone.vue';
 import {ClaimedMilestoneModel} from '@/common/models/ClaimedMilestoneModel';
 import {Preferences, PreferencesManager} from '@/client/utils/PreferencesManager';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'Milestones',
   props: {
     milestones: {
-      type: Array as () => Array<ClaimedMilestoneModel>,
+      type: Array as () => ReadonlyArray<ClaimedMilestoneModel>,
+      required: true,
     },
     showScores: {
       type: Boolean,
