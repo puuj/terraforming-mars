@@ -2,8 +2,8 @@
         <div id="game-setup-detail" class="game-setup-detail-container">
           <ul>
             <li><div class="setup-item" v-i18n>Expansion:</div>
-              <div v-if="gameOptions.expansions.corpera" class="create-game-expansion-icon expansion-icon-CE" title="Corporate Era"></div>
-              <div v-else class="create-game-expansion-icon expansion-icon-CE expansion-disabled" title="Corporate Era disabled"></div>
+	      <div v-if="gameOptions.expansions.corpera" class="create-game-expansion-icon expansion-icon-CE" title="Corporate Era"></div>
+	      <div v-else class="create-game-expansion-icon expansion-icon-CE expansion-disabled" title="Corporate Era disabled"></div>
               <div v-if="gameOptions.expansions.venus" class="create-game-expansion-icon expansion-icon-venus" title="Venus"></div>
               <div v-else class="create-game-expansion-icon expansion-icon-venus expansion-disabled" title="Venus disabled"></div>
               <div v-if="gameOptions.expansions.prelude" class="create-game-expansion-icon expansion-icon-prelude" title="Preludes"></div>
@@ -114,19 +114,20 @@
 
 <script lang="ts">
 
-import {defineComponent} from '@/client/vue3-compat';
+import {defineComponent} from 'vue';
 import {GameOptionsModel} from '@/common/models/GameOptionsModel';
 import {BoardName} from '@/common/boards/BoardName';
 import {RandomMAOptionType} from '@/common/ma/RandomMAOptionType';
 import {translateTextWithParams} from '@/client/directives/i18n';
+import {RULEBOOK_URLS} from '@/client/utils/WikiLinks';
 
 const boardColorClass: Record<BoardName, string> = {
   [BoardName.THARSIS]: 'game-config board-tharsis map',
   [BoardName.HELLAS]: 'game-config board-hellas map',
   [BoardName.ELYSIUM]: 'game-config board-elysium map',
   [BoardName.UTOPIA_PLANITIA]: 'game-config board-utopia-planitia map',
-  [BoardName.VASTITAS_BOREALIS_NOVUS]: 'game-config board-vastitas_borealis_novus map',
-  [BoardName.TERRA_CIMMERIA_NOVUS]: 'game-config board-terra_cimmeria_novus map',
+  [BoardName.VASTITAS_BOREALIS_NOVA]: 'game-config board-vastitas_borealis_nova map',
+  [BoardName.TERRA_CIMMERIA_NOVA]: 'game-config board-terra_cimmeria_nova map',
   [BoardName.AMAZONIS]: 'game-config board-amazonis map',
   [BoardName.ARABIA_TERRA]: 'game-config board-arabia_terra map',
   [BoardName.VASTITAS_BOREALIS]: 'game-config board-vastitas_borealis map',
@@ -151,6 +152,9 @@ export default defineComponent({
     },
   },
   computed: {
+    rulebookUrls(): typeof RULEBOOK_URLS {
+      return RULEBOOK_URLS;
+    },
     isPoliticalAgendasOn(): boolean {
       return (this.gameOptions.politicalAgendasExtension !== 'Standard');
     },

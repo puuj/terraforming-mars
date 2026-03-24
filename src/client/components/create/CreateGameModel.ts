@@ -47,6 +47,7 @@ export type CreateGameModel = {
   seed: number;
   seededGame: boolean;
   showBannedCards: boolean;
+  showCeosList: boolean;
   showColoniesList: boolean;
   showCorporationList: boolean;
   showIncludedCards: boolean;
