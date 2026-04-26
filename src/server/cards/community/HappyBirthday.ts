@@ -18,7 +18,7 @@ export class HappyBirthday extends Card implements IProjectCard {
       victoryPoints: {resourcesHere: {}},
 
       behavior: {
-        addResources: 44,
+        addResources: 43,
       },
 
       metadata: {
