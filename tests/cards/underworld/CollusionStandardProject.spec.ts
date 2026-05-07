@@ -3,14 +3,16 @@ import {expect} from 'chai';
 import {CollusionStandardProject} from '../../../src/server/cards/underworld/CollusionStandardProject';
 import {TestPlayer} from '../../TestPlayer';
 import {testGame} from '../../TestGame';
-import {cast, runAllActions} from '../../TestingUtils';
+import {runAllActions} from '../../TestingUtils';
 import {IGame} from '../../../src/server/IGame';
+import {Payment} from '../../../src/common/inputs/Payment';
 import {Turmoil} from '../../../src/server/turmoil/Turmoil';
 import {PartyName} from '../../../src/common/turmoil/PartyName';
 import {AndOptions} from '../../../src/server/inputs/AndOptions';
 import {SelectAmount} from '../../../src/server/inputs/SelectAmount';
 import {SelectParty} from '../../../src/server/inputs/SelectParty';
 import {MultiSet} from 'mnemonist';
+import {cast} from '../../../src/common/utils/utils';
 
 describe('CollusionStandardProject', () => {
   let game: IGame;
@@ -64,7 +66,7 @@ describe('CollusionStandardProject', () => {
 
     turmoil.sendDelegateToParty('NEUTRAL', PartyName.UNITY, game);
 
-    card.action(player);
+    card.payAndExecute(player, Payment.of({megacredits: 0}));
     runAllActions(game);
 
     const andOptions = cast(player.popWaitingFor(), AndOptions);
@@ -85,7 +87,7 @@ describe('CollusionStandardProject', () => {
     player.underworldData.corruption = 1;
     turmoil.sendDelegateToParty('NEUTRAL', PartyName.UNITY, game);
 
-    card.action(player);
+    card.payAndExecute(player, Payment.of({megacredits: 0}));
     runAllActions(game);
 
     const andOptions = cast(player.popWaitingFor(), AndOptions);
@@ -108,7 +110,7 @@ describe('CollusionStandardProject', () => {
     player.underworldData.corruption = 1;
     turmoil.sendDelegateToParty('NEUTRAL', PartyName.GREENS, game);
 
-    card.action(player);
+    card.payAndExecute(player, Payment.of({megacredits: 0}));
     runAllActions(game);
 
     const andOptions = cast(player.popWaitingFor(), AndOptions);
@@ -130,7 +132,7 @@ describe('CollusionStandardProject', () => {
     turmoil.sendDelegateToParty('NEUTRAL', PartyName.GREENS, game);
     turmoil.sendDelegateToParty('NEUTRAL', PartyName.GREENS, game);
 
-    card.action(player);
+    card.payAndExecute(player, Payment.of({megacredits: 0}));
     runAllActions(game);
 
     const andOptions = cast(player.popWaitingFor(), AndOptions);

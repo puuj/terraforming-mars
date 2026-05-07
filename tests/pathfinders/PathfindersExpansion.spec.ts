@@ -2,13 +2,14 @@ import {expect} from 'chai';
 import {testGame} from '../TestGame';
 import {PathfindersExpansion} from '../../src/server/pathfinders/PathfindersExpansion';
 import {Tag} from '../../src/common/cards/Tag';
-import {cast, fakeCard, runAllActions} from '../TestingUtils';
+import {fakeCard, runAllActions} from '../TestingUtils';
 import {CardResource} from '../../src/common/CardResource';
 import {CardName} from '../../src/common/cards/CardName';
 import {SelectParty} from '../../src/server/inputs/SelectParty';
 import {Turmoil} from '../../src/server/turmoil/Turmoil';
 import {assertPlaceCity, assertPlaceGreenery, assertPlaceMoonMine, assertPlaceMoonRoad, assertPlaceOcean} from '../assertions';
 import {SelectResource} from '../../src/server/inputs/SelectResource';
+import {cast} from '@/common/utils/utils';
 
 describe('PathfindersExpansion', () => {
   it('Earth track', () => {
@@ -367,5 +368,13 @@ describe('PathfindersExpansion', () => {
 
     expect(game.getVenusScaleLevel()).eq(2);
     expect(player.terraformRating).eq(15);
+  });
+
+  it('willGainEnergyProductionOnNextMarsTag - works at max', () => {
+    const [game, player] = testGame(1, {pathfindersExpansion: true});
+
+    game.pathfindersData!.mars = 17;
+
+    PathfindersExpansion.willGainEnergyProductionOnNextMarsTag(player, 1);
   });
 });
