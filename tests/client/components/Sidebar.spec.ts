@@ -22,6 +22,7 @@ describe('Sidebar', () => {
       ...globalConfig,
       props: {
         playerNumber: 2,
+        isTerraformed: false,
         gameOptions: fakeGameOptionsModel(),
         acting_player: true,
         player_color: 'blue',
@@ -31,7 +32,7 @@ describe('Sidebar', () => {
         oxygen: 0,
         oceans: 0,
         venus: 0,
-        moonData: {habitatRate: 0, miningRate: 0, logisticsRate: 0},
+        moonData: {habitatRate: 0, miningRate: 0, logisticRate: 0},
         turmoil: undefined,
         lastSoloGeneration: 14,
         deckSize: 100,

@@ -27,6 +27,7 @@ import {asArray} from '../../common/utils/utils';
 import {AdditionalProjectCosts} from '../../common/cards/Types';
 import {GlobalParameter} from '../../common/GlobalParameter';
 import {Warning} from '../../common/cards/Warning';
+import {Resource} from '@/common/Resource';
 
 /**
  * Cards that do not need a cost attribute.
@@ -493,7 +494,7 @@ export function validateBehavior(behavior: Behavior | undefined, name: CardName)
       validate(behavior.tr === undefined, 'spend.megacredits is not yet compatible with tr');
       validate(behavior.global === undefined, 'spend.megacredits is not yet compatible with global');
       validate(behavior.moon?.habitatRate === undefined, 'spend.megacredits is not yet compatible with moon.habitatRate');
-      validate(behavior.moon?.logisticsRate === undefined, 'spend.megacredits is not yet compatible with moon.logisticsRate');
+      validate(behavior.moon?.logisticRate === undefined, 'spend.megacredits is not yet compatible with moon.logisticRate');
       validate(behavior.moon?.miningRate === undefined, 'spend.megacredits is not yet compatible with moon.miningRate');
     }
     // Don't spend heat with other types yet. It's probably not compatible. Check carefully.
@@ -501,4 +502,16 @@ export function validateBehavior(behavior: Behavior | undefined, name: CardName)
       validate(Object.keys(spend).length === 1, 'spend.heat cannot be used with another spend');
     }
   }
+}
+
+type CardWithBonusResource = Card & {defaultProductionBox?: Units, bonusResource: Array<Resource> | undefined}
+/* Not sure this belongs here. */
+export function productionBoxWithBonusResource(card: CardWithBonusResource) {
+  const units: Units = card.defaultProductionBox ?
+    {...card.defaultProductionBox} :
+    {...Units.EMPTY};
+  if (card.bonusResource && card.bonusResource.length === 1) {
+    units[card.bonusResource[0]] += 1;
+  }
+  return units;
 }

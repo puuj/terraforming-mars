@@ -41,6 +41,7 @@ import {MoonExpansion} from './moon/MoonExpansion';
 import {IStandardProjectCard} from './cards/IStandardProjectCard';
 import {ConvertPlants} from './cards/base/standardActions/ConvertPlants';
 import {ConvertHeat} from './cards/base/standardActions/ConvertHeat';
+import {KELVINISTS_POLICY_3} from './turmoil/parties/Kelvinists';
 import {GlobalParameter} from '../common/GlobalParameter';
 import {LogHelper} from './LogHelper';
 import {UndoActionOption} from './inputs/UndoActionOption';
@@ -66,6 +67,7 @@ import {copyAndClear, inplaceRemove, sum, toName} from '../common/utils/utils';
 import {PreludesExpansion} from './preludes/PreludesExpansion';
 import {ChooseCards} from './deferredActions/ChooseCards';
 import {UnderworldPlayerData} from '../common/underworld/UnderworldPlayerData';
+import {DeltaProjectPlayerModel} from '../common/models/DeltaProjectPlayerModel';
 import {UnderworldExpansion} from './underworld/UnderworldExpansion';
 import {Counter} from './behavior/Counter';
 import {TRSource} from '../common/cards/TRSource';
@@ -86,7 +88,7 @@ const DEFAULT_GLOBAL_PARAMETER_STEPS = {
   [GlobalParameter.VENUS]: 0,
   [GlobalParameter.MOON_HABITAT_RATE]: 0,
   [GlobalParameter.MOON_MINING_RATE]: 0,
-  [GlobalParameter.MOON_LOGISTICS_RATE]: 0,
+  [GlobalParameter.MOON_LOGISTIC_RATE]: 0,
 } as const;
 
 export class Player implements IPlayer {
@@ -165,6 +167,7 @@ export class Player implements IPlayer {
   public removedFromPlayCards: Array<IProjectCard> = [];
   public preservationProgram = false;
   public underworldData: UnderworldPlayerData = UnderworldExpansion.initializePlayer();
+  public deltaProjectData?: DeltaProjectPlayerModel;
   public standardProjectsThisGeneration: Set<CardName> = new Set();
   public temporaryGlobalParameterRequirementBonus = 0;
 
@@ -538,7 +541,7 @@ export class Player implements IPlayer {
     }
   }
 
-  public addResourceTo(card: ICard, options: number | {qty?: number, log: boolean, logZero?: boolean} = 1): void {
+  public addResourceTo(card: ICard, options: number | {qty?: number, log: boolean, logZero?: boolean, from?: From} = 1): void {
     const count = typeof(options) === 'number' ? options : (options.qty ?? 1);
 
     if (card.resourceCount !== undefined) {
@@ -547,7 +550,7 @@ export class Player implements IPlayer {
 
     if (typeof(options) !== 'number' && options.log === true) {
       if (options.logZero === true || count !== 0) {
-        LogHelper.logAddResource(this, card, count);
+        LogHelper.logAddResource(this, card, count, options.from);
       }
     }
 
@@ -606,7 +609,6 @@ export class Player implements IPlayer {
 
     this.turmoilPolicyActionUsed = false;
     this.politicalAgendasActionUsedCount = 0;
-
     if (this.playedCards.has(CardName.SUPERCAPACITORS)) {
       Supercapacitors.onProduction(this);
     } else {
@@ -1577,19 +1579,25 @@ export class Player implements IPlayer {
       action.options.push(convertPlants.action(this));
     }
 
-    // Convert Heat
-    const convertHeat = new ConvertHeat();
-    if (convertHeat.canAct(this)) {
-      const option = new SelectOption('Convert 8 heat into temperature', 'Convert heat').andThen(() => {
-        return convertHeat.action(this);
-      });
-      if (convertHeat.warnings.size > 0) {
-        option.warnings = Array.from(convertHeat.warnings);
-        if (convertHeat.warnings.has('maxtemp')) {
-          option.eligibleForDefault = false;
-        }
+    // Convert Heat. Kelvinists kp03 swaps in a 6-heat variant in this slot.
+    if (PartyHooks.shouldApplyPolicy(this, PartyName.KELVINISTS, 'kp03')) {
+      if (KELVINISTS_POLICY_3.canAct(this)) {
+        action.options.push(KELVINISTS_POLICY_3.action(this));
       }
-      action.options.push(option);
+    } else {
+      const convertHeat = new ConvertHeat();
+      if (convertHeat.canAct(this)) {
+        const option = new SelectOption('Convert 8 heat into temperature', 'Convert heat').andThen(() => {
+          return convertHeat.action(this);
+        });
+        if (convertHeat.warnings.size > 0) {
+          option.warnings = Array.from(convertHeat.warnings);
+          if (convertHeat.warnings.has('maxtemp')) {
+            option.eligibleForDefault = false;
+          }
+        }
+        action.options.push(option);
+      }
     }
 
     // Turmoil
@@ -1809,6 +1817,7 @@ export class Player implements IPlayer {
       // Leavitt Station.
       scienceTagCount: this.tags.extraScienceTags,
       plantTagCount: this.tags.extraPlantTags,
+      jovianTagCount: this.tags.extraJovianTags,
       // Ecoline
       plantsNeededForGreenery: this.plantsNeededForGreenery,
       // Lawsuit
@@ -1840,6 +1849,7 @@ export class Player implements IPlayer {
     if (this.lastCardPlayed !== undefined) {
       result.lastCardPlayed = this.lastCardPlayed;
     }
+    result.deltaProject = this.deltaProjectData;
     return result;
   }
 
@@ -1883,6 +1893,7 @@ export class Player implements IPlayer {
     player.warmongerCards = d.warmongerCards ?? 0;
     player.tags.extraScienceTags = d.scienceTagCount;
     player.tags.extraPlantTags = d.plantTagCount;
+    player.tags.extraJovianTags = d.jovianTagCount ?? 0;
     player.steel = d.steel;
     player.steelValue = d.steelValue;
     player.terraformRating = d.terraformRating;
@@ -1906,6 +1917,7 @@ export class Player implements IPlayer {
     player.dealtPreludeCards = preludesFromJSON(d.dealtPreludeCards);
     player.dealtCeoCards = ceosFromJSON(d.dealtCeoCards);
     player.dealtProjectCards = cardsFromJSON(d.dealtProjectCards);
+    player.deltaProjectData = d.deltaProject;
     player.cardsInHand = cardsFromJSON(d.cardsInHand);
     // I don't like "as IPreludeCard" but this is pretty safe.
     player.preludeCardsInHand = cardsFromJSON(d.preludeCardsInHand) as Array<IPreludeCard>;

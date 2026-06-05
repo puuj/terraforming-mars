@@ -171,7 +171,7 @@
                           <td v-if="game.gameOptions.expansions.venus">{{ data.venus }}</td>
                           <td v-if="game.gameOptions.expansions.moon">{{ data.moonHabitat }}</td>
                           <td v-if="game.gameOptions.expansions.moon">{{ data.moonMining }}</td>
-                          <td v-if="game.gameOptions.expansions.moon">{{ data.moonLogistics }}</td>
+                          <td v-if="game.gameOptions.expansions.moon">{{ data.moonLogistic }}</td>
                           <td class="game-end-total">{{ data.total }}</td>
                       </tr>
                   </tbody>
@@ -200,6 +200,7 @@
             <div v-if="game.gameOptions.expansions.pathfinders">
               <PlanetaryTracks :tracks="game.pathfinders" :gameOptions="game.gameOptions"/>
             </div>
+            <DeltaProjectBoard v-if="game.gameOptions.expansions.deltaProject" :players="players"></DeltaProjectBoard>
           </div>
           <div class="game_end_block--log game-end-column">
             <log-panel :color="color" :viewModel="viewModel"></log-panel>
@@ -214,12 +215,14 @@
 
 import {defineComponent} from 'vue';
 import * as constants from '@/common/constants';
+import {setDocumentTitle} from '@/client/utils/documentTitle';
 import {paths} from '@/common/app/paths';
 import {GameModel} from '@/common/models/GameModel';
 import {PlayerViewModel, PublicPlayerModel, ViewModel} from '@/common/models/PlayerModel';
 import Board from '@/client/components/Board.vue';
 import MoonBoard from '@/client/components/moon/MoonBoard.vue';
 import PlanetaryTracks from '@/client/components/pathfinders/PlanetaryTracks.vue';
+import DeltaProjectBoard from '@/client/components/delta/DeltaProjectBoard.vue';
 import LogPanel from '@/client/components/logpanel/LogPanel.vue';
 import AppButton from '@/client/components/common/AppButton.vue';
 import VictoryPointChart, {DataSet} from '@/client/components/gameend/VictoryPointChart.vue';
@@ -347,11 +350,11 @@ export default defineComponent({
       if (this.game.gameOptions.expansions.moon === true) {
         dataset.push({label: $t('L. Habitat'), color: 'orange', data: getValues(GlobalParameter.MOON_HABITAT_RATE, 0, 8)});
         dataset.push({label: $t('L. Mining'), color: 'pink', data: getValues(GlobalParameter.MOON_MINING_RATE, 0, 8)});
-        dataset.push({label: $t('L. Logistics'), color: 'purple', data: getValues(GlobalParameter.MOON_LOGISTICS_RATE, 0, 8)});
+        dataset.push({label: $t('L. Logistic'), color: 'purple', data: getValues(GlobalParameter.MOON_LOGISTIC_RATE, 0, 8)});
       }
       return dataset;
     },
-    playerContributionsData(): Array<{player: string, color: Color, temp: number, oxygen: number, oceans: number, venus?: number, moonHabitat?: number, moonMining?: number, moonLogistics?: number, total: number}> {
+    playerContributionsData(): Array<{player: string, color: Color, temp: number, oxygen: number, oceans: number, venus?: number, moonHabitat?: number, moonMining?: number, moonLogistic?: number, total: number}> {
       return this.players.map((player) => {
         const steps = player.globalParameterSteps || {};
         const temp = steps[GlobalParameter.TEMPERATURE] || 0;
@@ -360,7 +363,7 @@ export default defineComponent({
         const venus = steps[GlobalParameter.VENUS] || 0;
         const moonHabitat = steps[GlobalParameter.MOON_HABITAT_RATE] || 0;
         const moonMining = steps[GlobalParameter.MOON_MINING_RATE] || 0;
-        const moonLogistics = steps[GlobalParameter.MOON_LOGISTICS_RATE] || 0;
+        const moonLogistic = steps[GlobalParameter.MOON_LOGISTIC_RATE] || 0;
 
         return {
           player: player.name,
@@ -371,8 +374,8 @@ export default defineComponent({
           venus,
           moonHabitat,
           moonMining,
-          moonLogistics,
-          total: temp + oxygen + oceans + venus + moonHabitat + moonMining + moonLogistics,
+          moonLogistic: moonLogistic,
+          total: temp + oxygen + oceans + venus + moonHabitat + moonMining + moonLogistic,
         };
       });
     },
@@ -388,10 +391,11 @@ export default defineComponent({
     AppButton,
     MoonBoard,
     PlanetaryTracks,
+    DeltaProjectBoard,
     VictoryPointChart,
   },
   mounted() {
-    document.title = `End of Game | ${constants.APP_NAME}`;
+    setDocumentTitle('🏁 | ' + this.game.name);
   },
   methods: {
     getEndGamePlayerRowColorClass(color: Color): string {

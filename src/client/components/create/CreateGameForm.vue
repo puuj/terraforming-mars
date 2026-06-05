@@ -169,6 +169,12 @@
                                 <div class="create-game-expansion-icon expansion-icon-underworld"></div>
                                 <span v-i18n>Underworld 2</span><span></span>&nbsp;<a :href="wikiUrls.underworld" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank">&#9432;</a>
                             </label>
+
+                            <input type="checkbox" name="deltaProject" id="deltaProject-checkbox" v-model="expansions.deltaProject">
+                            <label for="deltaProject-checkbox" class="expansion-button">
+                                <div class="create-game-expansion-icon expansion-icon-deltaProject"></div>
+                                <span v-i18n>Delta Project</span>&nbsp;<span title="Alpha — work in progress">(&#945;)</span><span></span>&nbsp;<a :href="wikiUrls.deltaProject" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank">&#9432;</a>
+                            </label>
                         </div>
 
                         <div class="create-game-page-column">
@@ -590,6 +596,7 @@ import {JSONProcessor} from './JSONProcessor';
 import {defaultCreateGameModel} from './defaultCreateGameModel';
 import {getColony} from '@/client/colonies/ClientColonyManifest';
 import {RULEBOOK_URLS, WIKI, WIKI_URLS} from '@/client/utils/WikiLinks';
+import {setDocumentTitle} from '@/client/utils/documentTitle';
 
 const REVISED_COUNT_ALGORITHM = false;
 
@@ -668,7 +675,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    document.title = `Create New Game | ${constants.APP_NAME}`;
+    setDocumentTitle('Create New Game');
   },
   computed: {
     wikiUrls(): typeof RULEBOOK_URLS & typeof WIKI_URLS {

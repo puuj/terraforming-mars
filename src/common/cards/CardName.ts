@@ -574,6 +574,7 @@ export enum CardName {
   STATIC_HARVESTING = 'Static Harvesting',
   WEATHER_BALLOONS = 'Weather Balloons',
   ALBEDO_PLANTS = 'Albedo Plants',
+  STERLING_VENTS = 'Sterling Vents',
 
   // Promo cards from Dutch Open
   FLOYD_CONTINUUM = 'Floyd Continuum',
@@ -1067,6 +1068,9 @@ export enum CardName {
   PROSPECTING = 'Prospecting',
   ELECTION_SPONSORSHIP = 'Election Sponsorship',
   CLOUD_VORTEX_OUTPOST = 'Cloud Vortex Outpost',
+
+  // Delta Project
+  DELTA_PROJECT = 'Delta Project',
 
   // Underworld Standard Projects
   EXCAVATE_STANDARD_PROJECT = 'Excavate:SP',

@@ -9,6 +9,8 @@ import {intersection} from '../../../common/utils/utils';
 import {message} from '../../logs/MessageBuilder';
 import {AresHandler} from '../../ares/AresHandler';
 import {BoardType} from '../../boards/BoardType';
+import {MarsBoard} from '../../boards/MarsBoard';
+import {Space} from '../../boards/Space';
 export class MarsNomads extends Card implements IActionCard {
   /*
    * A good page about this card: https://boardgamegeek.com/thread/3154812.
@@ -56,6 +58,14 @@ export class MarsNomads extends Card implements IActionCard {
       });
   }
 
+  private canAffordPlacementBonus(player: IPlayer, space: Space): boolean {
+    // Bonuses are not granted when moving onto a hazard tile.
+    if (AresHandler.hasHazardTile(space)) {
+      return true;
+    }
+    return MarsBoard.canAffordPlacementBonuses(player, space);
+  }
+
   private eliglbleDestinationSpaces(player: IPlayer) {
     const game = player.game;
     const board = game.board;
@@ -66,7 +76,8 @@ export class MarsNomads extends Card implements IActionCard {
     const availableSpaces = board.getNonReservedLandSpaces();
     const currentNomadSpace = board.getSpaceOrThrow(game.nomadSpace);
     const adjacentSpaces = board.getAdjacentSpaces(currentNomadSpace);
-    return intersection(availableSpaces, adjacentSpaces);
+    return intersection(availableSpaces, adjacentSpaces)
+      .filter((space) => this.canAffordPlacementBonus(player, space));
   }
 
   public canAct(player: IPlayer) {

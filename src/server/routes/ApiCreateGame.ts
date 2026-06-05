@@ -93,19 +93,19 @@ export class ApiCreateGame extends Handler {
           const gameReq = JSON.parse(body) as NewGameConfig;
           const gameId = safeCast(generateRandomId('g'), isGameId);
           const spectatorId = safeCast(generateRandomId('s'), isSpectatorId);
-          const players = gameReq.players.map((obj: any) => {
-            const parts = obj.name.split('|');
+          const players = gameReq.players.map((p) => {
+            const parts = p.name.split('|');
             let email = undefined;
-            let name = obj.name;
+            let name = p.name;
             if (parts.length > 1) {
               name = parts[0];
               email = parts[1];
             }
 	    return new Player(
 	      name,
-              obj.color,
-              obj.beginner,
-              Number(obj.handicap), // For some reason handicap is coming up a string.
+              p.color,
+              p.beginner,
+              Number(p.handicap), // For some reason handicap is coming up a string.
               safeCast(generateRandomId('p'), isPlayerId),
 	      email
             );
@@ -171,6 +171,7 @@ export class ApiCreateGame extends Handler {
             turmoilExtension: gameReq.expansions.turmoil,
             twoCorpsVariant: gameReq.twoCorpsVariant,
             underworldExpansion: gameReq.expansions.underworld,
+            deltaProjectExpansion: gameReq.expansions.deltaProject,
             undoOption: gameReq.undoOption,
             venusNextExtension: gameReq.expansions.venus,
           };
@@ -181,7 +182,7 @@ export class ApiCreateGame extends Handler {
             game = Cloner.clone(gameId, players, firstPlayerIdx, serialized);
           } else {
             const seed = Math.random();
-            game = Game.newInstance(gameId, players, players[firstPlayerIdx], gameOptions, seed, spectatorId);
+            game = Game.newInstance(gameId, players, players[firstPlayerIdx], spectatorId, gameOptions, seed);
           }
           ctx.gameLoader.add(game);
           responses.writeJson(res, ctx, Server.getSimpleGameModel(game));

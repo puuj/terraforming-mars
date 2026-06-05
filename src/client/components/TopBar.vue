@@ -1,8 +1,10 @@
 <template>
-    <div :class="formatCssClass()" :key="componentKey">
-      <PlayerInfo v-show="isExpanded()" :player="playerView.thisPlayer" :playerView="playerView" :actionLabel="''" :playerIndex="0" :hideZeroTags="true" :isTopBar="true"/>
-      <div class="top-bar-collapser" v-on:click="toggleBar()">
-        <img src="assets/arrows_left.png">
+    <div class="top-bar-container">
+      <div :class="formatCssClass()" :key="componentKey">
+        <PlayerInfo v-show="isExpanded()" :player="playerView.thisPlayer" :playerView="playerView" :actionLabel="''" :playerIndex="0" :hideZeroTags="true" :isTopBar="true"/>
+        <div class="top-bar-collapser" v-on:click="toggleBar()">
+          <img src="assets/arrows_left.png">
+        </div>
       </div>
     </div>
 </template>

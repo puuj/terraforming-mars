@@ -41,11 +41,12 @@ export interface Score {
 
 export interface IGame extends Logger {
   readonly id: GameId;
+  readonly name: string;
   readonly gameOptions: Readonly<GameOptions>;
   // Game-level data
   lastSaveId: number;
-  rng: SeededRandom;
-  spectatorId: SpectatorId | undefined;
+  readonly rng: SeededRandom;
+  readonly spectatorId: SpectatorId;
   deferredActions: DeferredActionsQueue;
   createdTime: Date;
   gameAge: number; // Each log event increases it
@@ -178,8 +179,10 @@ export interface IGame extends Logger {
    */
   /* for testing */ takeNextFinalGreeneryAction(): void;
   /* for testing */ worldGovernmentTerraforming(): void;
-  /* for World Government Advisor */
+  /* for World Government Advisor and Terra colony */
   worldGovernmentTerraformingInput(player: IPlayer): OrOptions;
+  /* for World Government Advisor and Terra colony */
+  temporarySolarPhase(player: IPlayer, cb: () => void): void;
   increaseOxygenLevel(player: IPlayer, increments: -2 | -1 | 1 | 2): void;
   getOxygenLevel(): number;
   increaseVenusScaleLevel(player: IPlayer, increments: -1 | 1 | 2 | 3): number;
