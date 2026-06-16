@@ -1696,8 +1696,10 @@ export class Player implements IPlayer {
     this.waitingFor = undefined;
     this.waitingForCb = undefined;
     try {
-      this.timer.stop();
-      if (this.notification) clearTimeout(this.notification);
+      if (!waitingFor.optional) {
+        this.timer.stop();
+      	if (this.notification) clearTimeout(this.notification);	
+      }
       this.defer(waitingFor.process(input, this));
       waitingForCb();
     } catch (err) {
@@ -1719,7 +1721,10 @@ export class Player implements IPlayer {
         console.warn(message);
       }
     }
-    this.timer.start();
+
+    if (!input.optional) {
+      this.timer.start();
+    }
     this.notification = this.game.makeTurnNotification(this);
     this.waitingFor = input;
     this.waitingForCb = cb;
@@ -1747,6 +1752,15 @@ export class Player implements IPlayer {
           this.setWaitingForSafely(input, cb);
         };
       }
+    }
+  }
+
+  public clearWaitingFor(): void {
+    const waitingFor = this.waitingFor;
+    this.waitingFor = undefined;
+    this.waitingForCb = undefined;
+    if (waitingFor !== undefined && !waitingFor.optional) {
+      this.timer.stop();
     }
   }
 
