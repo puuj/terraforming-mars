@@ -89,7 +89,7 @@ import LanguageIcon from '@/client/components/LanguageIcon.vue';
 export default defineComponent({
   name: 'Sidebar',
   props: {
-    active_player: {
+    activePlayer: {
       type: Boolean,
     },
     playerNumber: {
@@ -111,7 +111,7 @@ export default defineComponent({
       type: String as () => Color,
       required: true,
     },
-    current_player_color: {
+    currentPlayerColor: {
       type: String as () => Color,
     },
     generation: {
