@@ -33,12 +33,17 @@ See the full results at: ${link}`,
     const delay=Math.floor(player.timer.getActingTime()/60);
     const link = url+'/player?id='+player.id;
     // console.log(`Would notify ${player.name} for ${delay}`);
-    transporter.sendMail({
-      from: sender,
-      to: player.email,
-      subject: `Terraforming Mars turn notification for ${player.id}`,
-      text: `It's been your turn for ${delay} minutes. Take your turn at: ${link}`,
-    });
+    try {
+        transporter.sendMail({
+    	  from: sender,
+	  to: player.email,
+	  subject: `Terraforming Mars turn notification for ${player.id}`,
+	  text: `It's been your turn for ${delay} minutes. Take your turn at: ${link}`,
+	 });
+    } catch(err) {
+      console.error(`Error while notifying ${player.name} on ${player.id} for ${delay}`);
+      console.error(err);
+    }
   }
 
   makeTurnNotification(player: IPlayer, interval: number) : NodeJS.Timeout {
