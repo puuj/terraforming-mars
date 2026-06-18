@@ -32,6 +32,9 @@ See the full results at: ${link}`,
   sendTurnMessage(player: IPlayer, transporter: any, url: string, sender: string) : void {
     const delay=Math.floor(player.timer.getActingTime()/60);
     const link = url+'/player?id='+player.id;
+    if(player.game.getGeneration() > 1 && delay < 1){
+    	return;
+    }
     // console.log(`Would notify ${player.name} for ${delay}`);
     try {
         transporter.sendMail({
