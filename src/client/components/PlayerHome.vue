@@ -23,7 +23,6 @@
       :moonData="game.moon"
       :gameOptions = "game.gameOptions"
       :playerNumber = "playerView.players.length"
-      :isTerraformed="playerView.game.isTerraformed"
       :lastSoloGeneration = "game.lastSoloGeneration"
       :deckSize = "game.deckSize"
       :discardPileSize = "game.discardPileSize"/>

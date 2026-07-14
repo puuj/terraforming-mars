@@ -1,4 +1,5 @@
 import {AerospaceMission} from './AerospaceMission';
+import {Aerotech} from './Aerotech';
 import {AgricolaInc} from './AgricolaInc';
 import {Athena} from './Athena';
 import {ByElection} from './ByElection';
@@ -49,6 +50,7 @@ export const COMMUNITY_CARD_MANIFEST = new ModuleManifest({
     [CardName.SPECIAL_DESIGN_PROXY]: {Factory: SpecialDesignProxy, instantiate: false},
   },
   corporationCards: {
+    [CardName.AEROTECH]: {Factory: Aerotech},
     [CardName.AGRICOLA_INC]: {Factory: AgricolaInc},
     [CardName.PROJECT_WORKSHOP]: {Factory: ProjectWorkshop},
     [CardName.INCITE]: {Factory: Incite, compatibility: 'turmoil'},

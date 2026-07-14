@@ -4,7 +4,7 @@
       <i :title="milestone.playerName" class="board-cube" :class="`board-cube--${milestone.color}`" ></i>
     </div>
     <div class="ma-name--milestones" :class="nameCss">
-      <span v-i18n>{{name}}</span>
+      <span ref="name" v-i18n>{{name}}</span>
       <div v-if="showScores" class="ma-scores player_home_block--milestones-and-awards-scores">
         <template v-for="score in sortedScores" :key="score.color">
           <p
@@ -36,6 +36,11 @@ import {ClaimedMilestoneModel, MilestoneScore} from '@/common/models/ClaimedMile
 import {getMilestone} from '@/client/MilestoneAwardManifest';
 import {playerSymbol} from '@/client/utils/playerSymbol';
 import {Color} from '@/common/Color';
+import {fitTextWhenReady} from '@/client/utils/textFit';
+
+type Refs = {
+  name: HTMLElement | undefined;
+};
 
 export default defineComponent({
   name: 'Milestone',
@@ -52,7 +57,20 @@ export default defineComponent({
       type: Boolean,
     },
   },
+  mounted() {
+    this.fitName();
+  },
+  watch: {
+    name() {
+      this.fitName();
+    },
+  },
   methods: {
+    // Size the name to fit its medal box by measuring the rendered text rather
+    // than guessing from its length.
+    fitName(): void {
+      fitTextWhenReady(this.typedRefs.name, 'milestone-name');
+    },
     playerSymbol(color: Color): string {
       return playerSymbol(color);
     },
@@ -68,6 +86,9 @@ export default defineComponent({
     },
   },
   computed: {
+    typedRefs(): Refs {
+      return this.$refs as unknown as Refs;
+    },
     name(): string {
       return this.milestone.name.replace(/[0-9]+$/, '');
     },
