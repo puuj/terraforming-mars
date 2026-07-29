@@ -1722,8 +1722,9 @@ export class Player implements IPlayer {
 
     if (!input.optional) {
       this.timer.start();
+      this.notification = this.game.makeTurnNotification(this);
     }
-    this.notification = this.game.makeTurnNotification(this);
+
     this.waitingFor = input;
     this.waitingForCb = cb;
     this.game.inputsThisRound++;
