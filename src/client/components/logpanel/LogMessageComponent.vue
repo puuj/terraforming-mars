@@ -1,6 +1,6 @@
 <template>
    <li v-if="message !== undefined && message.data !== undefined && message.message !== undefined" @click.prevent="$emit('click')">
-    <span v-if="message.type !== LogMessageType.NEW_GENERATION" :title="when" v-html="icon"></span>
+    <span v-if="message.type === LogMessageType.DEFAULT" :title="when" v-html="icon"></span>
     <template v-for="(data, idx) of entries" :key="idx">
       <span class="log-plain-text" v-if="typeof(data) === 'string'">{{ data }}</span>
       <span v-else>
@@ -20,7 +20,7 @@
           {{undergroundResourceTokenDescription[data.value]}}
         </span>
         <span v-else-if="data.type === LogMessageDataType.SPACE" class="log-space-id" @click.prevent="$emit('spaceClicked', data.value)">
-            <svg width="20" height="14" viewBox="0 0 28 37">
+            <svg width="20" height="14" viewBox="0 0 28 38">
               <circle cx="14" cy="19" r="16" stroke="black" stroke-width="1" transform="translate(0, 2)" :fill="isMoonSpace(data.value) ? 'gray' : '#b7410e'" />
             </svg>
             {{ getSpaceName(data.value) }}
