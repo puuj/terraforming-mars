@@ -40,6 +40,8 @@ import * as authcookies from './auth/authcookies';
 import {DiscordUser} from './auth/discord';
 import {getHerokuIpAddress} from './heroku';
 import * as responses from './responses';
+import {EndGameLog} from '../routes/EndGameLog';
+import {UrlParams} from '../routes/UrlParams';
 
 const metrics = {
   request_count: new prometheus.Counter({
@@ -103,6 +105,7 @@ const handlers: Map<string, IHandler> = new Map(
     [paths.API_WAITING_FOR, ApiWaitingFor.INSTANCE],
     [paths.AUTOPASS, Autopass.INSTANCE],
     [paths.CARDS, ServeApp.INSTANCE],
+    [paths.END_GAME_LOG, EndGameLog.INSTANCE],
     ['favicon.ico', ServeAsset.INSTANCE],
     [paths.GAME, GameHandler.INSTANCE],
     [paths.GAMES_OVERVIEW, GamesOverview.INSTANCE],
@@ -212,6 +215,7 @@ export async function processRequest(req: Request, res: Response): Promise<void>
         },
         sessionid: sessionid,
         user: user,
+        urlParams: new UrlParams(url.searchParams),
       };
 
       await handler.processRequest(req, res, ctx);
