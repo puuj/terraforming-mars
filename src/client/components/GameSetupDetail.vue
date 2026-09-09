@@ -33,7 +33,7 @@
               <div v-if="gameOptions.expansions.starwars" class="create-game-expansion-icon expansion-icon-starwars" title="Star Wars"></div>
 	      <div v-else class="create-game-expansion-icon expansion-icon-starwars expansion-disabled" title="Star Wars disabled"></div>
               <div v-if="gameOptions.expansions.deltaProject" :href="rulebookUrls.deltaProject" class="tooltip" data-tooltip="Delta Project rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-deltaProject"></div></div>
-	      <div v-else class="create-game-expansion-icon expansion-icon-starwars expansion-disabled" title="Delta Project Rules disabled"></div>
+	      <div v-else class="create-game-expansion-icon expansion-icon-deltaProject expansion-disabled" title="Delta Project Rules disabled"></div>
             </li>
 
             <li><div class="setup-item" v-i18n>Board:</div>
