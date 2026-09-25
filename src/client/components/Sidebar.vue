@@ -49,15 +49,7 @@
       :class="{'sidebar_item--is-active': ui.gamesetup_detail_open}"
       @click="ui.gamesetup_detail_open = !ui.gamesetup_detail_open"
       :title="$t('game setup details')"></i>
-    <div class="info_panel" v-if="ui.gamesetup_detail_open">
-      <div class="info_panel-spacing"></div>
-      <div class="info-panel-title" v-i18n>Game Setup Details</div>
-      <GameSetupDetail :gameOptions="gameOptions" :playerNumber="playerNumber" :lastSoloGeneration="lastSoloGeneration"/>
-
-      <div class="info_panel_actions">
-        <button class="btn btn-lg btn-primary" @click="ui.gamesetup_detail_open=false" v-i18n>Ok</button>
-      </div>
-    </div>
+    <InfoPanel v-if="ui.gamesetup_detail_open" :gameOptions="gameOptions" :playerNumber="playerNumber" :lastSoloGeneration="lastSoloGeneration" :deckSize="deckSize" :discardPileSize="discardPileSize" :otherDeckSizes="otherDeckSizes" @close="ui.gamesetup_detail_open=false" />
   </div>
 
   <a href="help" target="_blank">
@@ -77,8 +69,9 @@ import {Color} from '@/common/Color';
 import {getPreferences, PreferencesManager} from '@/client/utils/PreferencesManager';
 import {TurmoilModel} from '@/common/models/TurmoilModel';
 import {PartyName} from '@/common/turmoil/PartyName';
-import GameSetupDetail from '@/client/components/GameSetupDetail.vue';
+import InfoPanel from '@/client/components/InfoPanel.vue';
 import {GameOptionsModel} from '@/common/models/GameOptionsModel';
+import {OtherDeckSizesModel} from '@/common/models/GameModel';
 import GlobalParameterValue from '@/client/components/GlobalParameterValue.vue';
 import MoonGlobalParameterValue from '@/client/components/moon/MoonGlobalParameterValue.vue';
 import {GlobalParameter} from '@/common/GlobalParameter';
@@ -152,9 +145,13 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    otherDeckSizes: {
+      type: Object as () => OtherDeckSizesModel,
+      required: true,
+    },
   },
   components: {
-    GameSetupDetail,
+    InfoPanel,
     GlobalParameterValue,
     MoonGlobalParameterValue,
     PreferencesIcon,

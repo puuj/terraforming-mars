@@ -831,19 +831,24 @@ describe('Game', () => {
     expect(deserialized.pathfindersData).is.undefined;
   });
 
-  it('deserializing a game migrates moon-logistics to moon-logistic', () => {
+  it('deserializing a game replaces invalid escape velocity options with defaults', () => {
     const player = TestPlayer.BLUE.newPlayer();
-    const game = Game.newInstance('gameid', [player], player, 'spectatorid', {moonExpansion: true});
-    const serialized = game.serialize();
-    serialized.globalsPerGeneration = [
-      {'moon-logistics': 3, 'moon-habitat': 1} as any,
-      {'moon-mining': 2},
-    ];
-    const deserialized = Game.deserialize(serialized);
-    expect(deserialized.globalsPerGeneration).deep.eq([
-      {'moon-logistic': 3, 'moon-habitat': 1},
-      {'moon-mining': 2},
-    ]);
+    const game = Game.newInstance('gameid', [player], player, 'spectatorid', {
+      escapeVelocity: {
+        thresholdMinutes: 35,
+        bonusSectionsPerAction: 2,
+        // Before the server validated escape velocity options, a cleared form field was stored as "".
+        penaltyPeriodMinutes: '' as unknown as number,
+        penaltyVPPerPeriod: 1,
+      },
+    });
+    const deserialized = Game.deserialize(game.serialize());
+    expect(deserialized.gameOptions.escapeVelocity).deep.eq({
+      thresholdMinutes: 35,
+      bonusSectionsPerAction: 2,
+      penaltyPeriodMinutes: 2,
+      penaltyVPPerPeriod: 1,
+    });
   });
 
   it('deserializing a game with awards', () => {

@@ -86,6 +86,7 @@ import {SpaceType} from '../common/boards/SpaceType';
 import {ICard} from './cards/ICard';
 import {generateGameName} from './GameName';
 import {byKey} from '@/common/utils/Ordering';
+import {sanitizeEscapeVelocityOptions} from '@/common/game/escapeVelocity';
 
 // Can be overridden by tests
 let createGameLog: () => Array<LogMessage> = () => [];
@@ -298,13 +299,13 @@ export class Game implements IGame, Logger {
     projectDeck.shuffle();
 
     const corporationDeck = new CorporationDeck(gameCards.getCorporationCards(), [], rng);
-    corporationDeck.shuffle(gameOptions.customCorporationsList);
+    corporationDeck.shuffle();
 
     const preludeDeck = new PreludeDeck(gameCards.getPreludeCards(), [], rng);
-    preludeDeck.shuffle(gameOptions.customPreludes);
+    preludeDeck.shuffle();
 
     const ceoDeck = new CeoDeck(gameCards.getCeoCards(), [], rng);
-    ceoDeck.shuffle(gameOptions.customCeos);
+    ceoDeck.shuffle();
 
     const activePlayer = firstPlayer.id;
 
@@ -1480,9 +1481,7 @@ export class Game implements IGame, Logger {
 
   public simpleAddTile(player: IPlayer, space: Space, tile: Tile) {
     space.tile = tile;
-    if (tile.tileType === TileType.OCEAN ||
-      tile.tileType === TileType.MARTIAN_NATURE_WONDERS ||
-      tile.tileType === TileType.REY_SKYWALKER) {
+    if (tile.tileType === TileType.OCEAN) {
       space.player = undefined;
     } else {
       space.player = player;
@@ -1735,6 +1734,9 @@ export class Game implements IGame, Logger {
   public static deserialize(d: SerializedGame): Game {
     const gameOptions = d.gameOptions;
     gameOptions.boardName = normalizeBoardName(gameOptions.boardName);
+    if (gameOptions.escapeVelocity !== undefined) {
+      gameOptions.escapeVelocity = sanitizeEscapeVelocityOptions(gameOptions.escapeVelocity);
+    }
     const players = d.players.map((element) => Player.deserialize(element));
     const first = players.find((player) => player.id === d.first);
     if (first === undefined) {
@@ -1833,15 +1835,6 @@ export class Game implements IGame, Logger {
     game.tradeEmbargo = d.tradeEmbargo ?? false;
     game.beholdTheEmperor = d.beholdTheEmperor ?? false;
     game.globalsPerGeneration = d.globalsPerGeneration;
-
-    // TODO(kberg): Remove this migration code by 2026-08-01
-    for (const generation of game.globalsPerGeneration) {
-      const asany = generation as any;
-      if (asany['moon-logistics']) {
-        generation['moon-logistic'] = asany['moon-logistics'];
-        delete asany['moon-logistics'];
-      }
-    }
     game.verminInEffect = d.verminInEffect;
     game.exploitationOfVenusInEffect = d.exploitationOfVenusInEffect;
     // Still in Draft or Research of generation 1

@@ -69,6 +69,18 @@ export function fakeGameOptionsModel(overrides?: RecursivePartial<GameOptionsMod
     requiresVenusTrackCompletion: false,
     twoCorpsVariant: false,
     undoOption: false,
+
+    aresHazards: false,
+    customCeos: [],
+    customColoniesList: [],
+    customCorporationsList: [],
+    customPreludes: [],
+    modularMA: false,
+    moonStandardProjectVariant: false,
+    moonStandardProjectVariant1: false,
+    startingCeos: 3,
+    startingCorporations: 2,
+    startingPreludes: 4,
     ...overrides,
   } as GameOptionsModel;
 }
@@ -81,6 +93,12 @@ export function fakeGameModel(overrides?: RecursivePartial<GameModel>): GameMode
     discardedColonies: [],
     deckSize: 0,
     discardPileSize: 0,
+    otherDeckSizes: {
+      corporations: {drawPile: 0, discardPile: 0},
+      preludes: undefined,
+      ceos: undefined,
+      globalEvents: undefined,
+    },
     expectedPurgeTimeMs: 0,
     gameAge: 0,
     gameOptions: fakeGameOptionsModel(),

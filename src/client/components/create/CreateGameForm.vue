@@ -1,11 +1,6 @@
 <template>
         <div id="create-game" class="create-game">
             <h1><span v-i18n>{{ constants.APP_NAME }}</span> — <span v-i18n>Create New Game</span></h1>
-            <div class="changelog"><a :href="wikiUrls.changelog" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank"><u v-i18n>Read our changelog to get the latest updates.</u></a></div>
-            <div class="discord-invite" v-if="playersCount===1">
-              (<span v-i18n>Looking for people to play with</span>? <a :href="constants.DISCORD_INVITE" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank"><u v-i18n>Join us on Discord</u></a>.)
-            </div>
-
             <div class="create-game-form create-game-panel create-game--block">
 
                 <div class="create-game-options">
@@ -445,6 +440,9 @@
                         </div>
 
                         <div class="create-game-players-cont">
+                            <div class="create-game-page-column">
+                                <h4 v-i18n>Players</h4>
+                            </div>
                             <div class="container">
                                 <div class="columns">
                                   <template v-for="(newPlayer, index) in getPlayers()" :key="index">
@@ -488,23 +486,29 @@
                             </div>
                         </div>
 
-                        <div class="create-game-action">
-                            <AppButton title="Create game" size="big" @click="createGame"/>
-                            <AppButton title="Reset" size="big" @click="resetSettings"/>
+                        <div class="create-game-action-row">
+                            <div class="create-game-action">
+                                <AppButton title="Create game" size="big" @click="createGame"/>
+                                <AppButton title="Reset" size="big" @click="resetSettings"/>
 
-                            <label>
-                                <div class="btn btn-primary btn-action btn-lg"><i class="icon icon-upload"></i></div>
-                                <input style="display: none" type="file" accept=".json" id="settings-file" ref="file" @change="uploadSettings()">
-                            </label>
+                                <label>
+                                    <div class="btn btn-primary btn-action btn-lg"><i class="icon icon-upload"></i></div>
+                                    <input style="display: none" type="file" accept=".json" id="settings-file" ref="file" @change="uploadSettings()">
+                                </label>
 
-                            <label>
-                                <div @click="downloadSettings()" class="btn btn-primary btn-action btn-lg"><i class="icon icon-download"></i></div>
-                            </label>
+                                <label>
+                                    <div @click="downloadSettings()" class="btn btn-primary btn-action btn-lg"><i class="icon icon-download"></i></div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <div class="changelog"><a :href="wikiUrls.changelog" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank"><u v-i18n>Read our changelog to get the latest updates.</u></a></div>
+            <div class="discord-invite">
+              (<span v-i18n>Looking for people to play with</span>? <a :href="constants.DISCORD_INVITE" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank"><u v-i18n>Join us on Discord</u></a>.)
+            </div>
 
             <CorporationsFilter
                 ref="corporationsFilter"
@@ -599,6 +603,7 @@ import {CreateGameSettingsStorage} from './CreateGameSettingsStorage';
 import {getColony} from '@/client/colonies/ClientColonyManifest';
 import {RULEBOOK_URLS, WIKI, WIKI_URLS} from '@/client/utils/WikiLinks';
 import {setDocumentTitle} from '@/client/utils/documentTitle';
+import {sanitizeEscapeVelocityOptions} from '@/common/game/escapeVelocity';
 
 const REVISED_COUNT_ALGORITHM = false;
 const createGameSettingsStorage = new CreateGameSettingsStorage();
@@ -1195,6 +1200,15 @@ export default defineComponent({
         customPreludes.length = 0;
       }
 
+      // Check custom CEO count. The server deals at least CEO_CARDS_DEALT_PER_PLAYER CEOs to each player.
+      if (customCeos.length > 0) {
+        const requiredCeoCount = players.length * Math.max(startingCeos, constants.CEO_CARDS_DEALT_PER_PLAYER);
+        if (customCeos.length < requiredCeoCount) {
+          window.alert(translateTextWithParams('Must select at least ${0} CEOs', [requiredCeoCount.toString()]));
+          return undefined;
+        }
+      }
+
       // Clone game checks
       if (this.clonedGameId !== undefined && this.seededGame) {
         const gameData = await fetch(paths.API_CLONEABLEGAME + '?id=' + this.clonedGameId)
@@ -1263,12 +1277,12 @@ export default defineComponent({
         moonStandardProjectVariant1: this.moonStandardProjectVariant1,
         altVenusBoard: this.altVenusBoard,
         escapeVelocity: this.escapeVelocityMode ?
-          {
+          sanitizeEscapeVelocityOptions({
             thresholdMinutes: this.escapeVelocityThreshold,
             bonusSectionsPerAction: this.escapeVelocityBonusSeconds,
             penaltyPeriodMinutes: this.escapeVelocityPeriod,
             penaltyVPPerPeriod: this.escapeVelocityPenalty,
-          } : undefined,
+          }) : undefined,
         twoCorpsVariant,
         startingCeos,
         startingPreludes,
