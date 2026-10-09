@@ -110,16 +110,7 @@
   height: 24px;
 }
 
-.board-space-bonus--bonustemperature {
-  background: url(./assets/board/bonus_temperature.png);
-  background-repeat: no-repeat;
-  background-size: 32px 21px;
-  width: 36px;
-  height: 21px;
-  background-position: center;
-  filter: saturate(1.5);
-}
-
+// TODO(kberg): Rename to bonustemperature after 2026-12-01
 .board-space-bonus--bonustemperature4mc {
   background: url(./assets/board/bonus_temperature-4mc.png);
   background-repeat: no-repeat;
@@ -579,8 +570,9 @@
     background-color: #444;
     clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
     cursor: pointer;
+    box-sizing: border-box;
     width: 46px;
-    height: 51px;
+    height: 50px;
     line-height: 12px;
     padding-top: 14px;
     text-align: center;
@@ -633,9 +625,9 @@
   anyresource1;
 
 each(@token_types, {
-.underground-token--@{value} {
-  background-image: url("assets/underworld/underground-resource--@{value}.png");
-}
+  .underground-token--@{value} {
+    background-image: url("assets/underworld/underground-resource--@{value}.png");
+  }
 })
 
 .underground-excavator {

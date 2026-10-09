@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div v-if="experimentalUI()" v-i18n>
+  <div v-if="experimentalUI" v-i18n>
     <label>
       <input type="checkbox" v-model="showReorder" > Reorder Cards
     </label>
@@ -27,6 +27,7 @@ import {CardModel} from '@/common/models/CardModel';
 import {CardOrderStorage} from '@/client/utils/CardOrderStorage';
 import {getPreferences} from '@/client/utils/PreferencesManager';
 import {comparing} from '@/common/utils/Ordering';
+import {SortOrder, sortCards} from '@/client/utils/SortOrder';
 
 type DataModel = {
   /** When true use the point-and-click reorder UI */
@@ -36,6 +37,29 @@ type DataModel = {
   /** When defined, it is the name of the card being dragged. */
   dragCard: CardName | undefined;
 };
+
+/**
+ * Returns the stored order for `cards`, with any cards missing from storage placed at the end.
+ */
+function initialCardOrder(playerId: string, cards: ReadonlyArray<CardModel>): {[x: string]: number} {
+  const cache = CardOrderStorage.getCardOrder(playerId);
+  const cardOrder: {[x: string]: number} = {};
+  const keys = Object.keys(cache);
+  let max = 0;
+  for (const key of keys) {
+    if (cards.find((card) => card.name === key) !== undefined) {
+      cardOrder[key] = cache[key];
+      max = Math.max(max, cache[key]);
+    }
+  }
+  max++;
+  for (const card of cards) {
+    if (cardOrder[card.name] === undefined) {
+      cardOrder[card.name] = max++;
+    }
+  }
+  return cardOrder;
+}
 
 export default defineComponent({
   name: 'SortableCards',
@@ -51,27 +75,31 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    /**
+     * Current sort order, or undefined once the player reorders by hand.
+     *
+     * Changing it re-sorts the cards.
+     */
+    sortOrder: {
+      type: Object as () => SortOrder | undefined,
+      required: false,
+    },
+  },
+  emits: ['update:sortOrder'],
+  watch: {
+    cards(cards: Array<CardModel>): void {
+      this.cardOrder = initialCardOrder(this.playerId, cards);
+    },
+    sortOrder(sortOrder: SortOrder | undefined): void {
+      if (sortOrder !== undefined) {
+        this.sortBy(sortOrder);
+      }
+    },
   },
   data(): DataModel {
-    const cache = CardOrderStorage.getCardOrder(this.playerId);
-    const cardOrder: {[x: string]: number} = {};
-    const keys = Object.keys(cache);
-    let max = 0;
-    for (const key of keys) {
-      if (this.cards.find((card) => card.name === key) !== undefined) {
-        cardOrder[key] = cache[key];
-        max = Math.max(max, cache[key]);
-      }
-    }
-    max++;
-    for (const card of this.cards) {
-      if (cardOrder[card.name] === undefined) {
-        cardOrder[card.name] = max++;
-      }
-    }
     return {
       showReorder: false,
-      cardOrder: cardOrder,
+      cardOrder: initialCardOrder(this.playerId, this.cards),
       dragCard: undefined,
     };
   },
@@ -81,6 +109,10 @@ export default defineComponent({
         this.cardOrder,
         this.cards,
       );
+    },
+    sortBy(sortOrder: SortOrder): void {
+      sortCards(this.getSortedCards(), sortOrder).forEach((card, index) => this.cardOrder[card.name] = index + 1);
+      CardOrderStorage.updateCardOrder(this.playerId, this.cardOrder);
     },
     onDragStart(source: CardName): void {
       this.dragCard = source;
@@ -104,6 +136,7 @@ export default defineComponent({
       const draggedCard = cardNames.splice(dragIndex, 1)[0];
       cardNames.splice(cardNames.indexOf(source) + (insertAfter ? 1 : 0), 0, draggedCard);
       cardNames.forEach((cardName, index) => this.cardOrder[cardName] = index + 1);
+      this.$emit('update:sortOrder');
       CardOrderStorage.updateCardOrder(this.playerId, this.cardOrder);
     },
     doNotDragAndDropOnReorder() {
@@ -133,12 +166,15 @@ export default defineComponent({
                 .forEach((entry, i) => {
                   this.cardOrder[entry[0]] = i+1;
                 });
+              this.$emit('update:sortOrder');
               CardOrderStorage.updateCardOrder(this.playerId, this.cardOrder);
             }
           }
         }
       }
     },
+  },
+  computed: {
     experimentalUI(): boolean {
       return getPreferences().experimental_ui;
     },

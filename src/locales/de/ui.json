@@ -631,7 +631,7 @@
   "Do nothing": "Mache nichts",
   "Ok ${0}": "OK ${0}",
 
-  "Starting Megacredits:": "Startkapital:",
+  "Starting M€:": "Startkapital:",
   "After Preludes:": "Nach Präludium:",
 
   "resources": "Resource(n)",
@@ -990,7 +990,6 @@
   "Choose 2 unit(s) of production to lose": "Wähle 2 Einheiten Produktion, die verloren gehen",
   "Choose 3 unit(s) of production to lose": "Wähle 3 Einheiten Produktion, die verloren gehen",
   "Choose 4 unit(s) of production to lose": "Wähle 4 Einheiten Produktion, die verloren gehen",
-  "Which resource production would you prefer to decrease?": "Welche Produktionsart bevorzugst Du zu reduzieren?",
   "Reveal erosions at:": "Erosionen aufdecken bei:",
   "Remove dust storms at:": "Entferne Sand Stürme bei:",
   "Amplify erosions at:": "Erosionen verstärken bei:",
@@ -1131,7 +1130,7 @@
   "corporation": "Konzern",
   "Hide discount on cards": "Verberge den Rabatt auf den Karten",
   "Hide sidebar notification": "Verberge Seitenrand Benachrichtigungen",
-  "Learner Mode (req. refresh)": "Beginner Modus (erfordert Aktualisierung)",
+  "Learner Mode": "Beginner Modus",
   "The id of this game is ${0}": "Die ID des Spiels ist ${0}",
   "Good luck ${0}!": "Viel Erfolg ${0}!",
   "Not enough cards selected": "Nicht genug Karten gewählt",

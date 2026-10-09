@@ -3,7 +3,7 @@
     <section>
       <dialog id="alert-dialog" class="alert-dialog">
         <form method="dialog">
-          <p id="alert-title" class="title" v-i18n>Error with input</p>
+          <p id="alert-dialog-title" class="title" v-i18n>Error with input</p>
           <p id="alert-dialog-message"></p>
           <menu class="dialog-menu centered-content">
             <button id="alert-dialog-button" class="btn btn-lg btn-primary">OK</button>
@@ -24,17 +24,14 @@
       <PlayerHome
         v-else-if="screen === 'player-home' && playerView !== undefined"
         :player-view="playerView"
-        :key="playerkey"
       />
       <SpectatorHome
         v-else-if="screen === 'spectator-home' && spectator !== undefined"
         :spectator="spectator"
-        :key="'spectator-' + playerkey"
       />
       <GameEnd
-        v-else-if="screen === 'the-end'"
-        :player-view="playerView"
-        :spectator="spectator"
+        v-else-if="screen === 'the-end' && participant !== undefined"
+        :participant="participant"
       />
       <GamesOverview
         v-else-if="screen === 'games-overview'"
@@ -100,10 +97,6 @@ export type MainAppData = {
      */
     spectator?: SpectatorModel;
     playerView?: PlayerViewModel;
-    // playerKey might seem to serve no function, but it's basically an arbitrary value used
-    // to force a rerender / refresh.
-    // See https://michaelnthiessen.com/force-re-render/
-    playerkey: number;
     isServerSideRequestInProgress: boolean;
     componentsVisibility: {[x: string]: boolean};
     game: SimpleGameModel | undefined;
@@ -122,7 +115,6 @@ export default defineComponent({
   data(): MainAppData {
     return {
       screen: 'empty',
-      playerkey: 0,
       isServerSideRequestInProgress: false,
       componentsVisibility: {
         'milestones': true,
@@ -154,6 +146,11 @@ export default defineComponent({
     Help,
     AdminHome,
     LoginHome,
+  },
+  computed: {
+    participant(): ViewModel | undefined {
+      return this.playerView ?? this.spectator;
+    },
   },
   methods: {
     showAlert(title: string, message: string, cb: () => void = () => {}): void {
@@ -204,7 +201,6 @@ export default defineComponent({
           } else if (path === paths.SPECTATOR) {
             app.spectator = model as SpectatorModel;
           }
-          app.playerkey++;
           if (
             model.game.phase === 'end' &&
               window.location.search.includes('&noredirect') === false

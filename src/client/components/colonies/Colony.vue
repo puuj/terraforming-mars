@@ -13,7 +13,7 @@
       <span class="colony-card-title-span" :class="colony.name + '-title'">{{colony.name}}</span>
     </div>
 
-    <div class="colony-content" :style="'margin-top: {{colonyContentOffset}}px;'">
+    <div class="colony-content">
     <!-- Bonus for colony owners when somebody trades -->
       <template v-if="metadata.colony.type === ColonyBenefit.GAIN_RESOURCES">
         <template v-if="metadata.colony.resource !== Resource.MEGACREDITS">
@@ -112,7 +112,7 @@
       <span v-else class="colony-background-color" v-i18n>Trade Income</span>
 
     <!-- Show the spaces for the player cubes and the white cube -->
-    <ColonyRow :metadata="metadata" :colony="colony"/>
+    <ColonyRow :metadata="metadata" :colony="colony" :fadeMarker="fadeMarker"/>
     <!-- show the numbers underneath the colony row -->
     <ColonyTradeRow :metadata="metadata"/>
   </div>
@@ -130,7 +130,7 @@ import {ColonyName} from '@/common/colonies/ColonyName';
 import {ColonyMetadata} from '@/common/colonies/ColonyMetadata';
 import ColonyRow from '@/client/components/colonies/ColonyRow.vue';
 import ColonyTradeRow from '@/client/components/colonies/ColonyTradeRow.vue';
-import {getColony} from '@/client/colonies/ClientColonyManifest';
+import {getColonyOrThrow} from '@/client/colonies/ClientColonyManifest';
 import {ColonyBenefit} from '@/common/colonies/ColonyBenefit';
 import {Resource} from '@/common/Resource';
 import {translateText} from '@/client/directives/i18n';
@@ -146,6 +146,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    // When true, the trade track marker fades in and out so the build bonus underneath is visible.
+    fadeMarker: {
+      type: Boolean,
+    },
   },
   components: {
     ColonyRow,
@@ -153,7 +157,7 @@ export default defineComponent({
   },
   computed: {
     metadata(): ColonyMetadata {
-      return getColony(this.colony.name);
+      return getColonyOrThrow(this.colony.name);
     },
     colonyResourceClass(): string {
       const resource = this.metadata.cardResource;

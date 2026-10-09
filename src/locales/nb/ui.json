@@ -446,7 +446,7 @@
 	"Ok 1": "",
 	"Ok 2": "",
 
-	"Starting Megacredits:": "Startkapital:",
+	"Starting M€:": "Startkapital:",
 	"After Preludes:": "Etter preludium:",
 
 	"Select a card to discard": "Velg et kort å kaste",
@@ -714,7 +714,6 @@
 
 	"Choose 1 unit(s) of production to lose": "Velg 1 enhet produksjon som skal mistes",
 	"Choose 2 unit(s) of production to lose": "Velg 2 enheter produksjon som skal mistes",
-	"Which resource production would you prefer to decrease?": "Hvilken ressursproduksjon vil du redusere?",
 	"Amplify erosions at:": "Forsterk erosjon på:",
 	"Save": "Lagre",
 
@@ -805,7 +804,7 @@
 	"corporation": "konsern",
 	"Hide discount on cards": "Skjul rabatt på kort",
 	"Hide sidebar notification": "Skjul varsler i sidepanelet",
-	"Learner Mode (req. refresh)": "Nybegynner-modus (krever at siden lastes på nytt)",
+	"Learner Mode": "Nybegynner-modus",
 	"Select how to pay for action": "Velg hvordan du vil betale for handlingen",
 	"Game Setup Details": "Detaljer om spilloppsett",
 

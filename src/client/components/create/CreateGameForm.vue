@@ -117,7 +117,7 @@
                                     <span v-i18n>Agendas</span>&nbsp;<a href="https://www.notion.so/Political-Agendas-8c6b0b018a884692be29b3ef44b340a9" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank">&#9432;</a>
                                 </label>
 
-                                <div class="create-game-page-column-row" v-if="isPoliticalAgendasExtensionEnabled()">
+                                <div class="create-game-page-column-row" v-if="isPoliticalAgendasExtensionEnabled">
                                     <div>
                                     <input type="radio" name="agendaStyle" v-model="politicalAgendasExtension" :value="getPoliticalAgendasExtensionAgendaStyle('random')" id="randomAgendaStyle-radio">
                                     <label class="label-agendaStyle agendaStyle-random" for="randomAgendaStyle-radio">
@@ -387,7 +387,7 @@
                                 <span v-i18n>Random Milestones/Awards</span>&nbsp;<a :href="wikiUrls.randomMilestonesAndAwards" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank">&#9432;</a>
                             </label>
 
-                            <div class="create-game-page-column-row" v-if="isRandomMAEnabled()">
+                            <div class="create-game-page-column-row" v-if="isRandomMAEnabled">
                                 <div>
                                 <input type="radio" name="randomMAOption" v-model="randomMA" :value="getRandomMaOptionType('limited')" id="limitedRandomMA-radio">
                                 <label class="label-randomMAOption" for="limitedRandomMA-radio">
@@ -445,7 +445,7 @@
                             </div>
                             <div class="container">
                                 <div class="columns">
-                                  <template v-for="(newPlayer, index) in getPlayers()" :key="index">
+                                  <template v-for="(newPlayer, index) in getPlayers" :key="index">
                                     <div>
                                       <div :class="'form-group col6 create-game-player '+getPlayerContainerColorClass(newPlayer.color)">
                                           <div>
@@ -463,7 +463,7 @@
                                           </div>
                                           <div>
                                               <!-- <template v-if="beginnerOption"> -->
-                                                  <label v-if="isBeginnerToggleEnabled()" class="form-switch form-inline create-game-beginner-option-label">
+                                                  <label v-if="isBeginnerToggleEnabled" class="form-switch form-inline create-game-beginner-option-label">
                                                       <input type="checkbox" v-model="newPlayer.beginner">
                                                       <i class="form-icon"></i> <span v-i18n>Beginner?</span>&nbsp;<a :href="wikiUrls.beginnerCorporation" class="tooltip" v-i18n data-tooltip="Link opens in a new tab/window" target="_blank">&#9432;</a>
                                                   </label>
@@ -485,22 +485,24 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="create-game-action-row">
-                            <div class="create-game-action">
-                                <AppButton title="Create game" size="big" @click="createGame"/>
-                                <AppButton title="Reset" size="big" @click="resetSettings"/>
+                <div class="create-game-action-row">
+                    <div class="create-game-action">
+                        <label>
+                            <div class="btn btn-primary btn-action btn-lg"><i class="icon icon-upload"></i></div>
+                            <input style="display: none" type="file" accept=".json" id="settings-file" ref="file" @change="uploadSettings()">
+                        </label>
 
-                                <label>
-                                    <div class="btn btn-primary btn-action btn-lg"><i class="icon icon-upload"></i></div>
-                                    <input style="display: none" type="file" accept=".json" id="settings-file" ref="file" @change="uploadSettings()">
-                                </label>
+                        <label>
+                            <div @click="downloadSettings()" class="btn btn-primary btn-action btn-lg"><i class="icon icon-download"></i></div>
+                        </label>
 
-                                <label>
-                                    <div @click="downloadSettings()" class="btn btn-primary btn-action btn-lg"><i class="icon icon-download"></i></div>
-                                </label>
-                            </div>
-                        </div>
+                        <AppButton class="create-game-action-gap" title="Reset" size="big" @click="resetSettings"/>
+                        <AppButton class="create-game-action-gap" title="Create game" size="big" @click="createGame" :disabled="hasBlockingValidationErrors"/>
+                        <span v-if="hasBlockingValidationErrors" class="create-game-custom-preludes-warning create-game-validation-blocker" @click="showValidationErrors = true">&#9888;&#xFE0E;</span>
+                        <span v-else-if="hasValidationProblems" class="create-game-validation-warning" @click="showValidationErrors = true">&#9888;&#xFE0F;</span>
                     </div>
                 </div>
             </div>
@@ -568,6 +570,7 @@
               />
             </div>
           <PreferencesIcon/>
+          <ValidationErrorsPopup v-if="showValidationErrors" :errors="validationErrors" @close="showValidationErrors = false"/>
         </div>
 </template>
 
@@ -599,15 +602,13 @@ import {CreateGameModel} from './CreateGameModel';
 import {paths} from '@/common/app/paths';
 import {JSONProcessor} from './JSONProcessor';
 import {defaultCreateGameModel} from './defaultCreateGameModel';
-import {CreateGameSettingsStorage} from './CreateGameSettingsStorage';
+import {createGameSettingsStorage} from './createGameSettingsStorage';
 import {getColony} from '@/client/colonies/ClientColonyManifest';
 import {RULEBOOK_URLS, WIKI, WIKI_URLS} from '@/client/utils/WikiLinks';
 import {setDocumentTitle} from '@/client/utils/documentTitle';
 import {sanitizeEscapeVelocityOptions} from '@/common/game/escapeVelocity';
-
-const REVISED_COUNT_ALGORITHM = false;
-const createGameSettingsStorage = new CreateGameSettingsStorage();
-
+import {validateNewGameConfig, validationDetails, ValidationErrors} from '@/common/game/validateNewGameConfig';
+import ValidationErrorsPopup from './ValidationErrorsPopup.vue';
 
 type Refs = {
   file: HTMLInputElement;
@@ -616,6 +617,7 @@ type Refs = {
 };
 
 type FormModel = {
+  showValidationErrors: boolean;
   preludeToggled: boolean;
   uploading: boolean;
   previousViewport: string;
@@ -626,6 +628,7 @@ export default defineComponent({
   data(): CreateGameModel & FormModel {
     return {
       ...defaultCreateGameModel(),
+      showValidationErrors: false,
       preludeToggled: false,
       uploading: false,
       previousViewport: '',
@@ -639,6 +642,7 @@ export default defineComponent({
     CorporationsFilter,
     PreludesFilter,
     PreferencesIcon,
+    ValidationErrorsPopup,
   },
   watch: {
     allOfficialExpansions(value: boolean) {
@@ -710,6 +714,77 @@ export default defineComponent({
     wikiUrls(): typeof RULEBOOK_URLS & typeof WIKI_URLS {
       return {...RULEBOOK_URLS, ...WIKI_URLS};
     },
+    /**
+     * The game settings, as they'd be sent to the server.
+     *
+     * serializeSettings finishes the players and the escape velocity values, and checks the cloned game.
+     */
+    newGameConfig(): NewGameConfig {
+      return {
+        players: this.players.slice(0, this.playersCount),
+        expansions: this.expansions,
+        draftVariant: this.draftVariant,
+        showOtherPlayersVP: this.showOtherPlayersVP,
+        customCorporationsList: this.customCorporations,
+        customColoniesList: this.customColonies,
+        customCeos: this.customCeos,
+        customPreludes: this.customPreludes,
+        bannedCards: this.bannedCards,
+        includedCards: this.includedCards,
+        board: this.board,
+        seed: this.seed,
+        solarPhaseOption: this.solarPhaseOption,
+        aresExtremeVariant: this.aresExtremeVariant,
+        politicalAgendasExtension: this.politicalAgendasExtension,
+        undoOption: this.undoOption,
+        showTimers: this.showTimers,
+        fastModeOption: this.fastModeOption,
+        removeNegativeGlobalEventsOption: this.removeNegativeGlobalEventsOption,
+        includeFanMA: this.includeFanMA,
+        modularMA: this.modularMA,
+        startingCorporations: this.startingCorporations,
+        soloTR: this.soloTR,
+        clonedGamedId: this.seededGame ? this.clonedGameId : undefined,
+        initialDraft: this.initialDraft,
+        preludeDraftVariant: this.preludeDraftVariant ?? false,
+        ceosDraftVariant: this.ceosDraftVariant ?? false,
+        randomMA: this.randomMA,
+        shuffleMapOption: this.shuffleMapOption,
+        randomFirstPlayer: this.randomFirstPlayer,
+        requiresVenusTrackCompletion: this.requiresVenusTrackCompletion,
+        requiresMoonTrackCompletion: this.requiresMoonTrackCompletion,
+        moonStandardProjectVariant: this.moonStandardProjectVariant,
+        moonStandardProjectVariant1: this.moonStandardProjectVariant1,
+        altVenusBoard: this.altVenusBoard,
+        // Not sanitized, so validation can catch negative values.
+        escapeVelocity: this.escapeVelocityMode ? {
+          thresholdMinutes: this.escapeVelocityThreshold,
+          bonusSectionsPerAction: this.escapeVelocityBonusSeconds,
+          penaltyPeriodMinutes: this.escapeVelocityPeriod,
+          penaltyVPPerPeriod: this.escapeVelocityPenalty,
+        } : undefined,
+        twoCorpsVariant: this.twoCorpsVariant,
+        startingCeos: this.startingCeos,
+        startingPreludes: this.startingPreludes,
+      };
+    },
+    validationErrors(): ValidationErrors {
+      return validateNewGameConfig(this.newGameConfig, {
+        getCardCompatibility: (name) => getCard(name)?.compatibility ?? [],
+        getColonyExpansion: (name) => {
+          return getColony(name)?.expansion;
+        },
+      });
+    },
+    hasValidationProblems(): boolean {
+      return Object.values(this.validationErrors).some((value) => Array.isArray(value) ? value.length > 0 : Boolean(value));
+    },
+    hasBlockingValidationErrors(): boolean {
+      return (Object.keys(validationDetails) as Array<keyof ValidationErrors>).some((key) => {
+        const value = this.validationErrors[key];
+        return validationDetails[key].blocking && (Array.isArray(value) ? value.length > 0 : Boolean(value));
+      });
+    },
     typedRefs(): Refs {
       return this.$refs as Refs;
     },
@@ -742,10 +817,22 @@ export default defineComponent({
         RandomBoardOption.ALL,
       ];
     },
+    getPlayers(): Array<NewPlayerModel> {
+      return this.players.slice(0, this.playersCount);
+    },
+    isRandomMAEnabled(): Boolean {
+      return this.randomMA !== RandomMAOptionType.NONE;
+    },
+    isPoliticalAgendasExtensionEnabled(): Boolean {
+      return this.politicalAgendasExtension !== 'Standard';
+    },
+    isBeginnerToggleEnabled(): Boolean {
+      return !(this.initialDraft || this.expansions.prelude || this.expansions.venus || this.expansions.colonies || this.expansions.turmoil);
+    },
   },
   methods: {
     restoreLastSettings() {
-      const settings = createGameSettingsStorage.loadSettings();
+      const settings = createGameSettingsStorage.load();
       if (settings === undefined) {
         return;
       }
@@ -755,8 +842,8 @@ export default defineComponent({
           this.showSettingsLoadResult('Restore settings', processor);
         }
       } catch (e) {
-        // TODO(rusliksu): show the restore error in the UI instead of logging only to the console.
         console.warn('Could not restore create game settings:', e);
+        vueRoot(this).showAlert('Restore settings', 'Error restoring settings ' + e);
       }
     },
     applySettings(json: JSONObject): JSONProcessor {
@@ -797,7 +884,7 @@ export default defineComponent({
       }
     },
     resetSettings() {
-      createGameSettingsStorage.clearSettings();
+      createGameSettingsStorage.clear();
       Object.assign(this, defaultCreateGameModel(), {
         preludeToggled: false,
         uploading: false,
@@ -867,12 +954,6 @@ export default defineComponent({
     updateCustomCeos(customCeos: Array<CardName>) {
       this.customCeos = customCeos;
     },
-    getPlayers(): Array<NewPlayerModel> {
-      return this.players.slice(0, this.playersCount);
-    },
-    isRandomMAEnabled(): Boolean {
-      return this.randomMA !== RandomMAOptionType.NONE;
-    },
     randomMAToggle() {
       if (this.randomMA === RandomMAOptionType.NONE) {
         this.randomMA = RandomMAOptionType.LIMITED;
@@ -888,9 +969,6 @@ export default defineComponent({
       } else {
         return RandomMAOptionType.NONE;
       }
-    },
-    isPoliticalAgendasExtensionEnabled(): Boolean {
-      return this.politicalAgendasExtension !== 'Standard';
     },
     politicalAgendasExtensionToggle() {
       if (this.politicalAgendasExtension === 'Standard') {
@@ -908,9 +986,6 @@ export default defineComponent({
         console.warn('AgendaStyle not found');
         return 'Standard';
       }
-    },
-    isBeginnerToggleEnabled(): Boolean {
-      return !(this.initialDraft || this.expansions.prelude || this.expansions.venus || this.expansions.colonies || this.expansions.turmoil);
     },
     getPlayersCountText(count: number): string {
       if (count === 1) {
@@ -1028,186 +1103,7 @@ export default defineComponent({
         return player;
       });
 
-      const draftVariant = this.draftVariant;
-      const initialDraft = this.initialDraft;
-      const randomMA = this.randomMA;
-      const showOtherPlayersVP = this.showOtherPlayersVP;
-      const solarPhaseOption = this.solarPhaseOption;
-      const shuffleMapOption = this.shuffleMapOption;
-      const customColonies = this.customColonies;
-      const customCorporations = this.customCorporations;
-      const customPreludes = this.customPreludes;
-      const bannedCards = this.bannedCards;
-      const includedCards = this.includedCards;
-      const board = this.board;
-      const seed = this.seed;
-      const politicalAgendasExtension = this.politicalAgendasExtension;
-      const undoOption = this.undoOption;
-      const showTimers = this.showTimers;
-      const fastModeOption = this.fastModeOption;
-      const removeNegativeGlobalEventsOption = this.removeNegativeGlobalEventsOption;
-      const includeFanMA = this.includeFanMA;
-      const startingCorporations = this.startingCorporations;
-      const soloTR = this.soloTR;
-      const randomFirstPlayer = this.randomFirstPlayer;
-      const requiresVenusTrackCompletion = this.requiresVenusTrackCompletion;
-      const twoCorpsVariant = this.twoCorpsVariant;
-      const customCeos = this.customCeos;
-      const startingCeos = this.startingCeos;
-      const startingPreludes = this.startingPreludes;
       let clonedGamedId: undefined | GameId = undefined;
-
-      // Check custom colony count
-      if (customColonies.length > 0) {
-        const playersCount = players.length;
-        let neededColoniesCount = playersCount + 2;
-        if (playersCount === 1) {
-          neededColoniesCount = 4;
-        } else if (playersCount === 2) {
-          neededColoniesCount = 5;
-        }
-
-        if (customColonies.length < neededColoniesCount) {
-          window.alert(translateTextWithParams('Must select at least ${0} colonies', [neededColoniesCount.toString()]));
-          return undefined;
-        }
-
-        let valid = true;
-        for (const colonyName of customColonies) {
-          const colony = getColony(colonyName);
-          if (colony.expansion !== undefined && !this.expansions[colony.expansion]) {
-            valid = false;
-            break;
-          }
-        }
-        if (valid === false) {
-          const confirm = window.confirm(translateText(
-            'Some of the colonies you selected need expansions you have not enabled. Using them might break your game. Press OK to continue or Cancel to change your selections.'));
-          if (confirm === false) {
-            return undefined;
-          }
-        }
-      }
-
-      if (players.length === 1 && this.expansions.corpera === false) {
-        const confirm = window.confirm(translateText(
-          'We do not recommend playing a solo game without the Corporate Era. Press OK if you want to play without it.'));
-        if (confirm === false) {
-          return undefined;
-        }
-      }
-
-      // Check Prelude 2 + Pathfinders infinite energy production
-      let energyProductionBug = true;
-      if (customCorporations.length > 0 && !customCorporations.includes(CardName.THORGATE)) {
-        energyProductionBug = false;
-      }
-      if (this.bannedCards.includes(CardName.STANDARD_TECHNOLOGY)) {
-        energyProductionBug = false;
-      }
-
-      if (this.bannedCards.includes(CardName.SUITABLE_INFRASTRUCTURE)) {
-        energyProductionBug = false;
-      } else {
-        if (this.expansions.prelude2 === false && !this.includedCards.includes(CardName.SUITABLE_INFRASTRUCTURE)) {
-          energyProductionBug = false;
-        }
-      }
-
-      if (this.bannedCards.includes(CardName.HIGH_TEMP_SUPERCONDUCTORS)) {
-        energyProductionBug = false;
-      } else {
-        if (this.expansions.pathfinders === false && !this.includedCards.includes(CardName.HIGH_TEMP_SUPERCONDUCTORS)) {
-          energyProductionBug = false;
-        }
-      }
-
-      if (energyProductionBug === true) {
-        const confirm = window.confirm(translateText(
-          'It is possible with ThorGate, Standard Technology, Suitable Infrastructure, and High Temp. Superconductors for a player to have infinite energy production. Press OK to continue or Cancel to change your selections.'));
-        if (confirm === false) {
-          return undefined;
-        }
-      }
-
-      // Check custom corp count
-      if (customCorporations.length > 0) {
-        let neededCorpsCount = players.length * startingCorporations;
-        if (REVISED_COUNT_ALGORITHM) {
-          if (this.twoCorpsVariant) {
-            // Add an additional 4 for the Merger prelude
-            // Everyone-Merger needs an additional 4 corps per player
-            //  NB: This will not cover the case when no custom corp list is set!
-            //  It _can_ come about if  the number of corps included in all expansions is still not enough.
-            neededCorpsCount = (players.length * startingCorporations) + (players.length * 4);
-          } else {
-            neededCorpsCount = players.length * startingCorporations;
-            // Merger Prelude alone needs 4 additional preludes
-            if (this.expansions.prelude && this.expansions.promo) {
-              neededCorpsCount += 4;
-            }
-          }
-        }
-        if (customCorporations.length < neededCorpsCount) {
-          window.alert(translateTextWithParams('Must select at least ${0} corporations', [neededCorpsCount.toString()]));
-          return undefined;
-        }
-        let valid = true;
-        for (const corp of customCorporations) {
-          const card = getCard(corp);
-          for (const module of card?.compatibility ?? []) {
-            if (!this.expansions[module]) {
-              valid = false;
-            }
-          }
-        }
-        if (valid === false) {
-          const confirm = window.confirm(translateText(
-            'Some of the corps you selected need expansions you have not enabled. Using them might break your game. Press OK to continue or Cancel to change your selections.'));
-          if (confirm === false) {
-            return undefined;
-          }
-        }
-      } else {
-        customCorporations.length = 0;
-      }
-
-      // TODO(kberg): this is a direct copy of the code right above.
-      // Check custom prelude count
-      if (customPreludes.length > 0) {
-        const requiredPreludeCount = players.length * startingPreludes;
-        if (customPreludes.length < requiredPreludeCount) {
-          window.alert(translateTextWithParams('Must select at least ${0} Preludes', [requiredPreludeCount.toString()]));
-          return undefined;
-        }
-        let valid = true;
-        for (const prelude of customPreludes) {
-          const card = getCard(prelude);
-          for (const module of card?.compatibility ?? []) {
-            if (!this.expansions[module]) {
-              valid = false;
-            }
-          }
-        }
-        if (valid === false) {
-          const confirm = window.confirm(translateText(
-            'Some of the Preludes you selected need expansions you have not enabled. Using them might break your game. Press OK to continue or Cancel to change your selections.'));
-          if (confirm === false) {
-            return undefined;
-          }
-        }
-      } else {
-        customPreludes.length = 0;
-      }
-
-      // Check custom CEO count. The server deals at least CEO_CARDS_DEALT_PER_PLAYER CEOs to each player.
-      if (customCeos.length > 0) {
-        const requiredCeoCount = players.length * Math.max(startingCeos, constants.CEO_CARDS_DEALT_PER_PLAYER);
-        if (customCeos.length < requiredCeoCount) {
-          window.alert(translateTextWithParams('Must select at least ${0} CEOs', [requiredCeoCount.toString()]));
-          return undefined;
-        }
-      }
 
       // Clone game checks
       if (this.clonedGameId !== undefined && this.seededGame) {
@@ -1239,62 +1135,24 @@ export default defineComponent({
         clonedGamedId = undefined;
       }
 
+      const config = this.newGameConfig;
       return {
+        ...config,
         players,
-        expansions: this.expansions,
-        draftVariant,
-        showOtherPlayersVP,
-        customCorporationsList: customCorporations,
-        customColoniesList: customColonies,
-        customCeos: customCeos,
-        customPreludes,
-        bannedCards,
-        includedCards,
-        board,
-        seed,
-        solarPhaseOption,
-        aresExtremeVariant: this.aresExtremeVariant,
-        politicalAgendasExtension: politicalAgendasExtension,
-        undoOption,
-        showTimers,
-        fastModeOption,
-        removeNegativeGlobalEventsOption,
-        includeFanMA,
-        modularMA: this.modularMA,
-        startingCorporations,
-        soloTR,
         clonedGamedId,
-        initialDraft,
-        preludeDraftVariant: this.preludeDraftVariant ?? false,
-        ceosDraftVariant: this.ceosDraftVariant ?? false,
-        randomMA,
-        shuffleMapOption,
-        // beginnerOption,
-        randomFirstPlayer,
-        requiresVenusTrackCompletion,
-        requiresMoonTrackCompletion: this.requiresMoonTrackCompletion,
-        moonStandardProjectVariant: this.moonStandardProjectVariant,
-        moonStandardProjectVariant1: this.moonStandardProjectVariant1,
-        altVenusBoard: this.altVenusBoard,
-        escapeVelocity: this.escapeVelocityMode ?
-          sanitizeEscapeVelocityOptions({
-            thresholdMinutes: this.escapeVelocityThreshold,
-            bonusSectionsPerAction: this.escapeVelocityBonusSeconds,
-            penaltyPeriodMinutes: this.escapeVelocityPeriod,
-            penaltyVPPerPeriod: this.escapeVelocityPenalty,
-          }) : undefined,
-        twoCorpsVariant,
-        startingCeos,
-        startingPreludes,
+        escapeVelocity: config.escapeVelocity === undefined ? undefined : sanitizeEscapeVelocityOptions(config.escapeVelocity),
       };
     },
     async createGame() {
+      if (this.hasBlockingValidationErrors) {
+        return;
+      }
       const newGameConfig = await this.serializeSettings();
 
       if (newGameConfig === undefined) {
         return;
       }
-      createGameSettingsStorage.saveSettings(newGameConfig);
+      createGameSettingsStorage.save(newGameConfig);
       const onSuccess = (json: any) => {
         if (json.players.length === 1) {
           window.location.href = 'player?id=' + json.players[0].id;

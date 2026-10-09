@@ -186,6 +186,20 @@ export class MarsBoard extends Board {
   }
 
   /**
+   * Returns the M€ `player` will gain from placing an ocean tile on `space`: adjacent oceans
+   * and underground resources.
+   *
+   * Does not include Ares adjacency bonuses.
+   */
+  public megacreditsFromOceanPlacement(player: IPlayer, space: Space): number {
+    let megacredits = this.getAdjacentSpaces(space).filter(Board.isOceanSpace).length * player.oceanBonus;
+    if (space.undergroundResources === 'place6mc') {
+      megacredits += 6;
+    }
+    return megacredits;
+  }
+
+  /**
    * Returns true when the player can afford the M€ (and Reds TR tax) that each of the
    * space's placement bonuses will charge.
    *
@@ -200,11 +214,6 @@ export class MarsBoard extends Board {
     const game = player.game;
     if (space.bonus.includes(SpaceBonus.OCEAN) && game.canAddOcean()) {
       if (!player.canAfford({cost: constants.HELLAS_BONUS_OCEAN_COST, tr: {oceans: 1}})) {
-        return false;
-      }
-    }
-    if (space.bonus.includes(SpaceBonus.TEMPERATURE) && game.getTemperature() < constants.MAX_TEMPERATURE) {
-      if (!player.canAfford({cost: constants.VASTITAS_BOREALIS_BONUS_TEMPERATURE_COST, tr: {temperature: 1}})) {
         return false;
       }
     }

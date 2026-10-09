@@ -1,6 +1,6 @@
 <template>
   <div id="game-end" class="game_end_cont">
-      <h1 v-i18n>{{ constants.APP_NAME }} - Game finished!</h1>
+      <h1><HomeLink>{{ constants.APP_NAME }} - Game finished!</HomeLink></h1>
       <div class="game_end">
           <div v-if="isSoloGame">
               <div v-if="game.isSoloModeWin">
@@ -15,7 +15,7 @@
                       <ul class="game_end_list">
                           <li v-i18n>Try to win with expansions enabled</li>
                           <li v-i18n>Try to win before the last generation</li>
-                          <li><span v-i18n>Can you get</span> {{ players[0].victoryPointsBreakdown.total + 10 }}<span v-i18n>+ Victory Points?</span></li>
+                          <li><span v-i18n>Can you get</span> {{ participant.players[0].victoryPointsBreakdown.total + 10 }}<span v-i18n>+ Victory Points?</span></li>
                       </ul>
                   </div>
               </div>
@@ -63,7 +63,7 @@
                           <th><div class="table-forest-tile"></div></th>
                           <th><div class="table-city-tile"></div></th>
                           <th v-if="game.moon !== undefined"><div class="table-moon-road-tile"></div></th>
-                          <th v-if="game.moon !== undefined"><div class="table-moon-colony-tile"></div></th>
+                          <th v-if="game.moon !== undefined"><div class="table-moon-habitat-tile"></div></th>
                           <th v-if="game.moon !== undefined"><div class="table-moon-mine-tile"></div></th>
                           <th v-if="game.pathfinders !== undefined"><div class="table-planetary-track"></div></th>
                           <th><div class="vp">VP</div></th>
@@ -156,9 +156,9 @@
                           <th><div class="tile oxygen-tile"></div></th>
                           <th><div class="tile ocean-tile"></div></th>
                           <th v-if="game.gameOptions.expansions.venus"><div class="tile venus-tile"></div></th>
-                          <th v-if="game.gameOptions.expansions.moon"><div class="table-moon-colony-tile"></div></th>
-                          <th v-if="game.gameOptions.expansions.moon"><div class="table-moon-road-tile"></div></th>
+                          <th v-if="game.gameOptions.expansions.moon"><div class="table-moon-habitat-tile"></div></th>
                           <th v-if="game.gameOptions.expansions.moon"><div class="table-moon-mine-tile"></div></th>
+                          <th v-if="game.gameOptions.expansions.moon"><div class="table-moon-road-tile"></div></th>
                           <th><div class="game-end-total-column">Total</div></th>
                       </tr>
                   </thead>
@@ -170,8 +170,8 @@
                           <td>{{ data.oceans }}</td>
                           <td v-if="game.gameOptions.expansions.venus">{{ data.venus }}</td>
                           <td v-if="game.gameOptions.expansions.moon">{{ data.moonHabitat }}</td>
-                          <td v-if="game.gameOptions.expansions.moon">{{ data.moonLogistic }}</td>
                           <td v-if="game.gameOptions.expansions.moon">{{ data.moonMining }}</td>
+                          <td v-if="game.gameOptions.expansions.moon">{{ data.moonLogistic }}</td>
                           <td class="game-end-total">{{ data.total }}</td>
                       </tr>
                   </tbody>
@@ -202,10 +202,10 @@
             <div v-if="game.gameOptions.expansions.pathfinders">
               <PlanetaryTracks :tracks="game.pathfinders" :gameOptions="game.gameOptions"/>
             </div>
-            <DeltaProjectBoard v-if="game.gameOptions.expansions.deltaProject" :players="players"/>
+            <DeltaProjectBoard v-if="game.gameOptions.expansions.deltaProject" :players="participant.players"/>
           </div>
           <div class="game_end_block--log game-end-column">
-            <LogPanel :color="color" :viewModel="viewModel"/>
+            <LogPanel :viewModel="participant"/>
             <a :href="downloadLogUrl" target="_blank" v-i18n>Download game log</a>
           </div>
         </div>
@@ -222,7 +222,7 @@ import {setFaviconStatus} from '@/client/utils/favicon';
 import {getPreferences} from '@/client/utils/PreferencesManager';
 import {paths} from '@/common/app/paths';
 import {GameModel} from '@/common/models/GameModel';
-import {PlayerViewModel, PublicPlayerModel, ViewModel} from '@/common/models/PlayerModel';
+import {PublicPlayerModel, ViewModel} from '@/common/models/PlayerModel';
 import Board from '@/client/components/Board.vue';
 import MoonBoard from '@/client/components/moon/MoonBoard.vue';
 import {nextTileView, TileView} from '@/client/components/board/TileView';
@@ -230,10 +230,10 @@ import PlanetaryTracks from '@/client/components/pathfinders/PlanetaryTracks.vue
 import DeltaProjectBoard from '@/client/components/delta/DeltaProjectBoard.vue';
 import LogPanel from '@/client/components/logpanel/LogPanel.vue';
 import AppButton from '@/client/components/common/AppButton.vue';
+import HomeLink from '@/client/components/common/HomeLink.vue';
 import VictoryPointChart, {DataSet} from '@/client/components/gameend/VictoryPointChart.vue';
 import {playerColorClass} from '@/common/utils/utils';
 import {Timer} from '@/common/Timer';
-import {SpectatorModel} from '@/common/models/SpectatorModel';
 import {Color} from '@/common/Color';
 import {CardType} from '@/common/cards/CardType';
 import {getCard} from '@/client/cards/ClientCardManifest';
@@ -244,56 +244,23 @@ import {LogMessageDataType} from '@/common/logs/LogMessageDataType';
 import {MADetail} from '@/common/game/VictoryPointsBreakdown';
 import {AwardName} from '@/common/ma/AwardName';
 
-function getViewModel(playerView: ViewModel | undefined, spectator: ViewModel | undefined): ViewModel {
-  if (playerView !== undefined) {
-    return playerView;
-  }
-  if (spectator !== undefined) {
-    return spectator;
-  }
-  throw new Error('Neither playerView nor spectator are defined');
-}
-
 export default defineComponent({
   name: 'GameEnd',
   props: {
-    playerView: {
-      type: Object as () => PlayerViewModel | undefined,
-      required: true,
-    },
-    spectator: {
-      type: Object as () => SpectatorModel | undefined,
+    participant: {
+      type: Object as () => ViewModel,
       required: true,
     },
   },
   computed: {
-    viewModel(): ViewModel {
-      return getViewModel(this.playerView, this.spectator);
-    },
     game(): GameModel {
-      return getViewModel(this.playerView, this.spectator).game;
-    },
-    players(): Array<PublicPlayerModel> {
-      return getViewModel(this.playerView, this.spectator).players;
-    },
-    color(): Color {
-      if (this.playerView !== undefined) {
-        return this.playerView.thisPlayer.color;
-      }
-      if (this.spectator !== undefined) {
-        return this.spectator.color;
-      }
-      throw new Error('Neither playerView nor spectator are defined');
+      return this.participant.game;
     },
     downloadLogUrl() {
-      const id = this.playerView?.id || this.spectator?.id;
-      if (id === undefined) {
-        return undefined;
-      }
-      return `${paths.END_GAME_LOG}?id=${id}`;
+      return `${paths.END_GAME_LOG}?id=${this.participant.id}`;
     },
     playersInPlace(): Array<PublicPlayerModel> {
-      const sorted = this.viewModel.players.toSorted(function(a:PublicPlayerModel, b:PublicPlayerModel) {
+      const sorted = this.participant.players.toSorted(function(a:PublicPlayerModel, b:PublicPlayerModel) {
         if (a.victoryPointsBreakdown.total < b.victoryPointsBreakdown.total) {
           return -1;
         }
@@ -323,10 +290,10 @@ export default defineComponent({
       return winners;
     },
     isSoloGame(): boolean {
-      return this.players.length === 1;
+      return this.participant.players.length === 1;
     },
     vpDataset(): ReadonlyArray<DataSet> {
-      return this.players.map((player) => {
+      return this.participant.players.map((player) => {
         return {
           label: player.name,
           data: player.victoryPointsByGeneration,
@@ -359,7 +326,7 @@ export default defineComponent({
       return dataset;
     },
     playerContributionsData(): Array<{player: string, color: Color, temp: number, oxygen: number, oceans: number, venus?: number, moonHabitat?: number, moonMining?: number, moonLogistic?: number, total: number}> {
-      return this.players.map((player) => {
+      return this.participant.players.map((player) => {
         const steps = player.globalParameterSteps || {};
         const temp = steps[GlobalParameter.TEMPERATURE] || 0;
         const oxygen = steps[GlobalParameter.OXYGEN] || 0;
@@ -393,6 +360,7 @@ export default defineComponent({
     };
   },
   components: {
+    HomeLink,
     Board,
     LogPanel,
     AppButton,

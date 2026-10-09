@@ -143,9 +143,10 @@ export interface IPlayer {
   // Cards this player has played that count toward the Warmonger award but don't live
   // in this player's tableau (e.g. Lawsuit, which lives in the sued player's event pile).
   warmongerCards: number;
-  // For Playwrights corp.
-  // removedFromPlayCards is a bit of a misname: it's a temporary storage for
-  // cards that provide 'next card' discounts. This will clear between turns.
+  // For Playwrights and Odyssey.
+  // removedFromPlayCards is a bit of a misname: it holds replayed events, so their
+  // 'next card' discounts still apply. It is never cleared; stale entries are
+  // harmless because those discounts only apply while lastCardPlayed matches.
   removedFromPlayCards: Array<IProjectCard>;
   /**
    * When true, Preservation Program is in effect, and the player has not triggered a TR gain this generation.
@@ -195,6 +196,13 @@ export interface IPlayer {
 
   // When set, this player can only be accessed by the user.
   user?: DiscordId;
+
+  /**
+   * When this player was given their current input request. Used to throttle bots.
+   *
+   * Not serialized: reloading the game asks for input again, which resets it.
+   */
+  inputRequestedAt?: number;
 
   setup(game: IGame): void;
 

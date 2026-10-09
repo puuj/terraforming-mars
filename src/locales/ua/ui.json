@@ -576,7 +576,7 @@
   "Ok 1": "",
   "Ok 2": "",
 
-  "Starting Megacredits:": "Початкові Мегакредити:",
+  "Starting M€:": "Початкові Мегакредити:",
   "After Preludes:": "Після Прелюдіїв:",
 
   "Select card to add 1 resource": "Виберіть карту, щоб додати 1 ресурс",
@@ -870,7 +870,6 @@
 
   "Choose 1 unit(s) of production to lose": "Виберіть 1 одиницю виробництва, яку втратити",
   "Choose 2 unit(s) of production to lose": "Виберіть 2 одиниці виробництва, які втратити",
-  "Which resource production would you prefer to decrease?": "Яке виробництво ресурсів ви бажаєте зменшити?",
   "Reveal erosions at:": "Розкрийте ерозії на:",
   "Remove dust storms at:": "Видалити пилові бурі на:",
   "Amplify erosions at:": "Посилити ерозії на:",
@@ -991,7 +990,7 @@
   "corporation": "корпорація",
   "Hide discount on cards": "Приховати знижку на картках",
   "Hide sidebar notification": "Приховати сповіщення на бічній панелі",
-  "Learner Mode (req. refresh)": "Режим для початківців (потребує оновлення)",
+  "Learner Mode": "Режим для початківців",
   "Select how to pay for action": "Виберіть, як оплатити дію",
   "Game Setup Details": "Деталі налаштування гри",
 

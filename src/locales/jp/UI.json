@@ -445,7 +445,7 @@
     "Ok 1": "",
     "Ok 2": "",
 
-    "Starting Megacredits:": "開始時MC:",
+    "Starting M€:": "開始時MC:",
     "After Preludes:": "プレリュードプレイ後:",
 
     "Select a card to discard": "捨てるカード1枚を選択",
@@ -716,7 +716,6 @@
 
     "Choose 1 unit(s) of production to lose": "-1段階する生産を選択",
     "Choose 2 unit(s) of production to lose": "-2段階する生産を選択",
-    "Which resource production would you prefer to decrease?": "どの生産を減らしますか？",
     "Amplify erosions at:": "",
     "Save": "",
 
@@ -838,7 +837,7 @@
     "corporation": "企業",
     "Hide discount on cards": "減額後のコストを非表示",
     "Hide sidebar notification": "サイドバー通知を非表示",
-    "Learner Mode (req. refresh)": "学習モード(再読み込み必須)",
+    "Learner Mode": "学習モード",
     "greenery": "緑地",
     "Select how to pay for action": "支払い方法を選択",
     "Official": "公式",

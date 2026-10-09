@@ -43,6 +43,9 @@ describe('PlayerTags', () => {
           // 1 VP per adjacent city tile (uses nextToThis)
           name: CardName.COMMERCIAL_DISTRICT,
         },
+        {
+          name: CardName.EARTH_EMBASSY,
+        },
       ],
       tags: {
         [Tag.BUILDING]: 0,
@@ -121,8 +124,6 @@ describe('PlayerTags', () => {
         conciseTagsViewDefaultValue: false,
       },
     });
-    // For tests.
-    wrapper.vm.$data.conciseView = false;
   });
 
   function elem(tag: Tag | 'all'): DOMWrapper<Element> {
@@ -153,5 +154,27 @@ describe('PlayerTags', () => {
     const cityCount = wrapper.vm.tagsInOrder.find((t: any) => t.name === SpecialTags.CITY_COUNT);
     expect(cityCount.points).to.eq(0);
     expect(cityCount.asterisk).to.eq(true);
+  });
+
+  it('tag substitution - earth embassy', () => {
+    const substitution = wrapper.find('[data-test="substitution-earth"]');
+    expect(substitution.exists()).to.eq(true);
+    const earth = wrapper.vm.tagsInOrder.find((t: any) => t.name === Tag.EARTH);
+    expect(earth.substitution).to.eq(Tag.MOON);
+  });
+
+  it('tag substitution - none for science', () => {
+    expect(wrapper.find('[data-test="substitution-science"]').exists()).to.eq(false);
+  });
+
+  it('updates when the player changes', async () => {
+    const player: PublicPlayerModel = wrapper.props('player');
+    await wrapper.setProps({
+      player: {
+        ...player,
+        tableau: [...player.tableau, {name: CardName.ANTS, discount: [{tag: Tag.MICROBE, amount: 5}]}],
+      },
+    });
+    expect(amount(elem(Tag.MICROBE))).to.eq('8');
   });
 });

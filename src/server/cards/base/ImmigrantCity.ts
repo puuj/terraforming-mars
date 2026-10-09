@@ -6,6 +6,7 @@ import {IPlayer} from '../../IPlayer';
 import {Space} from '../../boards/Space';
 import {PlaceCityTile} from '../../deferredActions/PlaceCityTile';
 import {Resource} from '../../../common/Resource';
+import {Units} from '../../../common/Units';
 import {CardName} from '../../../common/cards/CardName';
 import {Priority} from '../../deferredActions/Priority';
 import {GainProduction} from '../../deferredActions/GainProduction';
@@ -29,11 +30,15 @@ export class ImmigrantCity extends Card implements IProjectCard {
           b.effect('When a city tile is placed, including this, increase your M€ production 1 step.', (eb) => {
             eb.city({all}).startEffect.production((pb) => pb.megacredits(1));
           }).br;
-          b.production((pb) => pb.minus().energy(1).megacredits(-2)).city();
+          b.production((pb) => pb.energy(-1).megacredits(-2)).city();
         }),
         description: 'Decrease your energy production 1 step and decrease your M€ production 2 steps. Place a city tile.',
       },
     });
+  }
+
+  public productionBox() {
+    return Units.of({energy: -1, megacredits: -2});
   }
 
   public override bespokeCanPlay(player: IPlayer): boolean {

@@ -1,5 +1,5 @@
 <template>
-    <div :class="getGameBoardClassName()">
+    <div :class="gameBoardClassName">
         <div class="hide-tile-button-container">
           <div class="hide-tile-button" @click="$emit('toggleTileView')" data-test="hide-tiles-button" v-i18n>
             {{ tileView }} tiles
@@ -75,7 +75,7 @@
 
         <div class="board" id="main_board">
             <BoardSpace
-              v-for="curSpace in getAllSpacesOnMars()"
+              v-for="curSpace in allSpacesOnMars"
               :key="curSpace.id"
               :space="curSpace"
               :aresExtension="expansions.ares"
@@ -415,17 +415,7 @@ export default defineComponent({
   components: {
     BoardSpace,
   },
-  data() {
-    return {
-      spaceMap: new Map<string, SpaceModel>(this.spaces.map((s) => [s.id, s])),
-    };
-  },
   methods: {
-    getAllSpacesOnMars(): Array<SpaceModel> {
-      return this.spaces
-        .filter((s) => s.spaceType !== SpaceType.COLONY)
-        .toSorted((space1, space2) => parseInt(space1.id) - parseInt(space2.id));
-    },
     hasSpace(spaceId: SpaceId): boolean {
       return this.spaceMap.has(spaceId);
     },
@@ -494,11 +484,11 @@ export default defineComponent({
         return `${oceans_count}/${constants.MAX_OCEAN_TILES}`;
       }
     },
-    getGameBoardClassName(): string {
-      return this.expansions.venus ? 'board-cont board-with-venus' : 'board-cont board-without-venus';
-    },
   },
   computed: {
+    spaceMap(): Map<SpaceId, SpaceModel> {
+      return new Map(this.spaces.map((s) => [s.id, s]));
+    },
     BoardName(): typeof BoardName {
       return BoardName;
     },
@@ -510,6 +500,14 @@ export default defineComponent({
     },
     constants(): typeof constants {
       return constants;
+    },
+    allSpacesOnMars(): Array<SpaceModel> {
+      return this.spaces
+        .filter((s) => s.spaceType !== SpaceType.COLONY)
+        .toSorted((space1, space2) => parseInt(space1.id) - parseInt(space2.id));
+    },
+    gameBoardClassName(): string {
+      return this.expansions.venus ? 'board-cont board-with-venus' : 'board-cont board-without-venus';
     },
   },
 });

@@ -87,6 +87,7 @@ import {ICard} from './cards/ICard';
 import {generateGameName} from './GameName';
 import {byKey} from '@/common/utils/Ordering';
 import {sanitizeEscapeVelocityOptions} from '@/common/game/escapeVelocity';
+import {ColoniesHandler} from './colonies/ColoniesHandler';
 
 // Can be overridden by tests
 let createGameLog: () => Array<LogMessage> = () => [];
@@ -560,6 +561,17 @@ export class Game implements IGame, Logger {
     return action;
   }
 
+  /**
+   * Run every deferred action, including any added while running them, and then call `cb`.
+   */
+  public drainQueue(cb: () => void): void {
+    if (this.deferredActions.length === 0) {
+      cb();
+      return;
+    }
+    this.deferredActions.runAll(() => this.drainQueue(cb));
+  }
+
   public milestoneClaimed(milestone: IMilestone): boolean {
     return this.claimedMilestones.some(
       (claimedMilestone) => claimedMilestone.milestone.name === milestone.name,
@@ -571,18 +583,16 @@ export class Game implements IGame, Logger {
     const temperatureMaxed = this.temperature >= constants.MAX_TEMPERATURE;
     const oceansMaxed = !this.canAddOcean();
     let globalParametersMaxed = oxygenMaxed && temperatureMaxed && oceansMaxed;
+
+    if (this.moonData && this.gameOptions.requiresMoonTrackCompletion) {
+      const moonMaxed =
+        this.moonData.habitatRate === constants.MAXIMUM_HABITAT_RATE &&
+        this.moonData.miningRate === constants.MAXIMUM_MINING_RATE &&
+        this.moonData.logisticRate === constants.MAXIMUM_LOGISTIC_RATE;
+      globalParametersMaxed = globalParametersMaxed && moonMaxed;
+    }
+
     const venusMaxed = this.getVenusScaleLevel() === constants.MAX_VENUS_SCALE;
-
-    MoonExpansion.ifMoon(this, (moonData) => {
-      if (this.gameOptions.requiresMoonTrackCompletion) {
-        const moonMaxed =
-          moonData.habitatRate === constants.MAXIMUM_HABITAT_RATE &&
-          moonData.miningRate === constants.MAXIMUM_MINING_RATE &&
-          moonData.logisticRate === constants.MAXIMUM_LOGISTIC_RATE;
-        globalParametersMaxed = globalParametersMaxed && moonMaxed;
-      }
-    });
-
     // Solo games with Venus needs Venus maxed to end the game.
     if (this.players.length === 1 && this.gameOptions.venusNextExtension) {
       return globalParametersMaxed && venusMaxed;
@@ -793,80 +803,66 @@ export class Game implements IGame, Logger {
   }
 
   private postProductionPhase(): void {
-    if (this.deferredActions.length > 0) {
-      this.deferredActions.runAll(() => this.postProductionPhase());
-      return;
-    }
-    if (this.gameIsOver()) {
-      this.log('Final greenery placement', (b) => b.forNotice());
-      this.takeNextFinalGreeneryAction();
-      return;
-    } else {
-      this.players.forEach((player) => {
-        player.colonies.returnTradeFleets();
-      });
-    }
-
-    // solar Phase Option
-    this.phase = Phase.SOLAR;
-
-    // Maybe spawn a new hazard on Mars every 3 generations
-    if (this.gameOptions.aresExtension && this.gameOptions.aresExtremeVariant && this.generation % 3 === 0) {
-      const direction = Math.floor(this.rng.nextInt(2)) === 0 ? 'top' : 'bottom';
-      const tileType = this.board.getOceanSpaces().length >= 3 ? TileType.EROSION_MILD : TileType.DUST_STORM_MILD;
-
-      try {
-        const space = AresHazards.randomlyPlaceHazard(this, tileType, direction);
-        this.log('${0} placed at ${1}', (b) => b.tileType(tileType).space(space));
-      } catch (e) {
-        // #7734, the map is probably full.
-        this.log('The map is full. No random hazard can be placed this generation.');
+    this.drainQueue(() => {
+      if (this.gameIsOver()) {
+        this.log('Final greenery placement', (b) => b.forNotice());
+        this.takeNextFinalGreeneryAction();
+        return;
+      } else {
+        this.players.forEach((player) => {
+          player.colonies.returnTradeFleets();
+        });
       }
-    }
 
-    if (this.gameOptions.solarPhaseOption && ! this.marsIsTerraformed()) {
-      this.gotoWorldGovernmentTerraforming();
-      return;
-    }
-    this.gotoEndGeneration();
-  }
+      // solar Phase Option
+      this.phase = Phase.SOLAR;
 
-  private endGenerationForColonies() {
-    if (this.gameOptions.coloniesExtension) {
-      this.colonies.forEach((colony) => {
-        colony.endGeneration(this);
-      });
-      // Syndicate Pirate Raids hook. Also see Colony.ts and Player.ts
-      this.syndicatePirateRaider = undefined;
-      // Trade embargo hook.
-      this.tradeEmbargo = false;
-    }
-  }
+      // Maybe spawn a new hazard on Mars every 3 generations
+      if (this.gameOptions.aresExtension && this.gameOptions.aresExtremeVariant && this.generation % 3 === 0) {
+        const direction = Math.floor(this.rng.nextInt(2)) === 0 ? 'top' : 'bottom';
+        const tileType = this.board.getOceanSpaces().length >= 3 ? TileType.EROSION_MILD : TileType.DUST_STORM_MILD;
 
-  private gotoEndGeneration() {
-    if (this.deferredActions.length > 0) {
-      this.deferredActions.runAll(() => this.gotoEndGeneration());
-      return;
-    }
+        try {
+          const space = AresHazards.randomlyPlaceHazard(this, tileType, direction);
+          this.log('${0} placed at ${1}', (b) => b.tileType(tileType).space(space));
+        } catch (e) {
+          // #7734, the map is probably full.
+          this.log('The map is full. No random hazard can be placed this generation.');
+        }
+      }
 
-    this.endGenerationForColonies();
-    UnderworldExpansion.endGeneration(this);
-
-    Turmoil.ifTurmoil(this, (turmoil) => {
-      // this.phase = Phase.TURMOIL;
-      this.inTurmoil = true;
-      turmoil.endGeneration(this);
-      // Behold The Emperor hook
-      this.beholdTheEmperor = false;
+      if (this.gameOptions.solarPhaseOption && ! this.marsIsTerraformed()) {
+        this.gotoWorldGovernmentTerraforming();
+        return;
+      }
+      this.finishSolarPhase();
     });
+  }
 
-    // turmoil.endGeneration might have added actions.
-    if (this.deferredActions.length > 0) {
-      this.deferredActions.runAll(() => this.startGeneration());
-    } else {
-      this.inTurmoil = false;
+  private finishSolarPhase() {
+    this.drainQueue(() => {
+      ColoniesHandler.endGeneration(this);
+      UnderworldExpansion.endGeneration(this);
+      this.gotoTurmoilPhase();
+    });
+  }
+
+  private gotoTurmoilPhase() {
+    const turmoil = this.turmoil;
+    if (turmoil === undefined) {
       this.startGeneration();
+      return;
     }
+
+    // this.phase = Phase.TURMOIL;
+    this.inTurmoil = true;
+    turmoil.runTurmoilPhase(this, () => {
+      // The new government might have added actions.
+      this.drainQueue(() => {
+        this.inTurmoil = false;
+        this.startGeneration();
+      });
+    });
   }
 
   private updatePlayerVPForTheGeneration(): void {
@@ -887,11 +883,11 @@ export class Game implements IGame, Logger {
     if (this.gameOptions.venusNextExtension) {
       entry[GlobalParameter.VENUS] = this.venusScaleLevel;
     }
-    MoonExpansion.ifMoon(this, (moonData) => {
-      entry[GlobalParameter.MOON_HABITAT_RATE] = moonData.habitatRate;
-      entry[GlobalParameter.MOON_MINING_RATE] = moonData.miningRate;
-      entry[GlobalParameter.MOON_LOGISTIC_RATE] = moonData.logisticRate;
-    });
+    if (this.moonData) {
+      entry[GlobalParameter.MOON_HABITAT_RATE] = this.moonData.habitatRate;
+      entry[GlobalParameter.MOON_MINING_RATE] = this.moonData.miningRate;
+      entry[GlobalParameter.MOON_LOGISTIC_RATE] = this.moonData.logisticRate;
+    }
   }
 
   private startGeneration() {
@@ -985,7 +981,8 @@ export class Game implements IGame, Logger {
       }
     }
 
-    MoonExpansion.ifMoon(this, (moonData) => {
+    const moonData = this.moonData;
+    if (moonData) {
       if (moonData.habitatRate < constants.MAXIMUM_HABITAT_RATE) {
         orOptions.options.push(
           new SelectOption('Increase the Moon habitat rate', 'Increase').andThen(() => {
@@ -1012,7 +1009,7 @@ export class Game implements IGame, Logger {
           }),
         );
       }
-    });
+    }
 
     return orOptions;
   }
@@ -1021,7 +1018,7 @@ export class Game implements IGame, Logger {
     const player = this.first;
     const input = this.worldGovernmentTerraformingInput(player);
     player.setWaitingFor(input, () => {
-      this.gotoEndGeneration();
+      this.finishSolarPhase();
     });
   }
 
@@ -1091,27 +1088,24 @@ export class Game implements IGame, Logger {
   }
 
   public playerIsFinishedTakingActions(): void {
-    if (this.deferredActions.length > 0) {
-      this.deferredActions.runAll(() => this.playerIsFinishedTakingActions());
-      return;
-    }
+    this.drainQueue(() => {
+      this.inputsThisRound = 0;
 
-    this.inputsThisRound = 0;
+      // This next section can be done more simply.
+      if (this.allPlayersHavePassed()) {
+        this.gotoProductionPhase();
+        return;
+      }
 
-    // This next section can be done more simply.
-    if (this.allPlayersHavePassed()) {
-      this.gotoProductionPhase();
-      return;
-    }
-
-    const nextPlayer = this.getPlayerAfter(this.activePlayer);
-    if (!this.hasPassedThisActionPhase(nextPlayer)) {
-      this.startActionsForPlayer(nextPlayer);
-    } else {
-      // Recursively find the next player
-      this.activePlayer = nextPlayer;
-      this.playerIsFinishedTakingActions();
-    }
+      const nextPlayer = this.getPlayerAfter(this.activePlayer);
+      if (!this.hasPassedThisActionPhase(nextPlayer)) {
+        this.startActionsForPlayer(nextPlayer);
+      } else {
+        // Recursively find the next player
+        this.activePlayer = nextPlayer;
+        this.playerIsFinishedTakingActions();
+      }
+    });
   }
 
   private async gotoEndGame(): Promise<void> {
@@ -1538,13 +1532,11 @@ export class Game implements IGame, Logger {
     case SpaceBonus.SCIENCE:
       this.defer(new AddResourcesToCard(player, CardResource.SCIENCE, {count: count}));
       break;
-    case SpaceBonus.TEMPERATURE:
     case SpaceBonus.TEMPERATURE_4MC:
       if (this.getTemperature() < constants.MAX_TEMPERATURE) {
-        const cost = spaceBonus === SpaceBonus.TEMPERATURE ? constants.VASTITAS_BOREALIS_BONUS_TEMPERATURE_COST : constants.VASTITAS_BOREALIS_NOVA_BONUS_TEMPERATURE_COST;
         this.defer(new SelectPaymentDeferred(
           player,
-          cost,
+          constants.VASTITAS_BOREALIS_NOVA_BONUS_TEMPERATURE_COST,
           {title: 'Select how to pay for placement bonus temperature'}))
           .andThen(() => this.increaseTemperature(player, 1));
       }
@@ -1556,7 +1548,9 @@ export class Game implements IGame, Logger {
       this.defer(new AddResourcesToCard(player, CardResource.ASTEROID, {count: count}));
       break;
     case SpaceBonus.DELEGATE:
-      Turmoil.ifTurmoil(this, () => this.defer(new SendDelegateToArea(player)));
+      if (this.turmoil) {
+        this.defer(new SendDelegateToArea(player));
+      }
       break;
     case SpaceBonus.COLONY:
       this.defer(new SelectPaymentDeferred(

@@ -1,12 +1,12 @@
 <template>
-        <div class="players-overview" v-if="hasPlayers()">
+        <div class="players-overview" v-if="hasPlayers">
             <OverviewSettings />
             <div class="other_player" v-if="thisPlayer === undefined || players.length > 1">
-                <div v-for="(otherPlayer, index) in getPlayersInOrder()" :key="otherPlayer.color">
+                <div v-for="(otherPlayer, index) in playersInOrder" :key="otherPlayer.color">
                     <OtherPlayer v-if="thisPlayer === undefined || otherPlayer.color !== thisPlayer.color" :player="otherPlayer" :playerIndex="index"/>
                 </div>
             </div>
-            <PlayerInfo v-for="(p, index) in getPlayersInOrder()"
+            <PlayerInfo v-for="(p, index) in playersInOrder"
               :player="p"
               :key="p.color"
               :playerView="playerView"
@@ -64,23 +64,10 @@ export default defineComponent({
     thisPlayer(): PublicPlayerModel | undefined {
       return this.playerView.thisPlayer;
     },
-  },
-  components: {
-    PlayerInfo,
-    OverviewSettings,
-    OtherPlayer,
-  },
-  data() {
-    return {};
-  },
-  methods: {
     hasPlayers(): boolean {
       return this.players.length > 0;
     },
-    getIsFirstForGen(player: PublicPlayerModel): boolean {
-      return playerIndex(player.color, this.players) === 0;
-    },
-    getPlayersInOrder(): Array<PublicPlayerModel> {
+    playersInOrder(): Array<PublicPlayerModel> {
       const players = this.players;
       if (this.thisPlayer === undefined) {
         return players;
@@ -101,6 +88,16 @@ export default defineComponent({
       // return all but the focused user
       return result.slice(0, -1);
     },
+  },
+  components: {
+    PlayerInfo,
+    OverviewSettings,
+    OtherPlayer,
+  },
+  methods: {
+    getIsFirstForGen(player: PublicPlayerModel): boolean {
+      return playerIndex(player.color, this.players) === 0;
+    },
     getActionLabel(player: PublicPlayerModel): ActionLabel {
       if (this.playerView.game.phase === Phase.DRAFTING) {
         if (player.needsToDraft) {
@@ -113,6 +110,14 @@ export default defineComponent({
           return 'researching';
         } else {
           return 'none';
+        }
+      } else if (this.playerView.game.phase === Phase.SOLAR) {
+        // World Government Advisor and Terra briefly enter the Solar phase during the active player's turn.
+        // Otherwise this is World Government Terraforming, where activePlayer is stale and the running
+        // timer shows who is deciding.
+        const activePlayerIsDeciding = this.players.some((p) => p.isActive && p.timer.running);
+        if (!activePlayerIsDeciding) {
+          return player.timer.running ? 'active' : 'none';
         }
       }
       if (this.playerView.game.passedPlayers.includes(player.color)) {
