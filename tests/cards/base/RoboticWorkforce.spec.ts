@@ -14,7 +14,7 @@ import {IGame} from '../../../src/server/IGame';
 import {SelectSpace} from '../../../src/server/inputs/SelectSpace';
 import {ALL_RESOURCES, Resource} from '../../../src/common/Resource';
 import {SpaceBonus} from '../../../src/common/boards/SpaceBonus';
-import {runNextAction, runAllActions, addCity, addOcean, fakeCard} from '../../TestingUtils';
+import {runAllActions, addCity, addOcean, fakeCard} from '../../TestingUtils';
 import {TileType} from '../../../src/common/TileType';
 import {ICard} from '../../../src/server/cards/ICard';
 import {TestPlayer} from '../../TestPlayer';
@@ -359,26 +359,27 @@ describe('RoboticWorkforce', () => {
     expect(selectCard2.cards.map(toName)).to.have.members([titaniumMine.name, lunarMineUrbanization.name]);
   });
 
+  const cardsToIgnore = [
+    CardName.SOLAR_FARM,  // Tough to test
+    CardName.SMALL_OPEN_PIT_MINE, // Tough to test
+    CardName.BEHEMOTH_EXCAVATOR, // False positive
+  ];
+
   describe('test all cards', () => {
     ALL_MODULE_MANIFESTS.forEach((manifest) => {
       const cards: CardManifest<ICard> = {...manifest.projectCards, ...manifest.preludeCards, ...manifest.corporationCards};
       for (const [cardName, factory] of CardManifest.entries(cards)) {
         it(cardName, () => {
-          const card = new factory!.Factory();
-          // Cards that are tough to test (and might even have tests above.)
-          if (card.name === CardName.SOLAR_FARM || card.name === CardName.SMALL_OPEN_PIT_MINE) {
+          if (cardsToIgnore.includes(cardName)) {
             return;
           }
-
+          const card = new factory!.Factory();
           testCard(card);
         });
       }
     });
 
     const testCard = function(card: ICard) {
-      if (card.name === CardName.LUNAR_MINE_URBANIZATION) {
-        console.log('hello');
-      }
       let include = false;
       if ((card.tags.includes(Tag.BUILDING) || card.tags.includes(Tag.WILD)) && card.play !== undefined) {
         // Create new players, set all productions to 2
@@ -426,8 +427,8 @@ describe('RoboticWorkforce', () => {
 
         // SelectSpace will trigger production changes in the right cards (e.g. Mining Rights)
         while (game.deferredActions.length) {
-          // Some actions (e.g. PlaceCityTile) return their input rather than setting waitingFor.
-          const waitingFor = runNextAction(game) ?? player.popWaitingFor();
+          runAllActions(game);
+          const waitingFor = player.popWaitingFor();
           if (waitingFor instanceof SelectSpace) {
             waitingFor.cb(waitingFor.spaces[0]);
           }

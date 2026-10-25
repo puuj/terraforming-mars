@@ -97,7 +97,12 @@ export class SelectInitialCards extends OptionsInput<undefined> {
     const game = player.game;
     // Check for negative M€
     const cardCost = corporation.cardCost !== undefined ? corporation.cardCost : player.cardCost;
-    if (corporation.name !== CardName.BEGINNER_CORPORATION && player.cardsInHand.length * cardCost > corporation.startingMegaCredits) {
+    let budget = corporation.startingMegaCredits;
+    if (corporation.name === CardName.LUNA_TRADE_FEDERATION) {
+      // Its 10 starting titanium is worth 2 M€ each.
+      budget += 20;
+    }
+    if (corporation.name !== CardName.BEGINNER_CORPORATION && player.cardsInHand.length * cardCost > budget) {
       player.cardsInHand = [];
       player.preludeCardsInHand = [];
       throw new InputError('Too many cards selected');
@@ -145,9 +150,24 @@ export class SelectInitialCards extends OptionsInput<undefined> {
     if (input.responses.length !== this.options.length) {
       throw new InputError('Incorrect options provided');
     }
-    for (let i = 0; i < input.responses.length; i++) {
-      player.defer(this.options[i].process(input.responses[i], player));
+    // Each response is processed individually. This provides a rollback on failure,
+    // preventing a bad state with extra cards in hand, good for cheating.
+    const saved = {
+      cards: [...player.cardsInHand],
+      preludeCards: [...player.preludeCardsInHand],
+      ceoCards: new Set(player.ceoCardsInHand),
+    };
+
+    try {
+      for (let i = 0; i < input.responses.length; i++) {
+        player.defer(this.options[i].process(input.responses[i], player));
+      }
+      return this.cb(undefined);
+    } catch (error) {
+      player.cardsInHand = saved.cards;
+      player.preludeCardsInHand = saved.preludeCards;
+      player.ceoCardsInHand = saved.ceoCards;
+      throw error;
     }
-    return this.cb(undefined);
   }
 }

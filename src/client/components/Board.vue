@@ -13,14 +13,14 @@
           <BoardSpace v-if="hasSpace(SpaceName.DAWN_CITY)" :space="getSpace(SpaceName.DAWN_CITY)" text="Dawn City" :tileView="tileView"/>
           <BoardSpace v-if="hasSpace(SpaceName.STRATOPOLIS)" :space="getSpace(SpaceName.STRATOPOLIS)" text="Stratopolis" :tileView="tileView"/>
           <BoardSpace v-if="hasSpace(SpaceName.MAXWELL_BASE)" :space="getSpace(SpaceName.MAXWELL_BASE)" text="Maxwell Base" :tileView="tileView"/>
-          <!-- <board-space :space="getSpace('74')" text="Martian Transhipment Station" :tileView="tileView"></board-space> -->
+          <!-- <board-space :space="getSpace('c74')" text="Martian Transhipment Station" :tileView="tileView"></board-space> -->
           <BoardSpace v-if="hasSpace(SpaceName.CERES_SPACEPORT)" :space="getSpace(SpaceName.CERES_SPACEPORT)" text="Ceres Spaceport" :tileView="tileView"/>
           <BoardSpace v-if="hasSpace(SpaceName.DYSON_SCREENS)" :space="getSpace(SpaceName.DYSON_SCREENS)" text="Dyson Screens" :tileView="tileView"/>
           <BoardSpace v-if="hasSpace(SpaceName.LUNAR_EMBASSY)" :space="getSpace(SpaceName.LUNAR_EMBASSY)" text="Lunar Embassy" :tileView="tileView"/>
           <BoardSpace v-if="hasSpace(SpaceName.VENERA_BASE)" :space="getSpace(SpaceName.VENERA_BASE)" text="Venera Base" :tileView="tileView"/>
         </div>
 
-        <div class="global-numbers">
+        <div class="global-numbers" :class="{'global-numbers--large': isLargeBoard}">
             <div class="global-numbers-temperature">
                 <div :class="getScaleCSS(lvl)" v-for="(lvl, idx) in getValuesForParameter('temperature')" :key="idx">{{ lvl.strValue }}</div>
             </div>
@@ -34,11 +34,11 @@
             </div>
 
             <div class="global-numbers-oceans">
-              <span v-if="oceans_count === constants.MAX_OCEAN_TILES">
+              <span v-if="oceans_count === globalParameterMaximums.oceans">
                 <img width="26" src="assets/misc/circle-checkmark.png" class="board-ocean-checkmark" :alt="$t('Completed!')">
               </span>
               <span v-else>
-                {{oceans_count}}/{{constants.MAX_OCEAN_TILES}}
+                {{oceans_count}}/{{globalParameterMaximums.oceans}}
               </span>
             </div>
 
@@ -73,7 +73,7 @@
             </div>
         </div>
 
-        <div class="board" id="main_board">
+        <div class="board" :class="{'board--large': isLargeBoard}" id="main_board">
             <BoardSpace
               v-for="curSpace in allSpacesOnMars"
               :key="curSpace.id"
@@ -150,9 +150,9 @@
                       </text>
                   </g>
 
-                  <g id="hecatus_tholus"  transform="translate(130, 150)">
+                  <g id="hecates_tholus"  transform="translate(130, 150)">
                       <text class="board-caption">
-                          <tspan dy="15">Hecatus</tspan>
+                          <tspan dy="15">Hecates</tspan>
                           <tspan x="3" dy="12">Tholus</tspan>
                       </text>
                   </g>
@@ -173,10 +173,10 @@
                 </template>
 
                 <template v-if="boardName === BoardName.VASTITAS_BOREALIS_NOVA">
-                  <g id="hectates_tholius_vastitas_borealis_novus"  transform="translate(270, 70)">
+                  <g id="hecates_tholus_vastitas_borealis_novus"  transform="translate(270, 70)">
                       <text class="board-caption">
-                          <tspan dy="15">Hectates</tspan>
-                          <tspan x="5" dy="12">Tholius</tspan>
+                          <tspan dy="15">Hecates</tspan>
+                          <tspan x="5" dy="12">Tholus</tspan>
                       </text>
                   </g>
 
@@ -353,11 +353,13 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import * as constants from '@/common/constants';
+import {getGlobalParameterMaximums} from '@/common/boards/GlobalParameterMaximums';
 import BoardSpace from '@/client/components/BoardSpace.vue';
 import {AresData} from '@/common/ares/AresData';
 import {SpaceModel} from '@/common/models/SpaceModel';
 import {SpaceType} from '@/common/boards/SpaceType';
 import {SpaceId} from '@/common/Types';
+import {spacesById} from '@/client/utils/spacesById';
 import {TileView} from '@/client/components/board/TileView';
 import {BoardName} from '@/common/boards/BoardName';
 import {LEGENDS} from '@/client/components/Legends';
@@ -417,10 +419,10 @@ export default defineComponent({
   },
   methods: {
     hasSpace(spaceId: SpaceId): boolean {
-      return this.spaceMap.has(spaceId);
+      return spacesById(this.spaces).has(spaceId);
     },
     getSpace(spaceId: SpaceId): SpaceModel {
-      const space = this.spaceMap.get(spaceId);
+      const space = spacesById(this.spaces).get(spaceId);
       if (space === undefined) {
         // For some reason Vue still calls getSpace when hasSpace is false. I thought it didn't.
         // Returning undefined as SpaceModel satisfies the type checker, but the value isn't
@@ -440,13 +442,13 @@ export default defineComponent({
       switch (targetParameter) {
       case 'oxygen':
         startValue = constants.MIN_OXYGEN_LEVEL;
-        endValue = constants.MAX_OXYGEN_LEVEL;
+        endValue = this.globalParameterMaximums.oxygen;
         step = 1;
         curValue = this.oxygen_level;
         break;
       case 'temperature':
         startValue = constants.MIN_TEMPERATURE;
-        endValue = constants.MAX_TEMPERATURE;
+        endValue = this.globalParameterMaximums.temperature;
         step = 2;
         curValue = this.temperature;
         break;
@@ -460,6 +462,12 @@ export default defineComponent({
         throw new Error('Wrong parameter to get values from: ' + targetParameter);
       }
 
+      // Above 30%, the Venus scale moves 1% per step (Amazonis Planitia goes to 33%).
+      if (targetParameter === 'venus') {
+        for (let value = this.globalParameterMaximums.venus; value > endValue; value--) {
+          values.push(new GlobalParamLevel(value, value === curValue, value.toString()));
+        }
+      }
       for (let value = endValue; value >= startValue; value -= step) {
         strValue = (targetParameter === 'temperature' && value > 0) ? '+'+value : value.toString();
         values.push(
@@ -477,17 +485,22 @@ export default defineComponent({
     },
     oceansValue() {
       const oceans_count = this.oceans_count || 0;
-      const leftover = constants.MAX_OCEAN_TILES - oceans_count;
+      const leftover = this.globalParameterMaximums.oceans - oceans_count;
       if (leftover === 0) {
         return '<img width="26" src="assets/misc/circle-checkmark.png" class="board-ocean-checkmark" :alt="$t(\'Completed!\')">';
       } else {
-        return `${oceans_count}/${constants.MAX_OCEAN_TILES}`;
+        return `${oceans_count}/${this.globalParameterMaximums.oceans}`;
       }
     },
   },
   computed: {
-    spaceMap(): Map<SpaceId, SpaceModel> {
-      return new Map(this.spaces.map((s) => [s.id, s]));
+    // The per-map maximum values of the global parameters (the larger maps raise them).
+    globalParameterMaximums() {
+      return getGlobalParameterMaximums(this.boardName);
+    },
+    // The larger map needs a bigger board container.
+    isLargeBoard(): boolean {
+      return this.boardName === BoardName.AMAZONIS_PLANITIA;
     },
     BoardName(): typeof BoardName {
       return BoardName;
@@ -507,7 +520,8 @@ export default defineComponent({
         .toSorted((space1, space2) => parseInt(space1.id) - parseInt(space2.id));
     },
     gameBoardClassName(): string {
-      return this.expansions.venus ? 'board-cont board-with-venus' : 'board-cont board-without-venus';
+      const css = this.expansions.venus ? 'board-cont board-with-venus' : 'board-cont board-without-venus';
+      return this.isLargeBoard ? css + ' board-cont--large' : css;
     },
   },
 });

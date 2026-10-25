@@ -122,6 +122,7 @@ export class Server {
       runId: runId,
       pickedCorporationCard: player.pickedCorporationCard ? cardsToModel(player, [player.pickedCorporationCard]) : [],
       preludeCardsInHand: cardsToModel(player, player.preludeCardsInHand),
+      requestId: player.requestId,
       thisPlayer: thisPlayer,
       waitingFor: this.getWaitingFor(player, player.getWaitingFor()),
       players: players,
@@ -215,7 +216,8 @@ export class Server {
     if (waitingFor === undefined) {
       return undefined;
     }
-    // TODO(kberg): in theory this should be in all the other toModel calls.
+    // Only the top-level input's warning reaches the client. Warnings on inputs
+    // nested in OrOptions, AndOptions, or SelectInitialCards are not sent.
     const model = waitingFor.toModel(player);
     model.warning = waitingFor.warning;
     return model;
@@ -380,12 +382,14 @@ export class Server {
       }
 
       const model: SpaceModel = {
-        x: space.x,
-        y: space.y,
         id: space.id,
         spaceType: space.spaceType,
         bonus: space.bonus,
       };
+      const a9 = board.A9[space.id];
+      if (a9 !== undefined) {
+        model.a9 = a9;
+      }
       const tileType = space.tile?.tileType;
       if (tileType !== undefined) {
         model.tileType = tileType;

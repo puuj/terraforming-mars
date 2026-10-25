@@ -17,6 +17,7 @@ import {Priority} from './deferredActions/Priority';
 import {DeferredActionsQueue} from './deferredActions/DeferredActionsQueue';
 import {SerializedGame} from './SerializedGame';
 import {SpaceBonus} from '../common/boards/SpaceBonus';
+import {GlobalParameterMaximums} from '../common/boards/GlobalParameterMaximums';
 import {TileType} from '../common/TileType';
 import {ICard} from './cards/ICard';
 import {Turmoil} from './turmoil/Turmoil';
@@ -33,6 +34,8 @@ import {GlobalParameter} from '../common/GlobalParameter';
 import {UnderworldData} from './underworld/UnderworldData';
 import {OrOptions} from './inputs/OrOptions';
 import {IStandardProjectCard} from './cards/IStandardProjectCard';
+import {GlobalParameterTracks} from '@/server/boards/GlobalParameterTracks';
+import {Resource} from '@/common/Resource';
 
 export interface Score {
   corporation: String;
@@ -129,6 +132,10 @@ export interface IGame extends Logger {
 
   /** The set of tags available in this game. */
   readonly tags: ReadonlyArray<Tag>;
+
+  /** The bonuses on this board's global-parameter tracks. */
+  readonly globalParameterTracks: GlobalParameterTracks;
+
   /** Initiates the first research phase, which is when a player chooses their starting hand, corps and preludes. */
   gotoInitialResearchPhase(): void;
   gotoResearchPhase(): void;
@@ -192,6 +199,7 @@ export interface IGame extends Logger {
   getVenusScaleLevel(): number;
   increaseTemperature(player: IPlayer, increments: -2 | -1 | 1 | 2 | 3): undefined;
   getTemperature(): number;
+  readonly max: GlobalParameterMaximums;
   getGeneration(): number;
   getPassedPlayers():ReadonlyArray<Color>;
   /**
@@ -224,9 +232,21 @@ export interface IGame extends Logger {
 
   /**
    * Gives all the bonuses from a space on the map.
+   *
+   * `onStandardResource` is called with the resource chosen for a STANDARD_RESOURCE bonus.
    */
-  grantSpaceBonuses(player: IPlayer, space: Space): void;
-  grantSpaceBonus(player: IPlayer, spaceBonus: SpaceBonus, count?: number): void;
+  grantSpaceBonuses(player: IPlayer, space: Space, onStandardResource?: (resource: Resource) => void): void;
+  /**
+   * Gives all the bonuses from a space as placement bonuses, so cards can react to a
+   * chosen standard resource (see ICard.onStandardResourcePlacementBonus).
+   */
+  grantSpaceBonusesAsPlacement(player: IPlayer, space: Space): void;
+  /**
+   * Gives one bonus from rewards on a space.
+   *
+   * `onStandardResource` is called with the resource chosen for a STANDARD_RESOURCE bonus.
+   */
+  grantSpaceBonus(player: IPlayer, spaceBonus: SpaceBonus, count?: number, onStandardResource?: (resource: Resource) => void): void;
   addGreenery(player: IPlayer, space: Space, shouldRaiseOxygen?: boolean): void;
   addCity(player: IPlayer, space: Space, cardName?: CardName | undefined): void;
   canAddOcean(): boolean;
@@ -242,10 +262,7 @@ export interface IGame extends Logger {
    * Returns the Player holding this card, or returns undefined.
    */
   getCardPlayerOrUndefined(name: CardName): IPlayer | undefined;
-  /**
-   * Returns the list of standard project cards used in this game, sorted by cost.
-   */
-  getStandardProjects(): Array<IStandardProjectCard>;
+  standardProjects: ReadonlyArray<IStandardProjectCard>;
 
   log(message: string, f?: (builder: LogMessageBuilder) => void, options?: {reservedFor?: IPlayer}): void;
   discardForCost(cardCount: 1 | 2, toPlace: TileType): number;

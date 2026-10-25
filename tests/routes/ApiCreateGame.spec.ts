@@ -5,7 +5,6 @@ import {MockRequest, MockResponse} from './HttpMocks';
 import {RouteTestScaffolding} from './RouteTestScaffolding';
 import {statusCode} from '../../src/common/http/statusCode';
 import {NewGameConfig} from '../../src/common/game/NewGameConfig';
-import {RandomBoardOption} from '../../src/common/boards/RandomBoardOption';
 import {RandomMAOptionType} from '../../src/common/ma/RandomMAOptionType';
 import {SimpleGameModel} from '../../src/common/models/SimpleGameModel';
 import {FakeClock} from '../common/FakeClock';
@@ -38,7 +37,7 @@ function newGameConfigForTest(): NewGameConfig {
       underworld: false,
       deltaProject: false,
     },
-    board: RandomBoardOption.OFFICIAL,
+    boards: [BoardName.THARSIS],
     seed: 0,
     randomFirstPlayer: false,
     clonedGamedId: undefined,
@@ -89,25 +88,6 @@ describe('ApiCreateGame', () => {
     res = new MockResponse();
     scaffolding = new RouteTestScaffolding(req);
     apiCreateGame = new ApiCreateGame([{limit: 99999, perMs: 1}]);
-  });
-
-  it('Official random boards do not include fan maps', () => {
-    expect(ApiCreateGame.boardOptions(RandomBoardOption.OFFICIAL)).deep.eq([BoardName.THARSIS, BoardName.HELLAS, BoardName.ELYSIUM]);
-  });
-  it('Fully random boards do include fan maps', () => {
-    expect(ApiCreateGame.boardOptions(RandomBoardOption.ALL)).deep.eq([
-      BoardName.THARSIS,
-      BoardName.HELLAS,
-      BoardName.ELYSIUM,
-      BoardName.UTOPIA_PLANITIA,
-      BoardName.VASTITAS_BOREALIS_NOVA,
-      BoardName.TERRA_CIMMERIA_NOVA,
-      BoardName.ARABIA_TERRA,
-      BoardName.VASTITAS_BOREALIS,
-      BoardName.AMAZONIS,
-      BoardName.TERRA_CIMMERIA,
-      BoardName.HOLLANDIA,
-    ]);
   });
 
   it('no get', async () => {
@@ -340,5 +320,11 @@ describe('ApiCreateGame', () => {
     const res3 = new MockResponse();
     await postGame(apiCreateGame, req3, res3);
     expect(res3.statusCode).not.eq(statusCode.tooManyRequests);
+  });
+
+  it('rejects an empty board list', async () => {
+    await postConfig({...newGameConfigForTest(), boards: []});
+    expect(res.statusCode).eq(statusCode.badRequest);
+    expect(res.content).contains('Must select at least one board');
   });
 });

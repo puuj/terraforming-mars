@@ -114,12 +114,12 @@ export class MoonExpansion {
   }
 
   private static logTilePlacement(player: IPlayer, space: Space, tileType: TileType) {
-    // TODO(kberg): this can probably be removed now.
     // Skip off-grid tiles
-    if (space.x !== -1 && space.y !== -1) {
-      player.game.log('${0} placed a ${1} tile at ${2}', (b) =>
-        b.player(player).tileType(tileType).space(space));
+    if (space.spaceType === SpaceType.COLONY) {
+      return;
     }
+    player.game.log('${0} placed a ${1} tile at ${2}', (b) =>
+      b.player(player).tileType(tileType).space(space));
   }
 
   private static maybeBonus(originalRate: number, increment: number, value: number): boolean {
@@ -276,9 +276,9 @@ export class MoonExpansion {
       switch (tileBuilt) {
       case TileType.MOON_HABITAT:
         if (player.tableau.has(CardName.SUBTERRANEAN_HABITATS)) {
-          // Edge case: Momentum Virum is a space habitat, not a habitat
+          // Edge case: Momentum Virium is a space habitat, not a habitat
           // ON the moon.
-          if (card.name !== CardName.MOMENTUM_VIRUM_HABITAT) {
+          if (card.name !== CardName.MOMENTUM_VIRIUM_HABITAT) {
             titanium -= 1;
           }
         }

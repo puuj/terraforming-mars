@@ -12,9 +12,7 @@ import {TileType} from '@/common/TileType';
 
 const spaces: SpaceModel[] = [
   {
-    id: '01',
-    x: 1,
-    y: 1,
+    id: 'c01',
     bonus: [],
     spaceType: SpaceType.COLONY,
     color: undefined,
@@ -22,9 +20,7 @@ const spaces: SpaceModel[] = [
     tileType: undefined,
   },
   {
-    id: '02',
-    x: 2,
-    y: 1,
+    id: 'c02',
     bonus: [],
     spaceType: SpaceType.COLONY,
     color: undefined,
@@ -32,9 +28,7 @@ const spaces: SpaceModel[] = [
     tileType: undefined,
   },
   {
-    id: '69',
-    x: 3,
-    y: 1,
+    id: 'c69',
     bonus: [],
     spaceType: SpaceType.COLONY,
     color: undefined,
@@ -43,8 +37,6 @@ const spaces: SpaceModel[] = [
   },
   {
     id: '04',
-    x: 3,
-    y: 1,
     bonus: [],
     spaceType: SpaceType.OCEAN,
     color: undefined,

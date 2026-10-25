@@ -50,28 +50,21 @@ export class SpecializedSettlement extends Card implements IProjectCard {
     return PathfindersExpansion.willGainEnergyProductionOnNextMarsTag(player);
   }
 
-  private bonusResources(space: Space) {
+  private static readonly RESOURCES_FOR_BONUS: Partial<Record<SpaceBonus, Resource>> = {
+    [SpaceBonus.STEEL]: Resource.STEEL,
+    [SpaceBonus.TITANIUM]: Resource.TITANIUM,
+    [SpaceBonus.PLANT]: Resource.PLANTS,
+    [SpaceBonus.ENERGY]: Resource.ENERGY,
+    [SpaceBonus.HEAT]: Resource.HEAT,
+  };
+
+  private bonusResources(space: Space): ReadonlySet<Resource> {
     const resources: Set<Resource> = new Set();
-    space.bonus.forEach((bonus) => {
-      switch (bonus) {
-      case SpaceBonus.STEEL:
-        resources.add(Resource.STEEL);
-        break;
-      case SpaceBonus.TITANIUM:
-        resources.add(Resource.TITANIUM);
-        break;
-      case SpaceBonus.PLANT:
-        resources.add(Resource.PLANTS);
-        break;
-      case SpaceBonus.ENERGY:
-        resources.add(Resource.ENERGY);
-        break;
-      case SpaceBonus.HEAT:
-        resources.add(Resource.HEAT);
-        break;
-      }
-    });
-    return Array.from(resources);
+    space.bonus
+      .map((bonus) => SpecializedSettlement.RESOURCES_FOR_BONUS[bonus])
+      .filter((resource) => resource !== undefined)
+      .forEach((resource) => resources.add(resource));
+    return resources;
   }
 
   public override bespokePlay(player: IPlayer) {
@@ -84,28 +77,29 @@ export class SpecializedSettlement extends Card implements IProjectCard {
       .andThen((space) => {
         const coveringExistingTile = space.tile !== undefined;
 
-        player.game.addCity(player, space);
+        player.game.addCity(player, space, this.name);
 
         if (coveringExistingTile) {
           return;
         }
-        const bonusResources = this.bonusResources(space);
-        if (bonusResources.length === 0) {
-          return;
-        }
 
-        player.game.defer(new SelectResourceTypeDeferred(
-          player, bonusResources,
-          'Select a resource to gain 1 unit of production'))
-          .andThen(
-            (resource) => {
-              player.production.add(resource, 1, {log: true});
-              this.bonusResource = [resource];
-            },
-          );
+        this.produceForTile(player, this.bonusResources(space));
         return undefined;
       },
       );
+  }
+
+  private gainProduction(player: IPlayer, resource: Resource) {
+    player.production.add(resource, 1, {log: true});
+    this.bonusResource = [resource];
+  }
+
+  public onStandardResourcePlacementBonus(cardOwner: IPlayer, activePlayer: IPlayer, space: Space, resource: Resource) {
+    // A wild standard resource bonus is chosen after the city is placed, so produceForTile can't see it.
+    // The city tile carries this card's name, which limits this to its own space.
+    if (cardOwner === activePlayer && space.tile?.card === this.name) {
+      this.gainProduction(cardOwner, resource);
+    }
   }
 
   public readonly defaultProductionBox = Units.of({energy: -1, megacredits: 3});
@@ -113,19 +107,14 @@ export class SpecializedSettlement extends Card implements IProjectCard {
     return productionBoxWithBonusResource(this);
   }
 
-  public produceForTile(player: IPlayer, bonusResources: Array<Resource>) {
-    if (bonusResources.length === 0) {
+  private produceForTile(player: IPlayer, bonusResources: ReadonlySet<Resource>) {
+    if (bonusResources.size === 0) {
       return;
     }
 
     player.game.defer(new SelectResourceTypeDeferred(
-      player, bonusResources,
+      player, Array.from(bonusResources),
       'Select a resource to gain 1 unit of production'))
-      .andThen(
-        (resource) => {
-          player.production.add(resource, 1, {log: true});
-          this.bonusResource = [resource];
-        },
-      );
+      .andThen((resource) => this.gainProduction(player, resource));
   }
 }

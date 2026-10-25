@@ -11,15 +11,84 @@ import {oneWayDifference} from '../../common/utils/utils';
 import {Tile} from '../Tile';
 import {SpaceBonus} from '../../common/boards/SpaceBonus';
 import * as constants from '../../common/constants';
+import {GlobalParameterMaximums, getGlobalParameterMaximums} from '../../common/boards/GlobalParameterMaximums';
+import {BoardName} from '../../common/boards/BoardName';
+
+// Coordinate labels for the standard nine-row maps.
+const MARS_A9 = {
+  '03': 'A1',
+  '04': 'A2',
+  '05': 'A3',
+  '06': 'A4',
+  '07': 'A5',
+  '08': 'B1',
+  '09': 'B2',
+  '10': 'B3',
+  '11': 'B4',
+  '12': 'B5',
+  '13': 'B6',
+  '14': 'C1',
+  '15': 'C2',
+  '16': 'C3',
+  '17': 'C4',
+  '18': 'C5',
+  '19': 'C6',
+  '20': 'C7',
+  '21': 'D1',
+  '22': 'D2',
+  '23': 'D3',
+  '24': 'D4',
+  '25': 'D5',
+  '26': 'D6',
+  '27': 'D7',
+  '28': 'D8',
+  '29': 'E1',
+  '30': 'E2',
+  '31': 'E3',
+  '32': 'E4',
+  '33': 'E5',
+  '34': 'E6',
+  '35': 'E7',
+  '36': 'E8',
+  '37': 'E9',
+  '38': 'F1',
+  '39': 'F2',
+  '40': 'F3',
+  '41': 'F4',
+  '42': 'F5',
+  '43': 'F6',
+  '44': 'F7',
+  '45': 'F8',
+  '46': 'G1',
+  '47': 'G2',
+  '48': 'G3',
+  '49': 'G4',
+  '50': 'G5',
+  '51': 'G6',
+  '52': 'G7',
+  '53': 'H1',
+  '54': 'H2',
+  '55': 'H3',
+  '56': 'H4',
+  '57': 'H5',
+  '58': 'H6',
+  '59': 'J1',
+  '60': 'J2',
+  '61': 'J3',
+  '62': 'J4',
+  '63': 'J5',
+} as const;
 
 export class MarsBoard extends Board {
-  private readonly edges: ReadonlyArray<Space>;
+  public readonly A9: Readonly<Partial<Record<SpaceId, string>>> = MARS_A9;
+  public readonly max: Readonly<GlobalParameterMaximums>;
 
   public constructor(
     spaces: ReadonlyArray<Space>,
-    noctisCitySpaceId?: SpaceId | undefined) {
+    noctisCitySpaceId?: SpaceId | undefined,
+    max: Readonly<GlobalParameterMaximums> = getGlobalParameterMaximums(BoardName.THARSIS)) {
     super(spaces, noctisCitySpaceId);
-    this.edges = this.computeEdges();
+    this.max = max;
   }
 
   public getCitiesOffMars(player?: IPlayer): Array<Space> {
@@ -113,10 +182,6 @@ export class MarsBoard extends Board {
     );
   }
 
-  public hasAvailableCitySpaceWithBonus(player: IPlayer, bonus: SpaceBonus): boolean {
-    return this.getAvailableSpacesForCity(player).some((s) => s.bonus.includes(bonus));
-  }
-
   /**
    * Returns true when the player can cover -1 energy production cost via
    * an available city space that carries an ENERGY_PRODUCTION bonus.
@@ -161,7 +226,7 @@ export class MarsBoard extends Board {
     if (player.tableau.has(CardName.GORDON)) {
       return availableLandSpaces;
     }
-    // Spaces next to Red City are always unavialable for Greeneries.
+    // Spaces next to Red City are always unavailable for Greeneries.
     availableLandSpaces = this.filterSpacesAroundRedCity(availableLandSpaces);
 
     // player can place a greenery in an available land space that is next
@@ -217,7 +282,7 @@ export class MarsBoard extends Board {
         return false;
       }
     }
-    if (space.bonus.includes(SpaceBonus.TEMPERATURE_4MC) && game.getTemperature() < constants.MAX_TEMPERATURE) {
+    if (space.bonus.includes(SpaceBonus.TEMPERATURE_4MC) && game.getTemperature() < game.max.temperature) {
       if (!player.canAfford({cost: constants.VASTITAS_BOREALIS_NOVA_BONUS_TEMPERATURE_COST, tr: {temperature: 1}})) {
         return false;
       }
@@ -228,28 +293,6 @@ export class MarsBoard extends Board {
       }
     }
     return true;
-  }
-
-  private computeEdges(): ReadonlyArray<Space> {
-    return this.spaces.filter((space) => {
-      if (space.y === 0 || space.y === 8 || space.x === 8) {
-        return true;
-      }
-      // left side is tricky.
-      // top-left is easy with math. Look at the map.
-      if (space.y + space.x === 4) {
-        return true;
-      }
-      // bottom-left is also easy with math. Look at the map.
-      if (space.y - space.x === 4) {
-        return true;
-      }
-      return false;
-    });
-  }
-
-  public getEdges(): ReadonlyArray<Space> {
-    return this.edges;
   }
 
   public getAvailableIsolatedSpaces(player: IPlayer, canAffordOptions?: CanAffordOptions): ReadonlyArray<Space> {

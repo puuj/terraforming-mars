@@ -1,5 +1,6 @@
 import * as constants from '../../common/constants';
 import {ICard} from '../cards/ICard';
+import {IProjectCard} from '../cards/IProjectCard';
 import {GlobalParameter} from '../../common/GlobalParameter';
 import {SelectOption} from '../inputs/SelectOption';
 import {IPlayer} from '../IPlayer';
@@ -12,9 +13,11 @@ import {MARS_FIRST_POLICY_2} from './parties/MarsFirst';
 import {PartyHooks} from './parties/PartyHooks';
 import {PartyName} from '../../common/turmoil/PartyName';
 import {REDS_POLICY_2} from './parties/Reds';
+import {UNITY_POLICY_4} from './parties/Unity';
 import {TRSource} from '../../common/cards/TRSource';
 import {IPolicy, policyDescription} from './Policy';
 import {message} from '../logs/MessageBuilder';
+import {venusLevelAfterSteps, venusStepsBetween} from '../venusNext/venusScale';
 import {agendaInfoById} from '@/common/turmoil/Types';
 
 export class TurmoilHandler {
@@ -50,6 +53,14 @@ export class TurmoilHandler {
     if (PartyHooks.shouldApplyPolicy(player, PartyName.MARS, 'mp02')) {
       MARS_FIRST_POLICY_2.onCardPlayed(player, selectedCard);
     }
+  }
+
+  public static getCardDiscount(player: IPlayer, card: IProjectCard): number {
+    // PoliticalAgendas Unity P4 hook
+    if (PartyHooks.shouldApplyPolicy(player, PartyName.UNITY, 'up04')) {
+      return UNITY_POLICY_4.getCardDiscount(player, card);
+    }
+    return 0;
   }
 
   public static resolveTilePlacementCosts(player: IPlayer): void {
@@ -101,40 +112,49 @@ export class TurmoilHandler {
     tr = {...tr};
 
     let total = 0;
+    const game = player.game;
+    const globalParameterTracks = game.globalParameterTracks;
 
     if (tr.oxygen !== undefined) {
-      const availableSteps = constants.MAX_OXYGEN_LEVEL - player.game.getOxygenLevel();
+      const oxygenLevel = game.getOxygenLevel();
+      const availableSteps = game.max.oxygen - oxygenLevel;
       const steps = Math.min(availableSteps, tr.oxygen);
       total = total + steps;
-      if (player.game.getOxygenLevel() < constants.OXYGEN_LEVEL_FOR_TEMPERATURE_BONUS &&
-          player.game.getOxygenLevel() + steps >= constants.OXYGEN_LEVEL_FOR_TEMPERATURE_BONUS) {
-        tr.temperature = (tr.temperature ?? 0) + 1;
+      for (const {value, bonus} of globalParameterTracks.oxygen) {
+        if (bonus === 'temperature' && oxygenLevel < value && oxygenLevel + steps >= value) {
+          tr.temperature = (tr.temperature ?? 0) + 1;
+        }
       }
     }
 
     if (tr.temperature !== undefined) {
-      const availableSteps = Math.floor((constants.MAX_TEMPERATURE - player.game.getTemperature()) / 2);
+      const temperature = game.getTemperature();
+      const availableSteps = Math.floor((game.max.temperature - temperature) / 2);
       const steps = Math.min(availableSteps, tr.temperature);
       total = total + steps;
-      if (player.game.getTemperature() < constants.TEMPERATURE_FOR_OCEAN_BONUS &&
-        player.game.getTemperature() + (steps * 2) >= constants.TEMPERATURE_FOR_OCEAN_BONUS) {
-        tr.oceans = (tr.oceans ?? 0) + 1;
+      for (const {value, bonus} of globalParameterTracks.temperature) {
+        if (bonus === 'ocean' && temperature < value && temperature + (steps * 2) >= value) {
+          tr.oceans = (tr.oceans ?? 0) + 1;
+        }
       }
     }
 
     if (tr.oceans !== undefined) {
-      const availableSteps = constants.MAX_OCEAN_TILES - player.game.board.getOceanSpaces().length;
+      const availableSteps = game.max.oceans - game.board.getOceanSpaces().length;
       const steps = Math.min(availableSteps, tr.oceans);
       total = total + steps;
     }
 
     if (tr.venus !== undefined) {
-      const availableSteps = Math.floor((constants.MAX_VENUS_SCALE - player.game.getVenusScaleLevel()) / 2);
+      const venusLevel = game.getVenusScaleLevel();
+      const availableSteps = venusStepsBetween(venusLevel, game.max.venus);
       const steps = Math.min(availableSteps, tr.venus);
       total = total + steps;
-      if (player.game.getVenusScaleLevel() < constants.VENUS_LEVEL_FOR_TR_BONUS &&
-        player.game.getVenusScaleLevel() + (steps * 2) >= constants.VENUS_LEVEL_FOR_TR_BONUS) {
-        tr.tr = (tr.tr ?? 0) + 1;
+      const newVenusLevel = venusLevelAfterSteps(venusLevel, steps);
+      for (const {value, bonus} of globalParameterTracks.venus) {
+        if (bonus === 'tr' && venusLevel < value && newVenusLevel >= value) {
+          tr.tr = (tr.tr ?? 0) + 1;
+        }
       }
     }
 

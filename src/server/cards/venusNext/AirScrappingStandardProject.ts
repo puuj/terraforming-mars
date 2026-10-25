@@ -2,7 +2,6 @@ import {IPlayer} from '../../IPlayer';
 import {CardName} from '../../../common/cards/CardName';
 import {CardRenderer} from '../render/CardRenderer';
 import {StandardProjectCard} from '../StandardProjectCard';
-import * as constants from '../../../common/constants';
 
 export class AirScrappingStandardProject extends StandardProjectCard {
   constructor(properties = {
@@ -21,11 +20,11 @@ export class AirScrappingStandardProject extends StandardProjectCard {
     super(properties);
   }
 
-  public override canAct(player: IPlayer): boolean {
-    if (player.game.getVenusScaleLevel() >= constants.MAX_VENUS_SCALE) {
+  protected override bespokeCanAct(player: IPlayer): boolean {
+    if (player.game.getVenusScaleLevel() >= player.game.max.venus) {
       this.addWarning('maxvenus');
     }
-    return super.canAct(player);
+    return true;
   }
 
   actionEssence(player: IPlayer): void {

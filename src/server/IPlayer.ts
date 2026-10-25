@@ -204,6 +204,14 @@ export interface IPlayer {
    */
   inputRequestedAt?: number;
 
+  /**
+   * The id of the current input request.
+   *
+   * The client sends it back with its response. Not serialized: reloading the game asks for
+   * input again, which sets a new one.
+   */
+  requestId?: string;
+
   setup(game: IGame): void;
 
   getTitaniumValue(): number;
@@ -362,7 +370,7 @@ export interface IPlayer {
   affordOptionsForCard(card: IProjectCard): CanAffordOptions;
   canAfford(options: number | CanAffordOptions): boolean;
   getStandardProjectOption(): SelectStandardProjectToPlay;
-  takeAction(saveBeforeTakingAction?: boolean): void;
+  takeAction(): void;
   /** Return possible mid-game actions like play a card and fund an award, but not play prelude card. */
   getActions(): OrOptions;
   process(input: InputResponse): void;

@@ -30,7 +30,11 @@ export abstract class Board {
   private maxX: number = 0;
   private maxY: number = 0;
   private map: Map<SpaceId, Space> = new Map();
-  public volcanicSpaceIds: ReadonlyArray<SpaceId>;
+  public readonly volcanicSpaceIds: ReadonlyArray<SpaceId>;
+  public readonly bottomRow: number;
+  public readonly equatorRow: number;
+  /** Each space's coordinate label on the printed map (e.g. 'A9'). Off-board spaces have none. */
+  public abstract readonly A9: Readonly<Partial<Record<SpaceId, string>>>;
 
   // stores adjacent spaces in clockwise order starting from the top left
   private readonly adjacentSpaces = new Map<SpaceId, ReadonlyArray<Space>>();
@@ -48,6 +52,8 @@ export abstract class Board {
     });
 
     this.volcanicSpaceIds = this.spaces.filter((space) => space.volcanic).map((space) => space.id);
+    this.bottomRow = this.maxY;
+    this.equatorRow = this.bottomRow / 2;
   }
 
   /* Returns the space given a Space ID. */
@@ -348,6 +354,9 @@ export abstract class Board {
         if (space.volcanic) {
           serialized.volcanic = true;
         }
+        if (space.edge) {
+          serialized.edge = true;
+        }
         return serialized;
       }),
     };
@@ -367,6 +376,7 @@ export abstract class Board {
       // TODO(kberg): Remove after 2026-12-01
       // _TEMPERATURE_3MC was merged into TEMPERATURE_4MC.
       bonus: serialized.bonus.map((b) => b === SpaceBonus._TEMPERATURE_3MC ? SpaceBonus.TEMPERATURE_4MC : b),
+      edge: serialized.edge ?? false,
       x: serialized.x,
       y: serialized.y,
     };

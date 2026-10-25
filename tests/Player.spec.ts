@@ -88,6 +88,19 @@ describe('Player', () => {
     expect(player.inputRequestedAt).eq(5000);
   });
 
+  it('keeps the request id when a response is rejected', () => {
+    const [/* game */, player] = testGame(1);
+    player.clearWaitingFor();
+    player.setWaitingFor(new SelectOption('Input'));
+    const requestId = player.requestId;
+
+    expect(() => player.process({type: 'amount', amount: 1})).to.throw(/Not a valid SelectOptionResponse/);
+    expect(player.requestId).eq(requestId);
+
+    player.process({type: 'option'});
+    expect(player.requestId).is.undefined;
+  });
+
   it('does not stop the timer when processing optional input', () => {
     const [player, clock] = playerWithRunningTimer();
     const elapsed = player.timer.getElapsed();
@@ -266,7 +279,7 @@ describe('Player', () => {
       passingTo: undefined,
       preludeCardsInHand: [CardName.METAL_RICH_ASTEROID, CardName.PSYCHROPHILES],
       ceoCardsInHand: [],
-      playedCards: [], // TODO(kberg): these are SerializedCard.
+      playedCards: [],
       draftedCards: [CardName.FISH, CardName.EXTREME_COLD_FUNGUS],
       needsToDraft: false,
       cardCost: 3,
@@ -436,7 +449,8 @@ describe('Player', () => {
     expect(card.resourceCount).eq(5);
     expect(log).has.length(1);
     expect(log[0].data[1].value).eq('1');
-    expect(log[0].data[3].value).eq('Pets');
+    expect(log[0].data[2].value).eq('Animal');
+    expect(log[0].data[4].value).eq('Pets');
 
     log.length = 0;
     player.removeResourceFrom(card, 1);

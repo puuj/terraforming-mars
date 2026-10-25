@@ -11,7 +11,7 @@
         <text x="30" y="107" class="board-caption board_caption--black">●</text>
       </g>
 
-      <g id="mare_sereitatis" transform="translate(485, 140)">
+      <g id="mare_serenitatis" transform="translate(485, 140)">
         <text class="board-caption">
             <tspan dy="15">Mare</tspan>
             <tspan x="4" dy="12">Serenitatis</tspan>
@@ -82,6 +82,7 @@ import MoonSpace from '@/client/components/moon/MoonSpace.vue';
 import {TileView} from '../board/TileView';
 import {SpaceId} from '@/common/Types';
 import {comparing} from '@/common/utils/Ordering';
+import {spacesById} from '@/client/utils/spacesById';
 
 type MoonParamLevel = {
   value: number,
@@ -113,10 +114,9 @@ export default defineComponent({
   },
   methods: {
     getSpaceById(spaceId: SpaceId) {
-      for (const space of this.model.spaces) {
-        if (space.id === spaceId) {
-          return space;
-        }
+      const space = spacesById(this.model.spaces).get(spaceId);
+      if (space !== undefined) {
+        return space;
       }
       throw new Error('Board space not found by id \'' + spaceId + '\'');
     },

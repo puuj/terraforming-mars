@@ -48,7 +48,7 @@
               </a>
             </div>
           </div>
-          <div v-if="!isSoloGame || game.isSoloModeWin" class="game-end-winer-announcement">
+          <div v-if="!isSoloGame || game.isSoloModeWin" class="game-end-winner-announcement">
               <span v-for="p in winners" :key="p.color"><span :class="'log-player ' + getEndGamePlayerRowColorClass(p.color)">{{ p.name }}</span></span> <span v-i18n>won!</span>
           </div>
           <div class="game_end_victory_points">
@@ -112,7 +112,7 @@
                 />
               <div class="game-end-flexrow">
                   <div v-for="p in playersInPlace" :key="p.color" class="game-end-column">
-                      <div class="game-end-winer-scorebreak-player-title">
+                      <div class="game-end-winner-scorebreak-player-title">
                           <div :class="'game-end-player ' + getEndGamePlayerRowColorClass(p.color)"><a :href="'player?id='+p.id+'&noredirect'">{{p.name}}</a></div>
                       </div>
                       <div v-for="v in p.victoryPointsBreakdown.detailsCards" :key="v.cardName">
@@ -238,6 +238,7 @@ import {Color} from '@/common/Color';
 import {CardType} from '@/common/cards/CardType';
 import {getCard} from '@/client/cards/ClientCardManifest';
 import {GlobalParameter} from '@/common/GlobalParameter';
+import {getGlobalParameterMaximums} from '@/common/boards/GlobalParameterMaximums';
 import {$t, translateTextWithParams, translateMessage} from '@/client/directives/i18n';
 import {Message} from '@/common/logs/Message';
 import {LogMessageDataType} from '@/common/logs/LogMessageDataType';
@@ -312,11 +313,12 @@ export default defineComponent({
         });
       }
 
-      dataset.push({label: $t('Temperature'), color: 'red', data: getValues(GlobalParameter.TEMPERATURE, -30, 8)});
-      dataset.push({label: $t('Oxygen'), color: 'green', data: getValues(GlobalParameter.OXYGEN, 0, 14)});
-      dataset.push({label: $t('Oceans'), color: 'blue', data: getValues(GlobalParameter.OCEANS, 0, 9)});
+      const max = getGlobalParameterMaximums(this.game.gameOptions.boardName);
+      dataset.push({label: $t('Temperature'), color: 'red', data: getValues(GlobalParameter.TEMPERATURE, constants.MIN_TEMPERATURE, max.temperature)});
+      dataset.push({label: $t('Oxygen'), color: 'green', data: getValues(GlobalParameter.OXYGEN, constants.MIN_OXYGEN_LEVEL, max.oxygen)});
+      dataset.push({label: $t('Oceans'), color: 'blue', data: getValues(GlobalParameter.OCEANS, 0, max.oceans)});
       if (this.game.gameOptions.expansions.venus === true) {
-        dataset.push({label: $t('Venus'), color: 'yellow', data: getValues(GlobalParameter.VENUS, 0, 30)});
+        dataset.push({label: $t('Venus'), color: 'yellow', data: getValues(GlobalParameter.VENUS, constants.MIN_VENUS_SCALE, max.venus)});
       }
       if (this.game.gameOptions.expansions.moon === true) {
         dataset.push({label: $t('L. Habitat'), color: 'orange', data: getValues(GlobalParameter.MOON_HABITAT_RATE, 0, 8)});
@@ -399,7 +401,7 @@ export default defineComponent({
     translateAwardDetails(data: MADetail): string {
       if ( ! data.messageArgs || data.messageArgs.length < 3) {
         console.error( // data.message: ${0} place for ${1} award (funded by ${2})
-          `Award detail has not enought data.
+          `Award detail has not enough data.
           It must contain at least 3 arguments:
           1) a Player's place in the race for the award
           2) translatable Award name

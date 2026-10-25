@@ -28,19 +28,18 @@ export class CollusionStandardProject extends StandardProjectCard {
     super(properties);
   }
 
-  public override canAct(player: IPlayer): boolean {
+  protected override bespokeCanAct(player: IPlayer): boolean {
     if (player.underworldData.corruption <= 0) {
       return false;
     }
     const game = player.game;
     const turmoil = Turmoil.getTurmoil(game);
-    if (!turmoil.hasDelegatesInReserve(player)) {
+    if (!turmoil.delegateReserve.has(player)) {
       return false;
     }
     if (this.getParties(turmoil).length === 0) {
       return false;
     }
-    // return super.canAct(player); // Not necessary this time.
     return true;
   }
 
@@ -81,7 +80,7 @@ export class CollusionStandardProject extends StandardProjectCard {
         if (available < data.amount) {
           throw new Error(`${data.partyName} does not have ${data.amount} neutral delegates.`);
         }
-        if (turmoil.getAvailableDelegateCount(player) < data.amount) {
+        if (turmoil.delegateReserve.get(player) < data.amount) {
           throw new Error(`Player does not have ${data.amount} delegates in reserve`);
         }
         for (let i = 0; i < data.amount; i++) {
