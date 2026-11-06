@@ -158,7 +158,7 @@ export class Timer {
     return asString.slice(14, 19);
   }
   public getActingTime() : number {
-    if (this.running && this.afterFirstAction) {
+    if (this.running) {
       return Math.floor((Date.now() - this.startedAt)/1000);
     }
     return 0;

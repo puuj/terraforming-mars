@@ -12,7 +12,7 @@ export class AutomaGameSetup {
    */
   public static createMarsBotPlayer(gameId: GameId): IPlayer {
     const playerId: PlayerId = `p-${gameId}-marsbot`;
-    return new Player('MarsBot', 'bronze', false, 0, playerId);
+    return new Player('MarsBot', 'bronze', false, 0, playerId, "");
   }
 
   /** Gives MarsBot its delegates in a new automa game when Turmoil is on. */

@@ -19,7 +19,7 @@
         <a v-if="gameOptions.expansions.moon" :href="rulebookUrls.moon" class="tooltip" data-tooltip="The Moon rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-themoon"></div></a>
         <a v-else :href="rulebookUrls.moon" class="tooltip" data-tooltip="The Moon rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-themoon expansion-disbled" title="Moon disabled"></div></a>
         <a v-if="gameOptions.expansions.pathfinders" :href="rulebookUrls.pathfinders" class="tooltip" data-tooltip="Pathfinders rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-pathfinders"></div></a>
-        <a v-else :href="rulebookUrls.pathfinders" class="tooltip" data-tooltip="Pathfinders rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-pathfinders expansion-disabled" title=Pathfinders disabled"></div></a>
+        <a v-else :href="rulebookUrls.pathfinders" class="tooltip" data-tooltip="Pathfinders rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-pathfinders expansion-disabled" title="Pathfinders disabled"></div></a>
         <a v-if="gameOptions.expansions.community" :href="rulebookUrls.community" class="tooltip" data-tooltip="Community rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-community"></div></a>
         <a v-else :href="rulebookUrls.community" class="tooltip" data-tooltip="Community rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-community expansion-disabled" title="Community disabled"></div></a>
         <div v-if="isPoliticalAgendasOn" class="create-game-expansion-icon expansion-icon-agendas" title="Turmoil Agendas"></div>

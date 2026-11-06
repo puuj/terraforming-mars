@@ -14,7 +14,7 @@
       <GlobalParameterValue v-if="gameOptions.expansions.venus" :param="globalParameter.VENUS" :value="venus" :boardName="gameOptions.boardName" />
       <MoonGlobalParameterValue v-if="moonData" :moonData="moonData" />
     </div>
-    <div class="sidebar_item preferences_player" :title="Current Player Color Cube">
+    <div class="sidebar_item preferences_player" title="Current Player Color Cube">
       <div class="preferences_player_inner" :class="[`player_bg_color_${currentPlayerColor}`, {active: isAnimated}]"></div>
     </div>
 
