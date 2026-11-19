@@ -29,7 +29,7 @@ import {PlayerId, GameId, SpectatorId, SpaceId} from '../common/Types';
 import {PlayerInput} from './PlayerInput';
 import {CardResource} from '../common/CardResource';
 import {Resource} from '../common/Resource';
-import {AndThen, DeferredAction, SimpleDeferredAction} from './deferredActions/DeferredAction';
+import {AndThen, IDeferredAction, SimpleDeferredAction} from './deferredActions/DeferredAction';
 import {Priority} from './deferredActions/Priority';
 import {DeferredActionsQueue} from './deferredActions/DeferredActionsQueue';
 import {SelectPaymentDeferred} from './deferredActions/SelectPaymentDeferred';
@@ -60,10 +60,12 @@ import {GrantVenusAltTrackBonusDeferred} from './venusNext/GrantVenusAltTrackBon
 import {PathfindersExpansion} from './pathfinders/PathfindersExpansion';
 import {PathfindersData} from './pathfinders/PathfindersData';
 import {DeltaProject} from './cards/delta/DeltaProject';
+import {MiningCard} from './cards/base/MiningCard';
 import {AddResourcesToCard} from './deferredActions/AddResourcesToCard';
 import {ColonyDeserializer} from './colonies/ColonyDeserializer';
 import {GameLoader} from './database/GameLoader';
 import {DEFAULT_GAME_OPTIONS, GameOptions} from './game/GameOptions';
+import {isShowVP, showVPFromLegacy} from '../common/game/ShowVP';
 import {CorporationDeck, PreludeDeck, ProjectDeck, CeoDeck} from './cards/Deck';
 import {Logger} from './logs/Logger';
 import {addDays, stringToNumber} from './database/utils';
@@ -575,7 +577,7 @@ export class Game implements IGame, Logger {
     return player;
   }
 
-  public defer<T>(action: DeferredAction<T>, priority?: Priority): AndThen<T> {
+  public defer<T>(action: IDeferredAction<T>, priority?: Priority): AndThen<T> {
     if (priority !== undefined) {
       action.priority = priority;
     }
@@ -1573,15 +1575,29 @@ export class Game implements IGame, Logger {
         {title: 'Select how to pay for building a colony'}))
         .andThen(() => this.defer(new BuildColony(player)));
       break;
-    case SpaceBonus.STANDARD_RESOURCE:
+    case SpaceBonus.STANDARD_RESOURCE: {
+      const gainStandardResource = (resource: Resource) => {
+        player.stock.add(resource, 1, {log: true});
+        onStandardResource?.(resource);
+        return undefined;
+      };
+      if (player.lastCardPlayed) {
+        const lastCardPlayed = player.tableau.get(player.lastCardPlayed);
+        // Mining cards treat this bonus as the steel or titanium production the player chose.
+        if (lastCardPlayed instanceof MiningCard) {
+          const miningResource = lastCardPlayed.bonusResource?.[0];
+          if (miningResource !== undefined) {
+            gainStandardResource(miningResource);
+            break;
+          }
+        }
+      }
+
       // A space has this bonus at most once. If one ever has more, use SelectResources (see Philares).
       player.defer(new SelectResource('Select a standard resource to gain')
-        .andThen((resource) => {
-          player.stock.add(resource, 1, {log: true});
-          onStandardResource?.(resource);
-          return undefined;
-        }));
+        .andThen(gainStandardResource));
       break;
+    }
     default:
       throw new Error('Unhandled space bonus ' + spaceBonus + '. Report this exact error, please.');
     }
@@ -1754,6 +1770,13 @@ export class Game implements IGame, Logger {
     if (gameOptions.escapeVelocity !== undefined) {
       gameOptions.escapeVelocity = sanitizeEscapeVelocityOptions(gameOptions.escapeVelocity);
     }
+    // TODO(kberg): Remove after 2027-02-01
+    // Older games store the boolean showOtherPlayersVP instead of showVP.
+    const legacyOptions: GameOptions & {showOtherPlayersVP?: boolean} = gameOptions;
+    if (!isShowVP(legacyOptions.showVP)) {
+      gameOptions.showVP = showVPFromLegacy(legacyOptions.showOtherPlayersVP);
+    }
+    delete legacyOptions.showOtherPlayersVP;
     const players = d.players.map((element) => Player.deserialize(element));
     // MarsBot isn't serialized with the players, so it is recreated from the game id.
     const marsBotPlayer = gameOptions.automa ? AutomaGameSetup.createMarsBotPlayer(d.id) : undefined;

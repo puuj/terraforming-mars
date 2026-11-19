@@ -30,7 +30,7 @@
         <a v-else :href="rulebookUrls.underworld" class="tooltip" data-tooltip="Underworld rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-underworld expansion-disabled" title="Underworld disabled"></div></a>
         <a v-if="gameOptions.expansions.starwars" :href="rulebookUrls.starwars" class="tooltip" data-tooltip="Star Wars rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-starwars"></div></a>
         <a v-else :href="rulebookUrls.starwars" class="tooltip" data-tooltip="Star Wars rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-starwars expansion-disabled" title="Star Wars disabled"></div></a>
-        <a v-if="gameOptions.expansions.deltaProject" :href="rulebookUrls.deltaProject" class="tooltip" data-tooltip="Delta Project rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-deltaProject"></div></a>
+        <a v-if="gameOptions.expansions.deltaProject" :href="rulebookUrls.deltaProject" class="tooltip" data-tooltip="Delta Project rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-deltaproject"></div></a>
         <a v-else :href="rulebookUrls.deltaProject" class="tooltip" data-tooltip="Delta Project rules" target="_blank"><div class="create-game-expansion-icon expansion-icon-deltaProject expansion-disabled" title="Delta Project disabled"></div></a>
       </li>
       <li><div class="setup-item" v-i18n>Board:</div>
@@ -98,7 +98,8 @@
      <li><div class="setup-item" v-i18n>Game configs:</div>
         <div v-if="gameOptions.fastModeOption" class="game-config fastmode" v-i18n>fast mode</div>
         <div v-if="gameOptions.showTimers" class="game-config timer" v-i18n>timer</div>
-        <div v-if="gameOptions.showOtherPlayersVP" class="game-config realtime-vp" v-i18n>real-time vp</div>
+        <div v-if="gameOptions.showVP === 'all'" class="game-config realtime-vp" v-i18n>real-time vp</div>
+        <div v-if="gameOptions.showVP === 'none'" class="game-config hidden-vp" v-i18n>hidden vp</div>
         <div v-if="gameOptions.undoOption" class="game-config undo" v-i18n>undo</div>
         <div v-if="gameOptions.twoCorpsVariant" class="game-config alternative" v-i18n>Merger</div>
     </li>
