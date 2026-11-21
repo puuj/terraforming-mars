@@ -54,7 +54,7 @@
         <WaitingFor v-if="game.phase !== 'end'" :playerView="playerView" :waitingfor="playerView.waitingFor" :requestId="playerView.requestId" />
       </div>
       <div class="player-home-block player-home-block--hand" v-if="playerView.draftedCards.length > 0">
-        <DynamicTitle title="Drafted cards (passing to ' + playerView.passingTo + ')'" :color="thisPlayer.color" />
+        <DynamicTitle title="Drafted cards" :color="thisPlayer.color" />
         <div v-for="card in playerView.draftedCards" :key="card.name" class="cardbox">
           <Card :card="card" />
         </div>

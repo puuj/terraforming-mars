@@ -42,8 +42,6 @@
       </div>
     </a>
 
-    <LanguageIcon />
-
     <div class="sidebar-item sidebar-item--info" :title="$t('Information panel')">
       <i class="sidebar-icon sidebar-icon--info"
         :class="{'sidebar-item--is-active': ui.gamesetup_detail_open}"
